@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapLayout.java,v 1.15.14.2.2.2 2005-01-17 20:49:11 dpolivaev Exp $*/
+/*$Id: MindMapLayout.java,v 1.15.14.2.2.3 2005-01-22 08:48:46 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -41,11 +41,7 @@ import javax.swing.JLabel;
 public class MindMapLayout implements LayoutManager {
 
     private final static int BORDER = 30;//width of the border around the map.
-    public final static int HGAP = 20;//width of the horizontal gap that contains the edges
-    public final static int VGAP = 0;//height of the vertical gap between nodes
-    final static int SHIFT = 0;//height of the vertical shift between node and its closest child
 	// minimal width for input field of leaf or folded node (PN)
-	
 	// the MINIMAL_LEAF_WIDTH is reserved by calculation of the map width
 	public final static int MINIMAL_LEAF_WIDTH = 150;
 	public final static int MINIMAL_WIDTH = 50;
@@ -337,7 +333,7 @@ public class MindMapLayout implements LayoutManager {
 	}
 
 	  protected int getShiftUp(NodeView node) {
-	  	int shift = node.getShift() + getShift(node.getParentView()) ;
+	  	int shift = node.getShift();
 	  	if (shift < 0)
 	  		return shift;
 	  	else
@@ -345,7 +341,7 @@ public class MindMapLayout implements LayoutManager {
 	}
 
 	  protected int getShiftDown(NodeView node) {
-	  	int shift = node.getShift() + getShift(node.getParentView()) ;
+	  	int shift = node.getShift();
 	  	if (shift > 0)
 	  		return shift;
 	  	else
@@ -522,16 +518,6 @@ public class MindMapLayout implements LayoutManager {
     private void setYSize(int i) {
         ySize = i;
     }
-
-	private int getShift(NodeView node) {
-		try{
-			if (node.getChildrenViews().getFirst() == node.getChildrenViews().getLast())
-				return map.getZoomed(SHIFT);
-		}
-		catch(NoSuchElementException e){
-		}
-		return 0;
-	}
 
 
 }//class MindMapLayout

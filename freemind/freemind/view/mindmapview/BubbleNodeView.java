@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: BubbleNodeView.java,v 1.14.14.2.4.1 2005-01-07 15:25:19 dpolivaev Exp $*/
+/*$Id: BubbleNodeView.java,v 1.14.14.2.4.2 2005-01-22 08:48:35 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -34,18 +34,12 @@ public class BubbleNodeView extends NodeView {
 					1f, new float[] {2f, 2f}, 0f);  
     private final static Stroke DEF_STROKE = new BasicStroke();
 
-
-    public final int LEFT_WIDTH_OVERHEAD = 5;
-    public final int LEFT_HEIGHT_OVERHEAD = 2;
-
     //
     // Constructors
     //
     
     public BubbleNodeView(MindMapNode model, MapView map) {
 	super(model,map);
-	setHorizontalAlignment(CENTER);
-	setVerticalAlignment(CENTER);
     }
 
 
@@ -98,10 +92,6 @@ public class BubbleNodeView extends NodeView {
 			{
 				ovalStartPoint.translate(0 , - getZoomedFoldingSymbolHalfWidth());
 			}
-			Color actualColor = g.getColor();
-			g.setColor(model.getBackgroundColor());
-			g.fillOval(ovalStartPoint.x + 1 , ovalStartPoint.y + 1, getZoomedFoldingSymbolHalfWidth() * 2 - 2, getZoomedFoldingSymbolHalfWidth() * 2 - 2);
-			g.setColor(actualColor);
 			g.drawOval(ovalStartPoint.x , ovalStartPoint.y , getZoomedFoldingSymbolHalfWidth() * 2, getZoomedFoldingSymbolHalfWidth() * 2);
 		}
         
@@ -139,9 +129,6 @@ public class BubbleNodeView extends NodeView {
 
 	super.paint(g);
     }
-
-    public int getLeftWidthOverhead() {
-       return LEFT_WIDTH_OVERHEAD; }
 
     /**
      * Returns the Point where the OutEdge
@@ -184,23 +171,18 @@ public class BubbleNodeView extends NodeView {
 			graphics.fillRoundRect(0,0,size.width-1,size.height-1,10,10);
     }
 
-
-
 	/* (non-Javadoc)
 	 * @see freemind.view.mindmapview.NodeView#getStyle()
 	 */
 	String getStyle() {
 		return MindMapNode.STYLE_BUBBLE;
 	}
-
-
-
-	/** Changed to remove the printing bug of java.*/
 	public Dimension getPreferredSize() {
 		Dimension prefSize = super.getPreferredSize();
-		prefSize.width  += getZoomedFoldingSymbolHalfWidth();
+		prefSize.width  += 5;
 	    return prefSize;
 	}
+
 
 }
 

@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: RootNodeView.java,v 1.14.14.2.4.2 2005-01-17 20:49:13 dpolivaev Exp $*/
+/*$Id: RootNodeView.java,v 1.14.14.2.4.3 2005-01-22 08:48:48 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -150,8 +150,6 @@ public class RootNodeView extends NodeView {
         paintDragOver(g, size);
 
 	//Draw a root node
-	setHorizontalAlignment(CENTER);
-
 	g.setColor(Color.gray);
 	g.setStroke(new BasicStroke(1.0f));
         setRendering(g);
@@ -223,7 +221,6 @@ public class RootNodeView extends NodeView {
 		return model.getStyle();
 	}
 
-	/** Changed to remove the printing bug of java.*/
 	public Dimension getPreferredSize() {
 		Dimension prefSize = super.getPreferredSize();
 		prefSize.width *= 1.1;

@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: NodeView.java,v 1.27.14.4.4.2 2005-01-17 20:49:11 dpolivaev Exp $*/
+/*$Id: NodeView.java,v 1.27.14.4.4.3 2005-01-22 08:48:46 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -86,9 +86,6 @@ public abstract class NodeView extends JLabel {
     /** For RootNodeView.*/
     public final static int DRAGGED_OVER_SON_LEFT = 3;
 
-    public final static int VGAP = MindMapLayout.VGAP;
-    public final static int HGAP = MindMapLayout.HGAP;
-    public final static int SHIFT = MindMapLayout.SHIFT;
     protected int isDraggedOver = DRAGGED_OVER_NO;
     public void setDraggedOver(int draggedOver) {
        isDraggedOver = draggedOver; }
@@ -100,9 +97,6 @@ public abstract class NodeView extends JLabel {
 	final static int ALIGN_BOTTOM = -1;
 	final static int ALIGN_CENTER = 0;
 	final static int ALIGN_TOP = 1;
-
-    public final int LEFT_WIDTH_OVERHEAD = 0;
-    public final int LEFT_HEIGHT_OVERHEAD = 0;
     
     //
     // Constructors
@@ -111,6 +105,8 @@ public abstract class NodeView extends JLabel {
     private static Color standardSelectColor;
     private static Color standardNodeColor;
     protected NodeView(MindMapNode model, MapView map) {
+	setHorizontalAlignment(CENTER);
+
 	this.model = model;
 	setMap(map);
 
@@ -267,12 +263,13 @@ public abstract class NodeView extends JLabel {
         }
     }   
 	private static boolean NEED_PREF_SIZE_BUG_FIX = Controller.JAVA_VERSION.compareTo("1.5.0") < 0;
-    /** Changed to remove the printing bug of java.*/
+	private static final int MIN_HOR_NODE_SIZE = 10;
     public Dimension getPreferredSize() {
     	Dimension prefSize = super.getPreferredSize();
         if(map.isPrinting() && NEED_PREF_SIZE_BUG_FIX) {
         	prefSize.width += (int)(10f*map.getZoom());
         } 
+        prefSize.width = Math.max(map.getZoomed(MIN_HOR_NODE_SIZE), prefSize.width);
         return prefSize;
     }
     
@@ -388,10 +385,7 @@ public abstract class NodeView extends JLabel {
 	}
     }
 
-    public int getLeftWidthOverhead() {
-       return LEFT_WIDTH_OVERHEAD; }
-
-    //
+     //
     // get/set methods
     //
 
@@ -796,11 +790,8 @@ public abstract class NodeView extends JLabel {
         // for nonconvex feature of nodes starting with <html>.
 
 //        String nodeText = getModel().toString();
-        String nodeText = getModel().toString() + '#' + getModel().getShiftY();
-        if (nodeText.length() < 4) { // (PN)
-          nodeText = nodeText + new String("   ").substring(nodeText.length());
-        }
-
+        String nodeText = getModel().toString();
+ 
         // Tell if node is long and its width has to be restricted
         // boolean isMultiline = nodeText.indexOf("\n") >= 0;
         String[] lines = nodeText.split("\n");
@@ -979,13 +970,13 @@ public abstract class NodeView extends JLabel {
     /**
 	 * @return Returns the VGAP.
 	 */
-	public int getVGap() {
-        return (int ) ((1 + 8.0 / Math.pow(1 + model.getNodeLevel(), 1.5)) * VGAP * map.getZoom());
+	public int getVGap() {		
+        return  map.getZoomed(model.calcVGap());
         // TODO 
 	}
 
 	public int getHGap() {
-		return (int ) (HGAP* map.getZoom());
+		return  map.getZoomed(model.getHGap());
 	}
 
 

@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapNode.java,v 1.15.18.5.2.1 2005-01-07 15:25:19 dpolivaev Exp $*/
+/*$Id: MindMapNode.java,v 1.15.18.5.2.2 2005-01-22 08:48:35 dpolivaev Exp $*/
 
 package freemind.modes;
 
@@ -44,7 +44,9 @@ public interface MindMapNode extends MutableTreeNode {
 	public static final String STYLE_COMBINED = "combined";
 	public static final String STYLE_AS_PARENT = "as_parent";
 	
-    String getText();
+	static final int AUTO = -1;
+
+	String getText();
     void setText(String text);
     
 	/**
@@ -123,16 +125,15 @@ public interface MindMapNode extends MutableTreeNode {
 
     void setFolded(boolean folded);
 
-    void setFont(Font font);
-    
-    void setShiftX(int y);
-    
-    void setShiftY(int y);
+    void setFont(Font font);    
+     void setShiftY(int y);
+     int getShiftY();
 
-    int getShiftX();
-    
-    int getShiftY();
-
+ 	void setVGap(int i);
+	int getVGap();
+	int calcVGap();
+	void setHGap(int i);
+	int getHGap();
     void setLink(String link);
 
     void setFontSize(int fontSize);
