@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: ForkNodeView.java,v 1.10.18.1 2004-10-17 20:01:08 dpolivaev Exp $*/
+/*$Id: ForkNodeView.java,v 1.10.18.1.4.1 2005-01-07 15:25:19 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -39,30 +39,11 @@ public class ForkNodeView extends NodeView {
 	super(model,map);
     }
 
-    public Dimension getPreferredSize() {
-		Dimension result =  new Dimension(super.getPreferredSize().width,
-                             super.getPreferredSize().height + 3 + getEdge().getRealWidth());
-		if (getModel().isFolded()){
-			result.width +=  getZoomedFoldingSymbolHalfWidth() * 2 + FOLDING_WIDTH_OVERHEAD ;
-			result.height +=  getZoomedFoldingSymbolHalfWidth() ;
-		}
-		
-        return result;
-    }	
-    
 	public void setExtendedLocation(int x,	int y){
 		if(getModel().isFolded() && isLeft()){
 				x += getZoomedFoldingSymbolHalfWidth() * 2 + FOLDING_WIDTH_OVERHEAD;
 		}
 		setLocation(x, y);
-	}
-    
-	public void setExtendedSize(int width,	int height){
-		if(getModel().isFolded()){
-			height -= getZoomedFoldingSymbolHalfWidth();
-			width -= getZoomedFoldingSymbolHalfWidth() * 2 + FOLDING_WIDTH_OVERHEAD;
-		}
-		setSize(width, height);
 	}
     
     public int getExtendedX(){
@@ -73,18 +54,16 @@ public class ForkNodeView extends NodeView {
 		return x;
     }
     
-	public int getExtendedWidth()
+    protected int getExtendedWidth(int width )
 	{
-		int width = getWidth();
 		if(getModel().isFolded()){
 			width += getZoomedFoldingSymbolHalfWidth() * 2 + FOLDING_WIDTH_OVERHEAD;
 		}
 		return width;
 	}
   
-	public int getExtendedHeight()
+	protected int getExtendedHeight(int height)
 	{
-		int height = getHeight();
 		if(getModel().isFolded()){
 			height += getZoomedFoldingSymbolHalfWidth();
 		}
@@ -133,6 +112,14 @@ public class ForkNodeView extends NodeView {
    
 	super.paint(g);
     }
+
+	/* (non-Javadoc)
+	 * @see freemind.view.mindmapview.NodeView#getStyle()
+	 */
+	String getStyle() {
+		return MindMapNode.STYLE_FORK;
+	}
+
 }
 
 

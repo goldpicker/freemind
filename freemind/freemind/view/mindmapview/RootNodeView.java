@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: RootNodeView.java,v 1.14.14.2 2004-10-17 23:00:18 dpolivaev Exp $*/
+/*$Id: RootNodeView.java,v 1.14.14.2.4.1 2005-01-07 15:25:19 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -31,8 +31,11 @@ import java.awt.*;
  */
 public class RootNodeView extends NodeView {
     // sum width of the left child tree
-	private int leftTreeWidth;
+	protected int leftTreeWidth = 0;
+	protected int leftTreeHeight = 0;
 
+	protected int rightTreeWidth = 0;
+	protected int rightTreeHeight = 0;
     //
     // Constructors
     //
@@ -138,12 +141,6 @@ public class RootNodeView extends NodeView {
     // Layout
     //
 
-    public Dimension getPreferredSize() {
-	int width = (int)(super.getPreferredSize().width*1.1);
-	int height = (int)(super.getPreferredSize().height*2);
-	return new Dimension(width,height);
-    }	
-
     /**
      * Paints the node
      */
@@ -184,14 +181,6 @@ public class RootNodeView extends NodeView {
          g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); }}
 
 
-    public int getLeftTreeWidth() {
-        return leftTreeWidth;
-    }
-
-    public void setLeftTreeWidth(int i) {
-        leftTreeWidth = i;
-    }
-
     protected void paintBackground(
         Graphics2D graphics,
         Dimension size,
@@ -199,6 +188,60 @@ public class RootNodeView extends NodeView {
 		graphics.setColor(color);
 		graphics.fillOval(1,1,size.width-1,size.height-1);
     }
+
+	public int getLeftTreeHeight() {
+		return leftTreeHeight;
+	}
+
+	public int getRightTreeHeight() {
+		return rightTreeHeight;
+	}
+	public int getRightTreeWidth() {
+		return rightTreeWidth;
+	}
+    public int getLeftTreeWidth() {
+        return leftTreeWidth;
+    }
+
+    public void setTreeWidth(int w) {
+    	throw new Error();
+    }
+	public void setMinimumTreeHeight(int h) {
+    	throw new Error();
+	}
+    public void setRootTreeWidths(int left, int right) {
+        leftTreeWidth = left - getPreferredSize().width;
+        rightTreeWidth = right ;
+        super.setTreeWidth(leftTreeWidth + rightTreeWidth );
+    }
+	public void setRootTreeHeights(int left, int right) {
+		leftTreeHeight = left;
+		rightTreeHeight = right;
+		if(leftTreeHeight > rightTreeHeight){
+			super.setTreeHeight(leftTreeHeight);
+		}
+		else{
+			super.setTreeHeight(rightTreeHeight);
+		}		
+	}
+	public void setRootTreeShifts(int left, int right) {
+		super.setTreeShift(Math.min(left,right));
+	}
+
+	/* (non-Javadoc)
+	 * @see freemind.view.mindmapview.NodeView#getStyle()
+	 */
+	String getStyle() {
+		return model.getStyle();
+	}
+
+	/** Changed to remove the printing bug of java.*/
+	public Dimension getPreferredSize() {
+		Dimension prefSize = super.getPreferredSize();
+		prefSize.width *= 1.1;
+		prefSize.height *= 2;
+	    return prefSize;
+	}
 
 }
 

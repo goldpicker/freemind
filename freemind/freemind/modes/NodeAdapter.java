@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: NodeAdapter.java,v 1.20.16.5 2004-12-19 09:00:38 christianfoltin Exp $*/
+/*$Id: NodeAdapter.java,v 1.20.16.5.2.1 2005-01-07 15:25:19 dpolivaev Exp $*/
 
 package freemind.modes;
 
@@ -71,6 +71,9 @@ public abstract class NodeAdapter implements MindMapNode {
     protected Color backgroundColor;
     protected boolean folded;
     private Tools.BooleanHolder left;
+
+    private int shiftX = 0;
+    private int shiftY = 0;
 
     protected List children;
     private MindMapNode preferredChild; 
@@ -833,6 +836,30 @@ public abstract class NodeAdapter implements MindMapNode {
     }
     
 
+	/**
+	 * @return Returns the shiftX.
+	 */
+	public int getShiftX() {
+		return shiftX;
+	}
+	/**
+	 * @param shiftX The shiftX to set.
+	 */
+	public void setShiftX(int shiftX) {
+		this.shiftX = shiftX;
+	}
+	/**
+	 * @return Returns the shiftY.
+	 */
+	public int getShiftY() {
+		return shiftY;
+	}
+	/**
+	 * @param shiftY The shiftY to set.
+	 */
+	public void setShiftY(int shiftY) {
+		this.shiftY = shiftY;
+	}
     /**
      *
      */
@@ -846,4 +873,5 @@ public abstract class NodeAdapter implements MindMapNode {
     public boolean isNodeClassToBeSaved() {
         return false;
     }
+
 }

@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MapView.java,v 1.30.16.5 2005-01-02 07:57:27 christianfoltin Exp $*/
+/*$Id: MapView.java,v 1.30.16.5.2.1 2005-01-07 15:25:19 dpolivaev Exp $*/
  
 package freemind.view.mindmapview;
 
@@ -1063,16 +1063,18 @@ public class MapView extends JPanel implements Printable {
             // Works only with one child
             MindMapNode child = (MindMapNode)e.getChildren()[0];
 
-//            for (int i = 0; i < e.getPath().length; i++) {
-//                MindMapNode node = (MindMapNode) e.getPath()[i];
-//                if(node.isFolded()) {
-//                    logger.info("Found folded node in path of a new children to be inserted.");
-//                    return;
-//                }
-//            }
-            // Here, the view will be created if it does no exist already
-            parentView.insert(child);
-            getMindMapLayout().updateTreeHeightWidthShiftFromChildren(child.getViewer()); 
+            if (child != null) {  // if a node is folded, child is null.
+                // Here, the view will be created if it does no exist already
+//              for (int i = 0; i < e.getPath().length; i++) {
+//              MindMapNode node = (MindMapNode) e.getPath()[i];
+//              if(node.isFolded()) {
+//                  logger.info("Found folded node in path of a new children to be inserted.");
+//                  return;
+//              }
+//          }
+          // Here, the view will be created if it does no exist already
+                parentView.insert(child);
+                getMindMapLayout().updateTreeGeometry(child.getViewer()); }
             getMindMapLayout().updateTreeHeightsAndRelativeYOfAncestors(parentView);
             // Here, the view of child gets its size and position
             getMindMapLayout().layout(false);

@@ -16,10 +16,11 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: NodeView.java,v 1.27.14.4 2004-11-16 16:42:36 christianfoltin Exp $*/
+/*$Id: NodeView.java,v 1.27.14.4.4.1 2005-01-07 15:25:19 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
+import freemind.controller.Controller;
 import freemind.main.FreeMind;
 import freemind.main.Tools;
 import freemind.modes.MindMapCloud;
@@ -71,8 +72,8 @@ public abstract class NodeView extends JLabel {
     /** the Color of the Rectangle of a selected Node */
 	protected final static Color selectedColor = new Color(210,210,210); //Color.lightGray; //the Color of the Rectangle of a selected Node
     protected final static Color dragColor = Color.lightGray; //the Color of appearing GradientBox on drag over
-	protected int treeHeight = 0;
 	protected int treeWidth = 0;
+	protected int treeHeight = 0;
 	protected int treeShift = 0;
     private boolean left = true; //is the node left of root?
     int relYPos = 0;//the relative Y Position to it's parent
@@ -84,6 +85,9 @@ public abstract class NodeView extends JLabel {
     /** For RootNodeView.*/
     public final static int DRAGGED_OVER_SON_LEFT = 3;
 
+    public final static int VGAP = MindMapLayout.VGAP;
+    public final static int HGAP = MindMapLayout.HGAP;
+    public final static int SHIFT = MindMapLayout.SHIFT;
     protected int isDraggedOver = DRAGGED_OVER_NO;
     public void setDraggedOver(int draggedOver) {
        isDraggedOver = draggedOver; }
@@ -265,26 +269,37 @@ public abstract class NodeView extends JLabel {
 	        child.getCoordinates(inList, additionalDistanceForConvexHull, true);
         }
     }   
-
+	private static boolean NEED_PREF_SIZE_BUG_FIX = Controller.JAVA_VERSION.compareTo("1.5.0") < 0;
     /** Changed to remove the printing bug of java.*/
     public Dimension getPreferredSize() {
-        if(map.isPrinting()) {
-            return new Dimension(super.getPreferredSize().width + (int)(10f*map.getZoom()),
-                                 super.getPreferredSize().height);
-        } else {
-            return super.getPreferredSize();
-        }
+    	Dimension prefSize = super.getPreferredSize();
+        if(map.isPrinting() && NEED_PREF_SIZE_BUG_FIX) {
+        	prefSize.width += (int)(10f*map.getZoom());
+        } 
+        return prefSize;
     }
+    
     /** get width including folding symbol*/	
 	public int getExtendedWidth()
 	{
-		return getWidth();
+		return getExtendedWidth(getWidth());
 	}
   
 	/** get height including folding symbol*/	
 	public int getExtendedHeight()
 	{
-		return getHeight();
+		return getExtendedHeight(getHeight());
+	}
+  
+	protected int getExtendedWidth(int w)
+	{
+		return w;
+	}
+  
+	/** get height including folding symbol*/	
+	protected int getExtendedHeight(int h)
+	{
+		return h;
 	}
   
 	/** get x coordinate including folding symbol*/	
@@ -305,14 +320,18 @@ public abstract class NodeView extends JLabel {
 	}
   
 	/** set size including folding symbol*/	
-	public void setExtendedSize(int width,	int height){
-		setSize(width, height);
+	public void setSize(){
+		setSize(getPreferredSize());
 	}
 	  
 	/** set bounds including folding symbol*/	
-	public void setExtendedBounds(int x,	int y,	int width,	int height){
+	public void setExtendedBounds(int x,	int y){
 		setExtendedLocation(x, y);
-		setExtendedSize(width, height);
+		setSize();
+System.out.println(getText()
+				+ ": y=" + y 
+				);
+        
 	}
 
    public void requestFocus(){
@@ -392,15 +411,7 @@ public abstract class NodeView extends JLabel {
 		}
 	}
 
-    int getTreeHeight() {
-	return treeHeight;
-    }
-
-    void setTreeHeight(int treeHeight) {
-	this.treeHeight = treeHeight;
-
-    }
-
+ 
     protected boolean isSelected() {
 	return (getMap().isSelected(this));
     }
@@ -865,13 +876,15 @@ public abstract class NodeView extends JLabel {
 
    }
 
+   abstract String getStyle() ;
+   
     /**
      * @return the shift of the tree root node
      * relative to the middle of the tree
      * because of the light shift of the children nodes
      */
-    public int getTreeShift() {
-        return treeShift;
+    public int getTreeHeight() {
+        return treeHeight;
     }
 
 	/**
@@ -879,8 +892,8 @@ public abstract class NodeView extends JLabel {
 	 * relative to the middle of the tree
 	 * because of the light shift of the children nodes.
 	 */
-    public void setTreeShift(int i) {
-        treeShift = i;
+    public void setTreeHeight(int i) {
+        treeHeight = i;
     }
 
     public int getTreeWidth() {
@@ -957,5 +970,31 @@ public abstract class NodeView extends JLabel {
    return Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
   }
 
+	/**
+	 * @return Returns the sHIFT.
+	 */
 
+    public int getShift() {
+        return (int )(SHIFT * map.getZoom());
+    }
+
+    /**
+	 * @return Returns the VGAP.
+	 */
+	public int getVGap() {
+        return (int ) ((1 + 8.0 / Math.pow(1 + model.getNodeLevel(), 1.5)) * VGAP * map.getZoom());
+        // TODO 
+	}
+
+	public int getHGap() {
+		return (int ) (HGAP* map.getZoom());
+	}
+
+
+	public int getTreeShift() {
+		return treeShift;
+	}
+	public void setTreeShift(int treeShift) {
+		this.treeShift = treeShift;
+	}
 }
