@@ -31,14 +31,14 @@ class DelayedScroller extends ComponentAdapter{
 	}
 	private DelayedScroller() {}
 
-	public synchronized void componentMoved(ComponentEvent e){
+	public void componentMoved(ComponentEvent e){
 		e.getComponent().removeComponentListener(this);
 		m_map.scrollNodeToVisible(m_node, m_extraWidth);
 		m_map = null;
 		m_node = null;		
 	}		
 
-	private synchronized void Set(MapView map, NodeView node, int extraWidth){
+	private void Set(MapView map, NodeView node, int extraWidth){
 		if (node != null) 
 			node.removeComponentListener(this);
 		m_map = map;
