@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: NodeAdapter.java,v 1.20.16.5.2.2 2005-01-22 08:48:35 dpolivaev Exp $*/
+/*$Id: NodeAdapter.java,v 1.20.16.5.2.3 2005-02-27 15:11:14 dpolivaev Exp $*/
 
 package freemind.modes;
 
@@ -792,6 +792,16 @@ public abstract class NodeAdapter implements MindMapNode {
     	    //  real style is fork and node is folded, getStyle returns
     	    //  MindMapNode.STYLE_BUBBLE, which is not what we want to save.
     
+    	//layout
+        if(vGap != AUTO) {
+        	node.setAttribute("VGAP",Integer.toString(vGap));
+        }
+        if(hGap != HGAP) {
+        	node.setAttribute("HGAP",Integer.toString(hGap));
+        }
+        if(shiftY != 0) {
+        	node.setAttribute("SHIFT_Y",Integer.toString(shiftY));
+        }
     	//link
     	if (getLink() != null) {
                node.setAttribute("LINK", getLink()); }
@@ -840,10 +850,11 @@ public abstract class NodeAdapter implements MindMapNode {
         return node;
     }
     
-	/**
-	 * @return Returns the shiftY.
-	 */
 	public int getShiftY() {
+			return shiftY ;
+	}
+	
+	public int calcShiftY() {
 		try{
 			return shiftY + (getParent().getChildCount()== 1 ? SHIFT:0);
 		}

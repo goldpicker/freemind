@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: NodeView.java,v 1.27.14.4.4.4 2005-02-26 12:36:12 dpolivaev Exp $*/
+/*$Id: NodeView.java,v 1.27.14.4.4.5 2005-02-27 15:11:14 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -969,7 +969,7 @@ public abstract class NodeView extends JLabel {
 	 */
 
   public int getShift() {
-	return map.getZoomed(model.getShiftY());
+	return map.getZoomed(model.calcShiftY());
 }
   
 

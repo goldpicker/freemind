@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: XMLElementAdapter.java,v 1.4.14.3 2004-12-19 09:00:39 christianfoltin Exp $*/
+/*$Id: XMLElementAdapter.java,v 1.4.14.3.2.1 2005-02-27 15:11:14 dpolivaev Exp $*/
 
 package freemind.modes;
 
@@ -211,7 +211,16 @@ public void setAttribute(String name, Object value) {
              //System.out.println("(sValue, node) = " + sValue + ", "+  node);
              IDToTarget.put(sValue, node);
          }
-         return; }
+         else if (name.equals("SHIFT_Y")) {
+         	node.setShiftY(Integer.parseInt(sValue));
+         }
+         else if (name.equals("VGAP")) {
+           	node.setVGap(Integer.parseInt(sValue));
+         }
+         else if (name.equals("HGAP")) {
+           	node.setHGap(Integer.parseInt(sValue));
+         }
+        return; }
 
       if (userObject instanceof EdgeAdapter) {
          EdgeAdapter edge = (EdgeAdapter)userObject;

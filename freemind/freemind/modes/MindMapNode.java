@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapNode.java,v 1.15.18.5.2.2 2005-01-22 08:48:35 dpolivaev Exp $*/
+/*$Id: MindMapNode.java,v 1.15.18.5.2.3 2005-02-27 15:11:14 dpolivaev Exp $*/
 
 package freemind.modes;
 
@@ -128,6 +128,7 @@ public interface MindMapNode extends MutableTreeNode {
     void setFont(Font font);    
      void setShiftY(int y);
      int getShiftY();
+     int calcShiftY();
 
  	void setVGap(int i);
 	int getVGap();
