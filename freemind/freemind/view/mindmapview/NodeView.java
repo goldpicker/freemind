@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: NodeView.java,v 1.27.14.4.4.3 2005-01-22 08:48:46 dpolivaev Exp $*/
+/*$Id: NodeView.java,v 1.27.14.4.4.4 2005-02-26 12:36:12 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -188,10 +188,16 @@ public abstract class NodeView extends JLabel {
     //
 
     public boolean dropAsSibling(double xCoord) {
-       return isLeft() ?
-          xCoord > getSize().width*2/3 :
-          xCoord < getSize().width/3; 
-    }
+        return isLeft() ?
+           xCoord > getSize().width*2/3 :
+           xCoord < getSize().width/3; 
+     }
+
+    public boolean nearInPoint(Point pt) {
+        return isLeft() ?
+        		pt.x > getSize().width*2/3 :
+        		pt.x < getSize().width/3; 
+     }
 
     /** @return true if should be on the left, false otherwise.*/
     public boolean dropPosition (double xCoord) {
