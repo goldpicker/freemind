@@ -20,6 +20,7 @@
         <a href="index.html"    class="toc1">Newcomers and users</a><br>
         <a href="faq.html"   class="toc1">FAQ (Frequently asked questions)</a><br>
         <div class="toc2">
+          <a href="#faqA_0"         class="toc2">Documentation</a><br>
           <a href="#faqI_0"         class="toc2">Installation</a><br>
           <a href="#faqU_0"         class="toc2">Usage</a><br>
           <a href="#faqC_0"         class="toc2">Customization</a><br>
@@ -35,6 +36,10 @@
         border="0" alt="SourceForge.net Logo"></A>
         <!-- Body -->
         <td width="600">
+
+<a name="faqA_0"><h2>Documentation</h2></a> 
+<a name="faqA_1"><h3>Where can I find more documentation about FreeMind?</h3></a>
+There is a <a href="http://freemind.freezope.org/FreemindWiki/WikiFreemindFAQ">Wiki</a> with some more answers to common questions and more. 
 
 <a name="faqI_0"><h2>Installation</h2></a> 
 <a name="faqI_1"><h3>How can I install Freemind?</h3></a>
@@ -71,6 +76,11 @@ and there is your link. -->
 This is contained in a context menu using right click (or whatever this is on a MAC) on a node. Or type the following:<p>
 &lt;html&gt;&lt;img src=&quot;image.jpg&quot;&gt;&lt;/html&gt; <p> where image.jpg is the reference to an image.
 
+<a name="faqU_3"><h3>How can I present my map in the web?</h3></a>
+Use the freemind browser applet. The following <a href="docs/Serving%20Freemind%20maps%20in%20a%20browser/index.html">document</a> (thanks to Bob) explains what to do to have a complete testing environment for your
+applet. The most common problem to see a freemind browser applet is that you have to use Java >= 1.4 in your browser. Check this using the 
+"About plugins" section of your browser (or a similar place).
+
 <!-- next section -->
 <a name="faqC_0"><h2>Customization</h2></a> 
 <a name="faqC_1"><h3>Using another browser</h3></a> 
@@ -94,6 +104,32 @@ As an example, under Windows 2000, the file is normally in:
 <ul>
 <li>C:\Documents and Settings\&lt;username&gt;\freemind</li> 
 </ul>
+
+<a name="faqC_3"><h3>Changing the language</h3></a> 
+You have to edit your <a href="#faqC_2">user.properties</a> and to replace the line saying:
+<ul>
+<li><strong>#</strong>language = en</li> 
+</ul>
+With the line:
+<ul>
+<li>language = de</li> 
+</ul>
+(You have to remove the '#', too. That is important.) Now, restart FreeMind and you have changed the language to german. Other available languages are french (fr), danish (dk), spanish (es), italian (it), japanese (ja).<br>
+If your language isn't supported yet, please translate the file <a href="http://cvs.sourceforge.net/viewcvs.py/*checkout*/freemind/freemind/Resources_en.properties">Resource_en.properties</a> and send the result to the maintainers.
+
+<a name="faqC_4"><h3>FreeMind on the Mac</h3></a> 
+OK, FreeMind runs great as there is an own download version for it. But you have the problem, that there is no "insert" key on the Mac.
+The solution is the following:<br>
+You have to edit your <a href="#faqC_2">user.properties</a> and to replace the line saying:
+<ul>
+<li><strong>#</strong>keystroke_add_child = INSERT</li> 
+</ul>
+With the line:
+<ul>
+<li>keystroke_add_child = control shift ENTER</li> 
+</ul>
+(You have to remove the '#', too. That is important.) Now, you can add a new child to a node using the "control shift ENTER" key (or whatever you like and put instead of the above).
+
 
 <a name="faqP_0"><h2>Common Problems</h2></a> 
 <!-- Not necessary any more.
