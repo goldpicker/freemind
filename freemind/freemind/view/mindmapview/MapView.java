@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MapView.java,v 1.26 2003-12-02 22:50:23 christianfoltin Exp $*/
+/*$Id: MapView.java,v 1.26.4.1 2004-10-13 20:37:27 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
