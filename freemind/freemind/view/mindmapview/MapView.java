@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MapView.java,v 1.30.16.3.2.2 2004-12-04 10:15:34 dpolivaev Exp $*/
+/*$Id: MapView.java,v 1.30.16.3.2.3 2004-12-24 15:27:30 dpolivaev Exp $*/
  
 package freemind.view.mindmapview;
 
@@ -764,7 +764,7 @@ public class MapView extends JPanel implements Printable {
         this.zoom = zoom;
         getRoot().updateAll();
         getMindMapLayout().updateTreeHeightsAndRelativeYOfWholeMap();
-        getMindMapLayout().layout();
+        getMindMapLayout().layout(true);
         repaint();
     }
 
@@ -1044,7 +1044,7 @@ public class MapView extends JPanel implements Printable {
             logger.finest("The update node is "+node + " with treemodelevent="+e);
             node.update();
             getMindMapLayout().updateTreeHeightsAndRelativeYOfDescendantsAndAncestors(node);
-            getMindMapLayout().layout();
+            getMindMapLayout().layout(true);
             repaint();
         }
 	
@@ -1065,7 +1065,7 @@ public class MapView extends JPanel implements Printable {
                 getMindMapLayout().updateTreeHeightWidthShiftFromChildren(child.getViewer()); }
             getMindMapLayout().updateTreeHeightsAndRelativeYOfAncestors(parentView);
             // Here, the view of child gets its size and position
-            getMindMapLayout().layout();
+            getMindMapLayout().layout(false);
             //fc, 29.3.2004: here, I change parentView.requestFocus() to:
             child.getViewer().requestFocus();
             repaint();
@@ -1089,7 +1089,7 @@ public class MapView extends JPanel implements Printable {
                 selectAsTheOnlyOneSelected(parent);
             }
             getMindMapLayout().updateTreeHeightsAndRelativeYOfAncestors(parent);
-            getMindMapLayout().layout();
+            getMindMapLayout().layout(false);
             getSelected().requestFocus();
 			// scrollNodeToVisible(getSelected());
             //fc, 5.4.2004. is already done by selectAsTheOnlyOneSelected:
