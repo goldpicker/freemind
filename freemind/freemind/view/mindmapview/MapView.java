@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MapView.java,v 1.30.16.3.2.1 2004-11-28 21:42:04 dpolivaev Exp $*/
+/*$Id: MapView.java,v 1.30.16.3.2.2 2004-12-04 10:15:34 dpolivaev Exp $*/
  
 package freemind.view.mindmapview;
 
@@ -38,6 +38,8 @@ import java.awt.geom.CubicCurve2D;
 // end links.
 import java.awt.dnd.DragGestureListener;
 import java.awt.dnd.DropTargetListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.print.PageFormat;
@@ -143,6 +145,37 @@ public class MapView extends JPanel implements Printable {
 	//	Logging: 
 	private static java.util.logging.Logger logger;
 
+	private class DelayedScroller extends ComponentAdapter{
+		/**
+		 * the only one interface method.
+		 * @param map
+		 * @param node
+		 * @param extraWidth
+		 */
+		public void componentMoved(ComponentEvent e){
+			m_map.scrollNodeToVisible(m_node, m_extraWidth);
+			m_map = null;
+			m_node = null;		
+		}		
+	
+		public void scrollNodeToVisible(MapView map, NodeView node, int extraWidth){
+			deactivate();
+			m_map = map;
+			m_node = node;
+			m_extraWidth = extraWidth;
+			node.addComponentListener(this);
+		}
+		
+		public void deactivate(){
+			if (m_node != null) 
+				m_node.removeComponentListener(this);
+		}
+		MapView m_map = null;
+		NodeView m_node = null;
+		int m_extraWidth = 0;
+	}
+
+	private DelayedScroller m_delayedScroller = new DelayedScroller();
 
     private MindMap model;
     private NodeView rootView;
@@ -158,6 +191,7 @@ public class MapView extends JPanel implements Printable {
 	private Rectangle boundingRectangle = null;
 	private boolean fitToPage = true;
 	private boolean isPreparedForPrinting = false;
+        
     /** Used to identify a right click onto a link curve.*/
     private Vector/* of ArrowLinkViews*/ ArrowLinkViews;
     //
@@ -251,9 +285,10 @@ public class MapView extends JPanel implements Printable {
     public void scrollNodeToVisible( NodeView node, int extraWidth) {
         //see centerNode()
 		if (! node.isValid()){
-			DelayedScroller.scrollNodeToVisible(this, node, extraWidth);
+			m_delayedScroller.scrollNodeToVisible(this, node, extraWidth);
 			return;
 		}
+		m_delayedScroller.deactivate();
         final int HORIZ_SPACE  = 10;
         final int HORIZ_SPACE2 = 20;
         final int VERT_SPACE   = 5; 
