@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: RootNodeView.java,v 1.14.14.2.4.1 2005-01-07 15:25:19 dpolivaev Exp $*/
+/*$Id: RootNodeView.java,v 1.14.14.2.4.2 2005-01-17 20:49:13 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -32,10 +32,7 @@ import java.awt.*;
 public class RootNodeView extends NodeView {
     // sum width of the left child tree
 	protected int leftTreeWidth = 0;
-	protected int leftTreeHeight = 0;
-
 	protected int rightTreeWidth = 0;
-	protected int rightTreeHeight = 0;
     //
     // Constructors
     //
@@ -189,13 +186,6 @@ public class RootNodeView extends NodeView {
 		graphics.fillOval(1,1,size.width-1,size.height-1);
     }
 
-	public int getLeftTreeHeight() {
-		return leftTreeHeight;
-	}
-
-	public int getRightTreeHeight() {
-		return rightTreeHeight;
-	}
 	public int getRightTreeWidth() {
 		return rightTreeWidth;
 	}
@@ -206,7 +196,7 @@ public class RootNodeView extends NodeView {
     public void setTreeWidth(int w) {
     	throw new Error();
     }
-	public void setMinimumTreeHeight(int h) {
+	public void setStandardTreeShift(int h) {
     	throw new Error();
 	}
     public void setRootTreeWidths(int left, int right) {
@@ -215,13 +205,11 @@ public class RootNodeView extends NodeView {
         super.setTreeWidth(leftTreeWidth + rightTreeWidth );
     }
 	public void setRootTreeHeights(int left, int right) {
-		leftTreeHeight = left;
-		rightTreeHeight = right;
-		if(leftTreeHeight > rightTreeHeight){
-			super.setTreeHeight(leftTreeHeight);
+		if(left > right){
+			super.setTreeHeight(left);
 		}
 		else{
-			super.setTreeHeight(rightTreeHeight);
+			super.setTreeHeight(right);
 		}		
 	}
 	public void setRootTreeShifts(int left, int right) {

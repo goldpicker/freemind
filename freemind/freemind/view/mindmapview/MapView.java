@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MapView.java,v 1.30.16.5.2.1 2005-01-07 15:25:19 dpolivaev Exp $*/
+/*$Id: MapView.java,v 1.30.16.5.2.2 2005-01-17 20:49:07 dpolivaev Exp $*/
  
 package freemind.view.mindmapview;
 
@@ -352,6 +352,7 @@ public class MapView extends JPanel implements Printable {
 			mapViewport.setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
 		}
 		mapViewport.setViewPosition(currentPoint);
+System.out.println("scrolled " + currentPoint.y);		
 		if (repaint) {
 			mapViewport.setScrollMode(oldScrollMode);
 		}
@@ -1048,7 +1049,8 @@ public class MapView extends JPanel implements Printable {
             logger.finest("The update node is "+node + " with treemodelevent="+e);
             node.update();
             getMindMapLayout().updateTreeHeightsAndRelativeYOfDescendantsAndAncestors(node);
-            getMindMapLayout().layout(true);
+            getMindMapLayout().layout(false);
+//            getMindMapLayout().layout(true);
             repaint();
         }
 	

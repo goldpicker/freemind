@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: NodeView.java,v 1.27.14.4.4.1 2005-01-07 15:25:19 dpolivaev Exp $*/
+/*$Id: NodeView.java,v 1.27.14.4.4.2 2005-01-17 20:49:11 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -74,6 +74,7 @@ public abstract class NodeView extends JLabel {
     protected final static Color dragColor = Color.lightGray; //the Color of appearing GradientBox on drag over
 	protected int treeWidth = 0;
 	protected int treeHeight = 0;
+	protected int standardTreeShift = 0;
 	protected int treeShift = 0;
     private boolean left = true; //is the node left of root?
     int relYPos = 0;//the relative Y Position to it's parent
@@ -248,20 +249,16 @@ public abstract class NodeView extends JLabel {
 	}
 	private void getCoordinates(LinkedList inList, int additionalDistanceForConvexHull, boolean byChildren) {
 		MindMapCloud cloud = getModel().getCloud();
-		CloudView cloudView = null;
 
 		// consider existing clouds of children
 		if (byChildren && cloud != null){
-			cloudView = new CloudView(cloud, this);
-			additionalDistanceForConvexHull  += cloudView.getAdditionalHeigth() / 2; 
+			additionalDistanceForConvexHull  += CloudView.getAdditionalHeigth(cloud, this) / 2; 
 		}
         inList.addLast(new Point( -additionalDistanceForConvexHull + getExtendedX()             ,  -additionalDistanceForConvexHull + getExtendedY()              ));
         inList.addLast(new Point( -additionalDistanceForConvexHull + getExtendedX()             ,   additionalDistanceForConvexHull + getExtendedY() + getExtendedHeight()));
         inList.addLast(new Point(  additionalDistanceForConvexHull + getExtendedX() + getExtendedWidth(),   additionalDistanceForConvexHull + getExtendedY() + getExtendedHeight()));
         inList.addLast(new Point(  additionalDistanceForConvexHull + getExtendedX() + getExtendedWidth(),  -additionalDistanceForConvexHull + getExtendedY()              ));
 		
-		if (cloudView != null){
-		}
         LinkedList childrenViews = getChildrenViews();
         ListIterator children_it = childrenViews.listIterator();
         while(children_it.hasNext()) {
@@ -328,9 +325,9 @@ public abstract class NodeView extends JLabel {
 	public void setExtendedBounds(int x,	int y){
 		setExtendedLocation(x, y);
 		setSize();
-System.out.println(getText()
-				+ ": y=" + y 
-				);
+//System.out.println(getText()
+//				+ ": y=" + y 
+//				);
         
 	}
 
@@ -404,8 +401,7 @@ System.out.println(getText()
 	public int getAdditionalCloudHeigth() {
 		MindMapCloud cloud = getModel().getCloud();
 		if( cloud!= null) { 
-			CloudView cloudView = new CloudView(cloud, this);
-			return cloudView.getAdditionalHeigth();
+			return CloudView.getAdditionalHeigth(cloud, this);
 		} else {           
 			return 0;
 		}
@@ -799,7 +795,8 @@ System.out.println(getText()
         // Right now, this implementation is quite logical, although it allows
         // for nonconvex feature of nodes starting with <html>.
 
-        String nodeText = getModel().toString();
+//        String nodeText = getModel().toString();
+        String nodeText = getModel().toString() + '#' + getModel().getShiftY();
         if (nodeText.length() < 4) { // (PN)
           nodeText = nodeText + new String("   ").substring(nodeText.length());
         }
@@ -974,9 +971,10 @@ System.out.println(getText()
 	 * @return Returns the sHIFT.
 	 */
 
-    public int getShift() {
-        return (int )(SHIFT * map.getZoom());
-    }
+  public int getShift() {
+	return map.getZoomed(model.getShiftY());
+}
+  
 
     /**
 	 * @return Returns the VGAP.
@@ -996,5 +994,11 @@ System.out.println(getText()
 	}
 	public void setTreeShift(int treeShift) {
 		this.treeShift = treeShift;
+	}
+	public int getStandardTreeShift() {
+		return standardTreeShift;
+	}
+	public void setStandardTreeShift(int standardTreeShift) {
+		this.standardTreeShift = standardTreeShift;
 	}
 }

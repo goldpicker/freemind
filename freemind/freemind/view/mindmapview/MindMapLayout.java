@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapLayout.java,v 1.15.14.2.2.1 2005-01-07 15:25:19 dpolivaev Exp $*/
+/*$Id: MindMapLayout.java,v 1.15.14.2.2.2 2005-01-17 20:49:11 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -42,8 +42,8 @@ public class MindMapLayout implements LayoutManager {
 
     private final static int BORDER = 30;//width of the border around the map.
     public final static int HGAP = 20;//width of the horizontal gap that contains the edges
-    public final static int VGAP = 3;//height of the vertical gap between nodes
-    final static int SHIFT = - 2;//height of the vertical shift between node and its closest child
+    public final static int VGAP = 0;//height of the vertical gap between nodes
+    final static int SHIFT = 0;//height of the vertical shift between node and its closest child
 	// minimal width for input field of leaf or folded node (PN)
 	
 	// the MINIMAL_LEAF_WIDTH is reserved by calculation of the map width
@@ -196,7 +196,7 @@ public class MindMapLayout implements LayoutManager {
 	 * @return
 	 */
 	private int getRootY() {
-		return calcYBorderSize() / 2 - getRoot().getTreeShift();
+		return calcYBorderSize() / 2 - Math.min(0, getRoot().getTreeShift());
 	}
 
 	/**
@@ -270,8 +270,10 @@ public class MindMapLayout implements LayoutManager {
 
 
     void updateTreeHeightsAndRelativeYOfDescendantsAndAncestors(NodeView node) {
-       updateTreeHeightsAndRelativeYOfDescendants(node);       
-       updateTreeHeightsAndRelativeYOfAncestors(node); }
+       updateTreeHeightsAndRelativeYOfDescendants(node);  
+       if (! node.isRoot())
+       updateTreeHeightsAndRelativeYOfAncestors(node.getParentView()); 
+    }
 
     /**
      * This is called by treeNodesChanged(), treeNodesRemoved() & treeNodesInserted(), so it's the
@@ -302,49 +304,53 @@ public class MindMapLayout implements LayoutManager {
 	           updateTreeHeightsAndRelativeYOfDescendants((NodeView)e.next()); }
         updateTreeGeometry(node);
    	}
-
-      /**
-	 * @param node
-	 * @param l
-	 * @param sumOfChildHeights
-	 */
-	private void updateRelativeYOfChildren(NodeView node, LinkedList childrenViews) {
-		int sumOfChildHeights = sumOfChildHeights(node, childrenViews);		
-		int pointer = 0;
+    
+	private void updateRelativeYOfChildren(NodeView node, int standardTreeShift, LinkedList childrenViews) {
 		ListIterator e = childrenViews.listIterator();
-		if (e.hasNext())
-		{
-	        NodeView child = (NodeView)childrenViews.getFirst();
-			pointer  = (node.getPreferredSize().height - sumOfChildHeights) / 2
-			+ getShift() + child.getTreeShift();
-		}
-		
+		if (! e.hasNext())
+			return ;
+		int vgap = node.getVGap();
+		NodeView child = (NodeView)childrenViews.getFirst();
+		int sumShiftUp = 0;
+		int pointer  = 0  
+		+ (standardTreeShift - child.getStandardTreeShift())
+		- Math.min(0, child.getTreeShift()-child.getStandardTreeShift())
+  			+ Math.min(0, child.getTreeShift())
+			 ;
+
 		while (e.hasNext()) {
-			NodeView child = (NodeView)e.next();
-			int vgap = node.getVGap();
+			child = (NodeView)e.next();
+			int shiftUp = getShiftUp(child);
+			sumShiftUp += shiftUp;
+			sumShiftUp += Math.min(0, child.getTreeShift()-child.getStandardTreeShift());
+			int shiftDown = shiftUp!= 0 ? 0 : getShiftDown(child);
 			int iAdditionalCloudHeigth = child.getAdditionalCloudHeigth();
-			child.relYPos = pointer + iAdditionalCloudHeigth / 2  - child.getTreeShift(); 
-System.out.println(child.getText() + ": relYPos=" + child.relYPos);
-			pointer = pointer + child.getTreeHeight() + iAdditionalCloudHeigth + vgap;
+			child.relYPos = pointer - Math.min(0, child.getTreeShift())
+			+ iAdditionalCloudHeigth / 2  + shiftDown; 
+			pointer +=  child.getTreeHeight()- shiftUp + shiftDown + iAdditionalCloudHeigth + vgap;
+		}
+			while (e.hasPrevious()) {
+				child = (NodeView)e.previous();
+				
+				child.relYPos += sumShiftUp;
 		}
 	}
 
-		private int sumOfChildHeights( NodeView parent, LinkedList v ) {
-    	int parentHeight = parent.getPreferredSize().height;
-       if ( v == null || v.size() == 0 ) {
-          return parentHeight; }
-       int height = 0;
-       int vgap = 0;
-       for (ListIterator e = v.listIterator(); e.hasNext(); ) {
-           NodeView node = (NodeView)e.next();
-           vgap = parent.getVGap();
-           if (node != null) {
-              height += node.getPreferredSize().height + vgap + node.getAdditionalCloudHeigth(); 
-           }
-       }
-       return Math.max(parentHeight, height - vgap); 
-    }
+	  protected int getShiftUp(NodeView node) {
+	  	int shift = node.getShift() + getShift(node.getParentView()) ;
+	  	if (shift < 0)
+	  		return shift;
+	  	else
+	  		return 0;
+	}
 
+	  protected int getShiftDown(NodeView node) {
+	  	int shift = node.getShift() + getShift(node.getParentView()) ;
+	  	if (shift > 0)
+	  		return shift;
+	  	else
+	  		return 0;
+	}
     protected void updateTreeGeometry(NodeView node) {
     	if (node.isRoot()){
     		LinkedList leftNodeViews = getRoot().getLeft();
@@ -353,9 +359,11 @@ System.out.println(child.getText() + ": relYPos=" + child.relYPos);
 			int leftWidth = calcTreeWidth(node, leftNodeViews);
 			int rightWidth = calcTreeWidth(node, rightNodeViews);
 			getRoot().setRootTreeWidths(leftWidth, rightWidth);
+			int leftStandardTreeShift = calcStandardTreeShift(node, leftNodeViews);		
+			int rightStandardTreeShift = calcStandardTreeShift(node, rightNodeViews);		
 
-			updateRelativeYOfChildren(node, leftNodeViews);
-			updateRelativeYOfChildren(node, rightNodeViews);
+			updateRelativeYOfChildren(node, leftStandardTreeShift, leftNodeViews);
+			updateRelativeYOfChildren(node, rightStandardTreeShift, rightNodeViews);
 			
 			int leftTreeShift = calcTreeShift(node, leftNodeViews);
 			int rightTreeShift = calcTreeShift(node, rightNodeViews);
@@ -373,7 +381,10 @@ System.out.println(child.getText() + ": relYPos=" + child.relYPos);
 			int treeWidth = calcTreeWidth(node, childrenViews);
     		node.setTreeWidth(treeWidth); 
 
-    		updateRelativeYOfChildren(node, childrenViews);
+    		int standardTreeShift = calcStandardTreeShift(node, childrenViews);
+    		node.setStandardTreeShift(standardTreeShift);
+
+    		updateRelativeYOfChildren(node, standardTreeShift, childrenViews);
 
 			int treeShift = calcTreeShift(node, childrenViews);
 			node.setTreeShift(treeShift);
@@ -381,10 +392,10 @@ System.out.println(child.getText() + ": relYPos=" + child.relYPos);
 			int treeHeight = calcTreeHeight(node, treeShift, childrenViews);        	
     		node.setTreeHeight(treeHeight);
     		
-    		System.out.println(node.getText()
-    				+ ": treeShift=" + treeShift 
-    				+ ": treeHeight=" + treeHeight 
-					);
+// System.out.println(node.getText()
+//    				+ ": treeShift=" + treeShift 
+//    				+ ": treeHeight=" + treeHeight 
+//					);
     	}
 
     }
@@ -397,12 +408,11 @@ System.out.println(child.getText() + ": relYPos=" + child.relYPos);
 	private int calcTreeShift(NodeView node, LinkedList childrenViews) {
 		try{
 			NodeView firstChild = (NodeView) childrenViews.getFirst();
-			int childShift = firstChild.relYPos;
-			int childTreeShift = firstChild.getTreeShift() + childShift;
-			if (childTreeShift > 0)
-				return 0;
-			else
-				return childTreeShift;
+			int childShift = firstChild.relYPos - firstChild.getAdditionalCloudHeigth()/2;
+			int childTreeShift = firstChild.getTreeShift();
+			if (childTreeShift < 0 ) return childShift + childTreeShift; 
+			else return childShift;
+			
 		}
 		catch(NoSuchElementException e)
 		{
@@ -410,28 +420,44 @@ System.out.println(child.getText() + ": relYPos=" + child.relYPos);
 		}
 	}
 
+	private int calcStandardTreeShift( NodeView parent, LinkedList childrenViews ) {
+    	int parentHeight = parent.getPreferredSize().height;
+       if ( childrenViews == null || childrenViews.size() == 0 ) {
+          return 0; }
+       int height = 0;
+       int vgap = parent.getVGap();
+       for (ListIterator e = childrenViews.listIterator(); e.hasNext(); ) {
+           NodeView node = (NodeView)e.next();
+           if (node != null) {
+              height += node.getPreferredSize().height - 2 * node.getStandardTreeShift() + vgap + node.getAdditionalCloudHeigth(); 
+           }
+       }
+       return -Math.max(height - vgap - parentHeight, 0) / 2; 
+    }
+
 	/**
 	 * @param leftNodeViews
 	 * @return
 	 */
 	private int calcTreeHeight(NodeView parent, int treeShift, LinkedList childrenViews) {
     	int parentHeight = parent.getPreferredSize().height;
-        if ( childrenViews == null || childrenViews.size() == 0 ) {
-           return parentHeight; 
-        }
-        int sumOfChildrenHeights = 0;
-        int vgap = 0;
-        for (ListIterator e = childrenViews.listIterator(); e.hasNext(); ) {
-            NodeView node = (NodeView)e.next();
-            vgap = parent.getVGap();
-            if (node != null) {
-               sumOfChildrenHeights += node.getTreeHeight() + vgap + node.getAdditionalCloudHeigth(); }}
-        if (treeShift < 0)
-        	parentHeight -= treeShift;
-        NodeView firstChild = (NodeView)childrenViews.getFirst();
-        if (firstChild.relYPos > 0)
-        	sumOfChildrenHeights += firstChild.relYPos;
-        return  Math.max(parentHeight, sumOfChildrenHeights);
+		try{
+			NodeView firstChild = (NodeView) childrenViews.getFirst();
+			NodeView lastChild = (NodeView) childrenViews.getLast();
+			int minY = Math.min(
+					firstChild.relYPos + Math.min(firstChild.getTreeShift() , 0)
+					- firstChild.getAdditionalCloudHeigth()/2, 
+					0);
+			int maxY = Math.max(
+					lastChild.relYPos + Math.min(lastChild.getTreeShift(), 0)
+					+ lastChild.getTreeHeight() + lastChild.getAdditionalCloudHeigth()/2 
+					, parentHeight);
+			return maxY - minY;
+		}
+		catch(NoSuchElementException e)
+		{
+	           return parentHeight; 
+		}        	        
   	}
 
 	private int calcTreeWidth(NodeView parent, LinkedList childrenViews) {
@@ -497,8 +523,14 @@ System.out.println(child.getText() + ": relYPos=" + child.relYPos);
         ySize = i;
     }
 
-	private int getShift() {
-		return map.getZoomed(SHIFT);
+	private int getShift(NodeView node) {
+		try{
+			if (node.getChildrenViews().getFirst() == node.getChildrenViews().getLast())
+				return map.getZoomed(SHIFT);
+		}
+		catch(NoSuchElementException e){
+		}
+		return 0;
 	}
 
 
