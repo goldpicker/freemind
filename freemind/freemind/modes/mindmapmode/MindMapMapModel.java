@@ -17,7 +17,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapMapModel.java,v 1.36.2.1 2004-02-28 12:52:11 christianfoltin Exp $*/
+/*$Id: MindMapMapModel.java,v 1.36.2.2 2004-02-28 12:58:40 christianfoltin Exp $*/
 
 package freemind.modes.mindmapmode;
 
@@ -25,6 +25,7 @@ import freemind.main.FreeMindMain;
 import freemind.controller.MindMapNodesSelection;
 import freemind.main.XMLParseException;
 import freemind.main.Tools;
+import freemind.util.xslt.*;
 import freemind.modes.MapAdapter;
 import freemind.modes.MindMapNode;
 import freemind.modes.MindIcon;
@@ -554,6 +555,12 @@ public class MindMapMapModel extends MapAdapter {
     public boolean save(File file) {
         return saveInternal(file, false);
     }
+    
+    public boolean export(File file){
+            ExportDialog exp = new ExportDialog(file);
+            exp.setVisible(true);
+	return true;
+	}
     
     /** This method is intended to provide both normal save routines and saving of temporary (internal) files.*/
     private boolean saveInternal(File file, boolean isInternal) {

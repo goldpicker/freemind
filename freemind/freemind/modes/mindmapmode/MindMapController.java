@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapController.java,v 1.35.2.1 2004-02-28 12:52:11 christianfoltin Exp $*/
+/*$Id: MindMapController.java,v 1.35.2.2 2004-02-28 12:58:40 christianfoltin Exp $*/
 
 package freemind.modes.mindmapmode;
 
@@ -82,6 +82,8 @@ public class MindMapController extends ControllerAdapter {
     Action setLinkByTextField = new SetLinkByTextFieldAction();
     Action followLink = new FollowLinkAction();
     Action exportBranch = new ExportBranchAction();
+    Action export = new ExportAction(this);
+    
     Action importBranch = new ImportBranchAction();
     Action importLinkedBranch = new ImportLinkedBranchAction();
     Action importLinkedBranchWithoutRoot = new ImportLinkedBranchWithoutRootAction();
@@ -276,6 +278,7 @@ public class MindMapController extends ControllerAdapter {
 	add(fileMenu, saveAs, "keystroke_saveAs");
         fileMenu.addSeparator();
         add(fileMenu, exportToHTML, "keystroke_export_to_html");
+        add(fileMenu, export, "keystroke_export");
 	return fileMenu;
     }
 
