@@ -19,7 +19,7 @@
  *
  * Created on 21.08.2004
  */
-/*$Id: NodeUpAction.java,v 1.1.4.2 2004-11-22 22:25:48 christianfoltin Exp $*/
+/*$Id: NodeUpAction.java,v 1.1.4.2.2.1 2004-11-28 21:42:04 dpolivaev Exp $*/
 
 package freemind.modes.actions;
 
@@ -117,8 +117,8 @@ public class NodeUpAction extends AbstractAction implements ActorXml{
                   selected.getViewer());
             // fc, 22.11.2004: fast bug fix: removed the following line in order to prevent the map from 
             // jumping on ctrl + up/down.
-//            modeController.getView().scrollNodeToVisible(
-//                  selected.getViewer());
+            modeController.getView().scrollNodeToVisible(
+                  selected.getViewer());
             for (Iterator i = range.iterator(); i.hasNext();) {
                 Integer position = (Integer) i.next();
                 // from above:

@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MapView.java,v 1.30.16.3 2004-10-17 23:00:13 dpolivaev Exp $*/
+/*$Id: MapView.java,v 1.30.16.3.2.1 2004-11-28 21:42:04 dpolivaev Exp $*/
  
 package freemind.view.mindmapview;
 
@@ -242,7 +242,7 @@ public class MapView extends JPanel implements Printable {
 
     // scroll with extension (PN 6.2)
     public void scrollNodeToVisible( NodeView node ) {
-        scrollNodeToVisible( node, 0);
+			scrollNodeToVisible( node, 0);
     }
 
     // scroll with extension (PN)
@@ -250,14 +250,18 @@ public class MapView extends JPanel implements Printable {
     //      fit the input field into the screen
     public void scrollNodeToVisible( NodeView node, int extraWidth) {
         //see centerNode()
+		if (! node.isValid()){
+			DelayedScroller.scrollNodeToVisible(this, node, extraWidth);
+			return;
+		}
         final int HORIZ_SPACE  = 10;
         final int HORIZ_SPACE2 = 20;
         final int VERT_SPACE   = 5; 
         final int VERT_SPACE2  = 10;
 
         // get left/right dimension
-        int x  =  node.getLocation().x ;
-        int width = node.getSize().width;
+        int x  =  node.getX() ;
+        int width = node.getWidth();
         if (extraWidth < 0) { // extra left width
             x += extraWidth;
 			width -= extraWidth; 
@@ -266,8 +270,8 @@ public class MapView extends JPanel implements Printable {
             width += extraWidth; 
         }
 		// get top/bottom dimension
-		int y  =  node.getLocation().y;
-		int height = node.getSize().height;
+		int y  =  node.getY();
+		int height = node.getHeight();
         // adjusting container size is needed no more
         //this is buggy! 
         // %%% and therefore is the scrollRectToVisible called twice ? (PN)
