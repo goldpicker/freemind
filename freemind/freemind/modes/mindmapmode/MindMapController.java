@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapController.java,v 1.35 2004-02-06 06:04:25 christianfoltin Exp $*/
+/*$Id: MindMapController.java,v 1.35.8.1 2004-02-28 13:11:36 christianfoltin Exp $*/
 
 package freemind.modes.mindmapmode;
 
@@ -34,8 +34,6 @@ import freemind.modes.MindMapCloud;
 import freemind.modes.mindmapmode.MindMapArrowLinkModel;
 import freemind.view.mindmapview.NodeView;
 // link registry.
-import freemind.modes.MindMapLinkRegistry;
-
 import java.io.*;
 import java.util.*;
 import java.util.HashSet;
@@ -43,9 +41,15 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.JRadioButtonMenuItem;
 
@@ -60,7 +64,8 @@ public class MindMapController extends ControllerAdapter {
     //private JToolBar toolbar;
     private MindMapToolBar toolbar;
     private boolean addAsChildMode = false;
-
+    private IconSelectionPopupDialog selectionDialog;
+    
     Action newMap = new NewMapAction(this);
     Action open = new OpenAction(this);
     Action save = new SaveAction(this);
@@ -70,6 +75,7 @@ public class MindMapController extends ControllerAdapter {
 
     Action edit = new EditAction();
     Action editLong = new EditLongAction();
+    Action selectIcon = new SelectIconAction();
     Action newChild = new NewChildAction();
     Action newChildWithoutFocus = new NewChildWithoutFocusAction();
     Action newSibling = new NewSiblingAction();
@@ -78,7 +84,7 @@ public class MindMapController extends ControllerAdapter {
     Action toggleFolded = new ToggleFoldedAction();
     Action toggleChildrenFolded = new ToggleChildrenFoldedAction();
     Action setLinkByFileChooser = new SetLinkByFileChooserAction();
-	Action setImageByFileChooser = new SetImageByFileChooserAction();
+    Action setImageByFileChooser = new SetImageByFileChooserAction();
     Action setLinkByTextField = new SetLinkByTextFieldAction();
     Action followLink = new FollowLinkAction();
     Action exportBranch = new ExportBranchAction();
@@ -323,6 +329,7 @@ public class MindMapController extends ControllerAdapter {
        add(leadingEditMenu, edit, "keystroke_edit");
        add(leadingEditMenu, editLong, "keystroke_edit_long_node");
        add(leadingEditMenu, newChild, "keystroke_add_child");
+       add(leadingEditMenu, selectIcon, "keystroke_select_icon");
        leadingEditMenu.addSeparator();
 
        add(leadingEditMenu, cut, "keystroke_cut");
@@ -542,7 +549,38 @@ public class MindMapController extends ControllerAdapter {
 	importLinkedBranchWithoutRoot.setEnabled(enabled);
     }
 
+	public void selectIcon(){
+	  Vector items = new Vector();
+	  for (Enumeration e = iconActions.elements(); e.hasMoreElements();){
+	  	items.add(((IconAction)e.nextElement()).icon.getIcon(getFrame()));
+	  }
 
+	  Vector itemdescriptions = new Vector();
+	  for (Enumeration e = iconActions.elements(); e.hasMoreElements();){
+	  	itemdescriptions.add(((IconAction)e.nextElement()).icon.getDescription(getFrame()));
+	  }
+	  
+	  if(selectionDialog == null)
+	  	selectionDialog = new IconSelectionPopupDialog((JFrame)getFrame(), items, itemdescriptions, iconActions, getFrame());
+
+	  NodeView node = (NodeView)getView().getSelecteds().getFirst();
+	  // this code is copied from ControllerAdapter, edit
+	  getView().scrollNodeToVisible(node, 0);
+	  Point frameScreenLocation = getFrame().getLayeredPane().getLocationOnScreen();
+	  double posX = node.getLocationOnScreen().getX() - frameScreenLocation.getX();
+	  double posY = node.getLocationOnScreen().getY() - frameScreenLocation.getY()+20;
+	  if (posX + selectionDialog.getWidth() > getFrame().getLayeredPane().getWidth()) {
+	    posX = getFrame().getLayeredPane().getWidth() - selectionDialog.getWidth();
+	  }
+	  if (posY + selectionDialog.getHeight() > getFrame().getLayeredPane().getHeight()) {
+	    posY = getFrame().getLayeredPane().getHeight() - selectionDialog.getHeight();
+	  }
+	  posX = ((posX < 0) ? 0 : posX) + frameScreenLocation.getX();
+	  posY = ((posY < 0) ? 0 : posY) + frameScreenLocation.getY();
+	  selectionDialog.setLocation(new Double(posX).intValue(), new Double(posY).intValue());
+
+		selectionDialog.show();
+	}
 
 
     //
@@ -815,6 +853,15 @@ public class MindMapController extends ControllerAdapter {
               (getModel()).addIcon(selected, icon); 
             }
         };
+    }
+
+    protected class SelectIconAction extends AbstractAction {
+      public SelectIconAction() {
+      	super(getText("select_icon"));
+      }
+      public void actionPerformed(ActionEvent e) {
+      	selectIcon();
+      }
     }
 
     // ArrowLinks
