@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapController.java,v 1.35 2004-02-06 06:04:25 christianfoltin Exp $*/
+/*$Id: MindMapController.java,v 1.35.6.1 2004-02-28 13:04:54 christianfoltin Exp $*/
 
 package freemind.modes.mindmapmode;
 
@@ -74,6 +74,7 @@ public class MindMapController extends ControllerAdapter {
     Action newChildWithoutFocus = new NewChildWithoutFocusAction();
     Action newSibling = new NewSiblingAction();
     Action newPreviousSibling = new NewPreviousSiblingAction();
+    Action newParent = new NewParentAction();
     Action remove = new RemoveAction();
     Action toggleFolded = new ToggleFoldedAction();
     Action toggleChildrenFolded = new ToggleChildrenFoldedAction();
@@ -345,6 +346,7 @@ public class MindMapController extends ControllerAdapter {
           add(nodeMenu, newPreviousSibling, "keystroke_add_sibling_before");
         }
         add(nodeMenu, newSibling, "keystroke_add");
+        add(nodeMenu, newParent, "keystroke_add_parent");
  	add(nodeMenu, remove, "keystroke_remove");
         add(nodeMenu, joinNodes, "keystroke_join_nodes");
 

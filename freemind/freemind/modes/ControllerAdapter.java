@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: ControllerAdapter.java,v 1.41 2004-02-06 06:04:25 christianfoltin Exp $*/
+/*$Id: ControllerAdapter.java,v 1.41.6.1 2004-02-28 13:04:54 christianfoltin Exp $*/
 
 package freemind.modes;
 
@@ -1087,6 +1087,48 @@ public abstract class ControllerAdapter implements ModeController {
 //         getView().selectAsTheOnlyOneSelected(node.getViewer());
 //     }
 
+    public void newNodeAsParent() {
+        MindMapNode selectedNode = getSelected();
+        LinkedList selectedNodes = getSelecteds();
+
+        // Make sure the selected nodes all have the same parent
+        // (this restriction is to simplify the action, and could 
+        //    possibly be removed in the future, when we have undo)
+        // Also make sure that none of the selected nodes are the root node
+        MindMapNode selectedParent = selectedNode.getParentNode();
+        MindMapNode rootNode = (MindMapNode) getModel().getRoot();
+        for (Iterator it = selectedNodes.iterator(); it.hasNext();) {
+            MindMapNode node = (MindMapNode) it.next();
+            if (node.getParentNode() != selectedParent) {
+                getController().errorMessage(getText("cannot_add_parent_diff_parents"));
+                return;
+            }
+            if (node == rootNode) {
+                getController().errorMessage(getText("cannot_add_parent_to_root"));
+                return;
+            }
+        }
+
+        // Create new node in the position of the selectedNode 
+        int childPosition = selectedParent.getChildPosition(selectedNode);
+        MindMapNode newNode = newNode();
+        getModel().insertNodeInto(newNode, selectedParent, childPosition);
+
+        // Move selected nodes to become children of new node
+        Transferable copy = getModel().cut();
+        getModel().paste(copy, newNode);
+        getModel().nodeStructureChanged(selectedParent);
+
+        // Start editing new node
+        select(newNode.getViewer());
+        getFrame().repaint();
+        edit(newNode.getViewer(), selectedParent.getViewer(), null, false, false, false);
+
+        return;
+    }
+
+
+
     public void toggleFolded() {
         /* Retrieve the information whether or not all nodes have the same folding state. */
         Tools.BooleanHolder state = null; 
@@ -1616,6 +1658,14 @@ public abstract class ControllerAdapter implements ModeController {
         }
     }
 
+    protected class NewParentAction extends AbstractAction {
+       public NewParentAction() {
+          super(getText("new_parent"));
+       }
+       public void actionPerformed(ActionEvent e) {
+          newNodeAsParent();
+       }
+    }
 
     protected class RemoveAction extends AbstractAction {
         public RemoveAction() {
