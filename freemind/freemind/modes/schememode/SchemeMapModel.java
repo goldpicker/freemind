@@ -16,12 +16,12 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: SchemeMapModel.java,v 1.11 2003-11-03 11:00:22 sviles Exp $*/
+/*$Id: SchemeMapModel.java,v 1.11.6.1 2004-02-28 12:55:45 christianfoltin Exp $*/
 
 package freemind.modes.schememode;
 
 import freemind.main.FreeMindMain;
-
+import freemind.util.xslt.ExportDialog;
 import freemind.modes.MapAdapter;
 import java.io.File;
 import java.io.Reader;
@@ -48,6 +48,13 @@ public class SchemeMapModel extends MapAdapter {
     //
     // Other methods
     //
+    public boolean export(File file) {
+		ExportDialog exp = new ExportDialog(file);
+                exp.setVisible(true);
+		//exp.transForm(file);
+	return true;
+	}
+    
     public boolean save(File file) {
 	try {
 	    setFile(file);

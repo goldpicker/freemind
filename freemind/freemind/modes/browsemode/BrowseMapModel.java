@@ -16,13 +16,14 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: BrowseMapModel.java,v 1.9 2003-12-02 22:50:22 christianfoltin Exp $*/
+/*$Id: BrowseMapModel.java,v 1.9.6.1 2004-02-28 12:55:44 christianfoltin Exp $*/
 
 package freemind.modes.browsemode;
 
 
 import freemind.main.FreeMindMain;
 import freemind.modes.MapAdapter;
+import freemind.util.xslt.ExportDialog;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -97,6 +98,10 @@ public class BrowseMapModel extends MapAdapter {
     	return true;
     }
     
+    public boolean export(File file) {
+            
+			return true;
+		}
     public boolean isSaved() {
 	return true;
     }

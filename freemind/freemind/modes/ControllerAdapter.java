@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: ControllerAdapter.java,v 1.41 2004-02-06 06:04:25 christianfoltin Exp $*/
+/*$Id: ControllerAdapter.java,v 1.41.4.1 2004-02-28 12:55:44 christianfoltin Exp $*/
 
 package freemind.modes;
 
@@ -277,6 +277,22 @@ public abstract class ControllerAdapter implements ModeController {
     //
     // Dialogs with user
     //
+public boolean export() {
+		
+		
+			//if (getModel().isSaved()) return true;
+			if (getModel().getFile() == null || getModel().isReadOnly()) {
+			   if(save())
+			   return export();
+			   else
+			   return false; }
+			else {
+			   return export(getModel().getFile()); 
+			   }
+			}
+
+	public boolean export(File efile) {
+		   return getModel().export(efile); }	
 
     public void open() {
         JFileChooser chooser = null;
@@ -1731,6 +1747,19 @@ public abstract class ControllerAdapter implements ModeController {
         }
         public void actionPerformed(ActionEvent e) {
             loadURL();
+        }
+    }
+    
+protected class ExportAction extends AbstractAction {
+        ControllerAdapter mc;
+        public ExportAction(ControllerAdapter modeController) {
+            super("Export XSLT");
+            mc = modeController;
+        }
+        public void actionPerformed(ActionEvent e) {
+            mc.export();
+           // getFrame().out(getText("saved")); // perhaps... (PN)
+			//getController().setTitle(); // Possible update of read-only
         }
     }
 

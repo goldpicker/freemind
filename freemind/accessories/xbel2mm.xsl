@@ -9,7 +9,7 @@
    : William McVey <wam@wamber.net>
    : September 11, 2003
    :
-   : $Id: xbel2mm.xsl,v 1.1 2003-11-03 11:02:42 sviles Exp $
+   : $Id: xbel2mm.xsl,v 1.1.6.1 2004-02-28 12:55:44 christianfoltin Exp $
    :
   -->
 

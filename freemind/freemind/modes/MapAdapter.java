@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MapAdapter.java,v 1.24 2004-01-28 20:09:27 christianfoltin Exp $*/
+/*$Id: MapAdapter.java,v 1.24.4.1 2004-02-28 12:55:44 christianfoltin Exp $*/
 
 package freemind.modes;
 
@@ -69,6 +69,8 @@ public abstract class MapAdapter implements MindMap {
     //
 
     public abstract boolean save(File file); 
+    
+    public abstract boolean export(File file); 
     
     public abstract void load(File file) throws FileNotFoundException, IOException, XMLParseException ;
 
