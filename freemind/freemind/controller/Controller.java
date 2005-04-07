@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: Controller.java,v 1.40.14.5.2.1 2005-01-07 15:25:19 dpolivaev Exp $*/
+/*$Id: Controller.java,v 1.40.14.5.2.2 2005-04-07 20:51:41 dpolivaev Exp $*/
 
 package freemind.controller;
 
@@ -91,6 +91,7 @@ public class Controller {
     private FreeMindMain frame;
     private JToolBar toolbar;
     private NodeMouseMotionListener nodeMouseMotionListener;
+    private NodeMotionListener nodeMotionListener;
     private NodeKeyListener nodeKeyListener;
     private NodeDragListener nodeDragListener;
     private NodeDropListener nodeDropListener;
@@ -156,6 +157,7 @@ public class Controller {
         mapModuleManager = new MapModuleManager(this, history, lastOpened);
 
         nodeMouseMotionListener = new NodeMouseMotionListener(this);
+        nodeMotionListener = new NodeMotionListener(this);
         nodeKeyListener = new NodeKeyListener(this);
         nodeDragListener = new NodeDragListener(this);
         nodeDropListener = new NodeDropListener(this);
@@ -487,6 +489,10 @@ public class Controller {
 
     public NodeMouseMotionListener getNodeMouseMotionListener() {
         return nodeMouseMotionListener;
+    }
+
+    public NodeMotionListener getNodeMotionListener() {
+        return nodeMotionListener;
     }
 
     public MapMouseMotionListener getMapMouseMotionListener() {

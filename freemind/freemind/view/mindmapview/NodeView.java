@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: NodeView.java,v 1.27.14.4.4.5 2005-02-27 15:11:14 dpolivaev Exp $*/
+/*$Id: NodeView.java,v 1.27.14.4.4.6 2005-04-07 20:51:42 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -79,7 +79,7 @@ public abstract class NodeView extends JLabel {
     private boolean left = true; //is the node left of root?
     int relYPos = 0;//the relative Y Position to it's parent
     private boolean isLong = false;
-
+    
     public final static int DRAGGED_OVER_NO = 0;
     public final static int DRAGGED_OVER_SON = 1;
     public final static int DRAGGED_OVER_SIBLING = 2;
@@ -191,12 +191,6 @@ public abstract class NodeView extends JLabel {
         return isLeft() ?
            xCoord > getSize().width*2/3 :
            xCoord < getSize().width/3; 
-     }
-
-    public boolean nearInPoint(Point pt) {
-        return isLeft() ?
-        		pt.x > getSize().width*2/3 :
-        		pt.x < getSize().width/3; 
      }
 
     /** @return true if should be on the left, false otherwise.*/
@@ -315,12 +309,12 @@ public abstract class NodeView extends JLabel {
 	}
 
 	/** set x and y coordinate including folding symbol*/	
-	public void setExtendedLocation(int x,	int y){
+	protected void setExtendedLocation(int x,	int y){
 		setLocation(x, y);
 	}
   
 	/** set size including folding symbol*/	
-	public void setSize(){
+	private void setSize(){
 		setSize(getPreferredSize());
 	}
 	  
@@ -328,10 +322,6 @@ public abstract class NodeView extends JLabel {
 	public void setExtendedBounds(int x,	int y){
 		setExtendedLocation(x, y);
 		setSize();
-//System.out.println(getText()
-//				+ ": y=" + y 
-//				);
-        
 	}
 
    public void requestFocus(){
@@ -997,5 +987,8 @@ public abstract class NodeView extends JLabel {
 	}
 	public void setStandardTreeShift(int standardTreeShift) {
 		this.standardTreeShift = standardTreeShift;
+	}
+	public NodeMotionListenerView getMotionListenerView() {
+		return null;
 	}
 }

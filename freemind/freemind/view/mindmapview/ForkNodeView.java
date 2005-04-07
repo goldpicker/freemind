@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: ForkNodeView.java,v 1.10.18.1.4.1 2005-01-07 15:25:19 dpolivaev Exp $*/
+/*$Id: ForkNodeView.java,v 1.10.18.1.4.2 2005-04-07 20:51:41 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -27,9 +27,10 @@ import java.awt.*;
  * This class represents a single Fork-Style Node of a MindMap
  * (in analogy to TreeCellRenderer).
  */
-public class ForkNodeView extends NodeView {
+public class ForkNodeView extends MoveableNodeView {
 
 	public final int FOLDING_WIDTH_OVERHEAD = 3;
+
     
     //
     // Constructors
@@ -39,7 +40,7 @@ public class ForkNodeView extends NodeView {
 	super(model,map);
     }
 
-	public void setExtendedLocation(int x,	int y){
+    protected void setExtendedLocation(int x,	int y){
 		if(getModel().isFolded() && isLeft()){
 				x += getZoomedFoldingSymbolHalfWidth() * 2 + FOLDING_WIDTH_OVERHEAD;
 		}
@@ -119,7 +120,6 @@ public class ForkNodeView extends NodeView {
 	String getStyle() {
 		return MindMapNode.STYLE_FORK;
 	}
-
 }
 
 

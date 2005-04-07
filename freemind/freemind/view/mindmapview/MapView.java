@@ -16,11 +16,12 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MapView.java,v 1.30.16.5.2.3 2005-01-22 08:48:36 dpolivaev Exp $*/
+/*$Id: MapView.java,v 1.30.16.5.2.4 2005-04-07 20:51:41 dpolivaev Exp $*/
  
 package freemind.view.mindmapview;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -62,6 +63,7 @@ import javax.swing.event.TreeModelListener;
 
 import freemind.controller.Controller;
 import freemind.controller.NodeKeyListener;
+import freemind.controller.NodeMotionListener;
 import freemind.controller.NodeMouseMotionListener;
 import freemind.extensions.PermanentNodeHook;
 import freemind.main.Tools;
@@ -153,9 +155,11 @@ public class MapView extends JPanel implements Printable {
 		 * @param extraWidth
 		 */
 		public void componentMoved(ComponentEvent e){
-			m_map.scrollNodeToVisible(m_node, m_extraWidth);
-			m_map = null;
-			m_node = null;		
+			if(m_map != null){
+				m_map.scrollNodeToVisible(m_node, m_extraWidth);
+				m_map = null;
+				m_node = null;		
+			}
 		}		
 	
 		public void scrollNodeToVisible(MapView map, NodeView node, int extraWidth){
@@ -238,7 +242,19 @@ public class MapView extends JPanel implements Printable {
         getMindMapLayout().updateTreeHeightsAndRelativeYOfWholeMap();
         revalidate();
     }
+    
+    
 
+	public Component add(NodeView view) {
+		if(view.getMotionListenerView() != null)
+			super.add(view.getMotionListenerView());
+		return super.add(view);
+	}
+	public void remove(NodeView view) {
+		if(view.getMotionListenerView() != null)
+			super.remove(view.getMotionListenerView());
+		super.remove(view);
+	}
     public int getMaxNodeWidth() {
         if (maxNodeWidth == 0) {
             try {
@@ -689,6 +705,10 @@ public class MapView extends JPanel implements Printable {
 
     NodeMouseMotionListener getNodeMouseMotionListener() {
         return getController().getNodeMouseMotionListener();
+    }
+
+    NodeMotionListener getNodeMotionListener() {
+        return getController().getNodeMotionListener();
     }
 
     NodeKeyListener getNodeKeyListener() {

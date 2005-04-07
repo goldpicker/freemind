@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: BubbleNodeView.java,v 1.14.14.2.4.2 2005-01-22 08:48:35 dpolivaev Exp $*/
+/*$Id: BubbleNodeView.java,v 1.14.14.2.4.3 2005-04-07 20:51:41 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -27,7 +27,7 @@ import java.awt.*;
  * This class represents a single Bubble-Style Node of a MindMap
  * (in analogy to TreeCellRenderer).
  */
-public class BubbleNodeView extends NodeView {
+public class BubbleNodeView extends MoveableNodeView {
 
     private final static Stroke BOLD_STROKE =
 		new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
@@ -39,12 +39,12 @@ public class BubbleNodeView extends NodeView {
     //
     
     public BubbleNodeView(MindMapNode model, MapView map) {
-	super(model,map);
+    	super(model,map);
     }
 
 
 
-	public void setExtendedLocation(int x,	int y){
+    protected void setExtendedLocation(int x,	int y){
 		if(getModel().isFolded() && isLeft()){
 				x += getZoomedFoldingSymbolHalfWidth() * 2;
 		}
