@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: ForkNodeView.java,v 1.10.18.1.4.2 2005-04-07 20:51:41 dpolivaev Exp $*/
+/*$Id: ForkNodeView.java,v 1.10.18.1.4.3 2005-04-08 05:50:33 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -39,13 +39,6 @@ public class ForkNodeView extends MoveableNodeView {
     public ForkNodeView(MindMapNode model, MapView map) {
 	super(model,map);
     }
-
-    protected void setExtendedLocation(int x,	int y){
-		if(getModel().isFolded() && isLeft()){
-				x += getZoomedFoldingSymbolHalfWidth() * 2 + FOLDING_WIDTH_OVERHEAD;
-		}
-		setLocation(x, y);
-	}
     
     public int getExtendedX(){
     	int x = getX();

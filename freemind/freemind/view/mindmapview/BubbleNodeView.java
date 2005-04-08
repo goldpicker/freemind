@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: BubbleNodeView.java,v 1.14.14.2.4.3 2005-04-07 20:51:41 dpolivaev Exp $*/
+/*$Id: BubbleNodeView.java,v 1.14.14.2.4.4 2005-04-08 05:50:30 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -42,14 +42,6 @@ public class BubbleNodeView extends MoveableNodeView {
     	super(model,map);
     }
 
-
-
-    protected void setExtendedLocation(int x,	int y){
-		if(getModel().isFolded() && isLeft()){
-				x += getZoomedFoldingSymbolHalfWidth() * 2;
-		}
-		setLocation(x, y);
-	}
   
 	protected int getExtendedWidth(int width)
 	{	int dW = getZoomedFoldingSymbolHalfWidth() * 2;
