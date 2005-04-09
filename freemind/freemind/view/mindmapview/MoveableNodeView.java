@@ -34,16 +34,14 @@ public abstract class MoveableNodeView extends NodeView {
     	map.remove(getMotionListenerView());
     }
 
+	public void setBounds(int x,	int y){
+		Dimension prefSize = getPreferredSize();
+		setLocation(x, y);
+		setSize(prefSize);
+		int motionListenerViewX 
+		  = isLeft() ? x + prefSize.width : x-LISTENER_VIEW_WIDTH;
+		motionListenerView.setLocation(motionListenerViewX, y);
+		motionListenerView.setSize(LISTENER_VIEW_WIDTH, prefSize.height);
+	}
 
-	public void setLocation(int x, int y) {
-		super.setLocation(x, y);
-		motionListenerView.setLocation(x-LISTENER_VIEW_WIDTH, y);
-	}
-	public void setLocation(Point p) {
-		throw new AssertionError("Do not use this method");
-	}
-	public void setSize(int w, int h) {
-		super.setSize(w, h);
-		motionListenerView.setSize(LISTENER_VIEW_WIDTH, h);
-	}
 }

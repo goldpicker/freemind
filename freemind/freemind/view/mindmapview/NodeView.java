@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: NodeView.java,v 1.27.14.4.4.8 2005-04-09 09:05:50 dpolivaev Exp $*/
+/*$Id: NodeView.java,v 1.27.14.4.4.9 2005-04-09 18:32:28 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -317,15 +317,9 @@ public abstract class NodeView extends JLabel {
 	}
 
   
-	/** set size including folding symbol*/	
-	private void setSize(){
-		setSize(getPreferredSize());
-	}
-	  
-	/** set bounds including folding symbol*/	
 	public void setBounds(int x,	int y){
 		setLocation(x, y);
-		setSize();
+		setSize(getPreferredSize());
 	}
 
    public void requestFocus(){
