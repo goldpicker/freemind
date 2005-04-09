@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: NodeView.java,v 1.27.14.4.4.7 2005-04-08 05:50:33 dpolivaev Exp $*/
+/*$Id: NodeView.java,v 1.27.14.4.4.8 2005-04-09 09:05:50 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -148,6 +148,14 @@ public abstract class NodeView extends JLabel {
 	addDragListener( map.getNodeDragListener() );
 	addDropListener( map.getNodeDropListener() );
     }
+    
+    protected void addToMap(){
+    	map.add(this);
+    }
+    
+    protected void removeFromMap(){
+    	map.remove(this);
+    }
 
     void addDragListener(DragGestureListener dgl) {
 	DragSource dragSource = DragSource.getDefaultDragSource();
@@ -178,7 +186,7 @@ public abstract class NodeView extends JLabel {
 	    newView = new ForkNodeView(model, map);
 	}
 	model.setViewer(newView);
-	map.add(newView);
+	newView.addToMap();
 	newView.update();
 	return newView;
     }
@@ -719,7 +727,7 @@ public abstract class NodeView extends JLabel {
      * removed (it needs to stay in memory)
      */
     void remove() {
-	getMap().remove(this);
+	removeFromMap();
 	if (getEdge()!=null) {
            getEdge().remove(); }
         getModel().setViewer(null); // Let the model know he is invisible

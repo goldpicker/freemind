@@ -24,6 +24,17 @@ public abstract class MoveableNodeView extends NodeView {
 		return motionListenerView;
 	}
 
+    protected void addToMap(){
+    	map.add(this);
+    	map.add(getMotionListenerView());
+    }
+    
+    protected void removeFromMap(){
+    	map.remove(this);
+    	map.remove(getMotionListenerView());
+    }
+
+
 	public void setLocation(int x, int y) {
 		super.setLocation(x, y);
 		motionListenerView.setLocation(x-LISTENER_VIEW_WIDTH, y);

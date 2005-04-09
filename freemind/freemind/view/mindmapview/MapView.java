@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MapView.java,v 1.30.16.5.2.4 2005-04-07 20:51:41 dpolivaev Exp $*/
+/*$Id: MapView.java,v 1.30.16.5.2.5 2005-04-09 09:05:44 dpolivaev Exp $*/
  
 package freemind.view.mindmapview;
 
@@ -243,19 +243,7 @@ public class MapView extends JPanel implements Printable {
         revalidate();
     }
     
-    
-
-	public Component add(NodeView view) {
-		if(view.getMotionListenerView() != null)
-			super.add(view.getMotionListenerView());
-		return super.add(view);
-	}
-	public void remove(NodeView view) {
-		if(view.getMotionListenerView() != null)
-			super.remove(view.getMotionListenerView());
-		super.remove(view);
-	}
-    public int getMaxNodeWidth() {
+        public int getMaxNodeWidth() {
         if (maxNodeWidth == 0) {
             try {
                 maxNodeWidth = Integer.parseInt(controller.getProperty("max_node_width")); }
