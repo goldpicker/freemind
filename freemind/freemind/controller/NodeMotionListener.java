@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: NodeMotionListener.java,v 1.1.2.1 2005-04-07 20:51:41 dpolivaev Exp $*/
+/*$Id: NodeMotionListener.java,v 1.1.2.2 2005-04-21 22:56:57 dpolivaev Exp $*/
 
 package freemind.controller;
 
@@ -30,6 +30,8 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.swing.SwingUtilities;
 
 import freemind.main.Tools;
 import freemind.modes.MindMapNode;
@@ -87,11 +89,13 @@ public class NodeMotionListener extends MouseAdapter implements MouseMotionListe
 	        if ( (e.getModifiersEx() & (InputEvent.BUTTON1_DOWN_MASK | InputEvent.CTRL_DOWN_MASK))
 	         		 == (InputEvent.BUTTON1_DOWN_MASK | InputEvent.CTRL_DOWN_MASK)) {
 		        if (!isActive()){
-		   	      dragStartingPoint = e.getPoint();
+		        	dragStartingPoint = e.getPoint();
+		        	SwingUtilities.convertPointToScreen(dragStartingPoint, nodeV);
 		        }
 		        else if (isActive()){
 		        	Point dragNextPoint = e.getPoint();
-		        	MindMapNode node = nodeV.getModel();
+		        	SwingUtilities.convertPointToScreen(dragNextPoint, nodeV);
+		        	MindMapNode node = nodeV.getModel().getParentNode();
 		        	int vGapChange = (int)((dragNextPoint.y - dragStartingPoint.y) / c.getView().getZoom());
 		        	int oldVGap = node.calcVGap();
 		        	node.setVGap(Math.max(0, oldVGap - vGapChange));
@@ -115,7 +119,7 @@ public class NodeMotionListener extends MouseAdapter implements MouseMotionListe
         	}
         	if(e.getModifiersEx() == InputEvent.CTRL_DOWN_MASK) {
 	            NodeView nodeV = ((NodeMotionListenerView)e.getSource()).getMovedView();
-	        	MindMapNode node = nodeV.getModel();
+	        	MindMapNode node = nodeV.getModel().getParentNode();
 	        	node.setVGap(MindMapNode.AUTO);
 	        	c.getModel().nodeChanged(node);
 	        	return;
