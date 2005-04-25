@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: NodeMotionListener.java,v 1.1.2.2 2005-04-21 22:56:57 dpolivaev Exp $*/
+/*$Id: NodeMotionListener.java,v 1.1.2.3 2005-04-25 20:19:03 dpolivaev Exp $*/
 
 package freemind.controller;
 
@@ -61,50 +61,43 @@ public class NodeMotionListener extends MouseAdapter implements MouseMotionListe
         /** Invoked when a mouse button is pressed on a component and then dragged.  */
 	    public void mouseDragged(MouseEvent e) {
 	        logger.fine("Event: mouseDragged");
-	        NodeView nodeV = ((NodeMotionListenerView)e.getSource()).getMovedView();
-
-	        if ((e.getModifiersEx() & (InputEvent.BUTTON1_DOWN_MASK | InputEvent.CTRL_DOWN_MASK))
+	        if ((e.getModifiersEx() & InputEvent.BUTTON1_DOWN_MASK)
 	         		 == (InputEvent.BUTTON1_DOWN_MASK)
 					 ) {
-		        if (!isActive()){
-		   	      dragStartingPoint = e.getPoint();
-		        }
-		        else if(isActive()){
-		        	Point dragNextPoint = e.getPoint();
-		        	MindMapNode node = nodeV.getModel();
-		        	int shiftYChange = (int)((dragNextPoint.y - dragStartingPoint.y) / c.getView().getZoom());
-		        	node.setShiftY(node.getShiftY() + shiftYChange);
-		        	int hGapChange = (int)((dragNextPoint.x - dragStartingPoint.x) / c.getView().getZoom());
-		        	if (nodeV.isLeft()) hGapChange = -hGapChange;
-		        	int oldHGap = node.getHGap();
-		        	node.setHGap(oldHGap + hGapChange);
+	        	NodeView nodeV = ((NodeMotionListenerView)e.getSource()).getMovedView();
 
-		        	// Bad hack for keeping root node unmoved
-		        	nodeV.setLocation(0, 0);
-
-		        	c.getModel().nodeChanged(node);
-		        }
-	   	      	return;
-	         }
-	        if ( (e.getModifiersEx() & (InputEvent.BUTTON1_DOWN_MASK | InputEvent.CTRL_DOWN_MASK))
-	         		 == (InputEvent.BUTTON1_DOWN_MASK | InputEvent.CTRL_DOWN_MASK)) {
 		        if (!isActive()){
 		        	dragStartingPoint = e.getPoint();
 		        	SwingUtilities.convertPointToScreen(dragStartingPoint, nodeV);
 		        }
-		        else if (isActive()){
+		        else { 
 		        	Point dragNextPoint = e.getPoint();
 		        	SwingUtilities.convertPointToScreen(dragNextPoint, nodeV);
-		        	MindMapNode node = nodeV.getModel().getParentNode();
-		        	int vGapChange = (int)((dragNextPoint.y - dragStartingPoint.y) / c.getView().getZoom());
-		        	int oldVGap = node.calcVGap();
-		        	node.setVGap(Math.max(0, oldVGap - vGapChange));
-		        	dragStartingPoint = dragNextPoint;
-		        	c.getModel().nodeChanged(node);
+		        	
+		        	if((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) == 0)
+			        {
+			        	MindMapNode node = nodeV.getModel();
+			        	int shiftYChange = (int)((dragNextPoint.y - dragStartingPoint.y) / c.getView().getZoom());
+			        	node.setShiftY(node.getShiftY() + shiftYChange);
+			        	int hGapChange = (int)((dragNextPoint.x - dragStartingPoint.x) / c.getView().getZoom());
+			        	if (nodeV.isLeft()) hGapChange = -hGapChange;
+			        	int oldHGap = node.getHGap();
+			        	node.setHGap(oldHGap + hGapChange);
+			        	// Bad hack for keeping root node unmoved
+			        	nodeV.setLocation(0, 0);
+			        	c.getModel().nodeChanged(node);
+			        }
+		        	else {
+			        	MindMapNode node = nodeV.getModel().getParentNode();
+			        	int vGapChange = (int)((dragNextPoint.y - dragStartingPoint.y) / c.getView().getZoom());
+			        	int oldVGap = node.calcVGap();
+			        	node.setVGap(Math.max(0, oldVGap - vGapChange));
+			        	c.getModel().nodeChanged(node);
 		        }
-	   	      	return;
+	        	dragStartingPoint = dragNextPoint;
 	         }
-	    }
+        }
+    }
 
     public void mouseClicked(MouseEvent e) {
         if ( e.getButton() == 1 && e.getClickCount() == 2){
@@ -145,12 +138,16 @@ public class NodeMotionListener extends MouseAdapter implements MouseMotionListe
         }
 	}
 	
+	private void stopDrag(){
+		dragStartingPoint = null;
+	}
+	
     public void mouseReleased( MouseEvent e ) {
         logger.fine("Event: mouseReleased");
 		NodeMotionListenerView v = (NodeMotionListenerView)e.getSource();
 		if (! v.contains(e.getX(), e.getY()))
         	v.setMouseExited();			
-         dragStartingPoint = null;
+         stopDrag();
     }
 
     public boolean isActive(){return dragStartingPoint != null;}
