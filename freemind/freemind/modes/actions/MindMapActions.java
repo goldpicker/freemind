@@ -1,15 +1,28 @@
-/*
- * Created on 05.05.2004
+/*FreeMind - A Program for creating and viewing Mindmaps
+ *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *See COPYING for Details
  *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ *This program is free software; you can redistribute it and/or
+ *modify it under the terms of the GNU General Public License
+ *as published by the Free Software Foundation; either version 2
+ *of the License, or (at your option) any later version.
+ *
+ *This program is distributed in the hope that it will be useful,
+ *but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *GNU General Public License for more details.
+ *
+ *You should have received a copy of the GNU General Public License
+ *along with this program; if not, write to the Free Software
+ *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+/*$Id: MindMapActions.java,v 1.1.4.4.2.1 2005-04-27 21:08:18 christianfoltin Exp $*/
+
 package freemind.modes.actions;
 
 import java.awt.Color;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.List;
 
 import freemind.modes.MindIcon;
@@ -20,9 +33,8 @@ import freemind.modes.mindmapmode.MindMapArrowLinkModel;
 
 /**
  * @author foltin
+ * created: 5.5.2004
  *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public interface MindMapActions {
 	public void nodeStructureChanged(MindMapNode node);
@@ -116,4 +128,13 @@ public interface MindMapActions {
 	
 	//public void addHook(MindMapNode focussed, List selecteds, String hookName);
 	public MindMapNode getRootNode();
+	
+	/** Moves the node to a new position.
+	 * @param node
+	 * @param vGap
+	 * @param hGap
+	 * @param shiftY
+	 */
+	public void moveNodePosition(MindMapNode node, int vGap, int hGap,
+            int shiftY);
 }

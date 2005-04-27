@@ -96,6 +96,9 @@
 					<menu_action field="nodeColorBlend" key_ref="keystroke_node_color_blend"/>
 					<menu_action field="nodeBackgroundColor"/>
 				</menu_category>
+				<menu_category name="position">
+					<menu_action field="moveNodeAction"/>
+				</menu_category>
 			</menu_category>
 			<menu_category name="icons">
 			</menu_category>
