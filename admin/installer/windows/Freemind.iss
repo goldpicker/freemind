@@ -45,7 +45,7 @@ external 'isxbb_KillTimer@files:isxbb.dll stdcall';
 
 [Setup]
 AppName=FreeMind
-AppVerName=FreeMind 0.7.1
+AppVerName=FreeMind 0.8.0RC3
 AppPublisherURL=http://freemind.sourceforge.net
 AppSupportURL=http://freemind.sourceforge.net
 AppUpdatesURL=http://freemind.sourceforge.net
@@ -56,22 +56,22 @@ LicenseFile=license.txt
 WindowVisible=true
 
 
-AppCopyright=Copyright © 2003
+AppCopyright=Copyright © 2005 Christian Foltin and others
 ;AppCopyright=Copyright © {code:InstallationDate}
-AppVersion=0.7.1
+AppVersion=0.8.0RC3
 InfoAfterFile=after.txt
 InfoBeforeFile=before.txt
 PrivilegesRequired=admin
 UninstallDisplayIcon={app}\Freemind.exe
 UninstallDisplayName=FreeMind
 
-AppID={B991B020-2968-11D8-AF23-444553540000}
+AppID=B991B020-2968-11D8-AF23-444553540000
 UninstallRestartComputer=false
 ChangesAssociations=true
 FlatComponentsList=false
-OutputBaseFilename=FreeMind-Windows-Installer-0_7_1
+OutputBaseFilename=FreeMind-Windows-Installer-0_8_0RC3
 SolidCompression=false
-InternalCompressLevel=9
+; old: InternalCompressLevel=9
 Compression=zip/9
 ShowTasksTreeLines=true
 [Messages]
@@ -87,10 +87,11 @@ Name: fileassoc; Description: &Associate FreeMind Extensions with the .mm file e
 
 [Files]
 Source: ..\..\..\bin\dist\Freemind.exe; DestDir: {app}; Flags: promptifolder overwritereadonly
-Source: ..\..\..\bin\dist\accessories\mm2xbel.xsl; DestDir: {app}\accessories; Flags: promptifolder overwritereadonly
-Source: ..\..\..\bin\dist\accessories\xbel2mm.xsl; DestDir: {app}\accessories; Flags: promptifolder overwritereadonly
+Source: ..\..\..\bin\dist\Freemind.bat; DestDir: {app}; Flags: promptifolder overwritereadonly
+Source: ..\..\..\bin\dist\accessories\*.*; DestDir: {app}\accessories; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\doc\freemind.mm; DestDir: {app}\doc; Flags: promptifolder overwritereadonly
-Source: ..\..\..\bin\dist\lib\freemind.jar; DestDir: {app}\lib; Flags: promptifolder overwritereadonly
+Source: ..\..\..\bin\dist\lib\*.*; DestDir: {app}\lib; Flags: promptifolder overwritereadonly  recursesubdirs
+; Source: ..\..\..\bin\dist\plugins\*.*; DestDir: {app}\plugins; Flags: promptifolder overwritereadonly  recursesubdirs
 Source: license.txt; DestDir: {app}; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\patterns.xml; DestDir: {app}; Flags: promptifolder overwritereadonly
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
@@ -98,7 +99,7 @@ Source: ..\..\..\bin\dist\patterns.xml; DestDir: {app}; Flags: promptifolder ove
 Source: {app}\*.*; DestDir: {app}\backup; Flags: external skipifsourcedoesntexist uninsneveruninstall
 Source: {app}\accessories\*.*; DestDir: {app}\backup\accessories; Flags: external skipifsourcedoesntexist uninsneveruninstall
 Source: {app}\doc\*.*; DestDir: {app}\backup\doc; Flags: external skipifsourcedoesntexist uninsneveruninstall
-Source: {app}\lib\*.*; DestDir: {app}\backup\lib; Flags: external skipifsourcedoesntexist uninsneveruninstall
+Source: {app}\lib\*.*; DestDir: {app}\backup\lib; Flags: recursesubdirs external skipifsourcedoesntexist uninsneveruninstall
 
 Source: FreeMind.gif; DestDir: {tmp}; Flags: dontcopy
 Source: FreeMind1.gif; DestDir: {tmp}; Flags: dontcopy
@@ -123,21 +124,6 @@ Root: HKCR; SubKey: FreeMind Map\Shell\Open\Command; ValueType: string; ValueDat
 Root: HKCR; Subkey: FreeMind Map\DefaultIcon; ValueType: string; ValueData: {app}\Freemind.exe,0; Flags: uninsdeletekey; Tasks: fileassoc
 
 [Code]
-// AJI - Displays the two gifs on the main (blue) screen.
-procedure CurStepChanged(CurStep: Integer);
-begin
-  if CurStep=csStart then begin
-    ExtractTemporaryFile('FreeMind.gif');
-    ExtractTemporaryFile('FreeMind1.gif');
-
-    isxbb_AddImage(ExpandConstant('{tmp}')+'\FreeMind.gif',BOTTOMLEFT);
-    isxbb_AddImage(ExpandConstant('{tmp}')+'\FreeMind1.gif',TOPRIGHT);
-
-    isxbb_Init(StrToInt(ExpandConstant('{hwnd}')));
-   end;
-end;
-
-// AJI - Cannot guarantee that this will work on ALL Windows versions. May need tweaking.
 function CheckJavaVersion: Boolean;
 var
   AVersion: String;
@@ -145,11 +131,11 @@ begin
   Result := False;
   if RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\JavaSoft\Java Runtime Environment', 'CurrentVersion', AVersion) then
   begin
-	if AVersion = '1.4' then
+	if (AVersion = '1.4') or (AVersion = '1.5') then
 		Result := True;
   end;
-
-  if Result = False then	// Java 1.4 not found/detected
+  // Java 1.4 not found/detected
+  if Result = False then	
   begin
 	if MsgBox( 'Java 1.4 or greater not detected - Continue with installation ?', mbError, MB_YESNO) = MRYES then
 		Result := True
@@ -160,5 +146,14 @@ end;
 
 function InitializeSetup(): Boolean;
 begin
+// AJI - Displays the two gifs on the main (blue) screen.
+// AJI - Cannot guarantee that this will work on ALL Windows versions. May need tweaking.
+    ExtractTemporaryFile('FreeMind.gif');
+    ExtractTemporaryFile('FreeMind1.gif');
+
+    isxbb_AddImage(ExpandConstant('{tmp}')+'\FreeMind.gif',BOTTOMLEFT);
+    isxbb_AddImage(ExpandConstant('{tmp}')+'\FreeMind1.gif',TOPRIGHT);
+
+    isxbb_Init(StrToInt(ExpandConstant('{hwnd}')));
   Result := CheckJavaVersion;
 end;
