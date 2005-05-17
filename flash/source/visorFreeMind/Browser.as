@@ -566,7 +566,7 @@ class visorFreeMind.Browser {
 		}
 
 		for(var i=0;i<arrows.length;i++){
-			list_arrows.push([node_xml.attributes.ID,
+			list_arrows.push([node.getID(),
 							arrows[i].attributes.DESTINATION,
 							arrows[i].attributes.STARTARROW,
 							arrows[i].attributes.ENDARROW,

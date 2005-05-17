@@ -72,6 +72,10 @@ class visorFreeMind.Node {
 	function getNode_xml(){
 		return node_xml;
 	}
+	
+	function getID(){
+		return id;
+	}
 
 	function Node(x:Number,y:Number,node_xml,nom:String,coment:String,mc:MovieClip,
 							yy,cf:Number,lineWidth:Number,style:Number,styleLine:Number,

@@ -32,7 +32,8 @@ class visorFreeMind.ArrowDrawer {
 			var arrow=list_arrows[i];
 			var mc_orig=mc_floor[arrow[0]];
 			var mc_dest=mc_floor[arrow[1]];
-			//Logger.trace(arrow[0]+" x:"+mc_floor[arrow[0]]._x+" "+arrow[1]+" x:"+mc_floor[arrow[1]]._x);
+			//Logger.trace("dibujando arrow orig:"+mc_orig+" dest:"+mc_dest);
+			//Logger.trace(arrow[0]+" x:"+mc_floor[arrow[0]]._x+" "+arrow[1]+" x:"+mc_floor[arrow[1]]._x,2);
 			if(mc_orig._visible && mc_dest._visible){
 				drawArrow(mc_orig,mc_dest,arrow[4],mc_floor,xcenter);
 				drawStartEndArrowFigure(mc_orig,arrow[2],arrow[4],mc_floor,xcenter);
