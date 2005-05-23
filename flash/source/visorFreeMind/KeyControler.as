@@ -44,9 +44,10 @@ class visorFreeMind.KeyControler{
 	}
 
 	public function onKeyDown(){
-			//Logger.trace("key:"+Key.getAscii());
-			//Logger.trace("code:"+Key.getCode());
-			if(Key.isDown(Key.CONTROL) and Key.getCode() == 187){ //+
+			if(Key.isDown(Key.CONTROL) and Key.getCode() == 17 ){ //c
+				if(Node.currentOver!=null)
+					System.setClipboard(Node.currentOver.text);
+			}if(Key.isDown(Key.CONTROL) and Key.getCode() == 187){ //+
 				this.browser.mc_floor._xscale+=20;
 				this.browser.mc_floor._yscale+=20;
 			}else if(Key.isDown(Key.CONTROL) and Key.getCode() == 189){ //-

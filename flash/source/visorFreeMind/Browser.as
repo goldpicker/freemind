@@ -179,15 +179,16 @@ class visorFreeMind.Browser {
 			txt.wordWrap = true;
 			txt.html = true;
 			txt.htmlText="<font color='#996611'><b>This is a free</b><br>FREEMIND BROWSER<br> <br><b>shortcuts</b><br>"+
-			"LEFT ->move left<br>"+
-			"RIGHT ->move right<br>"+
-			"UP ->move up<br>"+
-			"DOWN ->move down<br>"+
-			"CTRL LEFT -> back history<br>"+
-			"CTRL RIGHT -> forward history<br>"+
-			"CTRL '+' -> increase<br>"+
-			"CTRL '-'_> shrink<br>"+
-			"SHIFT -> text selection<br></font><br>";
+			"LEFT : move left<br>"+
+			"RIGHT : move right<br>"+
+			"UP : move up<br>"+
+			"DOWN : move down<br>"+
+			"CTRL LEFT : back history<br>"+
+			"CTRL RIGHT : forward history<br>"+
+			"CTRL '+' : increase<br>"+
+			"CTRL '-' : shrink<br>"+
+			"SHIFT : text selection<br>"+
+			"CTRL 'c' : node to clipboard</font><br>";
 			mc_container.info._visible=false;
 		}
 	}
