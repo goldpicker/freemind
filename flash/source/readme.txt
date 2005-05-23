@@ -11,3 +11,5 @@ USE:
    example:
 
  <param name="FlashVars" value="initLoadFile=index.mm"/>
+ and 
+ <embed FlashVars="initLoadFile=index.mm" 
