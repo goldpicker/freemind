@@ -61,6 +61,7 @@ class visorFreeMind.Node {
 	public var bold:Boolean;
 	public var font:String;
 	private var link:MovieClip;
+	private var noteIcon:MovieClip;
 	private var withImage:Boolean=false;
 	private var listElements:Array=null;
 	private var counter=0;
@@ -68,6 +69,7 @@ class visorFreeMind.Node {
 	private var box_txt;
 	private var sombra=null;
 	private var eventControler;
+	private var note=null;
 
 	function getNode_xml(){
 		return node_xml;
@@ -96,6 +98,7 @@ class visorFreeMind.Node {
 		this.node_xml=node_xml;
 		this.haveEdge=node_xml.attributes.LINK!=undefined?true:false;
 		text=nom;
+		note=findNote(node_xml);
 		coment=coment;
 		listElements=[];
 		num+=2;
@@ -122,11 +125,44 @@ class visorFreeMind.Node {
 		}
 
 		eventControler=ref_mc;
+		
 		if(style!=1 && cbg!=0)
 			eventControler=ref_mc.box_txt;
 		activateEvents();
 	}
 
+	function findNote(node_xml:XMLNode){
+		var lista=getNodesType("hook",node_xml);
+		for(var i=0;i<lista.length;i++){
+			var hook=lista[i];
+			if(hook.attributes.NAME.indexOf("NodeNote")!=-1)
+				return hook.firstChild.firstChild.toString();
+		}
+		return null;
+	}
+
+	function getNodesType(type,node_xml){
+		var aux=[];
+		for(var i=0;i<node_xml.childNodes.length;i++){
+			var n=node_xml.childNodes[i];
+			if (n.nodeName==type )
+			   aux.push(n);
+		}
+		return aux;
+	}
+
+	public function activateNoteEvents(){
+		Logger.trace("poniendo eventos");
+		noteIcon.inst=this;
+		noteIcon.onRollOver=function(){
+			Logger.trace("NOTE ICON");
+			this.inst.browser.showTooltip(this.inst.note);
+		}
+		noteIcon.onRollOut=function(){
+			this.inst.browser.hideTooltip();
+		}
+	}
+	
 	public function deactivateEvents(){
 		eventControler.enabled=false;
 	}
@@ -169,7 +205,6 @@ class visorFreeMind.Node {
 			}
 			return;
 		}
-
 		eventControler.onRollOver=function(){
 			if (Node.currentOver instanceof Node )
 				Node.currentOver.colorNoSelect();
@@ -178,13 +213,31 @@ class visorFreeMind.Node {
 			if(this.inst.node_xml.attributes.LINK != undefined){
 				this.inst.browser.showTooltip(this.inst.node_xml.attributes.LINK);
 			}
+			if(this.inst.noteIcon!=null) {
+				//Logger.trace("registrando");
+				this.onMouseMove=function(){
+					if(this.inst.noteIcon.hitTest(_root._xmouse,_root._ymouse,false))
+						this.inst.browser.showTooltip(this.inst.note);
+					else{
+						if(this.inst.node_xml.attributes.LINK!=undefined){
+							this.inst.browser.showTooltip(this.inst.node_xml.attributes.LINK);
+						}else{
+							this.inst.browser.hideTooltip();
+						}
+					}
+				}
+			}
+			
 		}
 
 		eventControler.onRollOut=function(){
 			this.inst.browser.hideTooltip();
 			Node.currentOver.colorNoSelect();
+			if(this.inst.noteIcon!=null) {
+				this.onMouseMove=null;
+			}
 		}
-
+		
 	}
 
 	function hasSubnodes(){
@@ -415,18 +468,15 @@ class visorFreeMind.Node {
 	public function draw(){
 		counter++;
 		crearTextField("node_txt");
-		if(haveEdge && !isRight) {
-			addLinkIcon();
-			link._x=0;
-		}
+
 		var iconsList=getIcons(node_xml);
 		for(var i=0;i<iconsList.length;i++){
 			if(Icons["get_"+iconsList[i]]!=null){
 				addIcon(Icons["get_"+iconsList[i]](ref_mc.node_txt,i));
 			}
 		}
-		if(haveEdge&& isRight)
-			addLinkIcon();
+		
+		addSpecialIcons();
 
 		if(withImage==false)
 			posElements();
@@ -448,6 +498,12 @@ class visorFreeMind.Node {
 
 			ref_mc.node_txt.node_txt._x=initX;
 			initX+=ref_mc.node_txt.node_txt._width;
+			
+			if(noteIcon){
+				noteIcon._x=initX;
+				noteIcon._y=initY;
+				initX+=noteIcon._width;
+			}
 			if(link){
 				link._x=initX;
 				link._y=initY;
@@ -459,6 +515,11 @@ class visorFreeMind.Node {
 				link._x=initX;
 				link._y=initY;
 				initX+=link._width;
+			}
+			if(noteIcon){
+				noteIcon._x=initX;
+				noteIcon._y=initY;
+				initX+=noteIcon._width;
 			}
 			ref_mc.node_txt.node_txt._x=initX;
 			initX+=ref_mc.node_txt.node_txt._width;
@@ -491,12 +552,18 @@ class visorFreeMind.Node {
 		icon._y=(ref_mc.node_txt._height-icon._height)/2;
 	}
 
-	public function addLinkIcon(){
-		var width=ref_mc.node_txt._width;
-		if(node_xml.attributes.LINK.indexOf(".mm")>-1)
-			link=Icons.get_mm_link(ref_mc.node_txt);
-		else
-			link=Icons.genLink(ref_mc.node_txt);
+	public function addSpecialIcons(){
+		if(haveEdge){
+			if(node_xml.attributes.LINK.indexOf(".mm")>-1)
+				link=Icons.get_mm_link(ref_mc.node_txt);
+			else
+				link=Icons.genLink(ref_mc.node_txt);
+		}
+		if(note!=null){
+			noteIcon=Icons.get_Note(ref_mc.node_txt);
+			//noteIcon.trackAsMenu=true;
+			//activateNoteEvents();
+		}
 	}
 
 
