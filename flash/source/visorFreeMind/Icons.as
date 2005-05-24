@@ -595,6 +595,29 @@ return nice;
 		return Mail;
 	}
 
+	static public  function get_Note(mc_padre,depth){ //Mail
+		var Note=mc_padre.createEmptyMovieClip("Note",6+depth);
+		var color=0xFFFF55;
+		Note.lineStyle(1,0x222222,100);
+		Note.beginFill(color,100);
+		Note.moveTo(0,1);
+		Note.lineTo(10,1);
+		Note.lineTo(10,13);
+		Note.lineTo(0,13);
+		Note.lineTo(0,1);
+		Note.endFill();
+		Note.moveTo(2,4);
+		Note.lineTo(9,4);
+		Note.moveTo(2,6);
+		Note.lineTo(9,6);
+		Note.moveTo(2,8);
+		Note.lineTo(9,8);
+		Note.moveTo(2,10);
+		Note.lineTo(7,10);
+
+		return Note;
+	}
+
 	static public  function get_kaddressbook(mc_padre,depth){ //Phone
 		var phone=mc_padre.createEmptyMovieClip("phone",6+depth);
 		var color=0xDDDBB9;
