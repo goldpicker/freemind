@@ -31,6 +31,7 @@ class visorFreeMind.Node {
 	public static var colorNoSel:Number=0xFFDD44; // unselect color
 
 	public static var currentOver:Node=null;
+	public static var openUrl="_blank";
 
 	public var childNodes:Array;
 	private var lastClicks:Number=0;
@@ -182,7 +183,7 @@ class visorFreeMind.Node {
 			if(this.inst.node_xml.attributes.LINK != undefined && this.inst.link.hitTest(_root._xmouse,_root._ymouse,false)){
 				var url=this.inst.node_xml.attributes.LINK;
 				if(url.indexOf("http://") > -1 || url.indexOf(".mm")==-1)
-					getURL(url,"_blank");
+					getURL(url,Node.openUrl);
 				else{
 					Logger.trace("loading url");
 					this.inst.browser.loadXML(url);
