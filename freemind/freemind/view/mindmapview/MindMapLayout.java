@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapLayout.java,v 1.15.14.3.4.1 2005-05-25 22:33:55 dpolivaev Exp $*/
+/*$Id: MindMapLayout.java,v 1.15.14.3.4.2 2005-05-25 23:49:38 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -77,14 +77,7 @@ public class MindMapLayout implements LayoutManager {
     // Absolute positioning
     //
 
-    /**
-	* placeNode throws this exception 
-	* if the map size changes require new layout calculations 
-     */
-	private class NewLayoutIterationNeeded extends Exception {
-	}
-
-    /**
+     /**
      * This funcion resizes the map and do the layout.
      * All tree heights, widths and shifts should be already calculated.
      */
@@ -192,7 +185,7 @@ public class MindMapLayout implements LayoutManager {
 	 * @return
 	 */
 	private int getRootY() {
-		return (calcYBorderSize() + getRoot().getPreferredSize().height) / 2 + getRoot().getUpperChildShift();
+		return calcYBorderSize() / 2 + getRoot().getUpperChildShift();
 	}
 
 	/**
@@ -393,9 +386,9 @@ public class MindMapLayout implements LayoutManager {
 	private int calcUpperChildShift(NodeView node, LinkedList childrenViews) {
 		try{
 			NodeView firstChild = (NodeView) childrenViews.getFirst();
-			int childShift = -firstChild.relYPos + firstChild.getAdditionalCloudHeigth()/2;
-			int childTreeShift = firstChild.getUpperChildShift();
-			if (childTreeShift > 0 ) childShift += childTreeShift; 
+			int childShift = -firstChild.relYPos 
+				+ firstChild.getAdditionalCloudHeigth()/2
+				+ firstChild.getUpperChildShift(); 
 			return childShift > 0 ? childShift : 0;			
 		}
 		catch(NoSuchElementException e)
@@ -429,11 +422,13 @@ public class MindMapLayout implements LayoutManager {
 			NodeView firstChild = (NodeView) childrenViews.getFirst();
 			NodeView lastChild = (NodeView) childrenViews.getLast();
 			int minY = Math.min(
-					firstChild.relYPos - Math.max(firstChild.getUpperChildShift() , 0)
+					firstChild.relYPos 
+					- firstChild.getUpperChildShift()
 					- firstChild.getAdditionalCloudHeigth()/2, 
 					0);
 			int maxY = Math.max(
-					lastChild.relYPos - Math.max(lastChild.getUpperChildShift(), 0)
+					lastChild.relYPos 
+					- lastChild.getUpperChildShift()
 					+ lastChild.getTreeHeight() + lastChild.getAdditionalCloudHeigth()/2 
 					, parentHeight);
 			return maxY - minY;
