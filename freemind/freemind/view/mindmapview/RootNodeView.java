@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: RootNodeView.java,v 1.14.14.3 2005-04-27 21:45:32 christianfoltin Exp $*/
+/*$Id: RootNodeView.java,v 1.14.14.3.4.1 2005-05-25 22:33:55 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -194,10 +194,8 @@ public class RootNodeView extends NodeView {
     public void setTreeWidth(int w) {
     	throw new Error();
     }
-	public void setStandardTreeShift(int h) {
-    	throw new Error();
-	}
-    public void setRootTreeWidths(int left, int right) {
+    
+   public void setRootTreeWidths(int left, int right) {
         leftTreeWidth = left - getPreferredSize().width;
         rightTreeWidth = right ;
         super.setTreeWidth(leftTreeWidth + rightTreeWidth );
@@ -210,8 +208,8 @@ public class RootNodeView extends NodeView {
 			super.setTreeHeight(right);
 		}		
 	}
-	public void setRootTreeShifts(int left, int right) {
-		super.setTreeShift(Math.min(left,right));
+	public void setRootUpperChildShift(int left, int right) {
+		super.setUpperChildShift(Math.max(left,right));
 	}
 
 	/* (non-Javadoc)
