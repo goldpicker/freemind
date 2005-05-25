@@ -35,31 +35,40 @@ class visorFreeMind.KeyControler{
 	}
 
 	public function onKeyUp(){
-			if(Key.getCode()==Key.SHIFT && node_selectable!=null){
+		var tecla=Key.getCode();
+		var ctrl=Key.isDown(Key.CONTROL);
+			if(ctrl  and tecla==67){ //c
+				if(Node.currentOver!=null){
+					System.setClipboard(Node.currentOver.text);
+					Logger.trace(Node.currentOver.text);
+				}
+			}
+			
+			if(tecla==Key.SHIFT && node_selectable!=null){
 				node_selectable.ref_mc.node_txt.node_txt.selectable=false;
 				node_selectable.activateEvents();
 				node_selectable=null;
 				browser.floor.makeDraggable();
 			}
+		Logger.trace("key:"+tecla+"ctrl:"+ctrl);
 	}
 
 	public function onKeyDown(){
-			if(Key.isDown(Key.CONTROL) and Key.getCode() == 17 ){ //c
-				if(Node.currentOver!=null)
-					System.setClipboard(Node.currentOver.text);
-			}if(Key.isDown(Key.CONTROL) and Key.getCode() == 187){ //+
+		var tecla=Key.getCode();
+		var ctrl=Key.isDown(Key.CONTROL);
+			if(ctrl and tecla == 187){ //+
 				this.browser.mc_floor._xscale+=20;
 				this.browser.mc_floor._yscale+=20;
-			}else if(Key.isDown(Key.CONTROL) and Key.getCode() == 189){ //-
+			}else if(ctrl and tecla == 189){ //-
 				this.browser.mc_floor._xscale-=20;
 				this.browser.mc_floor._yscale-=20;
 			}
 			/// HISTORY
-			else if(Key.isDown(Key.CONTROL) && Key.isDown(Key.LEFT) && browser.posXmls>0){
+			else if(ctrl && Key.isDown(Key.LEFT) && browser.posXmls>0){
 				browser.posXmls--;
 				browser.fileName=browser.visitedMM[browser.posXmls];
 				browser.genMindMap(3);
-			}else if(Key.isDown(Key.CONTROL) && Key.isDown(Key.RIGHT)){
+			}else if(ctrl && Key.isDown(Key.RIGHT)){
 				if(browser.posXmls<(browser.visitedMM.length-1)){
 				browser.posXmls++;
 				browser.fileName=browser.visitedMM[browser.posXmls];
@@ -77,7 +86,6 @@ class visorFreeMind.KeyControler{
 				node_selectable=Node.currentOver;
 				node_selectable.deactivateEvents();
 				browser.floor.notDraggable();
-				Logger.trace("txt:"+Node.currentOver.text);
 				node_selectable.ref_mc.node_txt.node_txt.selectable=true;
 			}
 		}

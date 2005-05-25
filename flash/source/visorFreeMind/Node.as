@@ -214,7 +214,6 @@ class visorFreeMind.Node {
 				this.inst.browser.showTooltip(this.inst.node_xml.attributes.LINK);
 			}
 			if(this.inst.noteIcon!=null) {
-				//Logger.trace("registrando");
 				this.onMouseMove=function(){
 					if(this.inst.noteIcon.hitTest(_root._xmouse,_root._ymouse,false))
 						this.inst.browser.showTooltip(this.inst.note);
@@ -233,6 +232,7 @@ class visorFreeMind.Node {
 		eventControler.onRollOut=function(){
 			this.inst.browser.hideTooltip();
 			Node.currentOver.colorNoSelect();
+			Node.currentOver=null;
 			if(this.inst.noteIcon!=null) {
 				this.onMouseMove=null;
 			}
