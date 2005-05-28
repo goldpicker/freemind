@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: BubbleNodeView.java,v 1.14.14.4 2005-04-27 21:45:30 christianfoltin Exp $*/
+/*$Id: BubbleNodeView.java,v 1.14.14.4.4.1 2005-05-28 20:54:50 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -174,6 +174,7 @@ public class BubbleNodeView extends MoveableNodeView {
 	public Dimension getPreferredSize() {
 		Dimension prefSize = super.getPreferredSize();
 		prefSize.width  += 5;
+		prefSize.height += 4;
 	    return prefSize;
 	}
 

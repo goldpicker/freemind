@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: RootNodeView.java,v 1.14.14.3.4.1 2005-05-25 22:33:55 dpolivaev Exp $*/
+/*$Id: RootNodeView.java,v 1.14.14.3.4.2 2005-05-28 20:54:50 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -221,7 +221,7 @@ public class RootNodeView extends NodeView {
 
 	public Dimension getPreferredSize() {
 		Dimension prefSize = super.getPreferredSize();
-		prefSize.width *= 1.1;
+		prefSize.width += Math.max(10, prefSize.width / 10);
 		prefSize.height *= 2;
 	    return prefSize;
 	}
