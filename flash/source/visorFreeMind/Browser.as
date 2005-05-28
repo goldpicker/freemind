@@ -268,6 +268,11 @@ class visorFreeMind.Browser {
 	function createFloor(){
 		floor=new Floor(mc_container);
 		mc_floor=floor.getCanvas();
+		/*
+		mc_floor.onRollOver=function(){
+				Logger.trace("entrando");
+				//getURL("javascript:giveFocus()");
+		}*/
 
 	}
 

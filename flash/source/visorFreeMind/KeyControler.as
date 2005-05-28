@@ -35,7 +35,7 @@ class visorFreeMind.KeyControler{
 	}
 
 	public function onKeyUp(){
-		var tecla=Key.getCode();
+		var tecla=Key.getCode();		
 		var ctrl=Key.isDown(Key.CONTROL);
 			if(ctrl  and tecla==67){ //c
 				if(Node.currentOver!=null){

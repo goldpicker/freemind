@@ -31,6 +31,7 @@ class visorFreeMind.Node {
 	public static var colorNoSel:Number=0xFFDD44; // unselect color
 
 	public static var currentOver:Node=null;
+	public static var lastOverTxt=null;
 	public static var openUrl="_blank";
 
 	public var childNodes:Array;
@@ -106,9 +107,10 @@ class visorFreeMind.Node {
 		//creation of asociated movieClip
 		id=node_xml.attributes.ID?node_xml.attributes.ID:"node_"+num;
 		ref_mc=mc.createEmptyMovieClip(id,num);
+		//ref_mc.trackAsMenu=true;
 		box_txt=ref_mc.createEmptyMovieClip("box_txt",11);
 		ref_mc.node_txt=ref_mc.createEmptyMovieClip("node_txt",12);
-
+		//ref_mc.node_txt.trackAsMenu=true;
 		ref_mc._x=x;
 		ref_mc._y=y;
 		ref_mc._visible=false;
@@ -210,15 +212,18 @@ class visorFreeMind.Node {
 			if (Node.currentOver instanceof Node )
 				Node.currentOver.colorNoSelect();
 			Node.currentOver=this.inst;
+			
 			this.inst.colorSelect();
 			if(this.inst.node_xml.attributes.LINK != undefined){
 				this.inst.browser.showTooltip(this.inst.node_xml.attributes.LINK);
 			}
 			if(this.inst.noteIcon!=null) {
 				this.onMouseMove=function(){
-					if(this.inst.noteIcon.hitTest(_root._xmouse,_root._ymouse,false))
+					if(this.inst.noteIcon.hitTest(_root._xmouse,_root._ymouse,false)){
 						this.inst.browser.showTooltip(this.inst.note);
+					}
 					else{
+						Node.currentOver=this.inst;
 						if(this.inst.node_xml.attributes.LINK!=undefined){
 							this.inst.browser.showTooltip(this.inst.node_xml.attributes.LINK);
 						}else{
@@ -241,6 +246,24 @@ class visorFreeMind.Node {
 		
 	}
 
+	static function saveTxt(){
+		if (Node.currentOver instanceof Node ){
+			var node=Node.currentOver;
+			if(node.noteIcon!=null){
+				if(node.noteIcon!=null and 
+				node.noteIcon.hitTest(_root._xmouse,_root._ymouse,false)){
+					Node.lastOverTxt=node.note;
+				}else{
+					Node.lastOverTxt=node.text;
+				}
+			}else{
+				Node.lastOverTxt=node.text;
+			}
+		}else{
+			Node.lastOverTxt="";
+		}
+	}
+	
 	function hasSubnodes(){
 		if(node_xml.childNodes.length==0) return false;
 		for(var i=0;i<node_xml.childNodes.length;i++){

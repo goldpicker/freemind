@@ -26,6 +26,7 @@ import visorFreeMind.*;
 * This class is configured to be the called with MSTAC (Motion-Twin ActionScript 2 Compiler)
 */
 class visorFreeMind.Main {
+		
 			 // First called function from MTASC
 		static public var startApp = (
 			_root.onEnterFrame = function()
@@ -34,6 +35,27 @@ class visorFreeMind.Main {
 					_root.onEnterFrame = null
 				});
 
+		static function redefineRightMenu(){
+			var mycm=new ContextMenu();
+			mycm.hideBuiltInItems();
+			mycm.onSelect = visorFreeMind.Main.copyInfoNodeOver;
+			var copy=new ContextMenuItem("copy to clipboard",visorFreeMind.Main.getNodeText);
+			mycm.customItems.push(copy);
+			_root.menu = mycm;
+		}
+		
+		static function copyInfoNodeOver(){
+			Node.saveTxt();
+			if(Node.lastOverTxt=="")
+				_root.menu.customItems[0].enabled = false;
+			else
+				_root.menu.customItems[0].enabled = true;
+		}
+		
+		static 	function getNodeText(){
+				System.setClipboard(Node.lastOverTxt);
+		}
+		
 		static public function run ():Boolean
 	   {
 		   Logger.trace("Starting flash FreeMind Browser",2);
@@ -50,16 +72,16 @@ class visorFreeMind.Main {
 		    // of the operating system running the player
 			System.useCodepage = true;
 
-
+		    redefineRightMenu();
 		   // If not defined init mindmap file, use default (index.mm)
 		   if(_root.openUrl!=null)
 		   		Node.openUrl=_root.openUrl;
 		   if(_root.initLoadFile!=null){
-				Logger.trace("initial mindmap:"+_root.initLoadFile,2);
+				Logger.trace("initial mindmap: "+_root.initLoadFile,2);
 				var browser=new Browser(_root.initLoadFile,_root);
 		   }
 			else{
-				Logger.trace("initial mindmap:"+_root.initLoadFile,2);
+				Logger.trace("initial mindmap: index.mm",2);
 				var browser=new Browser("index.mm",_root);
 			}
 			return true;
