@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: NodeView.java,v 1.27.14.11.2.1 2005-05-25 22:33:55 dpolivaev Exp $*/
+/*$Id: NodeView.java,v 1.27.14.11.2.2 2005-05-29 21:41:46 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -281,6 +281,7 @@ public abstract class NodeView extends JLabel {
         if (isEmpty){
             setText("");
         }
+		prefSize.height += 4;
         return prefSize;
     }
     
