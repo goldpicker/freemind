@@ -214,21 +214,18 @@ class visorFreeMind.Node {
 			Node.currentOver=this.inst;
 			
 			this.inst.colorSelect();
-			if(this.inst.node_xml.attributes.LINK != undefined){
-				this.inst.browser.showTooltip(this.inst.node_xml.attributes.LINK);
-			}
-			if(this.inst.noteIcon!=null) {
+			if((this.inst.noteIcon!=null) || 
+				(this.inst.node_xml.attributes.LINK != undefined) ) {
 				this.onMouseMove=function(){
 					if(this.inst.noteIcon.hitTest(_root._xmouse,_root._ymouse,false)){
 						this.inst.browser.showTooltip(this.inst.note);
 					}
+					else if(this.inst.link.hitTest(_root._xmouse,_root._ymouse,false)){
+						this.inst.browser.showTooltip(this.inst.node_xml.attributes.LINK);
+					}
 					else{
 						Node.currentOver=this.inst;
-						if(this.inst.node_xml.attributes.LINK!=undefined){
-							this.inst.browser.showTooltip(this.inst.node_xml.attributes.LINK);
-						}else{
-							this.inst.browser.hideTooltip();
-						}
+						this.inst.browser.hideTooltip();
 					}
 				}
 			}
@@ -582,16 +579,16 @@ class visorFreeMind.Node {
 				link=Icons.get_mm_link(ref_mc.node_txt);
 			else
 				link=Icons.genLink(ref_mc.node_txt);
-		}
+		}		
 		if(note!=null){
 			noteIcon=Icons.get_Note(ref_mc.node_txt);
 			//noteIcon.trackAsMenu=true;
 			//activateNoteEvents();
 		}
+
 	}
 
-
-	function getIcons(node_xml){
+	private function getIcons(node_xml){
 		var iconsList=[];
 		for(var i=0;i<node_xml.childNodes.length;i++){
 			var n=node_xml.childNodes[i];
