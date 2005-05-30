@@ -236,7 +236,8 @@ class visorFreeMind.Node {
 			this.inst.browser.hideTooltip();
 			Node.currentOver.colorNoSelect();
 			Node.currentOver=null;
-			if(this.inst.noteIcon!=null) {
+			if(this.inst.noteIcon!=null  || 
+				(this.inst.node_xml.attributes.LINK != undefined)) {
 				this.onMouseMove=null;
 			}
 		}
