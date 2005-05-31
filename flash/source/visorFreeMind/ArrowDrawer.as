@@ -20,7 +20,7 @@
  * Created on 25.04.2005
  */
 
-﻿import visorFreeMind.*;
+
 /**
 * ArrowDrawer, draw the arrow enden lines in a mindmap, and it is composed of all, static
 * functions.

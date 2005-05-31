@@ -33,7 +33,13 @@ class visorFreeMind.ButtonsCreator{
 	private var bReset;
 	private var bShadow;
 	private var bInfo;
+	private var bColor;
+	private var mc_Color;
+	private var mc_Color_rollout;
 	private var browser:Browser;
+	public  static var colors=[0xFFFFFF,0xEEEEEE,0xDDDDDD,
+							   0xEEFFFF,0xFFEEFF,0xFFFFEE,
+								0xFFEEEE,0xEEFFEE,0xEEEEFF];
 
 	public function ButtonsCreator(browser:Browser){
 		this.browser=browser;
@@ -92,6 +98,9 @@ class visorFreeMind.ButtonsCreator{
 		bShadow._y=10;
 		bInfo._x=newCenter+60;
 		bInfo._y=10;
+		bColor._x=newCenter+80;
+		bColor._y=10;
+		createColorSelector();
 	}
 
 	function createNavigationButtons(mc_container){
@@ -135,6 +144,62 @@ class visorFreeMind.ButtonsCreator{
 		}
 	}
 
+	function createColorSelector(){
+		mc_Color=createCube(browser.mc_container,0,0,0xAAAAAA,8000,38);
+		mc_Color_rollout=createCube(browser.mc_container,0,0,0xEEEEEE,7793,60);
+		for(var i=0;i<9;i++){
+			createCube(mc_Color,1+(i%3)*12,1+Math.floor(i/3)*12,colors[i],i,12);
+		}
+		mc_Color._x=bColor._x+0;
+		mc_Color._y=bColor._y+0;
+		mc_Color._visible=false;
+		mc_Color_rollout._x=bColor._x-5;
+		mc_Color_rollout._y=bColor._y-5;
+		mc_Color_rollout._visible=false;
+		mc_Color_rollout._alpha=0;
+
+		mc_Color_rollout.mc_Color=mc_Color;
+		bColor.mc_Color=mc_Color;
+		bColor.mc_Color_rollout=mc_Color_rollout;
+		mc_Color.browser=browser;
+		bColor.onRollOver=function(){
+			this.mc_Color._visible=true;
+			this.mc_Color_rollout._visible=true;
+		}
+		mc_Color_rollout.onRollOver=function(){
+			this.mc_Color._visible=false;
+			this._visible=false;
+		}
+
+		mc_Color.onPress=function(){
+			//Calculamos el punto de hit
+			var x=_root._xmouse-this._x-1;
+			var y=_root._ymouse-this._y-1;
+			var i=Math.floor(x/12)+Math.floor(y/12)*3;
+			//Logger.trace("x:"+x+" y:"+y +" i: "+i);
+			if(i>=0 && i<9)
+				this.browser.floor.changeBgColor(ButtonsCreator.colors[i]);
+			this._visible=false;
+		}
+
+	}
+
+
+	function createCube(mc_container,posx,posy,color,deep,side){
+		var cubo=mc_container.createEmptyMovieClip("color_"+deep,deep);
+		cubo.lineStyle(1,color,100);
+		cubo.beginFill(color,100);
+		cubo.moveTo(0,0);
+		cubo.lineTo(side,0);
+		cubo.lineTo(side,side);
+		cubo.lineTo(0,side);
+		cubo.lineTo(0,0);
+		cubo.endFill();
+		cubo._x=posx;
+		cubo._y=posy;
+		return cubo;
+	}
+
 	function createSizeButtons(mc_container){
 		bGrow=mc_container.createEmptyMovieClip("navBack",7788);
 		bGrow.browser=browser;
@@ -151,6 +216,9 @@ class visorFreeMind.ButtonsCreator{
 		bInfo=mc_container.createEmptyMovieClip("bInfo",7792);
 		bInfo.browser=browser;
 		bInfo.info_text="hola desde Flash FreeMind Browser";
+		bColor=mc_container.createEmptyMovieClip("bColor",7794);
+		bColor.browser=browser;
+		bColor.info_text="change background color";
 
 		bGrow.lineStyle(16,0x9999ff,90);
 		bGrow.moveTo(0,0);
@@ -189,6 +257,11 @@ class visorFreeMind.ButtonsCreator{
 		bInfo.lineTo(0,-3.8);
 		bInfo.moveTo(0,0);
 		bInfo.lineTo(0,5);
+
+		bColor.lineStyle(16,0x9999ff,90);
+		bColor.moveTo(0,0);
+		bColor.lineTo(1,0);
+
 
 		bGrow.onPress=function(){
 			this.browser.mc_floor._xscale+=20;

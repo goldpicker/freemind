@@ -57,6 +57,7 @@ class visorFreeMind.Browser {
 	private var bReset;
 	private var bShadow;
 	private var bInfo;
+	private var bColor;
 	public  var withShadow=false;
 
 	public var text_selectable=null;
@@ -97,6 +98,7 @@ class visorFreeMind.Browser {
 	public function onResize(){
 		Logger.trace("redimension",0);
 		buttonsCreator.relocateAllButtons();
+		floor.fillFondo();
 		relocateMindMap();
 	}
 

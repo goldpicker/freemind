@@ -26,11 +26,43 @@ class  visorFreeMind.Floor {
 
 	private var mc_cont:MovieClip;
 	private  var mc_floor:MovieClip=null;
+	private var mc_fondo:MovieClip=null;
 
 	function Floor(mc:MovieClip){
 		mc_cont=mc; //father
 		mc_floor=mc_cont.createEmptyMovieClip("floor",4);
+		mc_fondo=mc_cont.createEmptyMovieClip("fondo",3);
+		fillFondo();
 		makeDraggable();
+	}
+
+	function fillFondo(){
+		var mc_c1=mc_fondo.createEmptyMovieClip("c1",1);
+		var color=getBackgroundColor();
+		mc_c1.lineStyle(1,color,100);
+		mc_c1.beginFill(color,100);
+		mc_c1.moveTo(0,0);
+		mc_c1.lineTo(Stage.width,0);
+		mc_c1.lineTo(Stage.width,Stage.height);
+		mc_c1.lineTo(0,Stage.height);
+		mc_c1.lineTo(0,0);
+		mc_c1.endFill();
+	}
+
+	function changeBgColor(color){
+			var freeMindVars = SharedObject.getLocal("freeMindBrowser");
+			freeMindVars.data.bgColor=color;
+			freeMindVars.flush();
+			this.fillFondo();
+	}
+
+
+	function getBackgroundColor(){
+		var freeMindVars = SharedObject.getLocal("freeMindBrowser");
+		if(!freeMindVars.data.bgColor){
+			freeMindVars.data.bgColor=0xFFFFFF;
+		}
+		return freeMindVars.data.bgColor;
 	}
 
 	function makeDraggable(){
