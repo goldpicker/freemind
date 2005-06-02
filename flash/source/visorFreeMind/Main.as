@@ -53,7 +53,9 @@ class visorFreeMind.Main {
 		}
 		
 		static 	function getNodeText(){
+				System.useCodepage = true;
 				System.setClipboard(Node.lastOverTxt);
+				System.useCodepage = false;
 		}
 		
 		static public function run ():Boolean
@@ -70,7 +72,7 @@ class visorFreeMind.Main {
 
 		    // tell the Macromedia Flash Player 6 to use the traditional code page
 		    // of the operating system running the player
-			System.useCodepage = true;
+			System.useCodepage = false;
 
 		    redefineRightMenu();
 		   // If not defined init mindmap file, use default (index.mm)

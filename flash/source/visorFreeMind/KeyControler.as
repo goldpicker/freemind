@@ -39,7 +39,9 @@ class visorFreeMind.KeyControler{
 		var ctrl=Key.isDown(Key.CONTROL);
 			if(ctrl  and tecla==67){ //c
 				if(Node.currentOver!=null){
+					System.useCodepage = true;
 					System.setClipboard(Node.currentOver.text);
+					System.useCodepage = false;
 					Logger.trace(Node.currentOver.text);
 				}
 			}

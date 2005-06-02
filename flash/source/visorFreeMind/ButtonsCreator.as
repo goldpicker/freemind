@@ -145,16 +145,17 @@ class visorFreeMind.ButtonsCreator{
 	}
 
 	function createColorSelector(){
-		mc_Color=createCube(browser.mc_container,0,0,0xAAAAAA,8000,38);
-		mc_Color_rollout=createCube(browser.mc_container,0,0,0xEEEEEE,7793,60);
+		mc_Color=browser.mc_container.createEmptyMovieClip("colSel",8000);
+		var mc_ColorCanvas=createCube(mc_Color,0,0,0xFFFFFF,12,38);
+		mc_Color_rollout=createCube(browser.mc_container,0,0,0xEEEEEE,7793,80);
 		for(var i=0;i<9;i++){
-			createCube(mc_Color,1+(i%3)*12,1+Math.floor(i/3)*12,colors[i],i,12);
+			createCube(mc_ColorCanvas,1+(i%3)*12,1+Math.floor(i/3)*12,colors[i],i,12);
 		}
 		mc_Color._x=bColor._x+0;
 		mc_Color._y=bColor._y+0;
 		mc_Color._visible=false;
-		mc_Color_rollout._x=bColor._x-5;
-		mc_Color_rollout._y=bColor._y-5;
+		mc_Color_rollout._x=bColor._x-15;
+		mc_Color_rollout._y=bColor._y-15;
 		mc_Color_rollout._visible=false;
 		mc_Color_rollout._alpha=0;
 
@@ -182,6 +183,8 @@ class visorFreeMind.ButtonsCreator{
 			this._visible=false;
 		}
 
+		
+		mc_ColorCanvas.dropShadow(8,4,4,0x777799,mc_Color);
 	}
 
 
