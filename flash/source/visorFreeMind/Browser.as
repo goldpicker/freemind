@@ -144,6 +144,8 @@ class visorFreeMind.Browser {
 	function relocateMindMap(){
 		relocateNodes(listNodesL[0],0,0,false);
 		relocateNodes(listNodesR[0],0,0,true);
+		relocateShifts(listNodesL[0],0,false);
+		relocateShifts(listNodesR[0],0,true);
 		adjustLeftNodes();
 		relocateFloor();
 		floor.clear();
@@ -351,17 +353,39 @@ class visorFreeMind.Browser {
 			relocateMindMap();
 	}
 
+	function relocateShifts(node,incLevel,isRight){
+		var m_decy=0;
+		var m_incy=0;
+		if(node.shift_y>0){
+			m_incy=node.shift_y;
+			incLevel+=m_incy;
+		}else{
+			m_decy=-node.shift_y;
+		}
+
+		node.ref_mc._y+=incLevel;
+		var negvals=0;
+		if(node.folded==false){
+			for(var i=0;i<node.childNodes.length;i++){
+				var mv=relocateShifts(node.childNodes[i],incLevel,isRight);
+				incLevel=mv[0];
+				negvals+=mv[1];
+				
+			}
+		}
+		node.ref_mc._y+=negvals;
+		return [incLevel+m_decy,m_decy+negvals];
+	}
+	
 	function relocateNodes(node,x,y,isRight){
-		var usedy:Number=y;
 		var incy:Number=y;
 		var numE:Number=0;
-		var y1:Number=0;
-		var yn:Number=0;
+		var y1:Node=node;
+		var yn:Node=node;
 		var resize:Number=0;
 
 		if(node.withCloud) {
 			incy+=18;
-			usedy+=18;
 		}
 
 		if(node.withImage){
@@ -369,36 +393,39 @@ class visorFreeMind.Browser {
 			node.posElements();
 			node.drawAroundNode(node.cbg,100,false);
 		}
-		node.ref_mc._x=x-(isRight?0:node.ref_mc._width);
-		var incx:Number=getIncX(isRight,node,x);
+		
+		//hgap added
+		node.ref_mc._x=x-(isRight?-node.hgap:node.ref_mc._width+node.hgap);
+		var incx:Number=getIncX(isRight,node,node.ref_mc._x);
 
 		if(node.folded==false){
 			for(var i=0;i<node.childNodes.length;i++){
 				var mv=relocateNodes(node.childNodes[i],incx,incy,isRight);
 				numE++;
 				incy=mv[0];
-				if(numE==1) y1=mv[1];//take first
-				yn=mv[1]; // take last
+				if(i==0) {
+					y1=mv[1];//take first
+				}
+				yn=mv[2]; // take last
 			}
 		} else {
 			hideSubNodes(node);
 		}
 
 		if(numE>=1)
-			usedy=y1+(yn-y1)/2;
+			node.ref_mc._y=y1.ref_mc._y+((yn.ref_mc._y-y1.ref_mc._y)/2);
 		else
-			incy+=node.ref_mc._height;
-
-		node.ref_mc._y=usedy;
-		incy=Math.max(incy,y+node.ref_mc._height); //solves diferent fonts sizes
-
+			node.ref_mc._y=incy;
+			
+		//for solving diferent fonts sizes
+		incy=Math.max(incy,node.ref_mc._y+node.ref_mc._height); 
 
 		node.ref_mc._visible=true;
 
 		if(node.withCloud==true )
-			return [incy+18,usedy];
+			return [incy+18,y1,yn];
 		else
-			return [incy+2,usedy];
+			return [incy+2,y1,yn];
 	}
 
 	function hideSubNodes(node){

@@ -62,6 +62,9 @@ class visorFreeMind.Node {
 	public var italic:Boolean;
 	public var bold:Boolean;
 	public var font:String;
+	public var hgap:Number=0;
+	public var shift_y:Number=0;
+	
 	private var link:MovieClip;
 	private var noteIcon:MovieClip;
 	private var withImage:Boolean=false;
@@ -126,7 +129,16 @@ class visorFreeMind.Node {
 			var cn:String=node_xml.attributes.BACKGROUND_COLOR;
 			cbg=new Number("0x"+cn.substring(1));
 		}
-
+		if(node_xml.attributes.HGAP!=undefined){
+			hgap=new Number(node_xml.attributes.HGAP);
+			if(hgap>0) hgap-=20;
+			//Logger.trace("hgap:"+hgap);
+		}
+		if(node_xml.attributes.SHIFT_Y!=undefined){
+			shift_y=new Number(node_xml.attributes.SHIFT_Y);
+		}
+		//temporal
+		//text=text+":"+shift_y;
 		eventControler=ref_mc;
 		
 		if(style!=1 && cbg!=0)
