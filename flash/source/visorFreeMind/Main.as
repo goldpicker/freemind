@@ -58,6 +58,7 @@ class visorFreeMind.Main {
 				System.useCodepage = false;
 		}
 		
+		
 		static public function run ():Boolean
 	   {
 		   Logger.trace("Starting flash FreeMind Browser",2);
