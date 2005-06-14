@@ -58,7 +58,7 @@ class visorFreeMind.Browser {
 	private var bShadow;
 	private var bInfo;
 	private var bColor;
-	public  var withShadow=false;
+	public  var withShadow=getStaticAtr("withShadow",false);
 
 	public var text_selectable=null;
 
@@ -72,7 +72,7 @@ class visorFreeMind.Browser {
 	var buttonsCreator;
 
 	function Browser(file:String,_mc:MovieClip){
-		Logger.trace("new Browser",0);
+		Logger.trace("new Browser, shadow="+withShadow,0);
 		browser=this;
 		mcl.addListener(this); // For waiting for the load of all images
 		PrototypesCreator.init();
@@ -637,6 +637,22 @@ class visorFreeMind.Browser {
 		} else {
 			Logger.trace("file not loaded!");
 		}
+	}
+
+
+	static	function setStaticAtr(nameAtr,value){
+		var freeMindVars = SharedObject.getLocal("freeMindBrowser");
+		freeMindVars.data[nameAtr]=value;
+		freeMindVars.flush();
+	}
+
+
+	static function getStaticAtr(nameAtr,defaultVal){
+		var freeMindVars = SharedObject.getLocal("freeMindBrowser");
+		if(freeMindVars.data[nameAtr]==null){
+			return defaultVal;
+		}
+		return freeMindVars.data[nameAtr];
 	}
 
 }

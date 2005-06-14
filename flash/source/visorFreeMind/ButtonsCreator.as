@@ -251,7 +251,13 @@ class visorFreeMind.ButtonsCreator{
 		bShadow.lineStyle(14,0xFFFFFF,90);
 		bShadow.moveTo(0,0);
 		bShadow.lineTo(1,0);
-
+		if(Browser.getStaticAtr("withShadow",false)){
+			bShadow.lineStyle(10,0xFF0000,90);
+			bShadow.moveTo(0,0);
+			bShadow.lineTo(1,0);
+			bShadow.tooltip="SHADOW OFF";
+		}
+		
 		bInfo.lineStyle(16,0x9999ff,90);
 		bInfo.moveTo(0,0);
 		bInfo.lineTo(1,0);
@@ -294,6 +300,8 @@ class visorFreeMind.ButtonsCreator{
 			this.moveTo(0,0);
 			this.lineTo(1,0);
 			this.browser.withShadow= this.browser.withShadow?false:true;
+			Browser.setStaticAtr("withShadow",this.browser.withShadow);
+			Logger.trace("withShadow:"+Browser.getStaticAtr("withShadow","hi"));
 			if(this.browser.withShadow==true){
 				this.lineStyle(10,0xFF0000,90);
 				this.moveTo(0,0);
