@@ -137,6 +137,10 @@ class visorFreeMind.Node {
 		if(node_xml.attributes.SHIFT_Y!=undefined){
 			shift_y=new Number(node_xml.attributes.SHIFT_Y);
 		}
+		if(node_xml.attributes.VSHIFT!=undefined){
+			shift_y=new Number(node_xml.attributes.VSHIFT);
+		}
+		
 		//temporal
 		//text=text+":"+shift_y;
 		eventControler=ref_mc;
