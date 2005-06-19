@@ -91,7 +91,7 @@ class visorFreeMind.CloudDrawer {
 
 		downPoints.reverse();
 		pOrig=downPoints[0];
-		pDest=downPoints[upPoints.length-1];
+		pDest=downPoints[downPoints.length-1];
 		listSelected=[];
 		calcGoodUpDownPoints(pOrig,pDest,1,downPoints.length,downPoints,listSelected,false);
 		for (var i=0;i<listSelected.length;i++){
