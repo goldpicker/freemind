@@ -65,18 +65,20 @@ class visorFreeMind.CloudDrawer {
 		container.beginFill(cloudColor,100);
 
 		var pOrig=upPoints[0];
+		var pDest=upPoints[upPoints.length-1];
 		container.moveTo(pOrig[0],pOrig[1]);
-
-		// UP
-		for (var i=1;i<upPoints.length;i++){
-			drawCurveUpDown(pOrig,upPoints[i],container,1,-1);
-			pOrig=upPoints[i];
+		var listSelected=[];
+		calcGoodUpDownPoints(pOrig,pDest,1,upPoints.length,upPoints,listSelected,true);
+		Logger.trace(listSelected.length,1);
+		for (var i=0;i<listSelected.length;i++){
+			drawCurveUpDown(pOrig,listSelected[i],container,1,-1);
+			pOrig=listSelected[i];
 		}
 
 		//SIDE
 		pOrig=upPoints[upPoints.length-1];
-		var pDest=downPoints[downPoints.length-1];
-		var listSelected=[];
+		pDest=downPoints[downPoints.length-1];
+		listSelected=[];
 		calcGoodSidePoints(pOrig,pDest,1,sidePoints.length,sidePoints,listSelected,isRight);
 
 		for(var i=0;i<listSelected.length;i++){
@@ -87,13 +89,24 @@ class visorFreeMind.CloudDrawer {
 		//DOWN
 		drawCurveSide(pOrig,downPoints[downPoints.length-1],container,isRight?1:-1,isRight?-1:1);
 
-		pOrig=downPoints[downPoints.length-1];
+		downPoints.reverse();
+		pOrig=downPoints[0];
+		pDest=downPoints[upPoints.length-1];
+		listSelected=[];
+		calcGoodUpDownPoints(pOrig,pDest,1,downPoints.length,downPoints,listSelected,false);
+		for (var i=0;i<listSelected.length;i++){
+			drawCurveUpDown(pOrig,listSelected[i],container,-1,1);
+			pOrig=listSelected[i];
+		}
+
+		/*
 		for (var  i=downPoints.length-2;i>=0;i--){
 			drawCurveUpDown(pOrig,downPoints[i],container,-1,1);
 			pOrig=downPoints[i];
 		}
-
-		drawCurveSide(pOrig,upPoints[0],container,isRight?-1:1,1)
+*/
+		drawCurveUpDown(pOrig,pDest,container,-1,1);
+		drawCurveSide(pDest,upPoints[0],container,isRight?-1:1,1)
 		container.endFill();
 	}
 
@@ -109,6 +122,38 @@ class visorFreeMind.CloudDrawer {
 		var middlePoint=[(pDest[0]+pOrig[0])/2,(pDest[1]+pOrig[1])/2];
 		var mod=Math.abs(30/Math.sqrt(1+slope*slope)); //30 pixels =  absolute displacement
 		container.curveTo(middlePoint[0]-sign_x*mod*slope,middlePoint[1]+sign_y*mod,pDest[0],pDest[1]);
+	}
+
+	function calcGoodUpDownPoints(maxsup,maxinf,ini,end,sidePoints,listSelected,isRight){
+		var slope=(maxsup[1]-maxinf[1]-0.0005)/(maxinf[0]-maxsup[0]);
+		Logger.trace("slope("+maxsup[0]+","+maxsup[1]+")"+"("+
+			maxinf[0]+","+maxinf[1]+")"+":"+slope);
+		var k1=slope*maxsup[0]+maxsup[1];
+		Logger.trace("	k1:"+k1);
+		var newmax=-1;
+		for(var i=ini;i<end;i++){
+			var p=sidePoints[i];
+			var k2=slope*p[0]+p[1];
+			Logger.trace("	k2:"+k2+" ("+p[0]+","+p[1]+")");
+			if(( isRight && k1>k2) || (!isRight && k1<k2)){
+				k1=k2;
+				Logger.trace("	new k1:"+k2);
+				newmax=i;
+			}
+		}
+		if(newmax>=0){
+			calcGoodUpDownPoints(maxsup,sidePoints[newmax],ini,newmax,sidePoints,listSelected,isRight);
+			listSelected.push(sidePoints[newmax]);
+			Logger.trace("added:"+"("+sidePoints[newmax][0]+","+sidePoints[newmax][1]+")");
+			calcGoodUpDownPoints(sidePoints[newmax],maxinf,newmax+1,end,sidePoints,listSelected,isRight);
+		} else  if(((maxinf[0]-maxsup[0])*(maxinf[0]-maxsup[0]) + (maxinf[1]-maxsup[1])*(maxinf[1]-maxsup[1]))>30000){
+
+			var middlePoint=[maxsup[0]+(maxinf[0]-maxsup[0])*0.5,maxsup[1]+(maxinf[1]-maxsup[1])*0.5];
+			calcGoodUpDownPoints(maxsup,middlePoint,ini,ini,sidePoints,listSelected,isRight);
+			listSelected.push(middlePoint);
+			calcGoodUpDownPoints(middlePoint,maxinf,ini,ini,sidePoints,listSelected,isRight);
+
+		}
 	}
 
 	function calcGoodSidePoints(maxsup,maxinf,ini,end,sidePoints,listSelected,isRight){
@@ -150,7 +195,18 @@ class visorFreeMind.CloudDrawer {
 		}
 	}
 
+	/**
+	 * 	 */
 	function getUpPoints(node,upPoints,numSubClouds,isRight){
+		upPoints.push([node.ref_mc._x+(isRight?0:node.ref_mc._width),node.ref_mc._y-8*numSubClouds]);
+		upPoints.push([node.ref_mc._x+(isRight?node.ref_mc._width:0),node.ref_mc._y-8*numSubClouds]);
+		if(node.childNodes.length>0 && node.childNodes[0].ref_mc._visible){
+			var incNumSubClouds=node.childNodes[0].withCloud==true?numSubClouds+1:numSubClouds;
+			getUpPoints(node.childNodes[0],upPoints,incNumSubClouds,isRight);
+		}
+	}
+
+	function getUpPoints2(node,upPoints,numSubClouds,isRight){
 		upPoints.push([node.ref_mc._x+(isRight?0:node.ref_mc._width),node.ref_mc._y-8*numSubClouds]);
 		if(node.childNodes.length>0 && node.childNodes[0].ref_mc._visible){
 			var incNumSubClouds=node.childNodes[0].withCloud==true?numSubClouds+1:numSubClouds;
@@ -161,6 +217,16 @@ class visorFreeMind.CloudDrawer {
 	}
 
 	function getDownPoints(node,downPoints,numSubClouds,isRight){
+		downPoints.push([node.ref_mc._x+(isRight?0:node.ref_mc._width),node.ref_mc._y+node.ref_mc._height+8*numSubClouds]);
+		downPoints.push([node.ref_mc._x+(isRight?node.ref_mc._width:0),node.ref_mc._y+node.ref_mc._height+8*numSubClouds]);
+		if(node.childNodes.length>0 && node.childNodes[node.childNodes.length-1].ref_mc._visible){
+			var incNumSubClouds=node.childNodes[node.childNodes.length-1].withCloud==true?numSubClouds+1:numSubClouds;
+			getDownPoints(node.childNodes[node.childNodes.length-1],downPoints,incNumSubClouds,isRight);
+		}
+	}
+
+
+	function getDownPoints2(node,downPoints,numSubClouds,isRight){
 		downPoints.push([node.ref_mc._x+(isRight?0:node.ref_mc._width),node.ref_mc._y+node.ref_mc._height+8*numSubClouds]);
 		if(node.childNodes.length>0 && node.childNodes[node.childNodes.length-1].ref_mc._visible){
 			var incNumSubClouds=node.childNodes[node.childNodes.length-1].withCloud==true?numSubClouds+1:numSubClouds;
