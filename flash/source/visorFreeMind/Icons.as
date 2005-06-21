@@ -900,6 +900,7 @@ return nice;
 		Priority.createTextField("texto",2,4,-1,16,18);
 		Priority.texto.text=numero;
 		Priority.texto.background=false;
+		Priority.texto.selectable=false;
 		var my_fmt:TextFormat = new TextFormat();
 		my_fmt.color=0xFFFFFF;
 		my_fmt.size=14;
