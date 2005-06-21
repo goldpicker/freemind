@@ -868,4 +868,46 @@ return nice;
 		cancel.endFill();
 		return cancel;
 	}
+	
+	static public function get_full_1(mc_padre,depth){
+		return get_full(mc_padre,depth,"1",0x770077);
+	}
+	static public function get_full_2(mc_padre,depth){
+		return get_full(mc_padre,depth,"2",0x928633);
+	}
+	static public function get_full_3(mc_padre,depth){
+		return get_full(mc_padre,depth,"3",0x339192);
+	}
+	static public function get_full_4(mc_padre,depth){
+		return get_full(mc_padre,depth,"4",0x007700);
+	}
+	static public function get_full_5(mc_padre,depth){
+		return get_full(mc_padre,depth,"5",0x454C7F);
+	}
+	static public function get_full_6(mc_padre,depth){
+		return get_full(mc_padre,depth,"6",0x992B2D);
+	}
+	static public function get_full_7(mc_padre,depth){
+		return get_full(mc_padre,depth,"7",0x85982B);
+	}
+		static public  function get_full(mc_padre,depth,numero,color){ //Mail
+		var Priority=mc_padre.createEmptyMovieClip("Mail",6+depth);
+		Priority.lineStyle();
+		Priority.beginFill(0xFFFFFF,100);
+		Priority.drawSquare(1,1,16)
+		Priority.endFill();
+		Priority.fillCircle(7,9,9,color);
+		Priority.createTextField("texto",2,4,-1,16,18);
+		Priority.texto.text=numero;
+		Priority.texto.background=false;
+		var my_fmt:TextFormat = new TextFormat();
+		my_fmt.color=0xFFFFFF;
+		my_fmt.size=14;
+		my_fmt.bold=true;
+		Priority.texto.setTextFormat(my_fmt);
+		
+		return Priority;
+	}
+
+	
 }

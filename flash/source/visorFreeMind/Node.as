@@ -509,8 +509,9 @@ class visorFreeMind.Node {
 
 		var iconsList=getIcons(node_xml);
 		for(var i=0;i<iconsList.length;i++){
-			if(Icons["get_"+iconsList[i]]!=null){
-				addIcon(Icons["get_"+iconsList[i]](ref_mc.node_txt,i));
+			var name=iconsList[i].replace("-","_");
+			if(Icons["get_"+name]!=null){
+				addIcon(Icons["get_"+name](ref_mc.node_txt,i));
 			}
 		}
 		

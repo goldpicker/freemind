@@ -217,5 +217,48 @@ class visorFreeMind.PrototypesCreator{
 		this.lineTo(x, y+h);
 		this.lineTo(x, y);
 		};
+		
+		MovieClip.prototype.drawSquare = function(x, y, side) {
+		this.moveTo(x, y);
+		this.lineTo(x+side, y);
+		this.lineTo(x+side, y+side);
+		this.lineTo(x, y+side);
+		this.lineTo(x, y);
+		};
+		
+		MovieClip.prototype.fillCircle= function(r:Number,x:Number,y:Number,color){
+			var styleMaker:Number = 22.5;
+			this.moveTo(x+r,y);
+			this.lineStyle();
+			this.beginFill(color)
+			var style:Number = Math.tan(styleMaker*Math.PI/180);
+			for (var angle:Number=45;angle<=360;angle+=45){
+			 var endX:Number = r * Math.cos(angle*Math.PI/180);
+			 var endY:Number = r * Math.sin(angle*Math.PI/180);
+			 var cX:Number   = endX + r* style * Math.cos((angle-90)*Math.PI/180);
+			 var cY:Number   = endY + r* style * Math.sin((angle-90)*Math.PI/180);
+			 this.curveTo(cX+x,cY+y,endX+x,endY+y);
+			}
+			this.endFill();
+		}
+		String.prototype.replace = function() {
+			var arg_search, arg_replace, position; 
+			var endText, preText, newText; 
+			arg_search = arguments[0];
+			arg_replace = arguments[1];
+			if(arg_search.length==1) return this.split(arg_search).join(arg_replace);
+			position = this.indexOf(arg_search); 
+			if(position == -1) return this; 
+			endText = this; 
+			do 
+			{ 
+			position = endText.indexOf(arg_search); 
+			preText = endText.substring(0, position) 
+			endText = endText.substring(position + arg_search.length) 
+			newText += preText + arg_replace; 
+			} while(endText.indexOf(arg_search) != -1) 
+			newText += endText; 
+			return newText; 
+		} 
 	}
 }
