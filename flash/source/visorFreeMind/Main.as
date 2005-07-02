@@ -79,6 +79,8 @@ class visorFreeMind.Main {
 		   // If not defined init mindmap file, use default (index.mm)
 		   if(_root.openUrl!=null)
 		   		Node.openUrl=_root.openUrl;
+		   if(_root.startCollapsedToLevel!=null)
+		   		Browser.startCollapsedToLevel=_root.startCollapsedToLevel;
 		   if(_root.initLoadFile!=null){
 				Logger.trace("initial mindmap: "+_root.initLoadFile,2);
 				var browser=new Browser(_root.initLoadFile,_root);

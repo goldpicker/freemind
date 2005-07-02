@@ -38,6 +38,7 @@ class visorFreeMind.Browser {
 	public var mc_floor:MovieClip; // dragable.
 	public var floor:Floor; //Class containing the mc where everything is draw
 	private var first_node:Node=null;
+	private var first_node_left:Node=null;
 	private var list_right_clouds:Array=[];
 	private var list_left_clouds:Array=[];
 	private var list_arrows:Array=[];
@@ -59,6 +60,7 @@ class visorFreeMind.Browser {
 	private var bInfo;
 	private var bColor;
 	public  var withShadow=getStaticAtr("withShadow",false);
+	public static var startCollapsedToLevel=-1;
 
 	public var text_selectable=null;
 
@@ -331,12 +333,13 @@ class visorFreeMind.Browser {
 		gestHistory(jumpType);
 		saveOldPosition();
 		//Clean old Data.
+		//Logger.trace("jumpType "+jumpType);
 		if(jumpType!=2) {// 2=fold and unfold
 			resetData();
 			// clear floor.
 			floor.clear();
 			// generate Tree
-			evalXML();
+			evalXML(jumpType);
 		}else{
 			relocateMindMap();
 		}
@@ -355,7 +358,7 @@ class visorFreeMind.Browser {
 		}
 	}
 
-	function evalXML(){
+	function evalXML(jumpType){
 		// Initial values.
 		var styleNode=1; // 0= elipse, 1=fork , 2=bubble
 		var styleLine=0; //0=bezier, 1=linear,2=sharp_bezier,3=sharp_linear
@@ -365,10 +368,13 @@ class visorFreeMind.Browser {
 
 		//asociate right left to nodes without it
 		asociatePosition(nodeXMLIni);
+		//if first time that loaded
+		if(jumpType==0 && startCollapsedToLevel >=0)
+			collapseToLevel(nodeXMLIni,startCollapsedToLevel);
 		//Right nodes
 		first_node=genNodes(true,nodeXMLIni,0,0,color_LineaIni,lineWidth,styleNode,styleLine,true,mc_floor);
 		//Left nodes
-		genNodes(false,nodeXMLIni,0,0,color_LineaIni,lineWidth,styleNode,styleLine,true,mc_floor);
+		first_node_left=genNodes(false,nodeXMLIni,0,0,color_LineaIni,lineWidth,styleNode,styleLine,true,mc_floor);
 		//IF there is no image to load we can show all.
 		if(numWaitingImages==0)
 			relocateMindMap();
@@ -562,11 +568,8 @@ class visorFreeMind.Browser {
 
 	function asociatePosition(node_xml){
 		var cont=0;
-		// n.attributes.POSITION!=(isRight?"left":"right")
 		for(var i=0;i<node_xml.childNodes.length;i++){
-
 			var n=node_xml.childNodes[i];
-			//subnodes
 			 if(n.nodeName=="node" ){
 			 	if(n.attributes.POSITION===undefined)
 			 		n.attributes.POSITION=(cont % 2==1?"left":"right");
@@ -575,6 +578,18 @@ class visorFreeMind.Browser {
 		}
 	}
 	
+	function collapseToLevel(node_xml,level){
+		for(var i=0;i<node_xml.childNodes.length;i++){
+			var n=node_xml.childNodes[i];
+			if(n.nodeName=="node" ){
+			 	collapseToLevel(n,level-1);
+				if(level<=0) 
+					node_xml.attributes.FOLDED="true";
+			}
+		}
+	}
+	
+
 	function genNodes(isRight,node_xml,x,y,lineColor,lineWidth,styleNode,styleLine,first,container){
 		var n:XMLNode=null;
 
@@ -619,7 +634,6 @@ class visorFreeMind.Browser {
 				var subnode=genNodes(isRight,n,0,0,lineColor,lineWidth,styleNode,styleLine,false,container);
 				childNodes.push(subnode);
 			}
-
 		}
 
 		node.childNodes=childNodes;

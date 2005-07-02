@@ -189,15 +189,10 @@ class visorFreeMind.Node {
 	public function activateEvents(){
 		if(eventControler.enabled==false){
 			eventControler.enabled=true;
-			Logger.trace("activado");
 			return;
 		}
 
 		eventControler.onPress=function(){
-
-		//var oldClick=this.inst.lastClick;
-		//this.inst.lastClick=getTimer();
-		//Logger.trace("link:"+this.inst.node_xml.attributes.LINK+" linkObj:"+this.inst.link+"test:"+this.inst.link.hitTest(_root._xmouse,_root._ymouse,false).toString());
 			if(this.inst.node_xml.attributes.LINK != undefined && this.inst.link.hitTest(_root._xmouse,_root._ymouse,false)){
 				var url=this.inst.node_xml.attributes.LINK;
 				if(url.indexOf("http://") > -1 || url.indexOf(".mm")==-1)
@@ -209,21 +204,32 @@ class visorFreeMind.Node {
 				return;
 			}
 
-			if(this.inst.hasSubnodes() && this.inst.style!=0){ // we don´t want main node to fold
+			if(this.inst.hasSubnodes() && this.inst.style!=8){ // we don´t want main node to fold
 				if(this.inst.folded){
 					this.inst.node_xml.attributes.FOLDED="false";
 					this.inst.folded=false;
 					this.inst.colorSelect();
+					if(this.inst==this.inst.browser.first_node){
+						Logger.trace("folding first"+this.inst.browser.first_node_left);
+						this.inst.browser.first_node_left.folded=false;
+						this.inst.browser.first_node_left.node_xml.attributes.FOLDED="false";
+					}
 				}else{
 					this.inst.node_xml.attributes.FOLDED="true";
 					this.inst.folded=true;
 					this.inst.colorSelect();
+					if(this.inst==this.inst.browser.first_node){
+						this.inst.browser.first_node_left.folded=true;
+						this.inst.browser.first_node_left.node_xml.attributes.FOLDED="true";
+					}
 				}
 				this.inst.lastClick=0;
+				
 				this.inst.browser.genMindMap(2);
 			}
 			return;
 		}
+		
 		eventControler.onRollOver=function(){
 			if (Node.currentOver instanceof Node )
 				Node.currentOver.colorNoSelect();
