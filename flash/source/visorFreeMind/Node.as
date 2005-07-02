@@ -171,7 +171,7 @@ class visorFreeMind.Node {
 	}
 
 	public function activateNoteEvents(){
-		Logger.trace("poniendo eventos");
+		//Logger.trace("poniendo eventos");
 		noteIcon.inst=this;
 		noteIcon.onRollOver=function(){
 			Logger.trace("NOTE ICON");
@@ -506,7 +506,7 @@ class visorFreeMind.Node {
 	public function draw(){
 		counter++;
 		crearTextField("node_txt");
-		Logger.trace("drawing --->");
+		//Logger.trace("drawing --->");
 
 		var iconsList=getIcons(node_xml);
 		for(var i=0;i<iconsList.length;i++){

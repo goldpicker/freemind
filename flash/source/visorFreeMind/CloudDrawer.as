@@ -69,7 +69,7 @@ class visorFreeMind.CloudDrawer {
 		container.moveTo(pOrig[0],pOrig[1]);
 		var listSelected=[];
 		calcGoodUpDownPoints(pOrig,pDest,1,upPoints.length,upPoints,listSelected,true);
-		Logger.trace(listSelected.length,1);
+		//Logger.trace(listSelected.length,1);
 		for (var i=0;i<listSelected.length;i++){
 			drawCurveUpDown(pOrig,listSelected[i],container,1,-1);
 			pOrig=listSelected[i];

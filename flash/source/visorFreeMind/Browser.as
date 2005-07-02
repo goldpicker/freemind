@@ -233,17 +233,36 @@ class visorFreeMind.Browser {
 
 	function showTooltip(texto){
 		mc_container.tooltip.tex_container.textfield.text=texto;
-		var sombra=mc_container.tooltip.createEmptyMovieClip("sombra",9);
-		mc_container.tooltip.tex_container.dropShadow(8,4,4,0x777799,sombra);
-		mc_container.tooltip._x=_root._xmouse+14;
-		mc_container.tooltip._y=_root._ymouse+20;
-		mc_container.tooltip._visible=true;
+		var tt=mc_container.tooltip;
+		var sombra=tt.createEmptyMovieClip("sombra",9);
+		tt.tex_container.dropShadow(8,4,4,0x777799,sombra);
+		
+		tt._x=_root._xmouse+14;
+		tt._y=_root._ymouse+20;
+		reposObjForViewing(tt);
+		tt._visible=true;
 	}
 
 	function hideTooltip(){
 		mc_container.tooltip._visible=false;
 	}
+	
 
+	function reposObjForViewing(tt){
+		var bbox=tt.getBounds(_root);
+		//Logger.trace(tt._x+" "+bbox.xMax+" "+Stage.width);
+		if(bbox.xMax>Stage.width){
+			var newval=Stage.width-bbox.xMax;
+			tt._x+=newval;
+			//Logger.trace("new x:"+tt._x+" newval:"+newval);
+		}
+		if(bbox.yMax>Stage.height){
+			var newval=Stage.height-bbox.yMax;
+			tt._y+=newval;
+			//Logger.trace("new x:"+tt._x+" newval:"+newval);
+		}
+	}
+	
 	function resetData(){
 		for(var j=0;j<list_edges.length;j++){
 			list_edges[j].ref_mc.removeMovieClip();
