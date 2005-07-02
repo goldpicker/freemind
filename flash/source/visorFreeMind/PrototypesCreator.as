@@ -102,6 +102,37 @@ class visorFreeMind.PrototypesCreator{
 			this.curveTo(ux+a, uy+b, ux+r, uy);
 		};
 
+		MovieClip.prototype.blurredRect = function(x, y, width, height, blur, color, alpha) {
+			this.lineStyle();
+			var f = [];
+			var sum = 0;
+			var b=0;
+			var factor;
+			for (var i = 1; i<blur+1; i++) {
+				f[i-1] = i*i;
+				sum += f[i-1];
+			}
+			var newfactor= 2;
+			var counter = 40;
+			do {
+				factor=newfactor
+				b = 0;
+				for (var i = 0; i<=blur; i++) {
+					var ftemp = (f[i]*(factor*alpha)/sum)/100;
+					b = b*(1-ftemp)+ftemp;
+				}
+				counter--;
+				newfactor *= alpha/(100*b);
+			} while ((counter>0) && (Math.abs(100*b-alpha)>.5));
+			for (var i = 0; i<=blur; i++) {
+				f[i] *= (factor*alpha)/sum;
+			}
+			for (var i = 0; i<=blur; i++) {
+				this.beginFill(color, f[i]);
+				this.roundRect(1+(x+i)-blur/2, 1+(y+i)-blur/2, x+width-i+blur/2-1, y+height-i+blur/2-1, blur-(i*2/3));
+				this.endFill();
+			}
+		};
 		/**
 		* This prototype is based in the implementation of:  ( Search I don´t remember now)
 		*	offsetX:

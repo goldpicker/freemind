@@ -344,6 +344,8 @@ class visorFreeMind.Browser {
 		var color_LineaIni=0x888888;
 		var nodeXMLIni=dictVisitedMM[fileName];
 
+		//asociate right left to nodes without it
+		asociatePosition(nodeXMLIni);
 		//Right nodes
 		first_node=genNodes(true,nodeXMLIni,0,0,color_LineaIni,lineWidth,styleNode,styleLine,true,mc_floor);
 		//Left nodes
@@ -539,6 +541,21 @@ class visorFreeMind.Browser {
 		return "_sans";
 	}
 
+	function asociatePosition(node_xml){
+		var cont=0;
+		// n.attributes.POSITION!=(isRight?"left":"right")
+		for(var i=0;i<node_xml.childNodes.length;i++){
+
+			var n=node_xml.childNodes[i];
+			//subnodes
+			 if(n.nodeName=="node" ){
+			 	if(n.attributes.POSITION===undefined)
+			 		n.attributes.POSITION=(cont % 2==1?"left":"right");
+					cont++;
+			}
+		}
+	}
+	
 	function genNodes(isRight,node_xml,x,y,lineColor,lineWidth,styleNode,styleLine,first,container){
 		var n:XMLNode=null;
 

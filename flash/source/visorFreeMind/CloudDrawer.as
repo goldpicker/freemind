@@ -126,25 +126,25 @@ class visorFreeMind.CloudDrawer {
 
 	function calcGoodUpDownPoints(maxsup,maxinf,ini,end,sidePoints,listSelected,isRight){
 		var slope=(maxsup[1]-maxinf[1]-0.0005)/(maxinf[0]-maxsup[0]);
-		Logger.trace("slope("+maxsup[0]+","+maxsup[1]+")"+"("+
-			maxinf[0]+","+maxinf[1]+")"+":"+slope);
+		//Logger.trace("slope("+maxsup[0]+","+maxsup[1]+")"+"("+
+		//	maxinf[0]+","+maxinf[1]+")"+":"+slope);
 		var k1=slope*maxsup[0]+maxsup[1];
-		Logger.trace("	k1:"+k1);
+		//Logger.trace("	k1:"+k1);
 		var newmax=-1;
 		for(var i=ini;i<end;i++){
 			var p=sidePoints[i];
 			var k2=slope*p[0]+p[1];
-			Logger.trace("	k2:"+k2+" ("+p[0]+","+p[1]+")");
+			//Logger.trace("	k2:"+k2+" ("+p[0]+","+p[1]+")");
 			if(( isRight && k1>k2) || (!isRight && k1<k2)){
 				k1=k2;
-				Logger.trace("	new k1:"+k2);
+				//Logger.trace("	new k1:"+k2);
 				newmax=i;
 			}
 		}
 		if(newmax>=0){
 			calcGoodUpDownPoints(maxsup,sidePoints[newmax],ini,newmax,sidePoints,listSelected,isRight);
 			listSelected.push(sidePoints[newmax]);
-			Logger.trace("added:"+"("+sidePoints[newmax][0]+","+sidePoints[newmax][1]+")");
+			//Logger.trace("added:"+"("+sidePoints[newmax][0]+","+sidePoints[newmax][1]+")");
 			calcGoodUpDownPoints(sidePoints[newmax],maxinf,newmax+1,end,sidePoints,listSelected,isRight);
 		} else  if(((maxinf[0]-maxsup[0])*(maxinf[0]-maxsup[0]) + (maxinf[1]-maxsup[1])*(maxinf[1]-maxsup[1]))>30000){
 

@@ -506,6 +506,7 @@ class visorFreeMind.Node {
 	public function draw(){
 		counter++;
 		crearTextField("node_txt");
+		Logger.trace("drawing --->");
 
 		var iconsList=getIcons(node_xml);
 		for(var i=0;i<iconsList.length;i++){
@@ -570,13 +571,24 @@ class visorFreeMind.Node {
 			}
 
 		}
+		genShadow();
+
+	}
+
+	public function delShadow(){
+		if(sombra!=null){
+			sombra.removeMovieClip();
+			sombra=null;
+		}
+	}
+	public function genShadow(){
+		delShadow();
 		if(style==2 && cbg!=0 && browser.withShadow){
 			sombra=ref_mc.createEmptyMovieClip("sombra",10);
 			ref_mc.node_txt.dropShadow(8,6,4,0x555555,sombra);
 		}
-
 	}
-
+	
 	public function addIcon(icon){
 		listElements.push(icon);
 		return;

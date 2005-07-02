@@ -273,9 +273,19 @@ class visorFreeMind.ButtonsCreator{
 
 
 		bGrow.onPress=function(){
+			/*
+			for(var i=0;i<this.browser.listNodesR.length;i++){
+			this.browser.listNodesR[i].delShadow();
+			}
+			*/
 			this.browser.mc_floor._xscale+=20;
 			this.browser.mc_floor._yscale+=20;
 			//this.browser.genMindMap(3);
+			/*
+			for(var i=0;i<this.browser.listNodesR.length;i++){
+			this.browser.listNodesR[i].genShadow();
+			}
+			*/
 		}
 		bShrink.onPress=function(){
 			this.browser.mc_floor._xscale-=20;
