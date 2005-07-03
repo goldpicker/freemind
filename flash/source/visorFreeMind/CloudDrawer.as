@@ -45,12 +45,14 @@ class visorFreeMind.CloudDrawer {
 			return 0xEEEEEE;
 	}
 
-	function drawCloud(xml_cloud:XMLNode,node:Node,container,isRight){
+	function drawCloud(xml_cloud:XMLNode,node:Node,container,supClouds,isRight){
 
 		//var xml_node:XMLNode=node.getNode_xml();
 		var cloudColor=getCloudColor(xml_cloud);
 		var cloudBorderColor=cloudColor-0x555555; //Aprox
 
+		var displacement=30/(supClouds/3+1);
+		var maxDistance=30000/(supClouds+1);
 		var numSubClouds=0;
 		//Obtain cloud points.
 		var upPoints=[];
@@ -68,10 +70,10 @@ class visorFreeMind.CloudDrawer {
 		var pDest=upPoints[upPoints.length-1];
 		container.moveTo(pOrig[0],pOrig[1]);
 		var listSelected=[];
-		calcGoodUpDownPoints(pOrig,pDest,1,upPoints.length,upPoints,listSelected,true);
+		calcGoodUpDownPoints(pOrig,pDest,1,upPoints.length,upPoints,listSelected,true,maxDistance);
 		//Logger.trace(listSelected.length,1);
 		for (var i=0;i<listSelected.length;i++){
-			drawCurveUpDown(pOrig,listSelected[i],container,1,-1);
+			drawCurveUpDown(pOrig,listSelected[i],container,1,-1,displacement);
 			pOrig=listSelected[i];
 		}
 
@@ -79,23 +81,23 @@ class visorFreeMind.CloudDrawer {
 		pOrig=upPoints[upPoints.length-1];
 		pDest=downPoints[downPoints.length-1];
 		listSelected=[];
-		calcGoodSidePoints(pOrig,pDest,1,sidePoints.length,sidePoints,listSelected,isRight);
+		calcGoodSidePoints(pOrig,pDest,1,sidePoints.length,sidePoints,listSelected,isRight,maxDistance);
 
 		for(var i=0;i<listSelected.length;i++){
-			drawCurveSide(pOrig,listSelected[i],container,isRight?1:-1,isRight?-1:1);
+			drawCurveSide(pOrig,listSelected[i],container,isRight?1:-1,isRight?-1:1,displacement);
 			pOrig=listSelected[i];
 		}
 
 		//DOWN
-		drawCurveSide(pOrig,downPoints[downPoints.length-1],container,isRight?1:-1,isRight?-1:1);
+		drawCurveSide(pOrig,downPoints[downPoints.length-1],container,isRight?1:-1,isRight?-1:1,displacement);
 
 		downPoints.reverse();
 		pOrig=downPoints[0];
 		pDest=downPoints[downPoints.length-1];
 		listSelected=[];
-		calcGoodUpDownPoints(pOrig,pDest,1,downPoints.length,downPoints,listSelected,false);
+		calcGoodUpDownPoints(pOrig,pDest,1,downPoints.length,downPoints,listSelected,false,maxDistance);
 		for (var i=0;i<listSelected.length;i++){
-			drawCurveUpDown(pOrig,listSelected[i],container,-1,1);
+			drawCurveUpDown(pOrig,listSelected[i],container,-1,1,displacement);
 			pOrig=listSelected[i];
 		}
 
@@ -105,26 +107,26 @@ class visorFreeMind.CloudDrawer {
 			pOrig=downPoints[i];
 		}
 */
-		drawCurveUpDown(pOrig,pDest,container,-1,1);
-		drawCurveSide(pDest,upPoints[0],container,isRight?-1:1,1)
+		drawCurveUpDown(pOrig,pDest,container,-1,1,displacement);
+		drawCurveSide(pDest,upPoints[0],container,isRight?-1:1,1,displacement)
 		container.endFill();
 	}
 
-	function drawCurveSide(pOrig,pDest,container,sign_x,sign_y){
+	function drawCurveSide(pOrig,pDest,container,sign_x,sign_y,displacement){
 		var slope=(pDest[0]+0.25-pOrig[0])/(pOrig[1]-0.25-pDest[1]);
 		var middlePoint=[(pDest[0]+pOrig[0])/2,(pDest[1]+pOrig[1])/2];
-		var mod=Math.abs(30/Math.sqrt(1+slope*slope)); //30 pixels =  absolute displacement
+		var mod=Math.abs(displacement/Math.sqrt(1+slope*slope)); //30 pixels =  absolute displacement
 		container.curveTo(middlePoint[0]+sign_x*mod,middlePoint[1]-sign_y*mod*slope,pDest[0],pDest[1]);
 	}
 
-	function drawCurveUpDown(pOrig,pDest,container,sign_x,sign_y){
+	function drawCurveUpDown(pOrig,pDest,container,sign_x,sign_y,displacement){
 		var slope=(pDest[1]+0.25-pOrig[1])/(pOrig[0]-0.25-pDest[0]);
 		var middlePoint=[(pDest[0]+pOrig[0])/2,(pDest[1]+pOrig[1])/2];
-		var mod=Math.abs(30/Math.sqrt(1+slope*slope)); //30 pixels =  absolute displacement
+		var mod=Math.abs(displacement/Math.sqrt(1+slope*slope)); //30 pixels =  absolute displacement
 		container.curveTo(middlePoint[0]-sign_x*mod*slope,middlePoint[1]+sign_y*mod,pDest[0],pDest[1]);
 	}
 
-	function calcGoodUpDownPoints(maxsup,maxinf,ini,end,sidePoints,listSelected,isRight){
+	function calcGoodUpDownPoints(maxsup,maxinf,ini,end,sidePoints,listSelected,isRight,maxDistance){
 		var slope=(maxsup[1]-maxinf[1]-0.0005)/(maxinf[0]-maxsup[0]);
 		//Logger.trace("slope("+maxsup[0]+","+maxsup[1]+")"+"("+
 		//	maxinf[0]+","+maxinf[1]+")"+":"+slope);
@@ -142,21 +144,21 @@ class visorFreeMind.CloudDrawer {
 			}
 		}
 		if(newmax>=0){
-			calcGoodUpDownPoints(maxsup,sidePoints[newmax],ini,newmax,sidePoints,listSelected,isRight);
+			calcGoodUpDownPoints(maxsup,sidePoints[newmax],ini,newmax,sidePoints,listSelected,isRight,maxDistance);
 			listSelected.push(sidePoints[newmax]);
 			//Logger.trace("added:"+"("+sidePoints[newmax][0]+","+sidePoints[newmax][1]+")");
-			calcGoodUpDownPoints(sidePoints[newmax],maxinf,newmax+1,end,sidePoints,listSelected,isRight);
-		} else  if(((maxinf[0]-maxsup[0])*(maxinf[0]-maxsup[0]) + (maxinf[1]-maxsup[1])*(maxinf[1]-maxsup[1]))>30000){
+			calcGoodUpDownPoints(sidePoints[newmax],maxinf,newmax+1,end,sidePoints,listSelected,isRight,maxDistance);
+		} else  if(((maxinf[0]-maxsup[0])*(maxinf[0]-maxsup[0]) + (maxinf[1]-maxsup[1])*(maxinf[1]-maxsup[1]))>maxDistance){
 
 			var middlePoint=[maxsup[0]+(maxinf[0]-maxsup[0])*0.5,maxsup[1]+(maxinf[1]-maxsup[1])*0.5];
-			calcGoodUpDownPoints(maxsup,middlePoint,ini,ini,sidePoints,listSelected,isRight);
+			calcGoodUpDownPoints(maxsup,middlePoint,ini,ini,sidePoints,listSelected,isRight,maxDistance);
 			listSelected.push(middlePoint);
-			calcGoodUpDownPoints(middlePoint,maxinf,ini,ini,sidePoints,listSelected,isRight);
+			calcGoodUpDownPoints(middlePoint,maxinf,ini,ini,sidePoints,listSelected,isRight,maxDistance);
 
 		}
 	}
 
-	function calcGoodSidePoints(maxsup,maxinf,ini,end,sidePoints,listSelected,isRight){
+	function calcGoodSidePoints(maxsup,maxinf,ini,end,sidePoints,listSelected,isRight,maxDistance){
 		var slope=(maxinf[0]-maxsup[0])/(maxsup[1]-maxinf[1]);
 		var k1=maxsup[0]+slope*maxsup[1];
 		var newmax=-1;
@@ -169,15 +171,15 @@ class visorFreeMind.CloudDrawer {
 			}
 		}
 		if(newmax>=0){
-			calcGoodSidePoints(maxsup,sidePoints[newmax],ini,newmax,sidePoints,listSelected,isRight);
+			calcGoodSidePoints(maxsup,sidePoints[newmax],ini,newmax,sidePoints,listSelected,isRight,maxDistance);
 			listSelected.push(sidePoints[newmax]);
-			calcGoodSidePoints(sidePoints[newmax],maxinf,newmax+1,end,sidePoints,listSelected,isRight);
-		} else  if(((maxinf[0]-maxsup[0])*(maxinf[0]-maxsup[0]) + (maxinf[1]-maxsup[1])*(maxinf[1]-maxsup[1]))>30000){
+			calcGoodSidePoints(sidePoints[newmax],maxinf,newmax+1,end,sidePoints,listSelected,isRight,maxDistance);
+		} else  if(((maxinf[0]-maxsup[0])*(maxinf[0]-maxsup[0]) + (maxinf[1]-maxsup[1])*(maxinf[1]-maxsup[1]))>maxDistance){
 
 			var middlePoint=[maxsup[0]+(maxinf[0]-maxsup[0])*0.5,maxsup[1]+(maxinf[1]-maxsup[1])*0.5];
-			calcGoodSidePoints(maxsup,middlePoint,ini,ini,sidePoints,listSelected,isRight);
+			calcGoodSidePoints(maxsup,middlePoint,ini,ini,sidePoints,listSelected,isRight,maxDistance);
 			listSelected.push(middlePoint);
-			calcGoodSidePoints(middlePoint,maxinf,ini,ini,sidePoints,listSelected,isRight);
+			calcGoodSidePoints(middlePoint,maxinf,ini,ini,sidePoints,listSelected,isRight,maxDistance);
 
 		}
 	}

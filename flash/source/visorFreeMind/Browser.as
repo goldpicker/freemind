@@ -371,10 +371,11 @@ class visorFreeMind.Browser {
 		//if first time that loaded
 		if(jumpType==0 && startCollapsedToLevel >=0)
 			collapseToLevel(nodeXMLIni,startCollapsedToLevel);
+		var supClouds=0;
 		//Right nodes
-		first_node=genNodes(true,nodeXMLIni,0,0,color_LineaIni,lineWidth,styleNode,styleLine,true,mc_floor);
+		first_node=genNodes(true,nodeXMLIni,0,0,color_LineaIni,lineWidth,styleNode,styleLine,true,mc_floor,supClouds);
 		//Left nodes
-		first_node_left=genNodes(false,nodeXMLIni,0,0,color_LineaIni,lineWidth,styleNode,styleLine,true,mc_floor);
+		first_node_left=genNodes(false,nodeXMLIni,0,0,color_LineaIni,lineWidth,styleNode,styleLine,true,mc_floor,supClouds);
 		//IF there is no image to load we can show all.
 		if(numWaitingImages==0)
 			relocateMindMap();
@@ -475,12 +476,12 @@ class visorFreeMind.Browser {
 		var lizq=list_left_clouds;
 		for (var i=lizq.length-1;i>=0;i--){
 			if(lizq[i][1].ref_mc._visible==true)
-				CloudDrawer.getInstance().drawCloud(lizq[i][0],lizq[i][1],lizq[i][2],false);
+				CloudDrawer.getInstance().drawCloud(lizq[i][0],lizq[i][1],lizq[i][2],lizq[i][3],false);
 		}
 		var ld=list_right_clouds;
 		for (var i=ld.length-1;i>=0;i--){
 			if(ld[i][1].ref_mc._visible==true)
-				CloudDrawer.getInstance().drawCloud(ld[i][0],ld[i][1],ld[i][2],true);
+				CloudDrawer.getInstance().drawCloud(ld[i][0],ld[i][1],ld[i][2],ld[i][3],true);
 		}
 	}
 
@@ -590,12 +591,13 @@ class visorFreeMind.Browser {
 	}
 	
 
-	function genNodes(isRight,node_xml,x,y,lineColor,lineWidth,styleNode,styleLine,first,container){
+	function genNodes(isRight,node_xml,x,y,lineColor,lineWidth,styleNode,styleLine,first,container,supClouds){
 		var n:XMLNode=null;
 
 		//get edge style.
 		var edge=getFirstNodeType("edge",node_xml);
 		var font=getFirstNodeType("font",node_xml);
+		var newSupClouds=supClouds;
 		styleLine=getLineStyle(edge,styleLine);
 		lineWidth=getLineWidth(edge,lineWidth);
 		lineColor=getLineColor(edge,lineColor);
@@ -612,7 +614,7 @@ class visorFreeMind.Browser {
 		var folded=true;
 		if(node_xml.attributes.FOLDED!="true")
 		  folded=false;
-
+	
 		var node:Node=new Node(0,0,node_xml,node_xml.attributes.TEXT,"",container,
 							   3,lineColor,lineWidth,(first?0:styleNode),styleLine,folded,isRight,withCloud,
 							   textSize,italic,bold,type,this);
@@ -625,13 +627,14 @@ class visorFreeMind.Browser {
 
 		var childNodes:Array=[];
 
+		if(withCloud) newSupClouds++;
 		//creation of all nodes, folded or not.
 		for(var i=0;i<node_xml.childNodes.length;i++){
 
 			n=node_xml.childNodes[i];
 			//subnodes
 			 if(n.nodeName=="node" && n.attributes.POSITION!=(isRight?"left":"right")){
-				var subnode=genNodes(isRight,n,0,0,lineColor,lineWidth,styleNode,styleLine,false,container);
+				var subnode=genNodes(isRight,n,0,0,lineColor,lineWidth,styleNode,styleLine,false,container,newSupClouds);
 				childNodes.push(subnode);
 			}
 		}
@@ -645,10 +648,12 @@ class visorFreeMind.Browser {
 
 		if(cloudNode!=undefined ){
 			if(isRight)
-				list_right_clouds.push([cloudNode,node,container]);
+				list_right_clouds.push([cloudNode,node,container,supClouds]);
 			else
-				list_left_clouds.push([cloudNode,node,container]);
+				list_left_clouds.push([cloudNode,node,container,supClouds]);
+			supClouds++;
 		}
+
 
 		for(var i=0;i<arrows.length;i++){
 			list_arrows.push([node.getID(),
