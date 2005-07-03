@@ -51,8 +51,8 @@ class visorFreeMind.CloudDrawer {
 		var cloudColor=getCloudColor(xml_cloud);
 		var cloudBorderColor=cloudColor-0x555555; //Aprox
 
-		var displacement=30/(supClouds/3+1);
-		var maxDistance=30000/(supClouds+1);
+		var displacement=30/(1+supClouds/3);
+		var maxDistance=30000/(1+supClouds);
 		var numSubClouds=0;
 		//Obtain cloud points.
 		var upPoints=[];
