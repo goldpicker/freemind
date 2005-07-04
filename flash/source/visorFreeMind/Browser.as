@@ -234,7 +234,8 @@ class visorFreeMind.Browser {
 	}
 
 	function showTooltip(texto){
-		mc_container.tooltip.tex_container.textfield.text=texto;
+		// eliminate \r because of problems of double returns
+		mc_container.tooltip.tex_container.textfield.text=texto.replace("\r","");
 		var tt=mc_container.tooltip;
 		var sombra=tt.createEmptyMovieClip("sombra",9);
 		tt.tex_container.dropShadow(8,4,4,0x777799,sombra);
