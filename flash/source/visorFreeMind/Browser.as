@@ -223,6 +223,7 @@ class visorFreeMind.Browser {
 			txt.autoSize=true;
 			txt.selectable=false;
 			txt.border=false;
+			txt.html = true;
 			my_fmt = new TextFormat();
 			my_fmt.color=0x002222;
 			my_fmt.font="Arial";
@@ -235,7 +236,7 @@ class visorFreeMind.Browser {
 
 	function showTooltip(texto){
 		// eliminate \r because of problems of double returns
-		mc_container.tooltip.tex_container.textfield.text=texto.replace("\r","");
+		mc_container.tooltip.tex_container.textfield.htmlText=texto.replace("\r","");
 		var tt=mc_container.tooltip;
 		var sombra=tt.createEmptyMovieClip("sombra",9);
 		tt.tex_container.dropShadow(8,4,4,0x777799,sombra);
@@ -494,6 +495,7 @@ class visorFreeMind.Browser {
 				else if(edge_xml.attributes.STYLE=="bezier") styleLine=0;
 				else if(edge_xml.attributes.STYLE=="linear") styleLine=1;
 				else if(edge_xml.attributes.STYLE=="sharp_linear") styleLine=3;
+				else if(edge_xml.attributes.STYLE=="rectangular") styleLine=4;
 			}
 		}
 		return styleLine;

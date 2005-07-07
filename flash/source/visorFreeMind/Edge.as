@@ -44,10 +44,10 @@ class visorFreeMind.Edge {
 	}
 
 
-	private function drawEdge(or_x,or_y,ddx,ddy,color,alpha){
+	private function drawEdge(or_x,or_y,ddx,ddy,color,alpha,colorOrig){
 		var thickness=_dest.lineWidth;
 		var h_thickness=_dest.lineWidth*0.5;
-		//0=bezier, 1=linear,2=sharp_bezier,3=sharp_linear
+		//0=bezier, 1=linear,2=sharp_bezier,3=sharp_linear;4=rectangular
 		switch(_dest.styleLine){
 		case 0:
 			ref_mc.lineStyle(thickness,color,alpha);
@@ -81,6 +81,14 @@ class visorFreeMind.Edge {
 			ref_mc.lineTo(or_x,or_y+h_thickness);
 			ref_mc.endFill();
 			break;
+		case 4:
+			//ref_mc.lineStyle(_orig.lineWidth,colorOrig,alpha);
+			ref_mc.lineStyle(thickness,color,alpha);
+			ref_mc.moveTo(or_x,or_y);
+			ref_mc.lineTo(or_x+10*Math.abs(ddx)/ddx,or_y);
+			ref_mc.lineTo(or_x+10*Math.abs(ddx)/ddx,ddy);
+			ref_mc.lineTo(ddx,ddy);
+			break;
 		}
 	}
 
@@ -95,14 +103,14 @@ class visorFreeMind.Edge {
 			ddx=_dest.ref_mc._x-((_dest.style==1)?0:(_dest.ref_mc.box_txt._width-_dest.ref_mc.node_txt._width)/2)- ref_mc._x;
 			 ddy=_dest.ref_mc._y -  ref_mc._y +((_dest.style==1)? _dest.ref_mc.node_txt._height -destThickness: _dest.ref_mc.node_txt._height/2);
 
-			drawEdge(0,0,ddx,ddy,_dest.cf,100);
+			drawEdge(0,0,ddx,ddy,_dest.cf,100,_orig.cf);
 		}else { // LEFT
 			ref_mc._x=_orig.ref_mc._x-((_orig.style==1)?0:(_orig.ref_mc.box_txt._width-_orig.ref_mc.node_txt._width)/2);
 			ref_mc._y=_orig.ref_mc._y+((_orig.style==1)? _orig.ref_mc.node_txt._height -origThickness: _orig.ref_mc.node_txt._height/2);
 			ddx=_dest.ref_mc._x+_dest.ref_mc.node_txt._width+((_dest.style==1)?0:(_dest.ref_mc.box_txt._width-_dest.ref_mc.node_txt._width)/2)- ref_mc._x;
 			ddy=_dest.ref_mc._y -  ref_mc._y +((_dest.style==1)? _dest.ref_mc.node_txt._height -destThickness: _dest.ref_mc.node_txt._height/2);
 
-			drawEdge(0,0,ddx,ddy,_dest.cf,100);
+			drawEdge(0,0,ddx,ddy,_dest.cf,100,_orig.cf);
 		}
 
 	}
