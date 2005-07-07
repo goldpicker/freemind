@@ -81,6 +81,8 @@ class visorFreeMind.Main {
 		   		Node.openUrl=_root.openUrl;
 		   if(_root.startCollapsedToLevel!=null)
 		   		Browser.startCollapsedToLevel=_root.startCollapsedToLevel;
+		   if(_root.mainNodeShape=="rectangle")
+		   		Node.mainNodeShape="rectangle";
 		   if(_root.initLoadFile!=null){
 				Logger.trace("initial mindmap: "+_root.initLoadFile,2);
 				var browser=new Browser(_root.initLoadFile,_root);

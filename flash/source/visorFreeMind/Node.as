@@ -33,7 +33,7 @@ class visorFreeMind.Node {
 	public static var currentOver:Node=null;
 	public static var lastOverTxt=null;
 	public static var openUrl="_blank";
-
+	public static var mainNodeShape=null;
 	public var childNodes:Array;
 	private var lastClicks:Number=0;
 	public var text:String; // Text of the node
@@ -91,6 +91,8 @@ class visorFreeMind.Node {
 		this.cf=cf;
 		this.lineWidth=lineWidth;
 		this.style=style;
+		if(style==0 && Node.mainNodeShape=="rectangle")
+			this.style=2;
 		this.styleLine=styleLine;
 		this.folded=folded;
 		this.isRight=isRight;
@@ -486,7 +488,7 @@ class visorFreeMind.Node {
 			}
 		}
 		else if(style==0){
-			circle(n._width, n._height,colorNoSel,alpha,cf);
+			circle(n._width+4, n._height+4,colorNoSel,alpha,cf);
 		}
 		else{
 			if(alpha==100)//selected

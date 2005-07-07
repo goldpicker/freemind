@@ -176,7 +176,7 @@ class visorFreeMind.Browser {
 			mc_container.info.tex_container.createTextField("txt", 1, 0, 0,170,10);
 			var txt=mc_container.info.tex_container.txt;
 			txt.type = "dynamic";
-			txt.backgroundColor=0xFFCC77;
+			txt.backgroundColor=0xFFDD88;// old one 0xFFCC77;
 			txt._alpha=100
 			txt.background=true;
 			txt.autoSize = "left";
@@ -219,7 +219,7 @@ class visorFreeMind.Browser {
 			mc_container.tooltip.tex_container.createTextField("textfield",7777,0,0,10,10);
 			var txt=mc_container.tooltip.tex_container.textfield;
 			txt.background=true;
-			txt.backgroundColor=0xFFCC77;
+			txt.backgroundColor=0xFFDD88;
 			txt.autoSize=true;
 			txt.selectable=false;
 			txt.border=false;
