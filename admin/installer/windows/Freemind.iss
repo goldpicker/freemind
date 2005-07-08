@@ -9,6 +9,7 @@
 ;* Andrew J. Iggleden (AJI) 8/12/2003 - Initial Release
 ;* Andrew J. Iggleden (AJI) 20/12/2003 - Version 0.7.0
 ;* Christian Foltin   (FC ) 10/01/2004 - Version 0.7.1
+;* Christian Foltin   (FC ) 08/07/2005 - Version 0.8.0
 ;****************************************************************************
 
 [Files]
@@ -45,7 +46,7 @@ external 'isxbb_KillTimer@files:isxbb.dll stdcall';
 
 [Setup]
 AppName=FreeMind
-AppVerName=FreeMind 0.8.0RC3
+AppVerName=FreeMind 0.8.0RC5
 AppPublisherURL=http://freemind.sourceforge.net
 AppSupportURL=http://freemind.sourceforge.net
 AppUpdatesURL=http://freemind.sourceforge.net
@@ -58,7 +59,7 @@ WindowVisible=true
 
 AppCopyright=Copyright © 2005 Christian Foltin and others
 ;AppCopyright=Copyright © {code:InstallationDate}
-AppVersion=0.8.0RC3
+AppVersion=0.8.0RC5
 InfoAfterFile=after.txt
 InfoBeforeFile=before.txt
 PrivilegesRequired=admin
@@ -69,7 +70,7 @@ AppID=B991B020-2968-11D8-AF23-444553540000
 UninstallRestartComputer=false
 ChangesAssociations=true
 FlatComponentsList=false
-OutputBaseFilename=FreeMind-Windows-Installer-0_8_0RC3
+OutputBaseFilename=FreeMind-Windows-Installer-0_8_0RC5
 SolidCompression=false
 ; old: InternalCompressLevel=9
 Compression=zip/9

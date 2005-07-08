@@ -3,6 +3,8 @@
 
 The current project director is Daniel Polansky and Christian Foltin is the current project manager. 
 
+Version 0.8.0RC5 is a release candidate version of 0.8.0 including mindmanager import and open office export.
+
 Version 0.8.0RC3 is a release candidate version of 0.8.0 including undo, movable nodes and many more with contributions by Christian Foltin, Dimitri Polivaev and others.
 
 Up to the version 0.4, FreeMind was developed by Jörg Müller. Jörg has not only started the project, he has also done a very good registration on Open Directory and designed the architecture that is still in use today. 
