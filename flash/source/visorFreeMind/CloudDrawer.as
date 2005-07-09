@@ -45,11 +45,63 @@ class visorFreeMind.CloudDrawer {
 			return 0xEEEEEE;
 	}
 
+	function drawRectangle(xml_cloud:XMLNode,node:Node,container,supClouds,isRight){
+		var cloudColor=getCloudColor(xml_cloud);
+		var cloudBorderColor=genBorderColor(cloudColor); //Aprox
+		var numSubClouds=0;
+		//Obtain cloud points.
+		var upPoints=[];
+		var downPoints=[];
+		var sidePoints=[];
+		getUpPoints(node,upPoints,numSubClouds,isRight);
+		getDownPoints(node,downPoints,numSubClouds,isRight);
+		getSidePoints(node,sidePoints,numSubClouds,isRight);
+		var allPoints=upPoints.concat(downPoints,sidePoints);
+		var res=getMaxMinXY(allPoints); //[minX,minY,maxX,maxY]
+		//Draw cloud
+		container.lineStyle(0,cloudBorderColor,100);
+		container.beginFill(cloudColor,100);
+		container.moveTo(res[0],res[1]);
+		container.lineTo(res[2],res[1]);
+		container.lineTo(res[2],res[3]);
+		container.lineTo(res[0],res[3]);
+		container.lineTo(res[0],res[1]);
+	}
+	
+	function genBorderColor(color){
+		var nRed = (color >> 16)-0x22;
+		nRed=nRed>=0?nRed:0;
+		var nGreen= ((color >> 8) & 0xff)-0x22;
+		nGreen=nGreen>=0?nGreen:0;
+		var nBlue= (color & 0xff)-0x22;
+		nBlue=nBlue>=0?nBlue:0;
+		return (nRed<<16 | nGreen<<8 |nBlue);
+	}
+	
+	function getMaxMinXY(allPoints){
+		var desp=4;
+		var maxX=allPoints[0][0];
+		var maxY=allPoints[0][1];
+		var minX=allPoints[0][0];
+		var minY=allPoints[0][1];
+		for(var point in allPoints){
+			if(allPoints[point][0]>maxX)
+				maxX=allPoints[point][0];
+			if(allPoints[point][0]<minX)
+				minX=allPoints[point][0];
+			if(allPoints[point][1]>maxY)
+				maxY=allPoints[point][1];
+			if(allPoints[point][1]<minY)
+				minY=allPoints[point][1];
+		}
+		return [minX-desp-4,minY-desp,maxX+desp,maxY+desp]
+	}
+	
 	function drawCloud(xml_cloud:XMLNode,node:Node,container,supClouds,isRight){
 
 		//var xml_node:XMLNode=node.getNode_xml();
 		var cloudColor=getCloudColor(xml_cloud);
-		var cloudBorderColor=cloudColor-0x555555; //Aprox
+		var cloudBorderColor=genBorderColor(cloudColor); //Aprox
 
 		var displacement=30/(1+supClouds/3);
 		var maxDistance=30000/(1+supClouds);

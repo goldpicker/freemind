@@ -475,19 +475,22 @@ class visorFreeMind.Browser {
 	}
 
 	function drawClouds(){
-		var lizq=list_left_clouds;
-		for (var i=lizq.length-1;i>=0;i--){
-			if(lizq[i][1].ref_mc._visible==true)
-				CloudDrawer.getInstance().drawCloud(lizq[i][0],lizq[i][1],lizq[i][2],lizq[i][3],false);
-		}
-		var ld=list_right_clouds;
-		for (var i=ld.length-1;i>=0;i--){
-			if(ld[i][1].ref_mc._visible==true)
-				CloudDrawer.getInstance().drawCloud(ld[i][0],ld[i][1],ld[i][2],ld[i][3],true);
-		}
+		drawCloudsSide(list_left_clouds,false);
+		drawCloudsSide(list_right_clouds,true);
 	}
 
 
+	function drawCloudsSide(lista,side){
+		for (var i=lista.length-1;i>=0;i--){
+			if(lista[i][1].ref_mc._visible==true){
+				if(lista[i][0].attributes.type)
+					CloudDrawer.getInstance().drawRectangle(lista[i][0],lista[i][1],lista[i][2],lista[i][3],side);
+				else 
+					CloudDrawer.getInstance().drawCloud(lista[i][0],lista[i][1],lista[i][2],lista[i][3],side);
+			}
+		}
+	}
+	
 	function getLineStyle(edge_xml,styleLine){
 		if(edge_xml!=null){
 			if(edge_xml.attributes.STYLE!=null){

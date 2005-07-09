@@ -36,6 +36,8 @@ class visorFreeMind.ButtonsCreator{
 	private var bColor;
 	private var mc_Color;
 	private var mc_Color_rollout;
+	private var mainColor;
+	private var alfa=100;
 	private var browser:Browser;
 	public  static var colors=[0xFFFFFF,0xEEEEEE,0xDDDDDD,
 							   0xEEFFFF,0xFFEEFF,0xFFFFEE,
@@ -43,13 +45,26 @@ class visorFreeMind.ButtonsCreator{
 
 	public function ButtonsCreator(browser:Browser){
 		this.browser=browser;
+		resetMainColor();
+		Logger.trace("ButtonsCreator created");
+	}
+
+	function resetMainColor(){
+		var color=browser.floor.getBackgroundColor();
+		var nRed = (color >> 16)-0x33;
+		nRed=nRed>=0?nRed:0;
+		var nGreen= ((color >> 8) & 0xff)-0x33;
+		nGreen=nGreen>=0?nGreen:0;
+		var nBlue= (color & 0xff)-0x33;
+		nBlue=nBlue>=0?nBlue:0;
+		this.mainColor=(nRed<<16 | nGreen<<8 |nBlue);
+		//Logger.trace(color+"("+nRed+","+nGreen+","+nBlue+")->"+this.mainColor+"\n");
 		createSizeButtons(browser.mc_container);
 		createNavigationButtons(browser.mc_container);
 		relocateAllButtons();
 		addToolTipsButtons();
-		Logger.trace("ButtonsCreator created");
 	}
-
+	
 	function addToolTipsButtons(){
 		var over=function(){
 			this.browser.showTooltip(this.tooltip);
@@ -112,14 +127,14 @@ class visorFreeMind.ButtonsCreator{
 		bForward.browser=browser;
 		bForward.tooltip="FORWARD";
 
-		bBack.lineStyle(16,0x9999ff,90);
+		bBack.lineStyle(16,mainColor,alfa);
 		bBack.moveTo(0,0);
 		bBack.lineTo(1,0);
 		bBack.lineStyle(3,0xFFFFFF,90);
 		bBack.moveTo(3,-4);
 		bBack.lineTo(-4,0);
 		bBack.lineTo(3,4);
-		bForward.lineStyle(16,0x9999ff,90);
+		bForward.lineStyle(16,mainColor,alfa);
 		bForward.moveTo(0,0);
 		bForward.lineTo(1,0);
 		bForward.lineStyle(3,0xFFFFFF,90);
@@ -163,6 +178,7 @@ class visorFreeMind.ButtonsCreator{
 		bColor.mc_Color=mc_Color;
 		bColor.mc_Color_rollout=mc_Color_rollout;
 		mc_Color.browser=browser;
+		mc_Color.bc=this;
 		bColor.onRollOver=function(){
 			this.mc_Color._visible=true;
 			this.mc_Color_rollout._visible=true;
@@ -178,8 +194,10 @@ class visorFreeMind.ButtonsCreator{
 			var y=_root._ymouse-this._y-1;
 			var i=Math.floor(x/12)+Math.floor(y/12)*3;
 			//Logger.trace("x:"+x+" y:"+y +" i: "+i);
-			if(i>=0 && i<9)
+			if(i>=0 && i<9){
 				this.browser.floor.changeBgColor(ButtonsCreator.colors[i]);
+				this.bc.resetMainColor();
+			}
 			this._visible=false;
 		}
 
@@ -214,6 +232,7 @@ class visorFreeMind.ButtonsCreator{
 		bReset.browser=browser;
 		bReset.tooltip="RESET";
 		bShadow=mc_container.createEmptyMovieClip("shadow",7791);
+		bShadow.bc=this;
 		bShadow.browser=browser;
 		bShadow.tooltip="SHADOW ON";
 		bInfo=mc_container.createEmptyMovieClip("bInfo",7792);
@@ -223,7 +242,7 @@ class visorFreeMind.ButtonsCreator{
 		bColor.browser=browser;
 		bColor.info_text="change background color";
 
-		bGrow.lineStyle(16,0x9999ff,90);
+		bGrow.lineStyle(16,mainColor,alfa);
 		bGrow.moveTo(0,0);
 		bGrow.lineTo(1,0);
 		bGrow.lineStyle(3,0xFFFFFF,90);
@@ -231,34 +250,34 @@ class visorFreeMind.ButtonsCreator{
 		bGrow.lineTo(0,4);
 		bGrow.moveTo(-4,0);
 		bGrow.lineTo(4,0);
-		bShrink.lineStyle(16,0x9999ff,90);
+		bShrink.lineStyle(16,mainColor,alfa);
 		bShrink.moveTo(0,0);
 		bShrink.lineTo(1,0);
 		bShrink.lineStyle(3,0xFFFFFF,90);
 		bShrink.moveTo(-4,0);
 		bShrink.lineTo(4,0);
 
-		bReset.lineStyle(16,0x9999ff,90);
+		bReset.lineStyle(16,mainColor,alfa);
 		bReset.moveTo(0,0);
 		bReset.lineTo(1,0);
 		bReset.lineStyle(8,0xFFFFFF,90);
 		bReset.moveTo(0,0);
 		bReset.lineTo(1,0);
 
-		bShadow.lineStyle(16,0x9999ff,90);
+		bShadow.lineStyle(16,mainColor,alfa);
 		bShadow.moveTo(0,0);
 		bShadow.lineTo(1,0);
 		bShadow.lineStyle(14,0xFFFFFF,90);
 		bShadow.moveTo(0,0);
 		bShadow.lineTo(1,0);
 		if(Browser.getStaticAtr("withShadow",false)){
-			bShadow.lineStyle(10,0x9999ff,90);
+			bShadow.lineStyle(10,mainColor,alfa);
 			bShadow.moveTo(0,0);
 			bShadow.lineTo(1,0);
 			bShadow.tooltip="SHADOW OFF";
 		}
 		
-		bInfo.lineStyle(16,0x9999ff,90);
+		bInfo.lineStyle(16,mainColor,alfa);
 		bInfo.moveTo(0,0);
 		bInfo.lineTo(1,0);
 		bInfo.lineStyle(3,0xFFFFFF,90);
@@ -267,7 +286,7 @@ class visorFreeMind.ButtonsCreator{
 		bInfo.moveTo(0,0);
 		bInfo.lineTo(0,5);
 
-		bColor.lineStyle(16,0x9999ff,90);
+		bColor.lineStyle(16,mainColor,alfa);
 		bColor.moveTo(0,0);
 		bColor.lineTo(1,0);
 
@@ -303,7 +322,7 @@ class visorFreeMind.ButtonsCreator{
 
 		bShadow.onPress=function(){
 			this.clear();
-			this.lineStyle(16,0x9999ff,90);
+			this.lineStyle(16,this.bc.mainColor,this.bc.alfa);
 			this.moveTo(0,0);
 			this.lineTo(1,0);
 			this.lineStyle(14,0xFFFFFF,90);
@@ -313,7 +332,7 @@ class visorFreeMind.ButtonsCreator{
 			Browser.setStaticAtr("withShadow",this.browser.withShadow);
 			Logger.trace("withShadow:"+Browser.getStaticAtr("withShadow","hi"));
 			if(this.browser.withShadow==true){
-				this.lineStyle(10,0x9999ff,90);
+				this.lineStyle(10,this.bc.mainColor,this.bc.alfa);
 				this.moveTo(0,0);
 				this.lineTo(1,0);
 				this.tooltip="SHADOW OFF";
