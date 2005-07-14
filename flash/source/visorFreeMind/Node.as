@@ -123,32 +123,41 @@ class visorFreeMind.Node {
 		ref_mc.inst=this; // add a reference to the Node object that create it
 		ref_mc.box_txt.inst=this;
 
+		//Font color
 		if(node_xml.attributes.COLOR!=undefined){
 			var cn:String=node_xml.attributes.COLOR;
 			cfont=new Number("0x"+cn.substring(1));
 		}
+		
+		//Background color
 		if(node_xml.attributes.BACKGROUND_COLOR!=undefined){
 			var cn:String=node_xml.attributes.BACKGROUND_COLOR;
 			cbg=new Number("0x"+cn.substring(1));
 		}
+		
+		//HGAP
 		if(node_xml.attributes.HGAP!=undefined){
 			hgap=new Number(node_xml.attributes.HGAP);
 			if(hgap>0) hgap-=20;
 			//Logger.trace("hgap:"+hgap);
 		}
+		
+		//SHIFT_Y
 		if(node_xml.attributes.SHIFT_Y!=undefined){
 			shift_y=new Number(node_xml.attributes.SHIFT_Y);
 		}
+		
+		//VSHIFT
 		if(node_xml.attributes.VSHIFT!=undefined){
 			shift_y=new Number(node_xml.attributes.VSHIFT);
 		}
 		
-		//temporal
-		//text=text+":"+shift_y;
+		// -----------EVENTS OF NODE -----------
 		eventControler=ref_mc;
-		
+		//For eliminating blinking of the node, if with shadow
 		if(style!=1 && cbg!=0)
 			eventControler=ref_mc.box_txt;
+			
 		activateEvents();
 	}
 
@@ -475,7 +484,11 @@ class visorFreeMind.Node {
 		if (colorNoSel==0)
 			alpha=0;
 		// 0= elipse, 1=fork , 2=bubble
+		
+		//n NODE_TXT
 		var n=ref_mc.node_txt;
+		
+		// Style==2 Bubble
 		if  (style==2){
 			round_rectangle(n._width, n._height,colorNoSel,alpha,cf);
 			if  ( alpha==100 && cbg!=0 && browser.withShadow){
@@ -486,16 +499,18 @@ class visorFreeMind.Node {
 					sombra._visible=true;
 				}
 			}
-		}
+		}// ELIPSE
 		else if(style==0){
 			circle(n._width+4, n._height+4,colorNoSel,alpha,cf);
-		}
+		}// FORK
 		else{
 			if(alpha==100)//selected
 				sel_subline(n._width, n._height,colorNoSel,alpha,colorSel);
 			else
 				subline(n._width,n._height,colorNoSel,alpha);
 		}
+		
+		//IF folded, draw a circle meaning, can be unfolded
 		if (folded==true){
 		    drawCircle(n._width,n._height,cf);
 		}
@@ -613,7 +628,9 @@ class visorFreeMind.Node {
 
 	public function addSpecialIcons(){
 		if(haveEdge){
-			if(node_xml.attributes.LINK.indexOf(".mm")>-1)
+			var direction=node_xml.attributes.LINK;
+			if(direction.indexOf(".mm")>-1 &&
+			   direction.indexOf(".mm")==direction.length-3)
 				link=Icons.get_mm_link(ref_mc.node_txt);
 			else
 				link=Icons.genLink(ref_mc.node_txt);
