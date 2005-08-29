@@ -1,14 +1,14 @@
-<map version="0.8.0 RC5">
+<map version="0.8.0">
 <!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->
 <node COLOR="#000000" CREATED="1120682078195" ID="Freemind_Link_802962067" MODIFIED="1120682106910" TEXT="Features 0.8.0">
 <font NAME="SansSerif" SIZE="20"/>
 <hook NAME="accessories/plugins/AutomaticLayout.properties"/>
 <node COLOR="#0033ff" CREATED="1120682111584" ID="_" MODIFIED="1120859328530" POSITION="right" TEXT="View">
 <font NAME="SansSerif" SIZE="18"/>
-<node COLOR="#00b439" CREATED="1120682135416" FOLDED="true" ID="Freemind_Link_1562424257" MODIFIED="1121447029922" TEXT="Moveable Nodes">
+<node COLOR="#00b439" CREATED="1120682135416" FOLDED="true" ID="Freemind_Link_1562424257" MODIFIED="1125341870140" TEXT="Moveable Nodes">
 <font NAME="SansSerif" SIZE="16"/>
 <hook NAME="accessories/plugins/NodeNote.properties">
-<text>Approaching the inner side (i.e. the side that is closer to the root node) of a node you&apos;ll notice that the mouse cursor changes and that a small ellipsis appears. &#xa;In this area you can simply drag and drop the node pressing the (left) mouse button.&#xa;&#xa;Moreover, if you press the control key simultaneously, all nodes on the same level get a bigger or smaller spacing. &#xa;In other words, the siblings of the moved nodes get more or less space in between. Just try it out.&#xa;</text>
+<text>Approaching the inner side (i.e. the side that is closer to the root node) of a node you&apos;ll notice that the mouse cursor changes and that a small ellipsis appears. &#xa;In this area you can simply drag and move the node pressing the (left) mouse button.&#xa;&#xa;Moreover, if you press the control key simultaneously, all nodes on the same level get a bigger or smaller spacing. &#xa;In other words, the siblings of the moved nodes get more or less space in between. Just try it out.&#xa;</text>
 </hook>
 <node COLOR="#990000" CREATED="1121445404844" ID="Freemind_Link_27697277" MODIFIED="1121445408412" TEXT="&lt;html&gt;&lt;img src=&quot;bild12.png&quot;&gt;">
 <font NAME="SansSerif" SIZE="14"/>
@@ -23,7 +23,7 @@
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 </node>
-<node COLOR="#00b439" CREATED="1120682634406" FOLDED="true" ID="Freemind_Link_1694174554" MODIFIED="1120859349554" TEXT="Backgroundcolor of Nodes">
+<node COLOR="#00b439" CREATED="1120682634406" FOLDED="true" ID="Freemind_Link_1694174554" MODIFIED="1125341812153" TEXT="Background Color of Nodes">
 <font NAME="SansSerif" SIZE="16"/>
 <node COLOR="#990000" CREATED="1121445423274" ID="Freemind_Link_206910105" MODIFIED="1121445427056" TEXT="&lt;html&gt;&lt;img src=&quot;bild14.png&quot;&gt;">
 <font NAME="SansSerif" SIZE="14"/>
@@ -41,7 +41,7 @@
 </node>
 <node COLOR="#0033ff" CREATED="1120682411016" ID="Freemind_Link_858284959" MODIFIED="1120859280653" POSITION="right" TEXT="Functionality">
 <font NAME="SansSerif" SIZE="18"/>
-<node COLOR="#00b439" CREATED="1120682415766" FOLDED="true" ID="Freemind_Link_851601643" MODIFIED="1120859289254" TEXT="Encrypted nodes/maps">
+<node COLOR="#00b439" CREATED="1120682415766" FOLDED="true" ID="Freemind_Link_851601643" MODIFIED="1125341824536" TEXT="Encrypted Nodes and Maps">
 <font NAME="SansSerif" SIZE="16"/>
 <node COLOR="#990000" CREATED="1121445491803" ID="Freemind_Link_1268868774" MODIFIED="1121445495703" TEXT="&lt;html&gt;&lt;img src=&quot;bild16.png&quot;&gt;">
 <font NAME="SansSerif" SIZE="14"/>
@@ -113,7 +113,7 @@
 <font NAME="SansSerif" SIZE="14"/>
 <node COLOR="#111111" CREATED="1121445629548" ID="Freemind_Link_510395983" MODIFIED="1121445633580" TEXT="&lt;html&gt;&lt;img src=&quot;bild3.png&quot;&gt;"/>
 </node>
-<node COLOR="#990000" CREATED="1120682696102" ID="Freemind_Link_717180448" MODIFIED="1121446171456" TEXT="Creation/Modification Times">
+<node COLOR="#990000" CREATED="1120682696102" ID="Freemind_Link_717180448" MODIFIED="1125341843782" TEXT="Times of Creation and Modification">
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 <node COLOR="#990000" CREATED="1121446174304" ID="Freemind_Link_1948795635" MODIFIED="1121446197371" TEXT="Reminder">

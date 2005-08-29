@@ -46,7 +46,7 @@ external 'isxbb_KillTimer@files:isxbb.dll stdcall';
 
 [Setup]
 AppName=FreeMind
-AppVerName=FreeMind 0.8.0RC5
+AppVerName=FreeMind 0.8.0
 AppPublisherURL=http://freemind.sourceforge.net
 AppSupportURL=http://freemind.sourceforge.net
 AppUpdatesURL=http://freemind.sourceforge.net
@@ -59,7 +59,7 @@ WindowVisible=true
 
 AppCopyright=Copyright © 2005 Christian Foltin and others
 ;AppCopyright=Copyright © {code:InstallationDate}
-AppVersion=0.8.0RC5
+AppVersion=0.8.0
 InfoAfterFile=after.txt
 InfoBeforeFile=before.txt
 PrivilegesRequired=admin
@@ -70,7 +70,7 @@ AppID=B991B020-2968-11D8-AF23-444553540000
 UninstallRestartComputer=false
 ChangesAssociations=true
 FlatComponentsList=false
-OutputBaseFilename=FreeMind-Windows-Installer-0_8_0RC5
+OutputBaseFilename=FreeMind-Windows-Installer-0_8_0
 SolidCompression=false
 ; old: InternalCompressLevel=9
 Compression=zip/9
@@ -135,8 +135,11 @@ begin
 	if (AVersion = '1.4') or (AVersion = '1.5') then
 		Result := True;
   end;
-  // Java 1.4 not found/detected
-  if Result = False then	
+	if AVersion = '1.5' then
+		Result := True;
+  end;
+
+  if Result = False then	// Java 1.4 not found/detected
   begin
 	if MsgBox( 'Java 1.4 or greater not detected - Continue with installation ?', mbError, MB_YESNO) = MRYES then
 		Result := True
