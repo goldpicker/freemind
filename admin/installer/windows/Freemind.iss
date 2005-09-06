@@ -70,7 +70,7 @@ AppID=B991B020-2968-11D8-AF23-444553540000
 UninstallRestartComputer=false
 ChangesAssociations=true
 FlatComponentsList=false
-OutputBaseFilename=FreeMind-Windows-Installer-0_8_0
+OutputBaseFilename=FreeMind-Windows-Installer-0_8_0-max
 SolidCompression=false
 ; old: InternalCompressLevel=9
 Compression=zip/9
@@ -92,7 +92,7 @@ Source: ..\..\..\bin\dist\Freemind.bat; DestDir: {app}; Flags: promptifolder ove
 Source: ..\..\..\bin\dist\accessories\*.*; DestDir: {app}\accessories; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\doc\freemind.mm; DestDir: {app}\doc; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\lib\*.*; DestDir: {app}\lib; Flags: promptifolder overwritereadonly  recursesubdirs
-; Source: ..\..\..\bin\dist\plugins\*.*; DestDir: {app}\plugins; Flags: promptifolder overwritereadonly  recursesubdirs
+Source: ..\..\..\bin\dist\plugins\*.*; DestDir: {app}\plugins; Flags: promptifolder overwritereadonly  recursesubdirs
 Source: license.txt; DestDir: {app}; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\patterns.xml; DestDir: {app}; Flags: promptifolder overwritereadonly
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
@@ -132,12 +132,13 @@ begin
   Result := False;
   if RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\JavaSoft\Java Runtime Environment', 'CurrentVersion', AVersion) then
   begin
-	if (AVersion = '1.4') or (AVersion = '1.5') then
-		Result := True;
-  end;
-	if AVersion = '1.5' then
-		Result := True;
-  end;
+    	if (AVersion = '1.4') or (AVersion = '1.5') then
+    		Result := True;
+      end;
+    	if AVersion = '1.5' then
+    		Result := True;
+      end;
+  end.
 
   if Result = False then	// Java 1.4 not found/detected
   begin

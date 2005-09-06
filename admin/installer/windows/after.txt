@@ -3,6 +3,9 @@
 
 The current project director is Daniel Polansky and Christian Foltin is the current project manager. 
 
+Version 0.8.0 is released due to the major contributions of Christian Foltin and Dimitri Polivaev, quality and documentation support of Daniel Polansky, our translators, our linux packager Eric Lavarde and many others.
+
+
 Version 0.8.0RC5 is a release candidate version of 0.8.0 including mindmanager import and open office export.
 
 Version 0.8.0RC3 is a release candidate version of 0.8.0 including undo, movable nodes and many more with contributions by Christian Foltin, Dimitri Polivaev and others.
