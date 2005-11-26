@@ -49,6 +49,7 @@ class visorFreeMind.Browser {
 	private var aux_ta=null;
 	private var initialization:Boolean=true;
 	private var numWaitingImages:Number=0; //When we have images, we have to wait for then loaded
+	private var imgsLoaded=false;
 	//Buttons
 	private var resizer;
 	private var bBack;
@@ -87,6 +88,18 @@ class visorFreeMind.Browser {
 		createInfoWindow();
 		buttonsCreator.addToolTipsButtons();
 		keyControler=new  KeyControler(this);
+		//Añadimos un control de frames
+		mc_container.browser=this;
+		mc_container.onEnterFrame=function(){
+			this.browser.checkImagesLoaded();
+		}	}
+
+	function checkImagesLoaded(){
+		if(imgsLoaded==true){
+			trace("imgsloaded");
+			relocateMindMap();
+			imgsLoaded=false;
+		}
 	}
 
 
@@ -110,7 +123,7 @@ class visorFreeMind.Browser {
 		numWaitingImages++;
 	}
 
-	public function onLoadInit(target){
+	public function onLoadComplete(target){
 		numWaitingImages--;
 		validLoaded();
 	}
@@ -121,8 +134,9 @@ class visorFreeMind.Browser {
 	}
 
 	public function validLoaded(){
-		if(numWaitingImages==0)
-			relocateMindMap();
+		if(numWaitingImages==0){
+			imgsLoaded=true;
+		}
 	}
 	////////////////////////// END LOADING IMAGES ////////////////
 

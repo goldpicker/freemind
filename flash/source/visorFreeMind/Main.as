@@ -32,7 +32,6 @@ class visorFreeMind.Main {
 			_root.onEnterFrame = function()
 				{
 					Main.run();
-					_root.onEnterFrame = null
 				});
 
 		static function redefineRightMenu(){
@@ -59,9 +58,13 @@ class visorFreeMind.Main {
 		}
 		
 		
+		static var initied=false;
 		static public function run ():Boolean
 	   {
-		   Logger.trace("Starting flash FreeMind Browser",2);
+	   	   if(initied==true)return true;
+	   	   else initied=true;
+	   	   Flashout.init();
+		   trace("Starting flash FreeMind Browser",2);
 
 			// set the Flash movie to have a fixed anchor
 		    // in the top left corner of the screen.

@@ -511,7 +511,7 @@ return nice;
 	}
 
 	static public  function genLink(mc_padre){
-		var link=mc_padre.createEmptyMovieClip("link",2);
+		var link=mc_padre.createEmptyMovieClip("link",4);
 		var color=0xEE0000;
 		link.lineStyle(1,color,100);
 		link.beginFill(color,100);
@@ -532,7 +532,7 @@ return nice;
 	}
 
 	static public  function get_mm_link2(mc_padre){ //butterfly
-		var butterfly=mc_padre.createEmptyMovieClip("butterfly",2);
+		var butterfly=mc_padre.createEmptyMovieClip("butterfly",4);
 		var color=0xEE0000;
 
 		butterfly.lineStyle(0,0x00EE00,100);
@@ -683,7 +683,7 @@ return nice;
 	}
 
 	static public function get_mm_link(mc_padre,depth){
-		var link=mc_padre.createEmptyMovieClip("link",2);
+		var link=mc_padre.createEmptyMovieClip("link",4);
 		var color=0xEE0000;
 
 		link.lineStyle(0,0x000000,100);

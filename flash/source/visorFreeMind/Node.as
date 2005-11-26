@@ -429,9 +429,10 @@ class visorFreeMind.Node {
 	}
 
 	public function crearTextField(name_txt:String){
-		if(text.indexOf("<html>")>=0 && text.indexOf(".jpg")>=0){
+		if(text.indexOf("<html>")>=0 && ( text.indexOf(".jpg")>=0 || 
+			text.indexOf(".gif")>=0 || text.indexOf(".png")>=0 )){
 			var start=text.indexOf("img src=")+9;
-			var length=text.indexOf(".jpg")+4-start;
+			var length=text.indexOf(".")+4-start;
 			// have to wait for the image load.
 			var cont_image=ref_mc.node_txt.createEmptyMovieClip(name_txt,2);
 			//Have to use the Flash Loader
