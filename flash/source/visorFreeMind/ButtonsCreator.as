@@ -46,7 +46,7 @@ class visorFreeMind.ButtonsCreator{
 	public function ButtonsCreator(browser:Browser){
 		this.browser=browser;
 		resetMainColor();
-		Logger.trace("ButtonsCreator created");
+		trace("ButtonsCreator created");
 	}
 
 	function resetMainColor(){
@@ -58,7 +58,7 @@ class visorFreeMind.ButtonsCreator{
 		var nBlue= (color & 0xff)-0x33;
 		nBlue=nBlue>=0?nBlue:0;
 		this.mainColor=(nRed<<16 | nGreen<<8 |nBlue);
-		//Logger.trace(color+"("+nRed+","+nGreen+","+nBlue+")->"+this.mainColor+"\n");
+		//trace(color+"("+nRed+","+nGreen+","+nBlue+")->"+this.mainColor+"\n");
 		createSizeButtons(browser.mc_container);
 		createNavigationButtons(browser.mc_container);
 		relocateAllButtons();
@@ -193,7 +193,7 @@ class visorFreeMind.ButtonsCreator{
 			var x=_root._xmouse-this._x-1;
 			var y=_root._ymouse-this._y-1;
 			var i=Math.floor(x/12)+Math.floor(y/12)*3;
-			//Logger.trace("x:"+x+" y:"+y +" i: "+i);
+			//trace("x:"+x+" y:"+y +" i: "+i);
 			if(i>=0 && i<9){
 				this.browser.floor.changeBgColor(ButtonsCreator.colors[i]);
 				this.bc.resetMainColor();
@@ -330,7 +330,7 @@ class visorFreeMind.ButtonsCreator{
 			this.lineTo(1,0);
 			this.browser.withShadow= this.browser.withShadow?false:true;
 			Browser.setStaticAtr("withShadow",this.browser.withShadow);
-			Logger.trace("withShadow:"+Browser.getStaticAtr("withShadow","hi"));
+			trace("withShadow:"+Browser.getStaticAtr("withShadow","hi"));
 			if(this.browser.withShadow==true){
 				this.lineStyle(10,this.bc.mainColor,this.bc.alfa);
 				this.moveTo(0,0);

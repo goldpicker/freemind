@@ -139,7 +139,7 @@ class visorFreeMind.Node {
 		if(node_xml.attributes.HGAP!=undefined){
 			hgap=new Number(node_xml.attributes.HGAP);
 			if(hgap>0) hgap-=20;
-			//Logger.trace("hgap:"+hgap);
+			//trace("hgap:"+hgap);
 		}
 		
 		//SHIFT_Y
@@ -157,7 +157,7 @@ class visorFreeMind.Node {
 		//For eliminating blinking of the node, if with shadow
 		if(style!=1 && cbg!=0)
 			eventControler=ref_mc.box_txt;
-			
+		eventControler.useHandCursor = false;
 		activateEvents();
 	}
 
@@ -182,10 +182,10 @@ class visorFreeMind.Node {
 	}
 
 	public function activateNoteEvents(){
-		//Logger.trace("poniendo eventos");
+		//trace("poniendo eventos");
 		noteIcon.inst=this;
 		noteIcon.onRollOver=function(){
-			Logger.trace("NOTE ICON");
+			trace("NOTE ICON");
 			this.inst.browser.showTooltip(this.inst.note);
 		}
 		noteIcon.onRollOut=function(){
@@ -206,10 +206,11 @@ class visorFreeMind.Node {
 		eventControler.onPress=function(){
 			if(this.inst.node_xml.attributes.LINK != undefined && this.inst.link.hitTest(_root._xmouse,_root._ymouse,false)){
 				var url=this.inst.node_xml.attributes.LINK;
-				if(url.indexOf("http://") > -1 || url.indexOf(".mm")==-1)
+				this.inst.browser.hideTooltip();
+				if(url.indexOf("http://") > -1 || url.indexOf(".mm")==-1){
 					getURL(url,Node.openUrl);
-				else{
-					Logger.trace("loading url");
+				}else{
+					trace("loading url");
 					this.inst.browser.loadXML(url);
 				}
 				return;
@@ -221,7 +222,7 @@ class visorFreeMind.Node {
 					this.inst.folded=false;
 					this.inst.colorSelect();
 					if(this.inst==this.inst.browser.first_node){
-						Logger.trace("folding first"+this.inst.browser.first_node_left);
+						trace("folding first"+this.inst.browser.first_node_left);
 						this.inst.browser.first_node_left.folded=false;
 						this.inst.browser.first_node_left.node_xml.attributes.FOLDED="false";
 					}
@@ -252,13 +253,16 @@ class visorFreeMind.Node {
 				this.onMouseMove=function(){
 					if(this.inst.noteIcon.hitTest(_root._xmouse,_root._ymouse,false)){
 						this.inst.browser.showTooltip(this.inst.note);
+						this.useHandCursor = true;
 					}
 					else if(this.inst.link.hitTest(_root._xmouse,_root._ymouse,false)){
 						this.inst.browser.showTooltip(this.inst.node_xml.attributes.LINK);
+						this.useHandCursor = true;
 					}
 					else{
 						Node.currentOver=this.inst;
 						this.inst.browser.hideTooltip();
+						this.useHandCursor = false;
 					}
 				}
 			}
@@ -318,6 +322,7 @@ class visorFreeMind.Node {
 
 	// draw ovals/circles
 	private function circle2(x,y,width,height,color:Number){
+		trace ("Drowing circles");
 		var a=width;
 		var b=height;
 		var j=a*0.70711;
@@ -339,10 +344,11 @@ class visorFreeMind.Node {
 	}
 
 	private function circle(width,height,color:Number,alpha:Number,colorLine:Number){
+		trace ("Drowing circles");
 		box_txt.clear();
-		var x=width*0.5;
-		var y=height*0.5;
-		var a=x;
+		var x=(width-4)*0.5;
+		var y=(height-4)*0.5;
+		var a=width*0.5;
 		var b=height*0.80;
 		var j=a*0.70711;
 		var n=b*0.70711;
@@ -363,6 +369,7 @@ class visorFreeMind.Node {
 	}
 	// draw rounded rectangle
 	private function round_rectangle(w:Number,h:Number,color:Number,alpha:Number,colorLine:Number){
+		trace ("Drowing rounded rectangle");
 		box_txt.clear();
 
 		var incx=2;
@@ -395,6 +402,7 @@ class visorFreeMind.Node {
 	}
 
 	private function sel_subline(w:Number,h:Number,color:Number,alpha:Number,colorLine:Number){
+		trace ("sel_subline");
 		box_txt.clear();
 
 		var incx=2;
@@ -419,6 +427,7 @@ class visorFreeMind.Node {
 	}
 
 	private function subline(w:Number,h:Number,color:Number,alpha){
+		trace ("subline");
 		var a=0;
 		ref_mc.clear();
 		box_txt.clear();
@@ -429,39 +438,43 @@ class visorFreeMind.Node {
 	}
 
 	public function crearTextField(name_txt:String){
-		if(text.indexOf("<html>")>=0 && ( text.indexOf(".jpg")>=0 || 
-			text.indexOf(".gif")>=0 || text.indexOf(".png")>=0 )){
+		trace ("create TextField "+name_txt+" "+text);
+		if(text.indexOf("<html>")>=0 && text.indexOf("img src=")&&(text.indexOf(".jpg")>=0 || text.indexOf(".jpeg")>=0  || text.indexOf(".png")>=0 || text.indexOf(".gif")>=0 || text.indexOf(".JPG")>=0 || text.indexOf(".JPEG")>=0 || text.indexOf(".PNG")>=0 || text.indexOf(".GIF")>=0)){
 			var start=text.indexOf("img src=")+9;
-			var length=text.indexOf(".")+4-start;
+			var length;
+			if (text.indexOf(".jpg")>=0) length=text.indexOf(".jpg")+4-start;
+			else if (text.indexOf(".jpeg")>=0) length=text.indexOf(".jpeg")+4-start;
+			else if (text.indexOf(".png")>=0) length=text.indexOf(".png")+4-start;
+			else if (text.indexOf(".gif")>=0) length=text.indexOf(".gif")+4-start;
+			else if (text.indexOf(".JPG")>=0) length=text.indexOf(".JPG")+4-start;
+			else if (text.indexOf(".JPEG")>=0) length=text.indexOf(".JPEG")+4-start;
+			else if (text.indexOf(".PNG")>=0) length=text.indexOf(".PNG")+4-start;
+			else if (text.indexOf(".GIF")>=0) length=text.indexOf(".GIF")+4-start;
 			// have to wait for the image load.
-			var cont_image=ref_mc.node_txt.createEmptyMovieClip(name_txt,2);
+			var cont_image=ref_mc.node_txt.createEmptyMovieClip("node_image",2);
 			//Have to use the Flash Loader
 			browser.loadImage(text.substr(start,length),cont_image);
+			trace ("image "+ text.substr(start,length) + " loaded");
 			withImage=true;
-			return;
-
+			text=text.substr(0,start-10)+text.substr(start+length+2);
+			var aux_text=text.substr(0,start-16)+text.substr(start+length+2);
+			
+			trace("tras substr:"+text+"==");
+			trace("tras substr:"+aux_text+"==");
+			if(aux_text=="") return;
 		}
 
-		if(text.indexOf("<html>")>=0 && text.indexOf(".swf")>=0){
-			var start=text.indexOf("img src=")+9;
-			var length=text.indexOf(".swf")+4-start;
-			// have to wait for the image load.
-			var cont_image=ref_mc.node_txt.createEmptyMovieClip(name_txt,2);
-			//Have to use the Flash Loader
-			browser.loadImage(text.substr(start,length),cont_image);
-			withImage=true;
-			return;
 
-		}
-
-		ref_mc.node_txt.createTextField(name_txt,3,0,0,10,10);
+		ref_mc.node_txt.createTextField(name_txt,3,0,0,0,0);
 		var my_fmt:TextFormat = new TextFormat();
 		if(text.indexOf("<html>")>=0){
 			ref_mc.node_txt.node_txt.html=true;
 			ref_mc.node_txt.node_txt.multiline=true;
 			ref_mc.node_txt.node_txt.htmlText=text;
+			trace ("html text="+text+"--");			
 		}else{
 			ref_mc.node_txt.node_txt.text=text;
+			trace ("text="+text+"--");
 		}
 		var txt=ref_mc.node_txt.node_txt;
 		txt.background=false;
@@ -477,14 +490,20 @@ class visorFreeMind.Node {
 		my_fmt.bold=bold;
 		my_fmt.italic=italic;
 		txt.setTextFormat(my_fmt);
+		//WordWrap
+		if(txt._width>600){
+			txt._width=600;			
+			txt.wordWrap=true;
+		}
 
 	}
 
 	public function drawAroundNode(colorNoSel,alpha,isSelected){
+		trace ("draw around node");
 		ref_mc.clear();
 		if (colorNoSel==0)
 			alpha=0;
-		// 0= elipse, 1=fork , 2=bubble
+		// 0= ellipse, 1=fork , 2=bubble
 		
 		//n NODE_TXT
 		var n=ref_mc.node_txt;
@@ -500,7 +519,7 @@ class visorFreeMind.Node {
 					sombra._visible=true;
 				}
 			}
-		}// ELIPSE
+		}// ELLIPSE
 		else if(style==0){
 			circle(n._width+4, n._height+4,colorNoSel,alpha,cf);
 		}// FORK
@@ -520,83 +539,107 @@ class visorFreeMind.Node {
 
 
 	private function drawCircle(w,h,color){
-		if(!isRight) w=-4;
-		if(style==1)
+		trace ("draw Circle");
+		if(style==1){
+			if(!isRight) w=-4;
 		    circle2(w+2,h,2,2,color);
-		else
-			circle2(w+2,h/2,2,2,color);
+		}else{
+			if(!isRight) w=-9;
+			circle2(w+5,h/2,2,2,color);
+		}
 	}
 
 	public function draw(){
 		counter++;
 		crearTextField("node_txt");
-		//Logger.trace("drawing --->");
+		trace("drawing --->");
 
 		var iconsList=getIcons(node_xml);
 		for(var i=0;i<iconsList.length;i++){
 			var name=iconsList[i].replace("-","_");
+			trace ("icon "+name);
 			if(Icons["get_"+name]!=null){
 				addIcon(Icons["get_"+name](ref_mc.node_txt,i));
+				trace ("add icon "+name);
 			}
 		}
 		
 		addSpecialIcons();
 
-		if(withImage==false)
-			posElements();
+		if(withImage==false) 
+		posElements();
 
 		drawAroundNode(cbg,100,false);
 	}
 
-	function posElements(){
-		if(isRight){
-			//First icons
-			var initX=0;
-			var initY=(Math.max(ref_mc.node_txt.node_txt._height,16)-16)/2;
-			//Logger.trace(text+" "+ref_mc.node_txt.node_txt._height);
-			for(var i=0;i<listElements.length;i++){
-				listElements[i]._x=initX;
-				listElements[i]._y=initY;
-				initX+=listElements[i]._width;
-			}
-
-			ref_mc.node_txt.node_txt._x=initX;
-			initX+=ref_mc.node_txt.node_txt._width;
-			
-			if(noteIcon){
-				noteIcon._x=initX;
-				noteIcon._y=initY;
-				initX+=noteIcon._width;
-			}
-			if(link){
-				link._x=initX;
-				link._y=initY;
-			}
-		}else{
-			var initX=0;
-			var initY=(Math.max(ref_mc.node_txt.node_txt._height,16)-16)/2;
-			if(link){
-				link._x=initX;
-				link._y=initY;
-				initX+=link._width;
-			}
-			if(noteIcon){
-				noteIcon._x=initX;
-				noteIcon._y=initY;
-				initX+=noteIcon._width;
-			}
-			ref_mc.node_txt.node_txt._x=initX;
-			initX+=ref_mc.node_txt.node_txt._width;
-
-			for(var i=0;i<listElements.length;i++){
-				listElements[i]._x=initX;
-				listElements[i]._y=initY;
-				initX+=listElements[i]._width;
-			}
-
+	function calcInitIconY(){
+		var initY=0;
+		if(ref_mc.node_txt.node_txt!=undefined)
+			initY=(Math.max(ref_mc.node_txt.node_txt._height,16)-16)/2;
+		if (ref_mc.node_txt.node_image!=undefined){
+				var aux_y=(Math.max(ref_mc.node_txt.node_image._height,16)-16)/2;
+				if(initY<aux_y){
+					initY=(initY<aux_y?aux_y:initY);
+				}		
 		}
-		genShadow();
+		if(initY>600) initY=16;
+		return initY;
+	}
 
+	function posIcons(initX,initY){
+			for(var i=0;i<listElements.length;i++){
+				listElements[i]._x=initX;
+				listElements[i]._y=initY;
+				initX+=listElements[i]._width;
+			}
+		return initX;
+	}
+	
+	function posTextImag(initX,initY){
+		if (ref_mc.node_txt.node_image!=undefined){
+				ref_mc.node_txt.node_image._x=initX;
+				initX+=ref_mc.node_txt.node_image._width;
+			}
+
+		if(ref_mc.node_txt.node_txt!=undefined){
+			ref_mc.node_txt.node_txt._x=initX;
+			initX+=ref_mc.node_txt.node_txt._width;
+			trace ("long text="+ref_mc.node_txt.node_txt._width);
+		}
+		return initX;
+	}
+	
+	function posNoteLink(initX,initY){
+		if(noteIcon){
+			noteIcon._x=initX;
+			noteIcon._y=initY;
+			initX+=noteIcon._width+2;
+		}
+		if(link){
+			link._x=initX;
+			link._y=initY;
+			initX+=link._width+2;
+		}
+		return initX;
+	}
+	
+	function posElements(){
+		//First the maxY
+		var initY=calcInitIconY();
+		var initX=0;
+		//Now X
+		if(isRight){
+			initX=posIcons(0,initY);
+			initX=posTextImag(initX,initY);
+			posNoteLink(initX,initY);
+			
+		}else{
+			initX=posNoteLink(initX,initY);
+			initX=posTextImag(initX,initY);
+			initX=posIcons(initX,initY);
+		}
+
+		genShadow();
 	}
 
 	public function delShadow(){
@@ -607,24 +650,16 @@ class visorFreeMind.Node {
 	}
 	public function genShadow(){
 		delShadow();
-		if(style==2 && cbg!=0 && browser.withShadow){
+		if(style==2 && cbg!=0 && browser.withShadow && ref_mc.node_txt._width>0){
 			sombra=ref_mc.createEmptyMovieClip("sombra",10);
 			ref_mc.node_txt.dropShadow(8,6,4,0x555555,sombra);
 		}
 	}
 	
 	public function addIcon(icon){
+		trace ("add icon");
 		listElements.push(icon);
 		return;
-		var width=ref_mc.node_txt._width;
-		if(isRight){
-			icon._x=ref_mc.node_txt.node_txt._x;
-			ref_mc.node_txt.node_txt._x+=icon._width;
-		}else{
-			icon._x=width;
-		}
-
-		icon._y=(ref_mc.node_txt._height-icon._height)/2;
 	}
 
 	public function addSpecialIcons(){

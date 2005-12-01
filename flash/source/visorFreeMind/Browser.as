@@ -73,9 +73,10 @@ class visorFreeMind.Browser {
 
 	var keyControler; //Atends key events
 	var buttonsCreator;
+	var loading:Loading;
 
 	function Browser(file:String,_mc:MovieClip){
-		Logger.trace("new Browser, shadow="+withShadow,0);
+		trace("new Browser, shadow="+withShadow,0);
 		browser=this;
 		mcl.addListener(this); // For waiting for the load of all images
 		PrototypesCreator.init();
@@ -86,6 +87,7 @@ class visorFreeMind.Browser {
 		recalcIfResize();
 		createToolTip(); //node_txt en mc_container.
 		createInfoWindow();
+		loading=new Loading(this,mc_container);
 		buttonsCreator.addToolTipsButtons();
 		keyControler=new  KeyControler(this);
 		//Añadimos un control de frames
@@ -107,20 +109,25 @@ class visorFreeMind.Browser {
 	// In case STAGE size change, recalc positions
 	function recalcIfResize(){
 		Stage.addListener (this);
-		Logger.trace("redimensioning",0);
+		trace("redimensioning",0);
 	}
 
 	public function onResize(){
-		Logger.trace("redimension",0);
+		trace("redimension",0);
 		buttonsCreator.relocateAllButtons();
 		floor.fillFondo();
 		relocateMindMap();
 	}
 
+	public function showLoading(){
+		loading.show();
+		trace("showing lllllllllllllllllllooooading");
+	}
 	/////////////////////// FOR LOADING IMAGES //////////////////
 	public function loadImage(fileName,mc_target){
 		mcl.loadClip(fileName,mc_target);
 		numWaitingImages++;
+		showLoading();
 	}
 
 	public function onLoadComplete(target){
@@ -136,6 +143,7 @@ class visorFreeMind.Browser {
 	public function validLoaded(){
 		if(numWaitingImages==0){
 			imgsLoaded=true;
+			loading.hide();
 		}
 	}
 	////////////////////////// END LOADING IMAGES ////////////////
@@ -182,9 +190,9 @@ class visorFreeMind.Browser {
 
 
 	function createInfoWindow(){
-		Logger.trace("creating info creation");
+		trace("creating info creation");
 		if(mc_container.info==null){
-			Logger.trace("showing info creation");
+			trace("showing info creation");
 			mc_container.info=mc_container.createEmptyMovieClip("info",8);
 			mc_container.info.createEmptyMovieClip("tex_container",10);
 			mc_container.info.tex_container.createTextField("txt", 1, 0, 0,170,10);
@@ -198,7 +206,7 @@ class visorFreeMind.Browser {
 			txt.multiline = true;
 			txt.wordWrap = true;
 			txt.html = true;
-			txt.htmlText="<font color='#996611'><b>This is a free</b><br>FREEMIND BROWSER<br> <br><b>shortcuts</b><br>"+
+			txt.htmlText="<font color='#996611'><b>This is a free</b><br>FREEMIND BROWSER v.91<br> <br><b>shortcuts</b><br>"+
 			"LEFT : move left<br>"+
 			"RIGHT : move right<br>"+
 			"UP : move up<br>"+
@@ -213,8 +221,9 @@ class visorFreeMind.Browser {
 		}
 	}
 
+
 	function showInfo(texto){
-		Logger.trace("showing info"+mc_container.info);
+		trace("showing info"+mc_container.info);
 		var sombra=mc_container.info.createEmptyMovieClip("sombra",9);
 		mc_container.info.tex_container.dropShadow(8,4,4,0x777799,sombra);
 		mc_container.info._x=_root._xmouse+14;
@@ -268,16 +277,16 @@ class visorFreeMind.Browser {
 
 	function reposObjForViewing(tt){
 		var bbox=tt.getBounds(_root);
-		//Logger.trace(tt._x+" "+bbox.xMax+" "+Stage.width);
+		//trace(tt._x+" "+bbox.xMax+" "+Stage.width);
 		if(bbox.xMax>Stage.width){
 			var newval=Stage.width-bbox.xMax;
 			tt._x+=newval;
-			//Logger.trace("new x:"+tt._x+" newval:"+newval);
+			//trace("new x:"+tt._x+" newval:"+newval);
 		}
 		if(bbox.yMax>Stage.height){
 			var newval=Stage.height-bbox.yMax;
 			tt._y+=newval;
-			//Logger.trace("new x:"+tt._x+" newval:"+newval);
+			//trace("new x:"+tt._x+" newval:"+newval);
 		}
 	}
 	
@@ -311,7 +320,7 @@ class visorFreeMind.Browser {
 		mc_floor=floor.getCanvas();
 		/*
 		mc_floor.onRollOver=function(){
-				Logger.trace("entrando");
+				trace("entrando");
 				//getURL("javascript:giveFocus()");
 		}*/
 
@@ -349,7 +358,7 @@ class visorFreeMind.Browser {
 		gestHistory(jumpType);
 		saveOldPosition();
 		//Clean old Data.
-		//Logger.trace("jumpType "+jumpType);
+		//trace("jumpType "+jumpType);
 		if(jumpType!=2) {// 2=fold and unfold
 			resetData();
 			// clear floor.
@@ -710,7 +719,7 @@ class visorFreeMind.Browser {
 		if (loaded) {
 		Browser.browser.genMindMap(0);
 		} else {
-			Logger.trace("file not loaded!");
+			trace("file not loaded!");
 		}
 	}
 

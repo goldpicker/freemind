@@ -42,7 +42,7 @@ class visorFreeMind.KeyControler{
 					System.useCodepage = true;
 					System.setClipboard(Node.currentOver.text);
 					System.useCodepage = false;
-					Logger.trace(Node.currentOver.text);
+					trace(Node.currentOver.text);
 				}
 			}
 			
@@ -52,7 +52,7 @@ class visorFreeMind.KeyControler{
 				node_selectable=null;
 				browser.floor.makeDraggable();
 			}
-		Logger.trace("key:"+tecla+"ctrl:"+ctrl);
+		trace("key:"+tecla+"ctrl:"+ctrl);
 	}
 
 	public function onKeyDown(){

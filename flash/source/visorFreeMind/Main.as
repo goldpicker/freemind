@@ -27,6 +27,7 @@ import visorFreeMind.*;
 */
 class visorFreeMind.Main {
 		
+		static var browser;
 			 // First called function from MTASC
 		static public var startApp = (
 			_root.onEnterFrame = function()
@@ -38,17 +39,35 @@ class visorFreeMind.Main {
 			var mycm=new ContextMenu();
 			mycm.hideBuiltInItems();
 			mycm.onSelect = visorFreeMind.Main.copyInfoNodeOver;
-			var copy=new ContextMenuItem("copy to clipboard",visorFreeMind.Main.getNodeText);
+			var copy=new ContextMenuItem("move back",visorFreeMind.Main.backward);
+			mycm.customItems.push(copy);
+			copy=new ContextMenuItem("move forward",visorFreeMind.Main.forward);
+			mycm.customItems.push(copy);
+			copy=new ContextMenuItem("copy to clipboard",visorFreeMind.Main.getNodeText);
 			mycm.customItems.push(copy);
 			_root.menu = mycm;
 		}
 		
+		static function backward(){
+			if(browser.posXmls>0){
+				browser.posXmls--;
+				browser.fileName=browser.visitedMM[browser.posXmls];
+				browser.genMindMap(3);
+			}
+		}
+		static function forward(){
+			if(browser.posXmls<(browser.visitedMM.length-1)){
+			browser.posXmls++;
+			browser.fileName=browser.visitedMM[browser.posXmls];
+			browser.genMindMap(3);
+			}
+		}		
 		static function copyInfoNodeOver(){
 			Node.saveTxt();
 			if(Node.lastOverTxt=="")
-				_root.menu.customItems[0].enabled = false;
+				_root.menu.customItems[2].enabled = false;
 			else
-				_root.menu.customItems[0].enabled = true;
+				_root.menu.customItems[2].enabled = true;
 		}
 		
 		static 	function getNodeText(){
@@ -78,7 +97,6 @@ class visorFreeMind.Main {
 		    // of the operating system running the player
 			System.useCodepage = false;
 
-		    redefineRightMenu();
 		   // If not defined init mindmap file, use default (index.mm)
 		   if(_root.openUrl!=null)
 		   		Node.openUrl=_root.openUrl;
@@ -87,13 +105,16 @@ class visorFreeMind.Main {
 		   if(_root.mainNodeShape=="rectangle")
 		   		Node.mainNodeShape="rectangle";
 		   if(_root.initLoadFile!=null){
-				Logger.trace("initial mindmap: "+_root.initLoadFile,2);
-				var browser=new Browser(_root.initLoadFile,_root);
+				trace("initial mindmap: "+_root.initLoadFile,2);
+				browser=new Browser(_root.initLoadFile,_root);
 		   }
 			else{
-				Logger.trace("initial mindmap: index.mm",2);
-				var browser=new Browser("index.mm",_root);
+				trace("initial mindmap: index.mm",2);
+				browser=new Browser("index.mm",_root);
 			}
+
+		    redefineRightMenu();
+
 			return true;
 		}
 
