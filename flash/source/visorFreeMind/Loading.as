@@ -30,7 +30,6 @@ class visorFreeMind.Loading {
 		cont_load.loading=this;
 		cont_load.pos=0;
 		cont_load.onEnterFrame=function(){
-			trace("f1");
 			if(this._visible==true){
 				this.clear();
 				var x=0;
@@ -44,11 +43,9 @@ class visorFreeMind.Loading {
 				this.pos=(this.pos+1)%5;
 			}
 		}
-		trace("CCCCCCCCCCCCCRRRRRRRRRRRR2");
 	}
 
 	function drawCircle(x,alfa){
-		trace("dibujando LOADING");
 		cont_load.lineStyle(16,mainColor,alfa);
 		cont_load.moveTo(x+0,0);
 		cont_load.lineTo(x+1,0);
