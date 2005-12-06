@@ -26,6 +26,7 @@ import visorFreeMind.*;
 */
 class visorFreeMind.Edge {
 	public static var num:Number=1000; // counter of edges
+	public static var elipseMode:Boolean=true;
 	private var nombre:String; // Not used
 	private var ref_mc:MovieClip;
 	private var gap:Number=0; //linked with size of Nodes
@@ -74,7 +75,8 @@ class visorFreeMind.Edge {
 			break;
 		case 3:
 			ref_mc.beginFill(color,alpha);
-			ref_mc.lineStyle(or_x,color,alpha);
+			ref_mc.lineStyle(0,color,alpha);
+			
 			ref_mc.moveTo(or_x,or_y+h_thickness);
 			ref_mc.lineTo(ddx,ddy);
 			ref_mc.lineTo(or_x,or_y-h_thickness);
@@ -92,8 +94,116 @@ class visorFreeMind.Edge {
 		}
 	}
 
+	private function drawEdgeCenter(or_x,or_y,ang,or_x2,or_y2,ddx,ddy,color,alpha,colorOrig){
+		var thickness=_dest.lineWidth;
+		var h_thickness=_dest.lineWidth*0.5;
+		//0=bezier, 1=linear,2=sharp_bezier,3=sharp_linear;4=rectangular
+		switch(_dest.styleLine){
+		case 0:
+			ref_mc.lineStyle(thickness,color,alpha);
+			var r=Math.sqrt((ddx-or_x)*(ddx-or_x)+(ddy-or_y)*(ddy-or_y))*0.3;
+			var cx=or_x+r*Math.cos(ang);
+			var cy=or_y+r*Math.sin(ang);
+			var cx2=ddx-r*ddx/Math.abs(ddx);
+			var cy2=ddy;
+			ref_mc.moveTo(or_x,or_y);
+			ref_mc.curveTo(cx,cy,(cx+cx2)/2,(cy+cy2)/2);
+			ref_mc.curveTo(cx2,ddy,ddx,ddy);
+			break;
+		case 1:
+			ref_mc.lineStyle(thickness,color,alpha);
+			ref_mc.moveTo(or_x,or_y);
+			ref_mc.lineTo(ddx,ddy);
+			//ref_mc.dashTo(or_x,or_y, ddx,ddy, 1, 2,thickness);
+			break;
+		case 2:
+			ref_mc.beginFill(_dest.cf,alpha);
+			ref_mc.lineStyle(0,color,alpha);
+			var r=Math.sqrt((ddx-or_x)*(ddx-or_x)+(ddy-or_y)*(ddy-or_y))*0.3;
+			var cx=or_x+r*Math.cos(ang);
+			var cy=or_y+r*Math.sin(ang);
+			var cxx=or_x2+r*Math.cos(ang);
+			var cyy=or_y2+r*Math.sin(ang);
+			var cx2=ddx-r*ddx/Math.abs(ddx);
+			var cy2=ddy;
+			ref_mc.moveTo(or_x,or_y);
+			ref_mc.curveTo(cx,cy,(cx+cx2)/2,(cy+cy2)/2);
+			ref_mc.curveTo(cx2,ddy,ddx,ddy);
+			ref_mc.curveTo(cx2,cy2,(cxx+cx2)/2,(cyy+cy2)/2);
+			ref_mc.curveTo(cxx,cyy,or_x2,or_y2);
+			ref_mc.lineTo(or_x,or_y);
+			ref_mc.endFill();
+			break;
+		case 3:
+			ref_mc.beginFill(color,alpha);
+			ref_mc.lineStyle(0,color,alpha);
+			ref_mc.moveTo(or_x,or_y);
+			ref_mc.lineTo(ddx,ddy);
+			ref_mc.lineTo(or_x2,or_y2);
+			ref_mc.lineTo(or_x,or_y);
+			ref_mc.endFill();
+			break;
+		case 4:
+			//ref_mc.lineStyle(_orig.lineWidth,colorOrig,alpha);
+			ref_mc.lineStyle(thickness,color,alpha);
+			ref_mc.moveTo(or_x,or_y);
+			ref_mc.lineTo(or_x+10*Math.abs(ddx)/ddx,or_y);
+			ref_mc.lineTo(or_x+10*Math.abs(ddx)/ddx,ddy);
+			ref_mc.lineTo(ddx,ddy);
+			break;
+		}
+	}
+
+	private function intersec(x,y){
+			var angle_d=Math.atan2(y,x);
+			var radian = Math.atan2(_orig.ref_mc._width*Math.tan(angle_d),_orig.ref_mc._height);
+			var angle_d_360=((angle_d*180/Math.PI)+360)%360;
+			if(angle_d_360>90 && angle_d_360<270)
+				radian+=Math.PI;
+			var w=(_orig.ref_mc._width)*Math.cos(radian)/2;
+			var h=(_orig.ref_mc._height)*Math.sin(radian)/2;
+			var pos=[w,h,radian];
+			return pos;
+	}
+	
+	private function drawCenter(){
+			var thickness=_dest.lineWidth;
+			var destThickness=0;
+			var h_thickness=_dest.lineWidth*0.5;
+		
+			var bo=_orig.ref_mc.getBounds(ref_mc._parent); 
+
+			ref_mc._x=bo.xMin+(bo.xMax-bo.xMin)/2;
+			ref_mc._y=bo.yMin+(bo.yMax-bo.yMin)/2;
+			
+			var ddx;
+			var ddy;
+			if(_orig.ref_mc._x < _dest.ref_mc._x){ // RIGHT
+				ddx=_dest.ref_mc._x-((_dest.style==1)?0:(_dest.ref_mc.box_txt._width-_dest.ref_mc.node_txt._width)/2)- ref_mc._x;
+				 ddy=_dest.ref_mc._y -  ref_mc._y +((_dest.style==1)? _dest.ref_mc.node_txt._height -destThickness: _dest.ref_mc.node_txt._height/2);
+			}else { // LEFT
+				ddx=_dest.ref_mc._x+_dest.ref_mc.node_txt._width+((_dest.style==1)?0:(_dest.ref_mc.box_txt._width-_dest.ref_mc.node_txt._width)/2)- ref_mc._x;
+				ddy=_dest.ref_mc._y -  ref_mc._y +((_dest.style==1)? _dest.ref_mc.node_txt._height -destThickness: _dest.ref_mc.node_txt._height/2);
+			}			
+			
+			var pos=intersec(ddx,ddy);
+			var pos2=pos;//Case aditional points
+			if(_dest.styleLine==3 || _dest.styleLine==2){//Calc aditional points in the elipse
+				pos2=intersec(pos[0]-h_thickness*Math.cos(pos[2]+Math.PI/2),pos[1]-h_thickness*Math.sin(pos[2]+Math.PI/2));
+				pos=intersec(pos[0]+h_thickness*Math.cos(pos[2]+Math.PI/2),pos[1]+h_thickness*Math.sin(pos[2]+Math.PI/2));
+			}
+			drawEdgeCenter(pos[0],pos[1],pos[2],pos2[0],pos2[1],ddx,ddy,_dest.cf,100,_orig.cf);
+	}
+	
 	public function draw(){
 		ref_mc.clear();
+		if(_orig.style==0 && elipseMode)//=Central Node
+			drawCenter();
+		else
+			drawSimple();
+	}
+	
+	private function drawSimple(){
 		var ddx,ddy;
 		var destThickness=0;
 		var origThickness=0;

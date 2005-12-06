@@ -562,6 +562,8 @@ class visorFreeMind.Browser {
 		  styleNode=2;
 		if(node_xml.attributes.STYLE=="fork")
 		  styleNode=1;
+		if(node_xml.attributes.STYLE=="elipse")
+		  styleNode=0;
 		return styleNode;
 	}
 

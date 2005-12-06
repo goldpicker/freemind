@@ -28,12 +28,6 @@ import visorFreeMind.*;
 class visorFreeMind.Main {
 		
 		static var browser;
-			 // First called function from MTASC
-		static public var startApp = (
-			_root.onEnterFrame = function()
-				{
-					Main.run();
-				});
 
 		static function redefineRightMenu(){
 			var mycm=new ContextMenu();
@@ -78,6 +72,13 @@ class visorFreeMind.Main {
 		
 		
 		static var initied=false;
+		public static function main():Void{
+						_root.onEnterFrame = function()
+				{
+					Main.run();
+				};
+		}
+		
 		static public function run ():Boolean
 	   {
 	   	   if(initied==true)return true;
@@ -100,6 +101,10 @@ class visorFreeMind.Main {
 		   // If not defined init mindmap file, use default (index.mm)
 		   if(_root.openUrl!=null)
 		   		Node.openUrl=_root.openUrl;
+		   if(_root.noElipseMode!=null)
+		   		Edge.elipseMode=false;
+		   if(!isNaN(_root.defaultWordWrap))
+		   		Node.defaultWordWrap=_root.defaultWordWrap;
 		   if(_root.startCollapsedToLevel!=null)
 		   		Browser.startCollapsedToLevel=_root.startCollapsedToLevel;
 		   if(_root.mainNodeShape=="rectangle")

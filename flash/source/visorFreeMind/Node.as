@@ -29,7 +29,7 @@ class visorFreeMind.Node {
 	public static var num:Number=2000; // counter of nodes
 	public static var colorSel:Number=0xBBBBBB; // select color
 	public static var colorNoSel:Number=0xFFDD44; // unselect color
-
+	public static var defaultWordWrap:Number=600;
 	public static var currentOver:Node=null;
 	public static var lastOverTxt=null;
 	public static var openUrl="_blank";
@@ -491,8 +491,8 @@ class visorFreeMind.Node {
 		my_fmt.italic=italic;
 		txt.setTextFormat(my_fmt);
 		//WordWrap
-		if(txt._width>600){
-			txt._width=600;			
+		if(txt._width>defaultWordWrap){
+			txt._width=defaultWordWrap;			
 			txt.wordWrap=true;
 		}
 
