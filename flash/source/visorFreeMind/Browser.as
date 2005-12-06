@@ -206,7 +206,7 @@ class visorFreeMind.Browser {
 			txt.multiline = true;
 			txt.wordWrap = true;
 			txt.html = true;
-			txt.htmlText="<font color='#996611'><b>This is a free</b><br>FREEMIND BROWSER v.91<br> <br><b>shortcuts</b><br>"+
+			txt.htmlText="<font color='#996611'><b>This is a free</b><br>FREEMIND BROWSER v.92<br> <br><b>shortcuts</b><br>"+
 			"LEFT : move left<br>"+
 			"RIGHT : move right<br>"+
 			"UP : move up<br>"+
