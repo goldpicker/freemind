@@ -457,11 +457,11 @@ class visorFreeMind.Node {
 			trace ("image "+ text.substr(start,length) + " loaded");
 			withImage=true;
 			text=text.substr(0,start-10)+text.substr(start+length+2);
-			var aux_text=text.substr(0,start-16)+text.substr(start+length+2);
+			//var aux_text=text.substr(0,start-16)+text.substr(start+length+2);
 			
 			trace("tras substr:"+text+"==");
-			trace("tras substr:"+aux_text+"==");
-			if(aux_text=="") return;
+			//trace("tras substr:"+aux_text+"==");
+			if(text=="<html>") return;
 		}
 
 

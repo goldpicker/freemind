@@ -154,14 +154,14 @@ class visorFreeMind.Edge {
 		}
 	}
 
-	private function intersec(x,y){
+	private function intersec(x,y,orig_w,orig_h){
 			var angle_d=Math.atan2(y,x);
-			var radian = Math.atan2(_orig.ref_mc._width*Math.tan(angle_d),_orig.ref_mc._height);
+			var radian = Math.atan2(orig_w*Math.tan(angle_d),orig_h);
 			var angle_d_360=((angle_d*180/Math.PI)+360)%360;
 			if(angle_d_360>90 && angle_d_360<270)
 				radian+=Math.PI;
-			var w=(_orig.ref_mc._width)*Math.cos(radian)/2;
-			var h=(_orig.ref_mc._height)*Math.sin(radian)/2;
+			var w=(orig_w)*Math.cos(radian)/2;
+			var h=(orig_h)*Math.sin(radian)/2;
 			var pos=[w,h,radian];
 			return pos;
 	}
@@ -175,6 +175,8 @@ class visorFreeMind.Edge {
 
 			ref_mc._x=bo.xMin+(bo.xMax-bo.xMin)/2;
 			ref_mc._y=bo.yMin+(bo.yMax-bo.yMin)/2;
+			var ow=bo.xMax-bo.xMin;
+			var oh=bo.yMax-bo.yMin;
 			
 			var ddx;
 			var ddy;
@@ -186,11 +188,14 @@ class visorFreeMind.Edge {
 				ddy=_dest.ref_mc._y -  ref_mc._y +((_dest.style==1)? _dest.ref_mc.node_txt._height -destThickness: _dest.ref_mc.node_txt._height/2);
 			}			
 			
-			var pos=intersec(ddx,ddy);
+			var pos=intersec(ddx,ddy,ow,oh);
+			trace(pos[0]+" -- "+pos[1]+" "+ddx+" "+ddy+" "+_orig.ref_mc._width+" "+_orig.ref_mc._height+" "+ow+" : "+oh);
 			var pos2=pos;//Case aditional points
 			if(_dest.styleLine==3 || _dest.styleLine==2){//Calc aditional points in the elipse
-				pos2=intersec(pos[0]-h_thickness*Math.cos(pos[2]+Math.PI/2),pos[1]-h_thickness*Math.sin(pos[2]+Math.PI/2));
-				pos=intersec(pos[0]+h_thickness*Math.cos(pos[2]+Math.PI/2),pos[1]+h_thickness*Math.sin(pos[2]+Math.PI/2));
+				var despx=Math.cos(pos[2]+Math.PI/2);
+				var despy=Math.sin(pos[2]+Math.PI/2);
+				pos2=intersec(pos[0]-h_thickness*despx,pos[1]-h_thickness*despy,ow,oh);
+				pos=intersec(pos[0]+h_thickness*despx,pos[1]+h_thickness*despy,ow,oh);
 			}
 			drawEdgeCenter(pos[0],pos[1],pos[2],pos2[0],pos2[1],ddx,ddy,_dest.cf,100,_orig.cf);
 	}
