@@ -510,8 +510,8 @@ return nice;
 		return knotify;
 	}
 
-	static public  function genLink(mc_padre){
-		var link=mc_padre.createEmptyMovieClip("link",4);
+	static public  function genLink(mc_padre,depth){
+		var link=mc_padre.createEmptyMovieClip("link",6+depth);
 		var color=0xEE0000;
 		link.lineStyle(1,color,100);
 		link.beginFill(color,100);
@@ -531,8 +531,8 @@ return nice;
 		return link;
 	}
 
-	static public  function get_mm_link2(mc_padre){ //butterfly
-		var butterfly=mc_padre.createEmptyMovieClip("butterfly",4);
+	static public  function get_mm_link2(mc_padre,depth){ //butterfly
+		var butterfly=mc_padre.createEmptyMovieClip("butterfly",6+depth);
 		var color=0xEE0000;
 
 		butterfly.lineStyle(0,0x00EE00,100);
@@ -621,6 +621,35 @@ return nice;
 		return Note;
 	}
 
+	static public  function drawFlashDashLine(mc,s_x,s_y,dist,dl,sl){
+		var x=s_x;
+		var max_x=x+dist;
+		while(max_x>(x+dl)){
+			mc.moveTo(x,s_y);
+			mc.lineTo(x+dl,s_y);
+			x=x+dl+sl;
+		}
+		if(x<max_x){
+			mc.moveTo(x,s_y);
+			mc.lineTo(max_x,s_y);
+		}		
+	}
+	
+	static public  function get_Atrs(mc_padre,depth){ //Mail
+		var Atrs=mc_padre.createEmptyMovieClip("Atrs",6+depth);
+		var color=0x000066;
+		Atrs.lineStyle(1,0x111111,100);
+		drawFlashDashLine(Atrs,1.5,2,12,4,2);
+		drawFlashDashLine(Atrs,1.5,8,12,4,2);
+		drawFlashDashLine(Atrs,1.5,10,12,4,2);
+		drawFlashDashLine(Atrs,1.5,12,12,4,2);
+		Atrs.lineStyle(3,0x111166,100);
+		drawFlashDashLine(Atrs,1,5,12,12,1);
+		Atrs.lineStyle(1,0xeeeeff,100);
+		drawFlashDashLine(Atrs,1,5,11,5,1);
+		return Atrs;
+	}
+
 	static public  function get_kaddressbook(mc_padre,depth){ //Phone
 		var phone=mc_padre.createEmptyMovieClip("phone",6+depth);
 		var color=0xDDDBB9;
@@ -683,7 +712,7 @@ return nice;
 	}
 
 	static public function get_mm_link(mc_padre,depth){
-		var link=mc_padre.createEmptyMovieClip("link",4);
+		var link=mc_padre.createEmptyMovieClip("link",6+depth);
 		var color=0xEE0000;
 
 		link.lineStyle(0,0x000000,100);

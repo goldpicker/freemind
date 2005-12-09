@@ -189,7 +189,7 @@ class visorFreeMind.Edge {
 			}			
 			
 			var pos=intersec(ddx,ddy,ow,oh);
-			trace(pos[0]+" -- "+pos[1]+" "+ddx+" "+ddy+" "+_orig.ref_mc._width+" "+_orig.ref_mc._height+" "+ow+" : "+oh);
+			//trace(pos[0]+" -- "+pos[1]+" "+ddx+" "+ddy+" "+_orig.ref_mc._width+" "+_orig.ref_mc._height+" "+ow+" : "+oh);
 			var pos2=pos;//Case aditional points
 			if(_dest.styleLine==3 || _dest.styleLine==2){//Calc aditional points in the elipse
 				var despx=Math.cos(pos[2]+Math.PI/2);

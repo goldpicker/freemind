@@ -31,6 +31,7 @@ class visorFreeMind.Browser {
 	public var visitedMM=[]; // for navigating among visited mm.
 	public var fileName;
 	private var dictVisitedMM={}; // Dictionary of visited mm.
+	private var dictVisitedMMLevel={}; // Dictionary of visited mm level.
 	public var posXmls:Number=-1;
 	private var mcl:MovieClipLoader=new MovieClipLoader();
 
@@ -94,7 +95,8 @@ class visorFreeMind.Browser {
 		mc_container.browser=this;
 		mc_container.onEnterFrame=function(){
 			this.browser.checkImagesLoaded();
-		}	}
+		}
+	}
 
 	function checkImagesLoaded(){
 		if(imgsLoaded==true){
@@ -109,11 +111,9 @@ class visorFreeMind.Browser {
 	// In case STAGE size change, recalc positions
 	function recalcIfResize(){
 		Stage.addListener (this);
-		trace("redimensioning",0);
 	}
 
 	public function onResize(){
-		trace("redimension",0);
 		buttonsCreator.relocateAllButtons();
 		floor.fillFondo();
 		relocateMindMap();
@@ -121,7 +121,6 @@ class visorFreeMind.Browser {
 
 	public function showLoading(){
 		loading.show();
-		trace("showing lllllllllllllllllllooooading");
 	}
 	/////////////////////// FOR LOADING IMAGES //////////////////
 	public function loadImage(fileName,mc_target){
@@ -148,9 +147,38 @@ class visorFreeMind.Browser {
 	}
 	////////////////////////// END LOADING IMAGES ////////////////
 
-
+	function contTimes(str,strBuscado){
+		var cont=0;
+		while(str.lastIndexOf(strBuscado)!=-1){
+			cont++;
+			str=str.substr(0,str.lastIndexOf(strBuscado));	
+		}
+		return cont;
+	}
+	
+	
 	function loadXML(fn:String){
-		//first validate if we have it
+		//first validate if we have it,modify all relative to main mm.
+		trace("fn input:"+fn);
+		if(fileName!=undefined && fileName.lastIndexOf("/")!=-1){
+			var actualDepth=fileName.substr(0,fileName.lastIndexOf("/"));
+			var desc=contTimes(fn,"..");
+			if(desc!=0){
+				while(desc!=0){
+					desc--;
+					var lio=actualDepth.lastIndexOf("/");
+					if(lio==-1)
+						actualDepth="";
+					else
+						actualDepth=actualDepth.substr(0,lio);
+				}
+				fn=fn.substr(fn.lastIndexOf("..")+3,fn.length);
+			}
+			if(actualDepth!="")
+				fn=actualDepth+"/"+fn;
+			trace(Flashout.INFO+actualDepth+" "+fn+" "+desc);
+		}
+		
 		if(dictVisitedMM[fn]==undefined){
 			xmlData=new XML();
 			fileName=fn;
@@ -206,7 +234,7 @@ class visorFreeMind.Browser {
 			txt.multiline = true;
 			txt.wordWrap = true;
 			txt.html = true;
-			txt.htmlText="<font color='#996611'><b>This is a free</b><br>FREEMIND BROWSER v.93<br> <br><b>shortcuts</b><br>"+
+			txt.htmlText="<font color='#996611'><b>This is a free</b><br>FREEMIND BROWSER v.94<br><b>shortcuts</b><br>"+
 			"LEFT : move left<br>"+
 			"RIGHT : move right<br>"+
 			"UP : move up<br>"+
@@ -318,12 +346,6 @@ class visorFreeMind.Browser {
 	function createFloor(){
 		floor=new Floor(mc_container);
 		mc_floor=floor.getCanvas();
-		/*
-		mc_floor.onRollOver=function(){
-				trace("entrando");
-				//getURL("javascript:giveFocus()");
-		}*/
-
 	}
 
 
@@ -335,7 +357,8 @@ class visorFreeMind.Browser {
 
 	function gestHistory(jumpType){
 		if(jumpType==0){ // 0=new
-			dictVisitedMM[fileName]=xmlData.firstChild.firstChild;
+			dictVisitedMM[fileName]=xmlData;
+			//dictVisitedMMLevel[fileName]=
 			deleteForwardHistory();
 			posXmls++;
 			visitedMM.push(fileName);
@@ -389,8 +412,9 @@ class visorFreeMind.Browser {
 		var styleLine=0; //0=bezier, 1=linear,2=sharp_bezier,3=sharp_linear
 		var lineWidth=0;
 		var color_LineaIni=0x888888;
-		var nodeXMLIni=dictVisitedMM[fileName];
-
+		var xmlObj=dictVisitedMM[fileName];
+		var nodeXMLIni=getFirstNodeType("node",xmlObj.firstChild);
+		
 		//asociate right left to nodes without it
 		asociatePosition(nodeXMLIni);
 		//if first time that loaded

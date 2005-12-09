@@ -67,6 +67,7 @@ class visorFreeMind.Node {
 	
 	private var link:MovieClip;
 	private var noteIcon:MovieClip;
+	private var atrsIcon:MovieClip;
 	private var withImage:Boolean=false;
 	private var listElements:Array=null;
 	private var counter=0;
@@ -75,8 +76,13 @@ class visorFreeMind.Node {
 	private var sombra=null;
 	private var eventControler;
 	private var note=null;
+	private var atributes=null;
 
-	function getNode_xml(){
+	function getAtributes():Array{
+		return atributes;
+	}
+	
+	function getNode_xml():XMLNode{
 		return node_xml;
 	}
 	
@@ -88,6 +94,7 @@ class visorFreeMind.Node {
 							yy,cf:Number,lineWidth:Number,style:Number,styleLine:Number,
 							folded:Boolean,isRight:Boolean,withCloud:Boolean,
 							textSize:Number,italic:Boolean,bold:Boolean,font:String,browser:Browser){
+		//trace("creando nodo:"+node_xml.attributes.TEXT);
 		this.cf=cf;
 		this.lineWidth=lineWidth;
 		this.style=style;
@@ -106,6 +113,7 @@ class visorFreeMind.Node {
 		this.haveEdge=node_xml.attributes.LINK!=undefined?true:false;
 		text=nom;
 		note=findNote(node_xml);
+		atributes=findAtributes(node_xml);
 		coment=coment;
 		listElements=[];
 		num+=2;
@@ -171,6 +179,14 @@ class visorFreeMind.Node {
 		return null;
 	}
 
+	function findAtributes(node_xml:XMLNode){
+		var lista=getNodesType("attribute",node_xml);
+		if(lista.length>0){
+			return lista;
+		}else
+			return null;
+	}
+
 	function getNodesType(type,node_xml){
 		var aux=[];
 		for(var i=0;i<node_xml.childNodes.length;i++){
@@ -181,17 +197,6 @@ class visorFreeMind.Node {
 		return aux;
 	}
 
-	public function activateNoteEvents(){
-		//trace("poniendo eventos");
-		noteIcon.inst=this;
-		noteIcon.onRollOver=function(){
-			trace("NOTE ICON");
-			this.inst.browser.showTooltip(this.inst.note);
-		}
-		noteIcon.onRollOut=function(){
-			this.inst.browser.hideTooltip();
-		}
-	}
 	
 	public function deactivateEvents(){
 		eventControler.enabled=false;
@@ -210,7 +215,7 @@ class visorFreeMind.Node {
 				if(url.indexOf("http://") > -1 || url.indexOf(".mm")==-1){
 					getURL(url,Node.openUrl);
 				}else{
-					trace("loading url");
+					//have in mind directory change, it works diferent in Freemind
 					this.inst.browser.loadXML(url);
 				}
 				return;
@@ -222,7 +227,7 @@ class visorFreeMind.Node {
 					this.inst.folded=false;
 					this.inst.colorSelect();
 					if(this.inst==this.inst.browser.first_node){
-						trace("folding first"+this.inst.browser.first_node_left);
+						//trace("folding first"+this.inst.browser.first_node_left);
 						this.inst.browser.first_node_left.folded=false;
 						this.inst.browser.first_node_left.node_xml.attributes.FOLDED="false";
 					}
@@ -248,7 +253,7 @@ class visorFreeMind.Node {
 			Node.currentOver=this.inst;
 			
 			this.inst.colorSelect();
-			if((this.inst.noteIcon!=null) || 
+			if((this.inst.noteIcon!=null) || (this.inst.atrsIcon!=null) ||
 				(this.inst.node_xml.attributes.LINK != undefined) ) {
 				this.onMouseMove=function(){
 					if(this.inst.noteIcon.hitTest(_root._xmouse,_root._ymouse,false)){
@@ -259,9 +264,14 @@ class visorFreeMind.Node {
 						this.inst.browser.showTooltip(this.inst.node_xml.attributes.LINK);
 						this.useHandCursor = true;
 					}
+					else if(this.inst.atrsIcon.hitTest(_root._xmouse,_root._ymouse,false)){
+						AtrsShow.showAtrs(this.inst,this.inst.browser);
+						this.useHandCursor = true;
+					}
 					else{
 						Node.currentOver=this.inst;
 						this.inst.browser.hideTooltip();
+						AtrsShow.hideAtrs();
 						this.useHandCursor = false;
 					}
 				}
@@ -273,7 +283,7 @@ class visorFreeMind.Node {
 			this.inst.browser.hideTooltip();
 			Node.currentOver.colorNoSelect();
 			Node.currentOver=null;
-			if(this.inst.noteIcon!=null  || 
+			if(this.inst.noteIcon!=null  || (this.inst.atrsIcon!=null) ||
 				(this.inst.node_xml.attributes.LINK != undefined)) {
 				this.onMouseMove=null;
 			}
@@ -322,7 +332,6 @@ class visorFreeMind.Node {
 
 	// draw ovals/circles
 	private function circle2(x,y,width,height,color:Number){
-		trace ("Drowing circles");
 		var a=width;
 		var b=height;
 		var j=a*0.70711;
@@ -344,7 +353,6 @@ class visorFreeMind.Node {
 	}
 
 	private function circle(width,height,color:Number,alpha:Number,colorLine:Number){
-		trace ("Drowing circles");
 		box_txt.clear();
 		var x=(width-4)*0.5;
 		var y=(height-4)*0.5;
@@ -369,7 +377,6 @@ class visorFreeMind.Node {
 	}
 	// draw rounded rectangle
 	private function round_rectangle(w:Number,h:Number,color:Number,alpha:Number,colorLine:Number){
-		trace ("Drowing rounded rectangle");
 		box_txt.clear();
 
 		var incx=2;
@@ -402,7 +409,6 @@ class visorFreeMind.Node {
 	}
 
 	private function sel_subline(w:Number,h:Number,color:Number,alpha:Number,colorLine:Number){
-		trace ("sel_subline");
 		box_txt.clear();
 
 		var incx=2;
@@ -427,7 +433,6 @@ class visorFreeMind.Node {
 	}
 
 	private function subline(w:Number,h:Number,color:Number,alpha){
-		trace ("subline");
 		var a=0;
 		ref_mc.clear();
 		box_txt.clear();
@@ -438,7 +443,7 @@ class visorFreeMind.Node {
 	}
 
 	public function crearTextField(name_txt:String){
-		trace ("create TextField "+name_txt+" "+text);
+		//trace (Flashout.DEBUG +"create TextField "+name_txt+" "+text);
 		if(text.indexOf("<html>")>=0 && text.indexOf("img src=")&&(text.indexOf(".jpg")>=0 || text.indexOf(".jpeg")>=0  || text.indexOf(".png")>=0 || text.indexOf(".gif")>=0 || text.indexOf(".JPG")>=0 || text.indexOf(".JPEG")>=0 || text.indexOf(".PNG")>=0 || text.indexOf(".GIF")>=0)){
 			var start=text.indexOf("img src=")+9;
 			var length;
@@ -454,13 +459,8 @@ class visorFreeMind.Node {
 			var cont_image=ref_mc.node_txt.createEmptyMovieClip("node_image",2);
 			//Have to use the Flash Loader
 			browser.loadImage(text.substr(start,length),cont_image);
-			trace ("image "+ text.substr(start,length) + " loaded");
 			withImage=true;
 			text=text.substr(0,start-10)+text.substr(start+length+2);
-			//var aux_text=text.substr(0,start-16)+text.substr(start+length+2);
-			
-			trace("tras substr:"+text+"==");
-			//trace("tras substr:"+aux_text+"==");
 			if(text=="<html>") return;
 		}
 
@@ -471,10 +471,10 @@ class visorFreeMind.Node {
 			ref_mc.node_txt.node_txt.html=true;
 			ref_mc.node_txt.node_txt.multiline=true;
 			ref_mc.node_txt.node_txt.htmlText=text;
-			trace ("html text="+text+"--");			
+			//trace (Flashout.DEBUG +" textfield html text="+text+"--");			
 		}else{
 			ref_mc.node_txt.node_txt.text=text;
-			trace ("text="+text+"--");
+			//trace (Flashout.DEBUG +"textfield text="+text+"--");
 		}
 		var txt=ref_mc.node_txt.node_txt;
 		txt.background=false;
@@ -499,7 +499,6 @@ class visorFreeMind.Node {
 	}
 
 	public function drawAroundNode(colorNoSel,alpha,isSelected){
-		trace ("draw around node");
 		ref_mc.clear();
 		if (colorNoSel==0)
 			alpha=0;
@@ -539,7 +538,6 @@ class visorFreeMind.Node {
 
 
 	private function drawCircle(w,h,color){
-		trace ("draw Circle");
 		if(style==1){
 			if(!isRight) w=-4;
 		    circle2(w+2,h,2,2,color);
@@ -552,19 +550,19 @@ class visorFreeMind.Node {
 	public function draw(){
 		counter++;
 		crearTextField("node_txt");
-		trace("drawing --->");
 
 		var iconsList=getIcons(node_xml);
+		var numIcons=0;
 		for(var i=0;i<iconsList.length;i++){
 			var name=iconsList[i].replace("-","_");
-			trace ("icon "+name);
+			//trace ("icon "+name);
 			if(Icons["get_"+name]!=null){
-				addIcon(Icons["get_"+name](ref_mc.node_txt,i));
-				trace ("add icon "+name);
+				addIcon(Icons["get_"+name](ref_mc.node_txt,numIcons++));
+				//trace ("add icon "+name);
 			}
 		}
 		
-		addSpecialIcons();
+		addSpecialIcons(numIcons);
 
 		if(withImage==false) 
 		posElements();
@@ -604,12 +602,17 @@ class visorFreeMind.Node {
 		if(ref_mc.node_txt.node_txt!=undefined){
 			ref_mc.node_txt.node_txt._x=initX;
 			initX+=ref_mc.node_txt.node_txt._width;
-			trace ("long text="+ref_mc.node_txt.node_txt._width);
+			//trace ("long text="+ref_mc.node_txt.node_txt._width);
 		}
 		return initX;
 	}
 	
-	function posNoteLink(initX,initY){
+	function posSpecialIcons(initX,initY){
+		if(atrsIcon){
+			atrsIcon._x=initX;
+			atrsIcon._y=initY;
+			initX+=atrsIcon._width+2;
+		}
 		if(noteIcon){
 			noteIcon._x=initX;
 			noteIcon._y=initY;
@@ -631,10 +634,10 @@ class visorFreeMind.Node {
 		if(isRight){
 			initX=posIcons(0,initY);
 			initX=posTextImag(initX,initY);
-			posNoteLink(initX,initY);
+			posSpecialIcons(initX,initY);
 			
 		}else{
-			initX=posNoteLink(initX,initY);
+			initX=posSpecialIcons(initX,initY);
 			initX=posTextImag(initX,initY);
 			initX=posIcons(initX,initY);
 		}
@@ -657,24 +660,24 @@ class visorFreeMind.Node {
 	}
 	
 	public function addIcon(icon){
-		trace ("add icon");
 		listElements.push(icon);
 		return;
 	}
 
-	public function addSpecialIcons(){
+	public function addSpecialIcons(numIcons){
 		if(haveEdge){
 			var direction=node_xml.attributes.LINK;
 			if(direction.indexOf(".mm")>-1 &&
 			   direction.indexOf(".mm")==direction.length-3)
-				link=Icons.get_mm_link(ref_mc.node_txt);
+				link=Icons.get_mm_link(ref_mc.node_txt,numIcons++);
 			else
-				link=Icons.genLink(ref_mc.node_txt);
+				link=Icons.genLink(ref_mc.node_txt,numIcons++);
 		}		
 		if(note!=null){
-			noteIcon=Icons.get_Note(ref_mc.node_txt);
-			//noteIcon.trackAsMenu=true;
-			//activateNoteEvents();
+			noteIcon=Icons.get_Note(ref_mc.node_txt,numIcons++);
+		}
+		if(atributes!=null){
+			atrsIcon=Icons.get_Atrs(ref_mc.node_txt,numIcons++);
 		}
 
 	}

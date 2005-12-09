@@ -27,10 +27,11 @@ class  visorFreeMind.Floor {
 	private var mc_cont:MovieClip;
 	private  var mc_floor:MovieClip=null;
 	private var mc_fondo:MovieClip=null;
-
+	
 	function Floor(mc:MovieClip){
 		mc_cont=mc; //father
 		mc_floor=mc_cont.createEmptyMovieClip("floor",4);
+		mc_floor.mouseDown=false;
 		mc_fondo=mc_cont.createEmptyMovieClip("fondo",3);
 		fillFondo();
 		makeDraggable();
@@ -67,12 +68,23 @@ class  visorFreeMind.Floor {
 
 	function makeDraggable(){
 		mc_floor.onMouseDown=function(){
+			trace("makeDraggable");
 			this.startDrag();
+			this.mouseDown=true;
 		}
 
 		mc_floor.onMouseUp=function(){
 			this.stopDrag();
+			this.mouseDown=false;
 		}
+
+		mc_floor.onMouseWheel=function(delta){trace("mosewheel");
+			if(this.mouseDown)
+				this._x+=delta*3;
+			else
+				this._y+=delta*3;
+		}
+		Mouse.addListener(mc_floor);
 	}
 
 	function notDraggable(){
