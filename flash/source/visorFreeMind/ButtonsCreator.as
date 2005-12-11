@@ -297,10 +297,7 @@ class visorFreeMind.ButtonsCreator{
 			this.browser.listNodesR[i].delShadow();
 			}
 			*/
-			this.browser.mc_floor._xscale+=20;
-			this.browser.mc_floor._yscale+=20;
-			this.browser.mc_container.tooltip._xscale+=20;
-			this.browser.mc_container.tooltip._yscale+=20;
+			this.browser.upscale();
 			//this.browser.genMindMap(3);
 			/*
 			for(var i=0;i<this.browser.listNodesR.length;i++){
@@ -309,10 +306,7 @@ class visorFreeMind.ButtonsCreator{
 			*/
 		}
 		bShrink.onPress=function(){
-			this.browser.mc_floor._xscale-=20;
-			this.browser.mc_floor._yscale-=20;
-			this.browser.mc_container.tooltip._xscale-=20;
-			this.browser.mc_container.tooltip._yscale-=20;
+			this.browser.downscale();
 			//this.browser.genMindMap(3);
 		}
 		bReset.onPress=function(){

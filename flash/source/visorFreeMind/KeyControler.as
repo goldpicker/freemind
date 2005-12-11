@@ -59,11 +59,9 @@ class visorFreeMind.KeyControler{
 		var tecla=Key.getCode();
 		var ctrl=Key.isDown(Key.CONTROL);
 			if(ctrl and tecla == 187){ //+
-				this.browser.mc_floor._xscale+=20;
-				this.browser.mc_floor._yscale+=20;
+				this.browser.upscale();
 			}else if(ctrl and tecla == 189){ //-
-				this.browser.mc_floor._xscale-=20;
-				this.browser.mc_floor._yscale-=20;
+				this.browser.downscale();
 			}
 			/// HISTORY
 			else if(ctrl && Key.isDown(Key.LEFT) && browser.posXmls>0){

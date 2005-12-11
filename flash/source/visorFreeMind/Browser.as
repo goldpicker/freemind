@@ -765,4 +765,28 @@ class visorFreeMind.Browser {
 		return freeMindVars.data[nameAtr];
 	}
 
+	public function upscale(){
+		mc_floor._xscale+=20;
+		mc_floor._yscale+=20;
+		mc_container.tooltip._xscale+=20;
+		mc_container.tooltip._yscale+=20;
+		regenShadows();
+	}
+	
+	public function downscale(){
+		mc_floor._xscale-=20;
+		mc_floor._yscale-=20;
+		mc_container.tooltip._xscale-=20;
+		mc_container.tooltip._yscale-=20;
+		//regenShadows();
+	}
+	
+	public function regenShadows(){
+		for(var i=0;i<listNodesL.length;i++){
+			listNodesL.genShadow();
+		}
+		for(var i=0;i<listNodesR.length;i++){
+			listNodesR.genShadow();
+		}
+	}
 }
