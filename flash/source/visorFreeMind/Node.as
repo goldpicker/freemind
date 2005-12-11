@@ -294,13 +294,17 @@ class visorFreeMind.Node {
 	static function saveTxt(){
 		if (Node.currentOver instanceof Node ){
 			var node=Node.currentOver;
-			if(node.noteIcon!=null){
-				if(node.noteIcon!=null and 
-				node.noteIcon.hitTest(_root._xmouse,_root._ymouse,false)){
+			if(node.noteIcon!=null and 	node.noteIcon.hitTest(_root._xmouse,_root._ymouse,false)){
 					Node.lastOverTxt=node.note;
-				}else{
-					Node.lastOverTxt=node.text;
-				}
+			}else	if(node.atrsIcon!=null and 	node.atrsIcon.hitTest(_root._xmouse,_root._ymouse,false)){
+				    var result="";
+			   		for(var i=0;i<node.atributes.length;i++){
+						var atr:XMLNode=node.atributes[i];
+						if(i>0) 
+						  result+="\r\n";
+						result+=atr.attributes.NAME +"\t"+atr.attributes.VALUE;
+					}
+					Node.lastOverTxt=result;
 			}else{
 				Node.lastOverTxt=node.text;
 			}
