@@ -299,6 +299,8 @@ class visorFreeMind.ButtonsCreator{
 			*/
 			this.browser.mc_floor._xscale+=20;
 			this.browser.mc_floor._yscale+=20;
+			this.browser.mc_container.tooltip._xscale+=20;
+			this.browser.mc_container.tooltip._yscale+=20;
 			//this.browser.genMindMap(3);
 			/*
 			for(var i=0;i<this.browser.listNodesR.length;i++){
@@ -309,11 +311,15 @@ class visorFreeMind.ButtonsCreator{
 		bShrink.onPress=function(){
 			this.browser.mc_floor._xscale-=20;
 			this.browser.mc_floor._yscale-=20;
+			this.browser.mc_container.tooltip._xscale-=20;
+			this.browser.mc_container.tooltip._yscale-=20;
 			//this.browser.genMindMap(3);
 		}
 		bReset.onPress=function(){
 			this.browser.mc_floor._xscale=100;
 			this.browser.mc_floor._yscale=100;
+			this.browser.mc_container.tooltip._xscale=100;
+			this.browser.mc_container.tooltip._yscale=100;
 			//Center View
 			this.browser.initialization=true;
 			//this.browser.relocateFloor();
