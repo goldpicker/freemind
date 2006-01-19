@@ -31,6 +31,7 @@ class visorFreeMind.Node {
 	public static var colorNoSel:Number=0xFFDD44; // unselect color
 	public static var defaultWordWrap:Number=600;
 	public static var currentOver:Node=null;
+	public static var overBeforeMenu:Node=undefined;
 	public static var lastOverTxt=null;
 	public static var openUrl="_blank";
 	public static var mainNodeShape=null;
@@ -40,7 +41,7 @@ class visorFreeMind.Node {
 	private var coment:String;
 	private var _x:Number; // xpos of the node
 	private var _y:Number; // ypos of the node
-	private var node_xml;
+	private var node_xml:XMLNode;
 	public var ref_mc:MovieClip;
 	private var over:Boolean;
 	private var id:String;
@@ -90,7 +91,7 @@ class visorFreeMind.Node {
 		return id;
 	}
 
-	function Node(x:Number,y:Number,node_xml,nom:String,coment:String,mc:MovieClip,
+	function Node(x:Number,y:Number,node_xml:XMLNode,nom:String,coment:String,mc:MovieClip,
 							yy,cf:Number,lineWidth:Number,style:Number,styleLine:Number,
 							folded:Boolean,isRight:Boolean,withCloud:Boolean,
 							textSize:Number,italic:Boolean,bold:Boolean,font:String,browser:Browser){
@@ -210,18 +211,26 @@ class visorFreeMind.Node {
 
 		eventControler.onPress=function(){
 			if(this.inst.node_xml.attributes.LINK != undefined && this.inst.link.hitTest(_root._xmouse,_root._ymouse,false)){
-				var url=this.inst.node_xml.attributes.LINK;
+				var url:String=this.inst.node_xml.attributes.LINK;
 				this.inst.browser.hideTooltip();
+				if(url.indexOf("#")==0){ //jump to the local node
+					this.inst.browser.unfoldLocalLink(url.substr(1,url.length-1));
+					return;
+				}
 				if(url.indexOf("http://") > -1 || url.indexOf(".mm")==-1){
 					getURL(url,Node.openUrl);
 				}else{
 					//have in mind directory change, it works diferent in Freemind
-					this.inst.browser.loadXML(url);
+					this.inst.browser.historyManager.loadXML(url);
 				}
 				return;
 			}
 
-			if(this.inst.hasSubnodes() && this.inst.style!=8){ // we don´t want main node to fold
+		    if(Key.isDown(Key.CONTROL)){
+		    	this.inst.browser.unfoldLinks(this.inst);
+		    	return;
+		    }
+			if(this.inst.hasSubnodes() && this.inst.style!=0){ // we don´t want main node to fold
 				if(this.inst.folded){
 					this.inst.node_xml.attributes.FOLDED="false";
 					this.inst.folded=false;
@@ -248,11 +257,9 @@ class visorFreeMind.Node {
 		}
 		
 		eventControler.onRollOver=function(){
-			if (Node.currentOver instanceof Node )
-				Node.currentOver.colorNoSelect();
-			Node.currentOver=this.inst;
+			this.inst.globalColorSelect();
+			this.inst.browser.floor.showNode(this.inst.ref_mc);
 			
-			this.inst.colorSelect();
 			if((this.inst.noteIcon!=null) || (this.inst.atrsIcon!=null) ||
 				(this.inst.node_xml.attributes.LINK != undefined) ) {
 				this.onMouseMove=function(){
@@ -291,9 +298,19 @@ class visorFreeMind.Node {
 		
 	}
 
+	public function globalColorSelect(){
+		if (Node.currentOver instanceof Node ){
+			Node.currentOver.colorNoSelect();
+		}
+		Node.currentOver=this;	
+		colorSelect();
+	}
+	
 	static function saveTxt(){
+		Node.overBeforeMenu=undefined;
 		if (Node.currentOver instanceof Node ){
 			var node=Node.currentOver;
+			Node.overBeforeMenu=Node.currentOver;
 			if(node.noteIcon!=null and 	node.noteIcon.hitTest(_root._xmouse,_root._ymouse,false)){
 					Node.lastOverTxt=node.note;
 			}else	if(node.atrsIcon!=null and 	node.atrsIcon.hitTest(_root._xmouse,_root._ymouse,false)){
@@ -514,7 +531,7 @@ class visorFreeMind.Node {
 		// Style==2 Bubble
 		if  (style==2){
 			round_rectangle(n._width, n._height,colorNoSel,alpha,cf);
-			if  ( alpha==100 && cbg!=0 && browser.withShadow){
+			if  ( alpha==100 && cbg!=0 && browser.withShadow && false){
 				if(isSelected){
 					round_rectangle(n._width, n._height,cbg,alpha,cf);
 					sombra._visible=false;
@@ -674,8 +691,10 @@ class visorFreeMind.Node {
 			if(direction.indexOf(".mm")>-1 &&
 			   direction.indexOf(".mm")==direction.length-3)
 				link=Icons.get_mm_link(ref_mc.node_txt,numIcons++);
-			else
-				link=Icons.genLink(ref_mc.node_txt,numIcons++);
+			else if(direction.indexOf("#")==0){
+				link=Icons.get_inner_link(ref_mc.node_txt,numIcons++);
+			}else
+				link=Icons.get_link(ref_mc.node_txt,numIcons++);
 		}		
 		if(note!=null){
 			noteIcon=Icons.get_Note(ref_mc.node_txt,numIcons++);

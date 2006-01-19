@@ -102,11 +102,12 @@ class visorFreeMind.Edge {
 		case 0:
 			ref_mc.lineStyle(thickness,color,alpha);
 			var r=Math.sqrt((ddx-or_x)*(ddx-or_x)+(ddy-or_y)*(ddy-or_y))*0.3;
+			if(r>=Math.abs(ddx))r=Math.abs(ddx); //For not crossing
 			var cx=or_x+r*Math.cos(ang);
 			var cy=or_y+r*Math.sin(ang);
 			var cx2=ddx-r*ddx/Math.abs(ddx);
 			var cy2=ddy;
-			ref_mc.moveTo(or_x,or_y);
+			ref_mc.moveTo(or_x,or_y); 
 			ref_mc.curveTo(cx,cy,(cx+cx2)/2,(cy+cy2)/2);
 			ref_mc.curveTo(cx2,ddy,ddx,ddy);
 			break;
@@ -120,6 +121,7 @@ class visorFreeMind.Edge {
 			ref_mc.beginFill(_dest.cf,alpha);
 			ref_mc.lineStyle(0,color,alpha);
 			var r=Math.sqrt((ddx-or_x)*(ddx-or_x)+(ddy-or_y)*(ddy-or_y))*0.3;
+			if(r>=Math.abs(ddx))r=Math.abs(ddx); //For not crossing
 			var cx=or_x+r*Math.cos(ang);
 			var cy=or_y+r*Math.sin(ang);
 			var cxx=or_x2+r*Math.cos(ang);

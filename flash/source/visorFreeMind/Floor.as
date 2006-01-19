@@ -27,16 +27,35 @@ class  visorFreeMind.Floor {
 	private var mc_cont:MovieClip;
 	private  var mc_floor:MovieClip=null;
 	private var mc_fondo:MovieClip=null;
+	private var mc_shots:MovieClip=null;
 	
 	function Floor(mc:MovieClip){
 		mc_cont=mc; //father
-		mc_floor=mc_cont.createEmptyMovieClip("floor",4);
+		mc_floor=mc_cont.createEmptyMovieClip("floor",5);
 		mc_floor.mouseDown=false;
-		mc_fondo=mc_cont.createEmptyMovieClip("fondo",3);
+		mc_fondo=mc_cont.createEmptyMovieClip("fondo",2);
+		mc_shots=mc_cont.createEmptyMovieClip("mc_shots",8888);
+		mc_shots._visible=false;
 		fillFondo();
 		makeDraggable();
 	}
 
+	function centerNode(node:MovieClip){
+		mc_floor._x=Stage.width/2-node._x-node._width/2;
+		mc_floor._y=Stage.height/2-node._y-node._height/2;
+	}
+	
+	function showNode(node:MovieClip){
+		if((mc_floor._x+node._x)<0)
+			mc_floor._x=-node._x;
+		if((mc_floor._y+node._y)<0)
+			mc_floor._y=-node._y;
+		if((mc_floor._x+node._x+node._width)>Stage.width)
+			mc_floor._x=Stage.width-node._width-node._x;
+		if((mc_floor._y+node._y+node._height)>Stage.height)
+			mc_floor._y=Stage.height-node._y-node._height;
+	}
+	
 	function fillFondo(){
 		var mc_c1=mc_fondo.createEmptyMovieClip("c1",1);
 		var color=getBackgroundColor();
@@ -88,6 +107,7 @@ class  visorFreeMind.Floor {
 	}
 
 	function notDraggable(){
+		trace("makenotDraggable");
 		mc_floor.stopDrag();
 		mc_floor.onMouseDown=undefined;
 		mc_floor.onMouseUp=undefined;
@@ -95,6 +115,10 @@ class  visorFreeMind.Floor {
 
 	function getCanvas(){
 		return mc_floor;
+	}
+
+	function getShotsCont(){
+		return mc_shots;
 	}
 
 

@@ -510,9 +510,15 @@ return nice;
 		return knotify;
 	}
 
-	static public  function genLink(mc_padre,depth){
+    static public function get_inner_link(mc_padre,depth){
+    	return genLink(mc_padre,depth,0x00AA00);
+    }
+
+	static public  function get_link(mc_padre,depth){
+    	return genLink(mc_padre,depth,0xEE0000);
+	}
+	static public  function genLink(mc_padre,depth,color){
 		var link=mc_padre.createEmptyMovieClip("link",6+depth);
-		var color=0xEE0000;
 		link.lineStyle(1,color,100);
 		link.beginFill(color,100);
 		link.moveTo(2,6);
@@ -601,7 +607,7 @@ return nice;
 	static public  function get_Note(mc_padre,depth){ //Mail
 		var Note=mc_padre.createEmptyMovieClip("Note",6+depth);
 		var color=0xFFFF55;
-		Note.lineStyle(1,0x222222,100);
+		Note.lineStyle(1,0x666666,100);
 		Note.beginFill(color,100);
 		Note.moveTo(0,1);
 		Note.lineTo(10,1);
@@ -711,11 +717,12 @@ return nice;
 		return attach;
 	}
 
+    
 	static public function get_mm_link(mc_padre,depth){
 		var link=mc_padre.createEmptyMovieClip("link",6+depth);
 		var color=0xEE0000;
 
-		link.lineStyle(0,0x000000,100);
+		link.lineStyle(1,0x000000,100);
 		link.moveTo(3.5,3.5);
 		link.lineTo(11.5,11.5);
 		link.moveTo(11,4.5);

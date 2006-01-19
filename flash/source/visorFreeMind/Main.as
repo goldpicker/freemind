@@ -27,8 +27,17 @@ import visorFreeMind.*;
 */
 class visorFreeMind.Main {
 		
-		static var browser;
+		static var browser:Browser;
 
+		static var initialized=false;
+		
+		public static function main():Void{
+				_root.onEnterFrame = function()
+				{
+					Main.run();
+				};
+		}
+		
 		static function redefineRightMenu(){
 			var mycm=new ContextMenu();
 			mycm.hideBuiltInItems();
@@ -39,23 +48,37 @@ class visorFreeMind.Main {
 			mycm.customItems.push(copy);
 			copy=new ContextMenuItem("copy to clipboard",visorFreeMind.Main.getNodeText);
 			mycm.customItems.push(copy);
+			copy=new ContextMenuItem("unfold all from Node",visorFreeMind.Main.unfoldAllFromNode);
+			mycm.customItems.push(copy);
+			copy=new ContextMenuItem("fold all from Node",visorFreeMind.Main.foldAllFromNode);
+			mycm.customItems.push(copy);
+			if(Browser.flashVersion>7){
+				copy=new ContextMenuItem("gen shots for linked maps",visorFreeMind.Main.genShotsForLinkedMaps);
+				mycm.customItems.push(copy);
+			}
 			_root.menu = mycm;
+		}
+
+		static function genShotsForLinkedMaps(){
+			browser.historyManager.genShotsForLinkedMaps();
+		}
+		
+		static function unfoldAllFromNode(){
+			browser.unfoldAllFromNode();
+		}
+		
+		static function foldAllFromNode(){
+			browser.foldAllFromNode();
 		}
 		
 		static function backward(){
-			if(browser.posXmls>0){
-				browser.posXmls--;
-				browser.fileName=browser.visitedMM[browser.posXmls];
-				browser.genMindMap(3);
-			}
+			browser.historyManager.backward();
 		}
+		
 		static function forward(){
-			if(browser.posXmls<(browser.visitedMM.length-1)){
-			browser.posXmls++;
-			browser.fileName=browser.visitedMM[browser.posXmls];
-			browser.genMindMap(3);
-			}
+			browser.historyManager.forward();
 		}		
+		
 		static function copyInfoNodeOver(){
 			Node.saveTxt();
 			if(Node.lastOverTxt=="")
@@ -71,18 +94,10 @@ class visorFreeMind.Main {
 		}
 		
 		
-		static var initied=false;
-		public static function main():Void{
-						_root.onEnterFrame = function()
-				{
-					Main.run();
-				};
-		}
-		
-		static public function run ():Boolean
+		static public function run():Boolean
 	   {
-	   	   if(initied==true)return true;
-	   	   else initied=true;
+	   	   if(initialized==true)return true;
+	   	   else initialized=true;
 	   	   Flashout.init();
 		   trace("Starting flash FreeMind Browser",2);
 
@@ -103,12 +118,18 @@ class visorFreeMind.Main {
 		   		Node.openUrl=_root.openUrl;
 		   if(_root.noElipseMode!=null)
 		   		Edge.elipseMode=false;
+		   if(_root.genAllShots!=null)
+		   		HistoryManager.genAllShots=Boolean(_root.genAllShots.toLowerCase()=="true");
+		   if(_root.unfoldAll!=null)
+		   		Browser.unfoldAll=Boolean(_root.unfoldAll.toLowerCase()=="true");
 		   if(!isNaN(_root.defaultWordWrap))
-		   		Node.defaultWordWrap=_root.defaultWordWrap;
-		   if(_root.startCollapsedToLevel!=null)
-		   		Browser.startCollapsedToLevel=_root.startCollapsedToLevel;
+		   		Node.defaultWordWrap=Number(_root.defaultWordWrap);
+		   if(!isNaN(_root.startCollapsedToLevel))
+		   		Browser.startCollapsedToLevel=Number(_root.startCollapsedToLevel);
 		   if(_root.mainNodeShape=="rectangle")
 		   		Node.mainNodeShape="rectangle";
+		   if(!isNaN(_root.ShotsWidth))
+		   		PictureTaker.ShotsWidth=Number(_root.ShotsWidth);
 		   if(_root.initLoadFile!=null){
 				trace("initial mindmap: "+_root.initLoadFile,2);
 				browser=new Browser(_root.initLoadFile,_root);

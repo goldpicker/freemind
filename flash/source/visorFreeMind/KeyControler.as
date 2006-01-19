@@ -19,6 +19,7 @@
  *
  * Created on 25.04.2005
  */
+ 
 import visorFreeMind.*;
 /**
 * Take into account all the KEY and Mouse events.
@@ -64,16 +65,11 @@ class visorFreeMind.KeyControler{
 				this.browser.downscale();
 			}
 			/// HISTORY
-			else if(ctrl && Key.isDown(Key.LEFT) && browser.posXmls>0){
-				browser.posXmls--;
-				browser.fileName=browser.visitedMM[browser.posXmls];
-				browser.genMindMap(3);
+			else if(ctrl && Key.isDown(Key.LEFT)){
+				trace("calling backward");
+				browser.historyManager.backward();
 			}else if(ctrl && Key.isDown(Key.RIGHT)){
-				if(browser.posXmls<(browser.visitedMM.length-1)){
-				browser.posXmls++;
-				browser.fileName=browser.visitedMM[browser.posXmls];
-				browser.genMindMap(3);
-				}
+				browser.historyManager.forward();
 			}else if(Key.isDown(Key.LEFT)){
 				this.browser.mc_floor._x-=10;
 			}else if(Key.isDown(Key.RIGHT)){

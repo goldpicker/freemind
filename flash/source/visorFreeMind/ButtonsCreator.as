@@ -25,19 +25,21 @@ import visorFreeMind.*;
 */
 class visorFreeMind.ButtonsCreator{
 	//Buttons
-	private var resizer;
-	private var bBack;
-	private var bForward;
-	private var bGrow;
-	private var bShrink;
-	private var bReset;
-	private var bShadow;
-	private var bInfo;
-	private var bColor;
+	private var resizer:MovieClip;
+	private var bBack:MovieClip;
+	private var bForward:MovieClip;
+	private var bGrow:MovieClip;
+	private var bShrink:MovieClip;
+	private var bReset:MovieClip;
+	private var bShadow:MovieClip;
+	private var bInfo:MovieClip;
+	private var bColor:MovieClip;
+	private var bHistory:MovieClip;
+	private var bSearch:MovieClip;
 	private var mc_Color;
 	private var mc_Color_rollout;
 	private var mainColor;
-	private var alfa=100;
+	private var alfa=80;
 	private var browser:Browser;
 	public  static var colors=[0xFFFFFF,0xEEEEEE,0xDDDDDD,
 							   0xEEFFFF,0xFFEEFF,0xFFFFEE,
@@ -61,6 +63,8 @@ class visorFreeMind.ButtonsCreator{
 		//trace(color+"("+nRed+","+nGreen+","+nBlue+")->"+this.mainColor+"\n");
 		createSizeButtons(browser.mc_container);
 		createNavigationButtons(browser.mc_container);
+		createHistoryButton(browser.mc_container);
+		createSearchButton(browser.mc_container);
 		relocateAllButtons();
 		addToolTipsButtons();
 	}
@@ -115,6 +119,10 @@ class visorFreeMind.ButtonsCreator{
 		bInfo._y=10;
 		bColor._x=newCenter+80;
 		bColor._y=10;
+		bHistory._y=10;
+		bHistory._x=10;
+		bSearch._y=10;
+		bSearch._x=30;
 		createColorSelector();
 	}
 
@@ -142,20 +150,10 @@ class visorFreeMind.ButtonsCreator{
 		bForward.lineTo(4,0);
 		bForward.lineTo(-3,4);
 		bBack.onPress=function(){
-			var v=this.browser;
-			if(v.posXmls>0){
-				v.posXmls--;
-				v.fileName=v.visitedMM[v.posXmls];
-				v.genMindMap(3);
-			}
+			this.browser.historyManager.backward();
 		}
 		bForward.onPress=function(){
-			var v=this.browser;
-			if(v.posXmls<(v.visitedMM.length-1)){
-			v.posXmls++;
-			v.fileName=v.visitedMM[v.posXmls];
-			v.genMindMap(3);
-			}
+			this.browser.historyManager.forward();
 		}
 	}
 
@@ -221,6 +219,45 @@ class visorFreeMind.ButtonsCreator{
 		return cubo;
 	}
 
+	function drawRectangleB(mc_container:MovieClip,mainColor,alfa,s){
+		mc_container.lineStyle(1,mainColor,0);
+		mc_container.beginFill(mainColor,alfa);
+		mc_container.moveTo(-s,-s);
+		mc_container.lineTo(s,-s);
+		mc_container.lineTo(s,s);
+		mc_container.lineTo(-s,s);
+		mc_container.lineTo(-s,-s);
+		mc_container.endFill();
+	}
+	
+	function createHistoryButton(mc_container:MovieClip){
+		bHistory=mc_container.createEmptyMovieClip("bHistory",7796);
+		bHistory.browser=browser;
+		bHistory.info_text="show history";
+		drawRectangleB(bHistory,mainColor,alfa,8);
+		bHistory.lineStyle(3,0xFFFFFF,90);
+		bHistory.moveTo(-3,-4);
+		bHistory.lineTo(0,4);
+		bHistory.moveTo(3,-4);
+		bHistory.lineTo(0,4);
+		bHistory.onRollOver=function(){
+			this.browser.historyManager.pt.show();
+		}
+	}
+	
+	function createSearchButton(mc_container:MovieClip){
+		bSearch=mc_container.createEmptyMovieClip("bSearch",7797);
+		bSearch.browser=browser;
+		bSearch.bCreator=this;
+		bSearch.info_text="show search dialog";
+		drawRectangleB(bSearch,mainColor,alfa,8);
+		drawRectangleB(bSearch,0xFFFFFF,90,4);
+		bSearch.onRollOver=function(){
+			this.browser.searchDialog.show(this,this.bCreator.mainColor);
+			this.browser.historyManager.pt.hide();
+		}
+	}
+	
 	function createSizeButtons(mc_container){
 		bGrow=mc_container.createEmptyMovieClip("navBack",7788);
 		bGrow.browser=browser;

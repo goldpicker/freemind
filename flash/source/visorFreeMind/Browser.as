@@ -1,5 +1,5 @@
 ﻿/*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2005  Joerg Mueller, Daniel Polansky, Christian Foltin and others.
+ *Copyright (C) 2000-2005  Joerg Mueller, Daniel Polansky, Christian Foltin, Juan Pedro and others.
  *
  *See COPYING for Details
  *
@@ -26,27 +26,25 @@ import visorFreeMind.*;
 	Will contain one mindmap in a time.
 */
 class visorFreeMind.Browser {
-	private var xmlData; // load mm files
-	private var xmlCurrent; // The actual xml viewed
-	public var visitedMM=[]; // for navigating among visited mm.
-	public var fileName;
-	private var dictVisitedMM={}; // Dictionary of visited mm.
-	private var dictVisitedMMLevel={}; // Dictionary of visited mm level.
-	public var posXmls:Number=-1;
+	
 	private var mcl:MovieClipLoader=new MovieClipLoader();
 
 	public var mc_container:MovieClip; //Movieclip where we are created
 	public var mc_floor:MovieClip; // dragable.
+	public var historyManager:HistoryManager;
+	public var searchDialog:SearchManager;
 	public var floor:Floor; //Class containing the mc where everything is draw
 	private var first_node:Node=null;
 	private var first_node_left:Node=null;
 	private var list_right_clouds:Array=[];
 	private var list_left_clouds:Array=[];
 	private var list_arrows:Array=[];
+	private var arrows_map:Object=null;
 	public static var browser;
 	private var listNodesR=[];
 	private var listNodesL=[];
 	private var list_edges=[];
+	public  var links_mm:Array=[];
 	private var aux_ta=null;
 	private var initialization:Boolean=true;
 	private var numWaitingImages:Number=0; //When we have images, we have to wait for then loaded
@@ -63,6 +61,8 @@ class visorFreeMind.Browser {
 	private var bColor;
 	public  var withShadow=getStaticAtr("withShadow",false);
 	public static var startCollapsedToLevel=-1;
+	public static var unfoldAll:Boolean=false;
+	public static var flashVersion:Number=0;
 
 	public var text_selectable=null;
 
@@ -79,10 +79,10 @@ class visorFreeMind.Browser {
 	function Browser(file:String,_mc:MovieClip){
 		trace("new Browser, shadow="+withShadow,0);
 		browser=this;
+		flashVersion=getFlashVersion();
 		mcl.addListener(this); // For waiting for the load of all images
 		PrototypesCreator.init();
 		mc_container=_mc;
-		loadXML(file);
 		createFloor();
 		buttonsCreator=new ButtonsCreator(this);
 		recalcIfResize();
@@ -96,6 +96,11 @@ class visorFreeMind.Browser {
 		mc_container.onEnterFrame=function(){
 			this.browser.checkImagesLoaded();
 		}
+		//Start loading first file
+		historyManager=new HistoryManager(this);
+		searchDialog=new SearchManager(this);
+		historyManager.loadXML(file);
+		
 	}
 
 	function checkImagesLoaded(){
@@ -103,6 +108,7 @@ class visorFreeMind.Browser {
 			trace("imgsloaded");
 			relocateMindMap();
 			imgsLoaded=false;
+			historyManager.genMMEnded();
 		}
 	}
 
@@ -147,50 +153,6 @@ class visorFreeMind.Browser {
 	}
 	////////////////////////// END LOADING IMAGES ////////////////
 
-	function contTimes(str,strBuscado){
-		var cont=0;
-		while(str.lastIndexOf(strBuscado)!=-1){
-			cont++;
-			str=str.substr(0,str.lastIndexOf(strBuscado));	
-		}
-		return cont;
-	}
-	
-	
-	function loadXML(fn:String){
-		//first validate if we have it,modify all relative to main mm.
-		trace("fn input:"+fn);
-		if(fileName!=undefined && fileName.lastIndexOf("/")!=-1){
-			var actualDepth=fileName.substr(0,fileName.lastIndexOf("/"));
-			var desc=contTimes(fn,"..");
-			if(desc!=0){
-				while(desc!=0){
-					desc--;
-					var lio=actualDepth.lastIndexOf("/");
-					if(lio==-1)
-						actualDepth="";
-					else
-						actualDepth=actualDepth.substr(0,lio);
-				}
-				fn=fn.substr(fn.lastIndexOf("..")+3,fn.length);
-			}
-			if(actualDepth!="")
-				fn=actualDepth+"/"+fn;
-			trace(Flashout.INFO+actualDepth+" "+fn+" "+desc);
-		}
-		
-		if(dictVisitedMM[fn]==undefined){
-			xmlData=new XML();
-			fileName=fn;
-			xmlData.ignoreWhite=true;
-			xmlData.onLoad=this.loadedXML;
-			xmlData.load(fn);
-		} else{
-			fileName=fn;
-			genMindMap(1);
-		}
-	}
-
 
 
 	function relocateMindMap(){
@@ -234,7 +196,7 @@ class visorFreeMind.Browser {
 			txt.multiline = true;
 			txt.wordWrap = true;
 			txt.html = true;
-			txt.htmlText="<font color='#996611'><b>This is a free</b><br>FREEMIND BROWSER v.95<br><b>shortcuts</b><br>"+
+			txt.htmlText="<font color='#996611'><b>This is a free</b><br>FREEMIND BROWSER v.96<br><b>shortcuts</b><br>"+
 			"LEFT : move left<br>"+
 			"RIGHT : move right<br>"+
 			"UP : move up<br>"+
@@ -244,7 +206,8 @@ class visorFreeMind.Browser {
 			"CTRL '+' : increase<br>"+
 			"CTRL '-' : shrink<br>"+
 			"SHIFT : text selection<br>"+
-			"CTRL 'c' : node to clipboard</font><br>";
+			"CTRL 'c' : node to clipboard<br>"+
+			"CTRL + mouseR : unfold linked</font><br>";
 			mc_container.info._visible=false;
 		}
 	}
@@ -265,7 +228,7 @@ class visorFreeMind.Browser {
 
 	function createToolTip(){
 		if(mc_container.tooltip==null){
-			mc_container.tooltip=mc_container.createEmptyMovieClip("tooltip",10);
+			mc_container.tooltip=mc_container.createEmptyMovieClip("tooltip",110);
 			mc_container.tooltip.createEmptyMovieClip("tex_container",10);
 			mc_container.tooltip.tex_container.createTextField("textfield",7777,0,0,10,10);
 			var txt=mc_container.tooltip.tex_container.textfield;
@@ -318,6 +281,25 @@ class visorFreeMind.Browser {
 		}
 	}
 	
+	/**
+	 * Delete all the flash hidden elements of the current map, help
+	 * for taking a shot	 */
+	public function deleteHidden(){
+		for(var j=0;j<list_edges.length;j++){
+			if(list_edges[j].ref_mc._visible==false)
+				list_edges[j].ref_mc.removeMovieClip();
+		}
+		for(var i=0;i<listNodesR.length;i++){
+			if(listNodesR[i].ref_mc._visible==false)
+				listNodesR[i].ref_mc.removeMovieClip();
+		}
+
+		for(var i=0;i<listNodesL.length;i++){
+			if(listNodesL[i].ref_mc._visible==false)
+				listNodesL[i].ref_mc.removeMovieClip();
+		}
+	}
+	
 	function resetData(){
 		for(var j=0;j<list_edges.length;j++){
 			list_edges[j].ref_mc.removeMovieClip();
@@ -335,12 +317,15 @@ class visorFreeMind.Browser {
 		listNodesR=[];
 		listNodesL=[];
 		list_arrows=[];
+		links_mm=[];
+		arrows_map={};
 		list_right_clouds=[];
 		list_left_clouds=[];
 
 		Node.currentOver=null;
 		Node.num=2000;
 		Edge.num=1000;
+		searchDialog.reset();
 	}
 
 	function createFloor(){
@@ -349,26 +334,6 @@ class visorFreeMind.Browser {
 	}
 
 
-	function deleteForwardHistory(){
-		while(visitedMM.length!=(posXmls+1)){
-			visitedMM.pop(); //clean olds
-		}
-	}
-
-	function gestHistory(jumpType){
-		if(jumpType==0){ // 0=new
-			dictVisitedMM[fileName]=xmlData;
-			//dictVisitedMMLevel[fileName]=
-			deleteForwardHistory();
-			posXmls++;
-			visitedMM.push(fileName);
-		}
-		if(jumpType==1){ // 1=visited
-			deleteForwardHistory();
-			posXmls++;
-			visitedMM.push(fileName);
-		}
-	}
 
 	function saveOldPosition(){
 		ant_floor_y=mc_floor._y;
@@ -378,7 +343,6 @@ class visorFreeMind.Browser {
 	}
 
 	function genMindMap(jumpType){
-		gestHistory(jumpType);
 		saveOldPosition();
 		//Clean old Data.
 		//trace("jumpType "+jumpType);
@@ -412,7 +376,7 @@ class visorFreeMind.Browser {
 		var styleLine=0; //0=bezier, 1=linear,2=sharp_bezier,3=sharp_linear
 		var lineWidth=0;
 		var color_LineaIni=0x888888;
-		var xmlObj=dictVisitedMM[fileName];
+		var xmlObj=historyManager.getXML();
 		var nodeXMLIni=getFirstNodeType("node",xmlObj.firstChild);
 		
 		//asociate right left to nodes without it
@@ -426,8 +390,10 @@ class visorFreeMind.Browser {
 		//Left nodes
 		first_node_left=genNodes(false,nodeXMLIni,0,0,color_LineaIni,lineWidth,styleNode,styleLine,true,mc_floor,supClouds);
 		//IF there is no image to load we can show all.
-		if(numWaitingImages==0)
+		if(numWaitingImages==0){
 			relocateMindMap();
+			this.historyManager.genMMEnded();
+		}
 	}
 
 	function relocateShifts(node,incLevel,isRight){
@@ -645,11 +611,16 @@ class visorFreeMind.Browser {
 		}
 	}
 	
-
+	function takeLinks_mm(node_xml){
+		if(node_xml.attributes.LINK != undefined && node_xml.attributes.LINK.indexOf(":")==-1 && node_xml.attributes.LINK.indexOf(".mm")!=-1)
+		this.links_mm.push(node_xml.attributes.LINK);
+	}
+	
 	function genNodes(isRight,node_xml,x,y,lineColor,lineWidth,styleNode,styleLine,first,container,supClouds){
 		var n:XMLNode=null;
 
 		//get edge style.
+		takeLinks_mm(node_xml);
 		var edge=getFirstNodeType("edge",node_xml);
 		var font=getFirstNodeType("font",node_xml);
 		var newSupClouds=supClouds;
@@ -666,7 +637,7 @@ class visorFreeMind.Browser {
 		var type=getFontType(font);
 		var withCloud:Boolean=cloudNode!=null?true:false;
 
-		var folded=true;
+		var folded=!unfoldAll;
 		if(node_xml.attributes.FOLDED!="true")
 		  folded=false;
 	
@@ -716,6 +687,8 @@ class visorFreeMind.Browser {
 							arrows[i].attributes.STARTARROW,
 							arrows[i].attributes.ENDARROW,
 							getNodeColor(arrows[i])]);
+			arrows_map[node.getID()]="";
+			arrows_map[arrows[i].attributes.DESTINATION]="";
 		}
 
 		return node;
@@ -741,13 +714,7 @@ class visorFreeMind.Browser {
 		return aux;
 	}
 
-	function loadedXML(loaded) {
-		if (loaded) {
-		Browser.browser.genMindMap(0);
-		} else {
-			trace("file not loaded!");
-		}
-	}
+
 
 
 	static	function setStaticAtr(nameAtr,value){
@@ -788,5 +755,144 @@ class visorFreeMind.Browser {
 		for(var i=0;i<listNodesR.length;i++){
 			listNodesR.genShadow();
 		}
+	}
+	
+	public function selectNode(nodeId:String){
+		mc_floor[nodeId].inst.globalColorSelect();
+	}
+	
+	public function unfoldLocalLink(nodeId:String){
+		var nodoXml:XMLNode=mc_floor[nodeId].inst.node_xml;
+		trace(nodeId+ " "+nodoXml);
+		if(mc_floor[nodeId]._visible==false){
+			unfold(nodoXml);
+		}else{
+			//fold(nodoXml);
+		}
+		genMindMap(2);
+		floor.centerNode(mc_floor[nodeId]);
+	}
+	
+	public function unfoldLinks(node:Node){
+		trace("unfolding links for: "+node.getID());
+		var str=node.getID();
+		var lista:Array=[];
+		for( var i=0;i<list_arrows.length;i++){
+			if(list_arrows[i][0]==str) lista.push(list_arrows[i][1]);
+			if(list_arrows[i][1]==str) lista.push(list_arrows[i][0]);
+		}
+		
+		for(var i=0;i<lista.length;i++){
+			trace("encontrado:"+lista[i]);
+			var nodoXml:XMLNode=mc_floor[lista[i]].inst.node_xml;
+			if(mc_floor[lista[i]]._visible==false){
+				unfold(nodoXml);
+			}else{
+				//fold(nodoXml);
+			}
+			
+		}
+		if(lista.length>0) genMindMap(2);
+		floor.centerNode(mc_floor[lista[0]]);
+	}
+	
+	private function unfold(elNodoXml:XMLNode){
+		var nodoXml=elNodoXml;	 
+		while(nodoXml.parentNode!=null){
+			nodoXml=nodoXml.parentNode;
+			mc_floor[nodoXml.attributes.ID].inst.folded=false;
+			mc_floor[nodoXml.attributes.ID].inst.colorNoSelect();
+		}
+	}
+	
+	private function fold(elNodoXml:XMLNode){
+		var nodoXml=elNodoXml;	 
+		while(nodoXml.parentNode!=null){
+			nodoXml=nodoXml.parentNode;
+			if(nodoXml.attributes.FOLDED=="true")
+				mc_floor[nodoXml.attributes.ID].inst.folded=true;
+			if(nodoXml.attributes.FOLDED=="false")
+				mc_floor[nodoXml.attributes.ID].inst.folded=false;
+		}
+	}
+	
+
+	
+	private function getFlashVersion():Number{ 
+	 var thisVer = System.capabilities.version.split(","); 
+	 var thisVerSpaceNum = thisVer[0].indexOf(" "); 
+	 return Number(thisVer[0].substr(thisVerSpaceNum)); 
+	}
+	
+	public function changeFoldedAllNodes(value:Boolean){
+		for(var i=0;i<listNodesR.length;i++){
+			if(listNodesR[i].childNodes.length>0 && listNodesR[i]!=this.first_node){
+				listNodesR[i].folded=value;
+				listNodesR[i].colorNoSelect();
+			}
+		}
+		for(var i=0;i<listNodesL.length;i++){
+			if(listNodesL[i].childNodes.length>0 && listNodesL[i]!=this.first_node_left){
+				listNodesL[i].folded=value;
+				listNodesL[i].colorNoSelect();
+			}
+		}
+		genMindMap(2);
+	}
+	
+	public function foldAllFromNode(){
+		changeFoldedFromActualNode(true);
+	}
+	public function unfoldAllFromNode(){
+		changeFoldedFromActualNode(false);
+	}
+	
+	public function changeFoldedFromActualNode(value:Boolean){
+		var node:Node=Node.overBeforeMenu;
+		if(node==undefined || node==first_node || node==first_node_left){
+			changeFoldedAllNodes(value);
+		}else{
+			changeFoldedFromNode(node,value);
+		}
+		
+		genMindMap(2);
+	}
+	
+	public function changeFoldedFromNode(node:Node,value:Boolean){ 
+		if(node.childNodes.length>0){
+			node.folded=value;
+			node.colorNoSelect();
+			for(var i=0;i<node.childNodes.length;i++){
+				changeFoldedFromNode(node.childNodes[i],value);
+			}
+		}
+	}
+	
+	public function search(str:String,caseSensitive:Boolean){
+		var lista=new Array();
+		for(var i=0;i<listNodesR.length;i++){
+			if(caseSensitive==false){
+				if(listNodesR[i].text.toLowerCase().indexOf(str.toLowerCase(),0)>-1){
+					lista.push(listNodesR[i].getID());
+				}
+			}else{
+				if(listNodesR[i].text.indexOf(str,0)>-1){
+					lista.push(listNodesR[i].getID());
+				}
+			}
+		}
+
+		for(var i=0;i<listNodesL.length;i++){
+			if(caseSensitive==false){
+				if(listNodesL[i].text.toLowerCase().indexOf(str.toLowerCase(),0)>-1){
+					lista.push(listNodesL[i].getID());
+				}
+			}else{
+				if(listNodesL[i].text.indexOf(str,0)>-1){
+					lista.push(listNodesL[i].getID());
+				}
+			}
+		}
+		return lista;
 	}
 }
