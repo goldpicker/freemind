@@ -205,9 +205,9 @@ class visorFreeMind.Browser {
 			"CTRL RIGHT : forward history<br>"+
 			"CTRL '+' : increase<br>"+
 			"CTRL '-' : shrink<br>"+
-			"SHIFT : text selection<br>"+
+			//"SHIFT : text selection<br>"+
 			"CTRL 'c' : node to clipboard<br>"+
-			"CTRL + mouseR : unfold linked</font><br>";
+			"CTRL + Lmouse : unfold linked</font><br>";
 			mc_container.info._visible=false;
 		}
 	}
@@ -826,13 +826,13 @@ class visorFreeMind.Browser {
 	
 	public function changeFoldedAllNodes(value:Boolean){
 		for(var i=0;i<listNodesR.length;i++){
-			if(listNodesR[i].childNodes.length>0 && listNodesR[i]!=this.first_node){
+			if(listNodesR[i].childNodes.length>0 && listNodesR[i]!=this.first_node  && listNodesR[i]!=this.first_node_left){
 				listNodesR[i].folded=value;
 				listNodesR[i].colorNoSelect();
 			}
 		}
 		for(var i=0;i<listNodesL.length;i++){
-			if(listNodesL[i].childNodes.length>0 && listNodesL[i]!=this.first_node_left){
+			if(listNodesL[i].childNodes.length>0 && listNodesL[i]!=this.first_node_left  && listNodesR[i]!=this.first_node){
 				listNodesL[i].folded=value;
 				listNodesL[i].colorNoSelect();
 			}

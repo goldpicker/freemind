@@ -312,7 +312,9 @@ class visorFreeMind.Node {
 			var node=Node.currentOver;
 			Node.overBeforeMenu=Node.currentOver;
 			if(node.noteIcon!=null and 	node.noteIcon.hitTest(_root._xmouse,_root._ymouse,false)){
-					Node.lastOverTxt=node.note;
+					Node.lastOverTxt=node.note.replace("\n","\r\n");
+			}else if(node.link!=null and 	node.link.hitTest(_root._xmouse,_root._ymouse,false)){
+					Node.lastOverTxt=node.node_xml.attributes.LINK;
 			}else	if(node.atrsIcon!=null and 	node.atrsIcon.hitTest(_root._xmouse,_root._ymouse,false)){
 				    var result="";
 			   		for(var i=0;i<node.atributes.length;i++){
@@ -323,7 +325,7 @@ class visorFreeMind.Node {
 					}
 					Node.lastOverTxt=result;
 			}else{
-				Node.lastOverTxt=node.text;
+				Node.lastOverTxt=node.text.replace("\n","\r\n");
 			}
 		}else{
 			Node.lastOverTxt="";

@@ -108,8 +108,17 @@ class visorFreeMind.PictureTaker{
 		}
 	}
 	
+	function checkZs(){
+		for(var i=0;i<list.length;i++){
+			if(list[i].getDepth()!=i+20)
+			   trace("descolocado:" +i);
+			   list[i].swapDepths(i+20);
+		}
+	}
+	
 	function show(){
 		trace("PT show");
+		checkZs()
 		cont._visible=true;
 		cont.onEnterFrame=function(){
 			if(this.hitTest(_root._xmouse,_root._ymouse,false)){

@@ -47,12 +47,6 @@ class visorFreeMind.KeyControler{
 				}
 			}
 			
-			if(tecla==Key.SHIFT && node_selectable!=null){
-				node_selectable.ref_mc.node_txt.node_txt.selectable=false;
-				node_selectable.activateEvents();
-				node_selectable=null;
-				browser.floor.makeDraggable();
-			}
 		trace("key:"+tecla+"ctrl:"+ctrl);
 	}
 
@@ -80,8 +74,8 @@ class visorFreeMind.KeyControler{
 				this.browser.mc_floor._y+=10;
 			}else if(Key.isDown(Key.SHIFT) && Node.currentOver!=null && node_selectable==null){
 				node_selectable=Node.currentOver;
-				node_selectable.deactivateEvents();
-				browser.floor.notDraggable();
+				//node_selectable.deactivateEvents();
+				//browser.floor.notDraggable();
 				node_selectable.ref_mc.node_txt.node_txt.selectable=true;
 			}
 		}
