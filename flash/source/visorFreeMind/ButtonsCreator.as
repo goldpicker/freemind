@@ -36,6 +36,7 @@ class visorFreeMind.ButtonsCreator{
 	private var bColor:MovieClip;
 	private var bHistory:MovieClip;
 	private var bSearch:MovieClip;
+	private var bPan:MovieClip;
 	private var mc_Color;
 	private var mc_Color_rollout;
 	private var mainColor;
@@ -65,6 +66,8 @@ class visorFreeMind.ButtonsCreator{
 		createNavigationButtons(browser.mc_container);
 		createHistoryButton(browser.mc_container);
 		createSearchButton(browser.mc_container);
+		if(Browser.flashVersion>=8)
+			createPanButton(browser.mc_container);
 		relocateAllButtons();
 		addToolTipsButtons();
 	}
@@ -123,6 +126,8 @@ class visorFreeMind.ButtonsCreator{
 		bHistory._x=10;
 		bSearch._y=10;
 		bSearch._x=30;
+		bPan._y=10;
+		bPan._x=50;
 		createColorSelector();
 	}
 
@@ -219,8 +224,8 @@ class visorFreeMind.ButtonsCreator{
 		return cubo;
 	}
 
-	function drawRectangleB(mc_container:MovieClip,mainColor,alfa,s){
-		mc_container.lineStyle(1,mainColor,0);
+	function drawRectangleB(mc_container:MovieClip,mainColor,alfa,alfaLine,s){
+		mc_container.lineStyle(1,mainColor,alfaLine);
 		mc_container.beginFill(mainColor,alfa);
 		mc_container.moveTo(-s,-s);
 		mc_container.lineTo(s,-s);
@@ -234,7 +239,7 @@ class visorFreeMind.ButtonsCreator{
 		bHistory=mc_container.createEmptyMovieClip("bHistory",7796);
 		bHistory.browser=browser;
 		bHistory.info_text="show history";
-		drawRectangleB(bHistory,mainColor,alfa,8);
+		drawRectangleB(bHistory,mainColor,alfa,0,8);
 		bHistory.lineStyle(3,0xFFFFFF,90);
 		bHistory.moveTo(-3,-4);
 		bHistory.lineTo(0,4);
@@ -250,11 +255,25 @@ class visorFreeMind.ButtonsCreator{
 		bSearch.browser=browser;
 		bSearch.bCreator=this;
 		bSearch.info_text="show search dialog";
-		drawRectangleB(bSearch,mainColor,alfa,8);
-		drawRectangleB(bSearch,0xFFFFFF,90,4);
+		drawRectangleB(bSearch,mainColor,alfa,0,8);
+		drawRectangleB(bSearch,0xFFFFFF,90,0,4);
 		bSearch.onRollOver=function(){
 			this.browser.searchDialog.show(this,this.bCreator.mainColor);
 			this.browser.historyManager.pt.hide();
+		}
+	}
+	
+	function createPanButton(mc_container:MovieClip){
+		bPan=mc_container.createEmptyMovieClip("bPan",7799);
+		bPan.browser=browser;
+		bPan.bCreator=this;
+		bPan.info_text="show search dialog";
+		drawRectangleB(bPan,mainColor,alfa,0,8);
+		drawRectangleB(bPan,0xFFFFFF,0,90,4);
+		bPan.onRollOver=function(){
+			this.browser.panner.show(this);
+			this.browser.historyManager.pt.hide();
+			this.browser.searchDialog.hide();
 		}
 	}
 	

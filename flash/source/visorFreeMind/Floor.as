@@ -46,14 +46,16 @@ class  visorFreeMind.Floor {
 	}
 	
 	function showNode(node:MovieClip){
-		if((mc_floor._x+node._x)<0)
-			mc_floor._x=-node._x;
-		if((mc_floor._y+node._y)<0)
-			mc_floor._y=-node._y;
-		if((mc_floor._x+node._x+node._width)>Stage.width)
-			mc_floor._x=Stage.width-node._width-node._x;
-		if((mc_floor._y+node._y+node._height)>Stage.height)
-			mc_floor._y=Stage.height-node._y-node._height;
+		var sx=mc_floor._xscale/100;
+		var sy=mc_floor._yscale/100;
+		if((mc_floor._x+node._x*sx)<0)
+			mc_floor._x=-node._x*sx;
+		if((mc_floor._y+node._y*sy)<0)
+			mc_floor._y=-node._y*sy;
+		if((mc_floor._x+node._x*sx+node._width*sx)>Stage.width)
+			mc_floor._x=Stage.width-node._width*sx-node._x*sx;
+		if((mc_floor._y+node._y*sy+node._height*sy)>Stage.height)
+			mc_floor._y=Stage.height-node._y*sy-node._height*sy;
 	}
 	
 	function fillFondo(){
@@ -87,7 +89,6 @@ class  visorFreeMind.Floor {
 
 	function makeDraggable(){
 		mc_floor.onMouseDown=function(){
-			trace("makeDraggable");
 			this.startDrag();
 			this.mouseDown=true;
 		}
@@ -97,7 +98,7 @@ class  visorFreeMind.Floor {
 			this.mouseDown=false;
 		}
 
-		mc_floor.onMouseWheel=function(delta){trace("mosewheel");
+		mc_floor.onMouseWheel=function(delta){
 			if(this.mouseDown)
 				this._x+=delta*3;
 			else

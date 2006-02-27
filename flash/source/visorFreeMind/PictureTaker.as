@@ -123,11 +123,11 @@ class visorFreeMind.PictureTaker{
 		cont.onEnterFrame=function(){
 			if(this.hitTest(_root._xmouse,_root._ymouse,false)){
 				if(this._height>Stage.height){
-					var h=Stage.height-60;
+					var h=Stage.height-30;
 					var m=_root._ymouse-30;
-					var dest=-(this._height+20-h)*(1+((m)-h)/h);
+					var dest=-(this._height+10-h)*(1+((m)-h)/h);
 					if(dest>0) dest=0;
-					if(_root._ymouse+60>Stage.height) dest=Stage.height-this._height;
+					if(_root._ymouse+30>Stage.height) dest=Stage.height-this._height;
 					var dif=Math.abs(Math.abs(this._y)-Math.abs(dest));
 					var sig=(this._y-dest)/Math.abs(this._y-dest);
 					this._y+=-sig*dif*0.2;

@@ -215,6 +215,7 @@ class visorFreeMind.Node {
 				this.inst.browser.hideTooltip();
 				if(url.indexOf("#")==0){ //jump to the local node
 					this.inst.browser.unfoldLocalLink(url.substr(1,url.length-1));
+					trace("local jump");
 					return;
 				}
 				if(url.indexOf("http://") > -1 || url.indexOf(".mm")==-1){
@@ -288,7 +289,8 @@ class visorFreeMind.Node {
 
 		eventControler.onRollOut=function(){
 			this.inst.browser.hideTooltip();
-			Node.currentOver.colorNoSelect();
+			this.inst.colorNoSelect();
+			trace("onRollOut");
 			Node.currentOver=null;
 			if(this.inst.noteIcon!=null  || (this.inst.atrsIcon!=null) ||
 				(this.inst.node_xml.attributes.LINK != undefined)) {
@@ -299,8 +301,10 @@ class visorFreeMind.Node {
 	}
 
 	public function globalColorSelect(){
+		trace("globalColorSelect");
 		if (Node.currentOver instanceof Node ){
 			Node.currentOver.colorNoSelect();
+			trace("globalColorSelect: currentOver  exist");
 		}
 		Node.currentOver=this;	
 		colorSelect();

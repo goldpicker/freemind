@@ -161,6 +161,11 @@ class visorFreeMind.SearchManager {
 		}
 	}
 	
+	function hide(){
+		this.container._visible=false;
+		this.container.onEnterFrame=undefined;
+	}
+	
 	private function round_rectangle2(w:Number,h:Number,color:Number,alpha:Number,colorLine:Number){
 		container.lineStyle(1,colorLine,10);
 		container.moveTo(despx,despy);

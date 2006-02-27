@@ -33,6 +33,7 @@ class visorFreeMind.Browser {
 	public var mc_floor:MovieClip; // dragable.
 	public var historyManager:HistoryManager;
 	public var searchDialog:SearchManager;
+	public var panner:Panner;
 	public var floor:Floor; //Class containing the mc where everything is draw
 	private var first_node:Node=null;
 	private var first_node_left:Node=null;
@@ -99,6 +100,7 @@ class visorFreeMind.Browser {
 		//Start loading first file
 		historyManager=new HistoryManager(this);
 		searchDialog=new SearchManager(this);
+		panner=new Panner(this);
 		historyManager.loadXML(file);
 		
 	}
@@ -196,7 +198,7 @@ class visorFreeMind.Browser {
 			txt.multiline = true;
 			txt.wordWrap = true;
 			txt.html = true;
-			txt.htmlText="<font color='#996611'><b>This is a free</b><br>FREEMIND BROWSER v.96<br><b>shortcuts</b><br>"+
+			txt.htmlText="<font color='#996611'><b>This is a free</b><br>FREEMIND BROWSER v.97<br><b>shortcuts</b><br>"+
 			"LEFT : move left<br>"+
 			"RIGHT : move right<br>"+
 			"UP : move up<br>"+
@@ -895,4 +897,43 @@ class visorFreeMind.Browser {
 		}
 		return lista;
 	}
+	
+	function getBounds(){
+		var comparator=floor.getCanvas();
+		var b=listNodesR[0].ref_mc.getBounds(comparator);
+		trace("b:"+b+" comp"+comparator);
+		var aux;
+		for(var i=0;i<listNodesL.length;i++){
+			aux=listNodesL[i].ref_mc.getBounds(comparator);
+			if(aux.xMin<b.xMin) b.xMin=aux.xMin;
+			if(aux.xMax>b.xMax) b.xMax=aux.xMax;
+			if(aux.yMin<b.yMin) b.yMin=aux.yMin;
+			if(aux.yMax>b.yMax) b.yMax=aux.yMax;
+		}
+		for(var i=0;i<listNodesR.length;i++){
+			aux=listNodesR[i].ref_mc.getBounds(comparator);
+			if(aux.xMin<b.xMin) b.xMin=aux.xMin;
+			if(aux.xMax>b.xMax) b.xMax=aux.xMax;
+			if(aux.yMin<b.yMin) b.yMin=aux.yMin;
+			if(aux.yMax>b.yMax) b.yMax=aux.yMax;
+		}
+		return b;
+	}
+	
+	function prepareBounds(){
+
+		for(var i=0;i<listNodesL.length;i++){
+			if(listNodesL[i].ref_mc._visible==false){
+				listNodesL[i].ref_mc._x=0;
+				listNodesL[i].ref_mc._y=0;
+			}
+		}
+		for(var i=0;i<listNodesR.length;i++){
+			if(listNodesR[i].ref_mc._visible==false){
+				listNodesR[i].ref_mc._x=0;
+				listNodesR[i].ref_mc._y=0;
+			}
+		}
+	}
+	
 }
