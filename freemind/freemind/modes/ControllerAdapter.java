@@ -16,11 +16,12 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: ControllerAdapter.java,v 1.41.14.22 2005-05-03 05:29:49 christianfoltin Exp $*/
+/*$Id: ControllerAdapter.java,v 1.41.14.22.2.2.2.16 2006-03-02 21:00:54 dpolivaev Exp $*/
 
 package freemind.modes;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Point;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -42,8 +43,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
@@ -59,6 +58,7 @@ import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
@@ -66,16 +66,12 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.filechooser.FileFilter;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
 
-import freemind.common.JaxbTools;
 import freemind.controller.Controller;
 import freemind.controller.StructuredMenuHolder;
 import freemind.controller.actions.ActionFactory;
@@ -83,13 +79,16 @@ import freemind.controller.actions.ModeControllerActionHandler;
 import freemind.controller.actions.UndoActionHandler;
 import freemind.controller.actions.generated.instance.ObjectFactory;
 import freemind.controller.actions.generated.instance.XmlAction;
+import freemind.controller.attributes.AssignAttributeDialog;
 import freemind.extensions.HookFactory;
 import freemind.extensions.ModeControllerHook;
 import freemind.extensions.NodeHook;
 import freemind.extensions.PermanentNodeHook;
 import freemind.extensions.UndoEventReceiver;
 import freemind.main.ExampleFileFilter;
+import freemind.main.FreeMind;
 import freemind.main.FreeMindMain;
+import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.main.XMLParseException;
 import freemind.modes.actions.AddArrowLinkAction;
@@ -141,11 +140,17 @@ import freemind.modes.actions.UnderlinedAction;
 import freemind.modes.actions.UndoAction;
 import freemind.modes.actions.FindAction.FindNextAction;
 import freemind.modes.actions.NodeBackgroundColorAction.RemoveNodeBackgroundColorAction;
+import freemind.modes.attributes.AttributeController;
+import freemind.modes.attributes.AttributeRegistry;
+import freemind.modes.attributes.AttributeTableLayoutModel;
+import freemind.modes.attributes.NodeAttributeTableModel;
+import freemind.modes.attributes.mindmapmodeactors.MindMapModeAttributeController;
 import freemind.modes.mindmapmode.MindMapArrowLinkModel;
 import freemind.view.MapModule;
 import freemind.view.mindmapview.MapView;
 import freemind.view.mindmapview.MindMapLayout;
 import freemind.view.mindmapview.NodeView;
+import freemind.view.mindmapview.attributeview.AttributeView;
 
 
 /**
@@ -159,7 +164,6 @@ public abstract class ControllerAdapter implements ModeController {
 	private final static int MINIMAL_WIDTH = MindMapLayout.MINIMAL_WIDTH;
 
     private ActionFactory actionFactory;
-	private ObjectFactory actionXmlFactory;
 	// for cascading updates.
 	private HashSet nodesAlreadyUpdated;
 	private HashSet nodesToBeUpdated;
@@ -234,6 +238,9 @@ public abstract class ControllerAdapter implements ModeController {
     public SelectBranchAction selectBranchAction = null;
     public SelectAllAction selectAllAction = null;
 
+    public Action showAllAttributes = new ShowAllAttributesAction();
+    public Action showSelectedAttributes = new ShowSelectedAttributesAction();
+    public Action hideAllAttributes = new HideAllAttributesAction();
 
 	/** Executes series of actions. */
 	private CompoundActionHandler compound = null;
@@ -250,10 +257,10 @@ public abstract class ControllerAdapter implements ModeController {
         // for updates of nodes:
 		nodesAlreadyUpdated = new HashSet();
 		nodesToBeUpdated    = new HashSet();
-		// new object factory for xml actions:
-		actionXmlFactory = JaxbTools.getInstance().getObjectFactory();
         // create action factory:
 		actionFactory = new ActionFactory(getController());
+        // create attrubute controller
+        attributeController = new MindMapModeAttributeController(this);
 		// prepare undo:
 		undo = new UndoAction(this);
 		redo = new RedoAction(this);
@@ -382,7 +389,7 @@ public abstract class ControllerAdapter implements ModeController {
                     .getNodeIcon();
             if (patternIcon != null) {
                 patterns[i].putValue(Action.SMALL_ICON, patternIcon
-                        .getIcon(getFrame()));
+                        .getIcon());
             }
         }
     }
@@ -396,8 +403,8 @@ public abstract class ControllerAdapter implements ModeController {
     // Methods that should be overloaded
     //
 
-    public abstract MindMapNode newNode(Object userObject);
-    protected MindMapNode newNode() {
+    public abstract MindMapNode newNode(Object userObject, MindMap map);
+    protected MindMapNode newNode(MindMap map) {
         return newNode(null);
     }
 
@@ -489,7 +496,7 @@ public abstract class ControllerAdapter implements ModeController {
         /* perform action only if one selected node.*/
         if(getSelecteds().size() != 1)
             return;
-        MindMapNode node = ((NodeView)(e.getComponent())).getModel();
+        MindMapNode node = ((NodeView)(e.getComponent().getParent())).getModel();
         // edit the node only if the node is a leaf (fc 0.7.1)
         if (node.hasChildren()) {
             // the emulate the plain click. 
@@ -510,8 +517,8 @@ public abstract class ControllerAdapter implements ModeController {
         /* perform action only if one selected node.*/
         if(getSelecteds().size() != 1)
             return;
-        MindMapNode node = ((NodeView)(e.getComponent())).getModel();
-        if (getView().getSelected().followLink(e.getX())) {
+        MindMapNode node = ((NodeView)(e.getComponent().getParent())).getModel();
+        if (getView().getSelected().isInFollowLinkRegion(e.getX())) {
             loadURL(); }
         else {
             if (!node.hasChildren()) {
@@ -563,6 +570,11 @@ public abstract class ControllerAdapter implements ModeController {
            return saveAs(); }
         else {
            return save(getModel().getFile()); }}
+    
+    
+    public void load(String xmlMapContents) {
+        revertAction.openXmlInsteadOfMap(xmlMapContents);
+    }
 
     /** fc, 24.1.2004: having two methods getSelecteds with different return values 
      * (linkedlists of models resp. views) is asking for trouble. @see MapView
@@ -654,6 +666,16 @@ public abstract class ControllerAdapter implements ModeController {
 	   return item;
 	}
 
+	protected JMenuItem addRadioItem(StructuredMenuHolder holder, String category, Action action, String keystroke, boolean isSelected) {
+	    JRadioButtonMenuItem item = (JRadioButtonMenuItem) holder.addMenuItem(new JRadioButtonMenuItem(action), category);
+	    if(keystroke != null) {
+	        item.setAccelerator(KeyStroke.getKeyStroke(getFrame().getProperty(keystroke)));
+	    }
+	    item.setSelected(isSelected);
+	    return item;
+	}
+
+    
 	protected void add(JMenu menu, Action action) {
        menu.add(action); }
 
@@ -693,6 +715,7 @@ public abstract class ControllerAdapter implements ModeController {
        else if (exceptionType.equals("java.io.FileNotFoundException")) {
           getController().errorMessage(ex.getMessage()); }
        else {
+       	  ex.printStackTrace();
           getController().errorMessage(ex); }
     }
 
@@ -745,13 +768,22 @@ public abstract class ControllerAdapter implements ModeController {
         getController().getMapModuleManager().updateMapModuleName();        
         return true;
     }
-    /** Creates a proposal for a file name to save the map.
-     *  Removes all illegal characters.
+    /**
+     * Creates a proposal for a file name to save the map. Removes all illegal
+     * characters.
+     * 
+     * Fixed: When creating file names based on the text of the root node, now all the
+     * extra unicode characters are replaced with _. This is not very good. For
+     * chinese content, you would only get a list of ______ as a file name. Only
+     * characters special for building file paths shall be removed (rather than
+     * replaced with _), like : or /. The exact list of dangeous characters
+     * needs to be investigated. 0.8.0RC3.
+     * 
      * @return
      */
     private String getFileNameProposal() {
         String rootText = ((MindMapNode)getMap().getRoot()).toString();
-        rootText = rootText.replaceAll("[^0-9a-zA-Z_ ]+", "_");
+        rootText = rootText.replaceAll("[&:/\\\\\0%$#~\\?\\*]+", "");
         return rootText;
     }
 
@@ -846,6 +878,11 @@ public abstract class ControllerAdapter implements ModeController {
         edgeColor.setEnabled(enabled);
         removeLastIconAction.setEnabled(enabled);
         removeAllIconsAction.setEnabled(enabled);
+        selectAllAction.setEnabled(enabled);
+        selectBranchAction.setEnabled(enabled);
+        removeNodeBackgroundColor.setEnabled(enabled);
+        moveNodeAction.setEnabled(enabled);
+        revertAction.setEnabled(enabled);
         for (int i=0; i<edgeWidths.length; ++i) { 
             edgeWidths[i].setEnabled(enabled);
         }
@@ -959,6 +996,7 @@ public abstract class ControllerAdapter implements ModeController {
     // status, currently: default, blocked  (PN)
     // (blocked to protect against particular events e.g. in edit mode)
     private boolean isBlocked = false;
+    private AttributeController attributeController;
 
     public boolean isBlocked() {
       return this.isBlocked;
@@ -1016,7 +1054,7 @@ public abstract class ControllerAdapter implements ModeController {
         Color nodeColor = node.getColor();
         if (nodeColor == null) {
             nodeColor = Tools.xmlToColor(getFrame().getProperty(
-                    "standardnodecolor"));
+                    FreeMind.RESOURCES_NODE_COLOR));
         }
         setNodeColor(node, new Color(
                 (3 * mapColor.getRed() + nodeColor.getRed()) / 4, (3 * mapColor
@@ -1188,7 +1226,8 @@ public abstract class ControllerAdapter implements ModeController {
 	}
 	
 	public void centerNode(MindMapNode node){
-	    	if(node.getViewer()==null){
+	    	NodeView viewer = node.getViewer();
+	    	if(viewer==null || ! viewer.isVisible()){
 	    	    displayNode(node);
 	    	}
 	        // Select the node and scroll to it.
@@ -1236,6 +1275,7 @@ public abstract class ControllerAdapter implements ModeController {
                 }
 
                 try {
+                	// FIXME: Is this used?????
                    if (picturesAmongSelecteds) {
                       for (ListIterator e = getSelecteds().listIterator();e.hasNext();) {
                          MindMapNode node = (MindMapNode)e.next();
@@ -1244,9 +1284,9 @@ public abstract class ControllerAdapter implements ModeController {
                             String relative = Tools.isAbsolutePath(possiblyRelative) ?
                                new File(possiblyRelative).toURL().toString() : possiblyRelative;
                             if (relative != null) {
-                               String strText = "<html><img src=\"" + relative + "\">"; 
-                               node.setLink(null);
-                               getModel().changeNode(node,strText);
+                               String strText = "<html><img src=\"" + relative + "\">";
+                               setLink(node, null);
+                               setNodeText(node, strText);
                             }
                          }
                       }
@@ -1255,7 +1295,7 @@ public abstract class ControllerAdapter implements ModeController {
                       String relative = getLinkByFileChooser(filter);
                       if (relative != null) {
                          String strText = "<html><img src=\"" + relative + "\">"; 
-                         getModel().changeNode((MindMapNode)getSelected(),strText);
+                         setNodeText((MindMapNode)getSelected(),strText);
                       } 
                    }
                 }
@@ -1413,10 +1453,12 @@ public abstract class ControllerAdapter implements ModeController {
         this.mode = mode;
     }
 
+    //FIXME: Wrong as the actual controller is eventually not used (think of more than one map opened).
     protected MapModule getMapModule() {
         return getController().getMapModuleManager().getMapModule();
     }
 
+    //FIXME: Wrong as the actual controller is eventually not used (think of more than one map opened).
     public MapAdapter getMap() {
         if (getMapModule() != null) {
             return (MapAdapter)getMapModule().getModel();
@@ -1484,7 +1526,7 @@ public abstract class ControllerAdapter implements ModeController {
     }
 
     public boolean extendSelection(MouseEvent e) {
-        NodeView newlySelectedNodeView = (NodeView)e.getSource();
+        NodeView newlySelectedNodeView = (NodeView)((Component)e.getSource()).getParent();
         //MindMapNode newlySelectedNode = newlySelectedNodeView.getModel();
         boolean extend = e.isControlDown(); 
         boolean range = e.isShiftDown(); 
@@ -1672,35 +1714,11 @@ public abstract class ControllerAdapter implements ModeController {
 
 
     public String marshall(XmlAction action) {
-        try {
-            // marshall:
-            //marshal to StringBuffer:
-            StringWriter writer = new StringWriter();
-            Marshaller m = JaxbTools.getInstance().createMarshaller();
-            m.marshal(action, writer);
-            String result = writer.toString();
-            return result;
-        } catch (JAXBException e) {
-			logger.severe(e.toString());
-            e.printStackTrace();
-            return "";
-        }
-
+        return getController().marshall(action);
 	}
 
 	public XmlAction unMarshall(String inputString) {
-		try {
-			// unmarshall:
-			Unmarshaller u = JaxbTools.getInstance().createUnmarshaller();
-			StringBuffer xmlStr = new StringBuffer( inputString);
-			XmlAction doAction = (XmlAction) u.unmarshal( new StreamSource( new StringReader( xmlStr.toString() ) ) );
-			return doAction;
-		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-
+        return getController().unMarshall(inputString);
 	}
 
 	protected class EditLongAction extends AbstractAction {
@@ -1711,6 +1729,53 @@ public abstract class ControllerAdapter implements ModeController {
             edit(null, false, true);
         }
     }
+
+    
+        protected class ShowAllAttributesAction extends AbstractAction {
+            public ShowAllAttributesAction(){
+                super(Resources.getInstance().getResourceString("attributes_show_all"));
+            };
+            public void actionPerformed(ActionEvent e) {
+                final AttributeRegistry attributes = getMap().getRegistry().getAttributes();
+                if(attributes.getAttributeViewType() != AttributeTableLayoutModel.SHOW_ALL){
+                    attributes.setAttributeViewType(AttributeTableLayoutModel.SHOW_ALL); 
+                }
+            }
+        }
+        protected class HideAllAttributesAction extends AbstractAction {
+            public HideAllAttributesAction(){
+                super(Resources.getInstance().getResourceString("attributes_hide_all"));
+            };
+            public void actionPerformed(ActionEvent e) {
+                final AttributeRegistry attributes = getMap().getRegistry().getAttributes();
+                if(attributes.getAttributeViewType() != AttributeTableLayoutModel.HIDE_ALL){
+                    attributes.setAttributeViewType(AttributeTableLayoutModel.HIDE_ALL); 
+                }
+            }
+        }
+
+        protected class ShowSelectedAttributesAction extends AbstractAction {
+            public ShowSelectedAttributesAction(){
+                super(Resources.getInstance().getResourceString("attributes_show_selected"));
+            };
+            public void actionPerformed(ActionEvent e) {
+                final AttributeRegistry attributes = getMap().getRegistry().getAttributes();
+                if(attributes.getAttributeViewType() != AttributeTableLayoutModel.SHOW_SELECTED){
+                    attributes.setAttributeViewType(AttributeTableLayoutModel.SHOW_SELECTED); 
+                }
+            }
+        }
+
+
+        protected class EditAttributesAction extends AbstractAction {
+            public EditAttributesAction(){
+                super(Resources.getInstance().getResourceString("attributes_edit_in_place"));                
+            };
+            public void actionPerformed(ActionEvent e) {
+                final AttributeView attributeView = getView().getSelected().getAttributeView();
+                attributeView.edit();
+            }
+        }
 
     protected class SetLinkByFileChooserAction extends AbstractAction {
         public SetLinkByFileChooserAction() {
@@ -1816,7 +1881,7 @@ public abstract class ControllerAdapter implements ModeController {
 	 * @return
 	 */
 	public ObjectFactory getActionXmlFactory() {
-		return actionXmlFactory;
+		return getController().getActionXmlFactory();
 	}
 
     /**
@@ -1889,7 +1954,12 @@ public abstract class ControllerAdapter implements ModeController {
 	    moveNodeAction.moveNodeTo(node, vGap, hGap, shiftY);
 	}
 
+    public void mapChanged(MindMap newMap) {        
+    }
 
+    public AttributeController getAttributeController(){
+        return attributeController;
+    }
     
     
 }

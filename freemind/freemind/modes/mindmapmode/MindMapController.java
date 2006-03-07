@@ -16,10 +16,11 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapController.java,v 1.35.14.11 2005-05-03 05:29:50 christianfoltin Exp $*/
+/*$Id: MindMapController.java,v 1.35.14.11.2.1.2.11 2006-03-02 21:00:54 dpolivaev Exp $*/
 
 package freemind.modes.mindmapmode;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +38,7 @@ import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ButtonGroup;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -55,9 +57,11 @@ import freemind.controller.StructuredMenuHolder;
 import freemind.controller.actions.generated.instance.MenuActionBase;
 import freemind.controller.actions.generated.instance.MenuCategoryBase;
 import freemind.controller.actions.generated.instance.MenuCheckedAction;
+import freemind.controller.actions.generated.instance.MenuRadioAction;
 import freemind.controller.actions.generated.instance.MenuSeparator;
 import freemind.controller.actions.generated.instance.MenuStructure;
 import freemind.controller.actions.generated.instance.MenuSubmenu;
+import freemind.controller.attributes.AssignAttributeDialog;
 import freemind.extensions.HookFactory;
 import freemind.extensions.HookRegistration;
 import freemind.extensions.HookFactory.RegistrationContainer;
@@ -84,6 +88,7 @@ import freemind.modes.actions.NodeGeneralAction;
 import freemind.modes.actions.NodeHookAction;
 import freemind.modes.actions.RemoveArrowLinkAction;
 import freemind.modes.actions.SingleNodeOperation;
+import freemind.modes.attributes.AttributeTableLayoutModel;
 
 
 
@@ -91,6 +96,17 @@ import freemind.modes.actions.SingleNodeOperation;
 
 public class MindMapController extends ControllerAdapter {
 
+    protected class AssignAttributesAction extends AbstractAction {
+        public AssignAttributesAction() {
+            super(getText("attributes_assign_dialog"));
+        }
+        public void actionPerformed(ActionEvent e) {
+             if(assignAttributeDialog == null){
+                assignAttributeDialog = new AssignAttributeDialog(getView());
+            }
+            assignAttributeDialog.setVisible(true);
+        }
+     }
 	private static Logger logger;
 	private Vector hookActions;
 	/** Stores the menu items belonging to the given action. */
@@ -108,6 +124,9 @@ public class MindMapController extends ControllerAdapter {
    public Action exportBranchToHTML = new ExportBranchToHTMLAction(this);
 
    public Action editLong = new EditLongAction();
+   public Action editAttributes = new EditAttributesAction();
+   protected  AssignAttributeDialog assignAttributeDialog = null;
+   public Action assignAttributes = new AssignAttributesAction();
    public Action newSibling = new NewSiblingAction(this);
    public Action newPreviousSibling = new NewPreviousSiblingAction(this);
    public Action setLinkByFileChooser = new SetLinkByFileChooserAction();
@@ -118,6 +137,8 @@ public class MindMapController extends ControllerAdapter {
    public Action importLinkedBranch = new ImportLinkedBranchAction();
    public Action importLinkedBranchWithoutRoot = new ImportLinkedBranchWithoutRootAction();
 
+   public Action showAttributeManagerAction = null;    
+   
 
     public Action increaseNodeFont = new NodeGeneralAction (this, "increase_node_font_size", null,
        new SingleNodeOperation() { public void apply(MindMapMapModel map, MindMapNodeModel node) {
@@ -138,6 +159,7 @@ public class MindMapController extends ControllerAdapter {
 
     public MindMapController(Mode mode) {
 	super(mode);
+    showAttributeManagerAction = getController().showAttributeManagerAction;
 	if(logger == null) {
 		logger = getFrame().getLogger(this.getClass().getName());
 	}
@@ -214,7 +236,7 @@ public class MindMapController extends ControllerAdapter {
     }
     
 	public MapAdapter newModel() {
-       return new MindMapMapModel(getFrame()); }
+       return new MindMapMapModel(getFrame(), this); }
 
     private void createIconActions() {
         Vector iconNames = MindIcon.getAllIconNames();
@@ -280,13 +302,13 @@ public class MindMapController extends ControllerAdapter {
     private NewNodeCreator myNewNodeCreator = null;
     
     public interface NewNodeCreator {
-        MindMapNode createNode(Object userObject);
+        MindMapNode createNode(Object userObject, MindMap map);
     }
 
     public class DefaultMindMapNodeCreator implements NewNodeCreator {
 
-        public MindMapNode createNode(Object userObject) {
-            return new MindMapNodeModel(userObject, getFrame());
+        public MindMapNode createNode(Object userObject, MindMap map) {
+            return new MindMapNodeModel(userObject, getFrame(), map);
         }
         
     }
@@ -295,12 +317,12 @@ public class MindMapController extends ControllerAdapter {
         myNewNodeCreator = creator;
     }
     
-    public MindMapNode newNode(Object userObject) {
+    public MindMapNode newNode(Object userObject, MindMap map) {
         // singleton default:
         if (myNewNodeCreator == null) {
             myNewNodeCreator = new DefaultMindMapNodeCreator();
         }
-        return myNewNodeCreator.createNode(userObject);
+        return myNewNodeCreator.createNode(userObject, map);
     }
 
     // fc, 14.12.2004: end "different models" change
@@ -335,7 +357,11 @@ public class MindMapController extends ControllerAdapter {
 
 
 //        editMenu.add(getIconMenu());
-		String iconMenuString = MenuBar.INSERT_MENU + "icons";
+		addIconsToMenu(holder, MenuBar.INSERT_MENU + "icons");
+
+    }
+
+    public void addIconsToMenu(StructuredMenuHolder holder, String iconMenuString) {
 		JMenu iconMenu = holder.addMenu(new JMenu(getText("icon_menu")), iconMenuString+"/.") ;
 		holder.addAction(removeLastIconAction, iconMenuString+"/removeLastIcon");
 		holder.addAction(removeAllIconsAction, iconMenuString+"/removeAllIcons");
@@ -343,10 +369,9 @@ public class MindMapController extends ControllerAdapter {
 		for (int i=0; i<iconActions.size(); ++i) {          
 			   JMenuItem item = holder.addAction((Action) iconActions.get(i), iconMenuString+"/"+i);
 		}
+	}
 
-    }
-
-    /**
+	/**
      * @param holder
      * @param formatMenuString
      */
@@ -385,6 +410,7 @@ public class MindMapController extends ControllerAdapter {
      */
     public void processMenuCategory(StructuredMenuHolder holder, List list, String category) {
 		String categoryCopy = category;
+        ButtonGroup buttonGroup = null;        
     	for (Iterator i = list.iterator(); i.hasNext();) {
             Object obj = (Object) i.next();
             if(obj instanceof MenuCategoryBase) {
@@ -409,7 +435,13 @@ public class MindMapController extends ControllerAdapter {
 					String theCategory = categoryCopy+"/"+name;
 					if (obj instanceof MenuCheckedAction) {
 						addCheckBox(holder, theCategory, theAction, keystroke);
-					} else {
+					} else if (obj instanceof MenuRadioAction) {                        
+                        final JRadioButtonMenuItem item = (JRadioButtonMenuItem) addRadioItem(holder, theCategory, theAction, keystroke, ((MenuRadioAction)obj).isSelected());
+                        if(buttonGroup == null)
+                            buttonGroup = new ButtonGroup();
+                        buttonGroup.add(item);
+
+                    } else {
 						add(holder, theCategory, theAction, keystroke);
 					}
 				} catch (Exception e1) {
@@ -420,111 +452,7 @@ public class MindMapController extends ControllerAdapter {
             } /* else exception */
          }
     }
-/*
-<<<<<<< MindMapController.java
-    JMenu getLeadingNodeMenu() {
-       JMenu leadingEditMenu = new JMenu();
-       add(leadingEditMenu, edit, "keystroke_edit");
-       add(leadingEditMenu, editLong, "keystroke_edit_long_node");
-       add(leadingEditMenu, newChild, "keystroke_add_child");
-       leadingEditMenu.addSeparator();
 
-       add(leadingEditMenu, cut, "keystroke_cut");
-       add(leadingEditMenu, copy, "keystroke_copy");
-       add(leadingEditMenu, copySingle, "keystroke_copy_single");
-       add(leadingEditMenu, paste, "keystroke_paste");
-       return leadingEditMenu; }
-
-    JMenu getNodeMenu() {
-	JMenu nodeMenu = new JMenu(getText("node"));
-
-// currently only hidden feature - needs debugging %%%   
-//#  if the property "add_as_child = true" is set,
-//#  the old logic of inserting of a new node with Ctrl+N is used.
-   
-        if (addAsChildMode) {
-          add(nodeMenu, newChildWithoutFocus, "keystroke_add_sibling_before");
-        }
-        else {
-          add(nodeMenu, newPreviousSibling, "keystroke_add_sibling_before");
-        }
-        add(nodeMenu, newSibling, "keystroke_add");
- 	add(nodeMenu, remove, "keystroke_remove");
-        add(nodeMenu, joinNodes, "keystroke_join_nodes");
-
-	nodeMenu.addSeparator();
-
-        add(nodeMenu, find, "keystroke_find");
-        add(nodeMenu, findNext, "keystroke_find_next");
-
-	nodeMenu.addSeparator();
-
- 	add(nodeMenu, nodeUp, "keystroke_node_up");
- 	add(nodeMenu, nodeDown, "keystroke_node_down");
-
-	nodeMenu.addSeparator();
-
-	add(nodeMenu, followLink, "keystroke_follow_link");
-	add(nodeMenu, setLinkByFileChooser, "keystroke_set_link_by_filechooser");
-	add(nodeMenu, setLinkByTextField, "keystroke_set_link_by_textfield");
-
-	nodeMenu.addSeparator();
-
-	add(nodeMenu, setImageByFileChooser, "keystroke_set_image_by_filechooser");
-
-	nodeMenu.addSeparator();
-
-	add(nodeMenu, toggleFolded, "keystroke_toggle_folded");
-	add(nodeMenu, toggleChildrenFolded, "keystroke_toggle_children_folded");
-
-	nodeMenu.addSeparator();
-
-	JMenu nodeStyle = new JMenu(getText("style"));
-	nodeMenu.add(nodeStyle);
-
-	add(nodeStyle, forkStyle);
-	add(nodeStyle, bubbleStyle);
-	add(nodeStyle, combinedStyle);
-	add(nodeStyle, parentStyle);
-	
-    // and the clouds:
-	nodeStyle.addSeparator();
-	add(nodeStyle, cloud, "keystroke_node_toggle_cloud");
-	add(nodeStyle, cloudColor);
-    
-    
-
-	JMenu nodeFont = new JMenu(getText("font"));
-	add(nodeFont, increaseNodeFont, "keystroke_node_increase_font_size");
-	add(nodeFont, decreaseNodeFont, "keystroke_node_decrease_font_size");
-
-	nodeFont.addSeparator();
-
-	add(nodeFont, italic,"keystroke_node_toggle_italic"); 
-	add(nodeFont, bold,"keystroke_node_toggle_boldface");
-	nodeMenu.add(nodeFont);
-	//	nodeFont.add(underline);
-	add(nodeMenu, nodeColor, "keystroke_node_color"); 
-        add(nodeMenu, nodeColorBlend, "keystroke_node_color_blend");
-
-	return nodeMenu;
-    }
-
-    JMenu getEdgeMenu() {
-	JMenu edgeMenu = new JMenu(getText("edge"));
-	JMenu edgeStyle = new JMenu(getText("style"));
-	edgeMenu.add(edgeStyle);
-	for (int i=0; i<edgeStyles.length; ++i) { 
-           edgeStyle.add(edgeStyles[i]); }
- 	add(edgeMenu, edgeColor, "keystroke_edge_color");
-	JMenu edgeWidth = new JMenu(getText("width"));
-	edgeMenu.add(edgeWidth);
-	for (int i=0; i<edgeWidths.length; ++i) { 
-           edgeWidth.add(edgeWidths[i]); }
-	return edgeMenu; }
-
-=======
-*/
     public JPopupMenu getPopupMenu() {
         return popupmenu;
     }
@@ -598,7 +526,7 @@ public class MindMapController extends ControllerAdapter {
 	return (MindMapToolBar)toolbar;
     }
 
-    JToolBar getLeftToolBar() {
+    Component getLeftToolBar() {
 	return ((MindMapToolBar)toolbar).getLeftToolBar();
     }
 
@@ -740,7 +668,9 @@ public class MindMapController extends ControllerAdapter {
                 deleteNode(node);
                 // save node:
                 node.setParent(null);
-                MindMapMapModel map = new MindMapMapModel(node, getFrame());
+                MindMapMapModel map = new MindMapMapModel(getFrame(), MindMapController.this);
+                node.setMap(map);
+                map.setRoot(node);
                 map.save(chosenFile);
                 // new node instead:
                 MindMapNode newNode = addNewNode(parent, nodePosition, node.isLeft());
@@ -897,6 +827,13 @@ public class MindMapController extends ControllerAdapter {
 	   public String getDescription() {
 	      return getText("mindmaps_desc");
 	   }
+    }
+
+    public void mapChanged(MindMap newMap) {
+        if(assignAttributeDialog != null){
+            assignAttributeDialog.mapChanged(getView());
+        }
+        
     }
 
 

@@ -16,31 +16,41 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MainToolBar.java,v 1.16.14.1 2004-10-17 23:00:06 dpolivaev Exp $*/
+/*$Id: MainToolBar.java,v 1.16.14.1.6.1.2.3 2005-12-24 13:45:18 dpolivaev Exp $*/
 
 package freemind.controller;
 
-import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JToggleButton;
 
 public class MainToolBar extends FreeMindToolBar {
-    JComboBox zoom;	    
+    private JComboBox zoom;	    
     Controller c;
     String userDefinedZoom;
+    private static Logger logger= null;
 	
     public MainToolBar(final Controller c) {
     	super();
         this.setRollover(true);
         this.c = c;
+        if(logger == null) {
+            logger = c.getFrame().getLogger(this.getClass().getName());
+        }
         userDefinedZoom = c.getResourceString("user_defined_zoom");
 	JButton button;
 
 	button = add(c.navigationPreviousMap);
 	button = add(c.navigationNextMap);
 	button = add(c.printDirect);
+	JToggleButton btnFilter = new JToggleButton (c.showFilterToolbarAction);
+	btnFilter.setToolTipText(c.getResourceString("filter_toolbar"));
+	add(btnFilter);
+	button = add(c.showAttributeManagerAction);
 
         zoom = new JComboBox(c.getZooms());
         zoom.setSelectedItem("100%");
@@ -80,6 +90,7 @@ public class MainToolBar extends FreeMindToolBar {
        return (int)(f*100F)+"%"; }
 
     public void setZoomComboBox(float f) {
+        logger.info("setZoomComboBox is called with "+f+".");
         String toBeFound = getItemForZoom(f);
         for(int i = 0; i < zoom.getItemCount(); ++i) {
             if(toBeFound.equals((String) zoom.getItemAt(i))) {

@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapNodeModel.java,v 1.21.14.3 2004-10-28 05:24:54 christianfoltin Exp $*/
+/*$Id: MindMapNodeModel.java,v 1.21.14.3.10.2 2005-09-17 19:02:07 dpolivaev Exp $*/
 
 package freemind.modes.mindmapmode;
 
@@ -30,6 +30,7 @@ import java.util.ListIterator;
 import freemind.main.FreeMindMain;
 import freemind.main.Tools;
 import freemind.modes.MindIcon;
+import freemind.modes.MindMap;
 import freemind.modes.MindMapNode;
 import freemind.modes.NodeAdapter;
 
@@ -43,19 +44,19 @@ public class MindMapNodeModel extends NodeAdapter {
     //  Constructors
     //
 
-	public MindMapNodeModel(FreeMindMain frame) {
-		this(null,frame);
+	public MindMapNodeModel(FreeMindMain frame, MindMap map) {
+		this(null,frame, map);
     }
 
 	    
-    public MindMapNodeModel( Object userObject, FreeMindMain frame ) {
-		super(userObject,frame);
+    public MindMapNodeModel( Object userObject, FreeMindMain frame, MindMap map) {
+		super(userObject,frame, map);
 		children = new LinkedList();
 		setEdge(new MindMapEdgeModel(this, getFrame()));
     }
 
-    protected MindMapNode basicCopy() {
-       return new MindMapNodeModel(userObject, getFrame()); }
+    protected MindMapNode basicCopy(MindMap map) {
+       return new MindMapNodeModel(userObject, getFrame(), map); }
 
     //
     // The mandatory load and save methods
@@ -99,6 +100,23 @@ public class MindMapNodeModel extends NodeAdapter {
                 result.append(myChar); }
              previousSpace = spaceOccured; }}
        return result.toString(); };
+
+   public String saveHTML_escapeUnicode(String text) {
+        int len = text.length();
+        StringBuffer result = new StringBuffer(len);
+        int intValue;
+        char myChar;
+        for (int i = 0; i < len; ++i) {
+            myChar = text.charAt(i);
+            intValue = (int) text.charAt(i);
+            if (intValue > 128) {
+                result.append("&#").append(intValue).append(';');
+            } else {
+                result.append(myChar);
+            }
+        }
+        return result.toString();
+    };
 
     public int saveHTML(Writer fileout, String parentID, int lastChildNumber,
                         boolean isRoot, boolean treatAsParagraph, int depth) throws IOException {
@@ -179,7 +197,7 @@ public class MindMapNodeModel extends NodeAdapter {
            String output = this.toString().substring(6); // do not write <html>
            if (output.endsWith("</html>")) {
               output = output.substring(0,output.length()-7); }
-           fileout.write(output); }
+           fileout.write(saveHTML_escapeUnicode(output)); }
         else {
            fileout.write(saveHTML_escapeUnicodeAndSpecialCharacters(toString())); }
 

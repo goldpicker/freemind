@@ -19,7 +19,7 @@
  *
  * Created on 06.02.2005
  */
-/*$Id: ReminderHook.java,v 1.1.2.7 2005-05-03 05:29:51 christianfoltin Exp $*/
+/*$Id: ReminderHook.java,v 1.1.2.7.6.2 2005-12-06 19:47:30 dpolivaev Exp $*/
 package plugins.time;
 
 import java.text.MessageFormat;
@@ -89,10 +89,10 @@ public class ReminderHook extends PermanentNodeHookAdapter {
 
 	public void shutdownMapHook() {
 		getController().setToolTip(getNode(), getName(), null);
-		displayState(REMOVE_CLOCK, getNode(), true);
 		if (timer != null) {
 			timer.cancel();
 		}
+		displayState(REMOVE_CLOCK, getNode(), true);
 		super.shutdownMapHook();
 	}
 
@@ -130,8 +130,7 @@ public class ReminderHook extends PermanentNodeHookAdapter {
 	private ImageIcon getClockIcon() {
 		// icon
 		if (clockIcon == null) {
-			clockIcon = MindIcon.factory("clock").getIcon(
-					getController().getFrame());
+			clockIcon = MindIcon.factory("clock").getIcon();
 		}
 		return clockIcon;
 	}
@@ -139,8 +138,7 @@ public class ReminderHook extends PermanentNodeHookAdapter {
 	private ImageIcon getBellIcon() {
 		// icon
 		if (bellIcon == null) {
-			bellIcon = MindIcon.factory("bell").getIcon(
-					getController().getFrame());
+			bellIcon = MindIcon.factory("bell").getIcon();
 		}
 		return bellIcon;
 	}
@@ -148,8 +146,7 @@ public class ReminderHook extends PermanentNodeHookAdapter {
 	private ImageIcon getFlagIcon() {
 		// icon
 		if (flagIcon == null) {
-			flagIcon = MindIcon.factory("flag").getIcon(
-					getController().getFrame());
+			flagIcon = MindIcon.factory("flag").getIcon();
 		}
 		return flagIcon;
 	}

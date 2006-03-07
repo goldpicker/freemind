@@ -16,7 +16,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-/* $Id: EncryptedMindMapNode.java,v 1.1.2.9 2005-05-03 05:29:50 christianfoltin Exp $ */
+/* $Id: EncryptedMindMapNode.java,v 1.1.2.9.6.4 2005-12-06 19:47:30 dpolivaev Exp $ */
 
 package freemind.modes.mindmapmode;
 
@@ -43,13 +43,14 @@ import freemind.main.Tools;
 import freemind.main.XMLElement;
 import freemind.modes.ControllerAdapter;
 import freemind.modes.MindIcon;
+import freemind.modes.MindMap;
 import freemind.modes.MindMapLinkRegistry;
 import freemind.modes.MindMapNode;
 import freemind.modes.actions.PasteAction;
 
 public class EncryptedMindMapNode extends MindMapNodeModel {
 
-    private boolean isVisible = true;
+    private boolean isAccessable = true;
 
     /**
      * is only set to false by the load mechanism. 
@@ -75,13 +76,13 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
      * @param userObject
      * @param frame
      */
-    public EncryptedMindMapNode(Object userObject, FreeMindMain frame) {
-        super(userObject, frame);
+    public EncryptedMindMapNode(Object userObject, FreeMindMain frame, MindMap map) {
+        super(userObject, frame, map);
         if (encryptedIcon == null) {
-            encryptedIcon = MindIcon.factory("encrypted").getIcon(frame);
+            encryptedIcon = MindIcon.factory("encrypted").getIcon();
         }
         if (decryptedIcon == null) {
-            decryptedIcon = MindIcon.factory("decrypted").getIcon(frame);
+            decryptedIcon = MindIcon.factory("decrypted").getIcon();
         }
         updateIcon();
     }
@@ -107,7 +108,7 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
             }
             isDecrypted = true;
         }
-        setVisible(true);
+        setAccessable(true);
         setFolded(false);
         return true;
     }
@@ -155,32 +156,32 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
     public void encrypt() {
         // FIXME: Sync.
         setFolded(true);
-        setVisible(false);
+        setAccessable(false);
     }
 
     public int getChildCount() {
-        if (isVisible()) {
+        if (isAccessable()) {
             return super.getChildCount();
         }
         return 0;
     }
 
     public ListIterator childrenFolded() {
-        if (isVisible()) {
+        if (isAccessable()) {
             return super.childrenFolded();
         }
         return new Vector().listIterator();
     }
 
     public ListIterator childrenUnfolded() {
-        if (isVisible() || isShuttingDown) {
+        if (isAccessable() || isShuttingDown) {
             return super.childrenUnfolded();
         }
         return new Vector().listIterator();
     }
 
     public boolean hasChildren() {
-        if (isVisible()) {
+        if (isAccessable()) {
             return super.hasChildren();
         }
         return false;
@@ -192,7 +193,7 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
      * @see freemind.modes.MindMapNode#getIcons()
      */
     public void updateIcon() {
-        setStateIcon("encryptedNode", (isVisible()) ? decryptedIcon : encryptedIcon);
+        setStateIcon("encryptedNode", (isAccessable()) ? decryptedIcon : encryptedIcon);
     }
 
 	public void setPassword(StringBuffer password) {
@@ -204,7 +205,7 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
      */
 
     public boolean isFolded() {
-        if (isVisible()) {
+        if (isAccessable()) {
             return super.isFolded();
         }
         return true;
@@ -215,7 +216,7 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
      */
 
     public void setFolded(boolean folded) {
-        if (isVisible()) {
+        if (isAccessable()) {
             super.setFolded(folded);
         } else {
             super.setFolded(true);
@@ -228,16 +229,12 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
 
     public void setAdditionalInfo(String info) {
         encryptedContent = info;
-        setVisible(false);
+        setAccessable(false);
         isDecrypted = false;
     }
 
     public String getAdditionalInfo() {
         return encryptedContent;
-    }
-
-    public boolean isNodeClassToBeSaved() {
-        return true;
     }
 
     /**
@@ -249,15 +246,15 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
         if (isDecrypted) {
             generateEncryptedContent(registry);
         }
-        boolean oldIsVisible = isVisible();
-        setVisible(false);
+        boolean oldIsVisible = isAccessable();
+        setAccessable(false);
         XMLElement ret = null;
         try {
             ret = super.save(writer, registry);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        setVisible(oldIsVisible);
+        setAccessable(oldIsVisible);
         return ret;
     }
 
@@ -322,16 +319,16 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
     /**
      * @param isVisible The isVisible to set.
      */
-    private void setVisible(boolean isVisible) {
-        this.isVisible = isVisible;
+    private void setAccessable(boolean isAccessable) {
+        this.isAccessable = isAccessable;
         updateIcon();
     }
 
     /**
      * @return Returns the isVisible.
      */
-    public boolean isVisible() {
-        return isVisible;
+    public boolean isAccessable() {
+        return isAccessable;
     }
 
     // from: http://javaalmanac.com/egs/javax.crypto/PassKey.html
@@ -418,6 +415,9 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
 
 
         public String decrypt(String str) {
+            if(str == null) {
+                return null;
+            }
             try {
                 byte[] salt = null;
                 // test if salt exists:

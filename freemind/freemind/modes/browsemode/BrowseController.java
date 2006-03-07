@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: BrowseController.java,v 1.13.18.4 2005-03-03 21:11:27 christianfoltin Exp $*/
+/*$Id: BrowseController.java,v 1.13.18.4.2.1.2.2 2006-01-22 12:24:38 dpolivaev Exp $*/
 
 package freemind.modes.browsemode;
 
@@ -37,6 +37,7 @@ import freemind.controller.StructuredMenuHolder;
 import freemind.main.Tools;
 import freemind.modes.ControllerAdapter;
 import freemind.modes.MapAdapter;
+import freemind.modes.MindMap;
 import freemind.modes.MindMapNode;
 import freemind.modes.Mode;
 import freemind.modes.actions.GotoLinkNodeAction;
@@ -69,7 +70,7 @@ public class BrowseController extends ControllerAdapter {
     }
 
     public MapAdapter newModel() {
-	return new BrowseMapModel(getFrame());
+	return new BrowseMapModel(getFrame(), this);
     }
 
     public void doubleClick() {
@@ -80,8 +81,8 @@ public class BrowseController extends ControllerAdapter {
         }
     }
 
-    public MindMapNode newNode(Object userObject) {
-    	return new BrowseNodeModel(userObject, getFrame());
+    public MindMapNode newNode(Object userObject, MindMap map) {
+    	return new BrowseNodeModel(userObject, getFrame(), map);
         }
 
     public JPopupMenu getPopupMenu() {

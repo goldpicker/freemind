@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MapAdapter.java,v 1.24.14.7 2005-04-26 21:41:00 christianfoltin Exp $*/
+/*$Id: MapAdapter.java,v 1.24.14.7.2.1.2.5 2006-01-22 12:24:38 dpolivaev Exp $*/
 
 package freemind.modes;
 
@@ -26,7 +26,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -42,7 +41,9 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import freemind.controller.MindMapNodesSelection;
+import freemind.controller.filter.Filter;
 import freemind.extensions.PermanentNodeHook;
+import freemind.main.FreeMind;
 import freemind.main.FreeMindMain;
 import freemind.main.Tools;
 import freemind.main.XMLParseException;
@@ -58,14 +59,16 @@ public abstract class MapAdapter implements MindMap {
     private File file;
     private FreeMindMain frame;
     static protected Logger logger;
+    private MapRegistry registry;
+    private Filter filter = null;
 
 
-
-    public MapAdapter (FreeMindMain frame) {
+    public MapAdapter (FreeMindMain frame, ModeController modeController) {
 		this.frame = frame;
 		if(logger == null) {
 		    logger = frame.getLogger(this.getClass().getName());
 		}
+		registry = new MapRegistry(this, modeController);
     }
 
     //
@@ -145,7 +148,7 @@ public abstract class MapAdapter implements MindMap {
 
     public Color getBackgroundColor() {
 	if (backgroundColor==null) {
-	    return Tools.xmlToColor(getFrame().getProperty("standardbackgroundcolor"));
+	    return Tools.xmlToColor(getFrame().getProperty(FreeMind.RESOURCES_BACKGROUND_COLOR));
 	}
 	return backgroundColor;
     }
@@ -159,7 +162,7 @@ public abstract class MapAdapter implements MindMap {
 	return root;
     }
 
-    protected void setRoot(MindMapNode root) {
+    public void setRoot(MindMapNode root) {
 	this.root = root;
     }
 
@@ -354,10 +357,10 @@ public abstract class MapAdapter implements MindMap {
            removedArray[0] = node;
            nodesWereRemoved(parent, childIndex, removedArray); }}
 
-    public void changeNode(MindMapNode node, String newText) {
-	node.setUserObject(newText);
-	nodeChanged(node);
-    }
+//    public void changeNode(MindMapNode node, String newText) {
+//	node.setUserObject(newText);
+//	nodeChanged(node);
+//    }
 
     //
     // Interface TreeModel
@@ -446,6 +449,10 @@ public abstract class MapAdapter implements MindMap {
       */
     public void nodeChanged(TreeNode node) {
         frame.getController().getMode().getModeController().nodeChanged((MindMapNode)node);
+    }
+
+    public void nodeRefresh(TreeNode node) {
+        frame.getController().getMode().getModeController().nodeRefresh((MindMapNode)node);
     }
 
 	public void nodeChangedMapInternal(TreeNode node) {
@@ -626,5 +633,14 @@ public abstract class MapAdapter implements MindMap {
         }
     }
 
+    public MapRegistry getRegistry() {
+        return registry;
+    }
+    public Filter getFilter() {
+        return filter;
+    }
+    public void setFilter(Filter filter) {
+        this.filter = filter;
+    }
 }
 

@@ -16,25 +16,31 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindIcon.java,v 1.1.18.5 2005-05-03 05:29:50 christianfoltin Exp $*/
+/*$Id: MindIcon.java,v 1.1.18.5.2.1.2.2 2005-12-06 19:47:30 dpolivaev Exp $*/
 
 package freemind.modes;
 
+import java.awt.Component;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 
+import freemind.controller.Controller;
 import freemind.main.FreeMindMain;
+import freemind.main.Resources;
 
 /**
  * This class represents a MindIcon than can be applied
  * to a node or a whole branch.
  */
-public class MindIcon {
+public class MindIcon implements Comparable{
     private String name;
     private String description;
+    private int number = UNKNOWN;
     /**
      * Stores the once created ImageIcon.
      */
@@ -45,11 +51,22 @@ public class MindIcon {
      * Set of all created icons. Name -> MindIcon
      */
     private static HashMap createdIcons = new HashMap();
+    private static final int UNKNOWN = -2;
+    private JComponent component = null;
     
 
     private MindIcon(String name) {
        setName(name); 
        associatedIcon=null;
+    }
+
+    /**
+     * @param iconName
+     * @param icon
+     */
+    private MindIcon(String name, ImageIcon icon) {
+        setName(name); 
+        associatedIcon=icon;
     }
 
     public String toString() {
@@ -115,15 +132,15 @@ public class MindIcon {
         return "images/icons/";
     }
 
-    public ImageIcon getIcon(FreeMindMain frame) {
+    public ImageIcon getIcon() {
         // We need the frame to be able to obtain the resource URL of the icon.
         if (iconNotFound == null) {
-           iconNotFound = new ImageIcon(frame.getResource("images/IconNotFound.png")); }
+           iconNotFound = new ImageIcon(Resources.getInstance().getResource("images/IconNotFound.png")); }
 
         if(associatedIcon != null)
             return associatedIcon;
         if ( name != null ) {
-           URL imageURL = frame.getResource(getIconFileName());
+           URL imageURL = Resources.getInstance().getResource(getIconFileName());
            ImageIcon icon = imageURL == null ? iconNotFound : new ImageIcon(imageURL);
            setIcon(icon);
            return icon; }
@@ -186,4 +203,50 @@ public class MindIcon {
     		createdIcons.put(iconName, icon);
     		return icon;
     }
+
+    /**
+     * @param key
+     * @param icon
+     * @return
+     */
+    public static MindIcon factory(String iconName, ImageIcon icon) {
+		if(createdIcons.containsKey(iconName)){
+			return (MindIcon) createdIcons.get(iconName);
+		}
+		MindIcon mindIcon = new MindIcon(iconName, icon);
+		getAllIconNames ().add(iconName);
+		createdIcons.put(iconName, mindIcon);
+		return mindIcon;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(Object o) {
+        if (o instanceof MindIcon){
+            MindIcon icon = (MindIcon)o;
+            int i1 = getNumber();
+            int i2 = icon.getNumber();
+            return i1 < i2 ? -1 : i1 == i2 ? 0 : +1;
+        }
+        throw new ClassCastException() ;
+    }
+    
+    
+    private int getNumber() {
+        if(number == UNKNOWN){
+            number = getAllIconNames ().indexOf(name);
+        }
+        return number;
+    }
+
+    /**
+     * @return
+     */
+    public JComponent getRendererComponent() {
+        if(component == null){
+            component = new JLabel(getIcon());
+        }
+        return component;
+    }
+
 }

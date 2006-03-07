@@ -16,13 +16,14 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMap.java,v 1.14.14.6 2005-03-11 22:27:29 christianfoltin Exp $*/
+/*$Id: MindMap.java,v 1.14.14.6.2.1.2.3 2005-09-17 19:02:07 dpolivaev Exp $*/
 
 package freemind.modes;
 
 import java.awt.Color;
 import java.awt.datatransfer.Transferable;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.MalformedURLException;
@@ -32,11 +33,16 @@ import java.util.List;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 
+import freemind.controller.filter.Filter;
+import freemind.main.XMLParseException;
+
 public interface MindMap extends TreeModel {
         
-    void changeNode(MindMapNode node, String newText);
+//    void changeNode(MindMapNode node, String newText);
     //nodeChanged has moved to the modeController. (fc, 2.5.2004)
 	void nodeChanged(TreeNode node);
+	
+	void nodeRefresh(TreeNode node);
 
     Transferable cut(MindMapNode node);
 
@@ -109,6 +115,25 @@ public interface MindMap extends TreeModel {
     void destroy();
 
     boolean isReadOnly();
+    /**
+     * @return
+     */
+    MapRegistry getRegistry();
+    /**
+     * @param file
+     * @throws XMLParseException
+     * @throws IOException
+     * @throws FileNotFoundException
+     */
+    void load(File file) throws FileNotFoundException, IOException, XMLParseException;
+    /**
+     * @return
+     */
+    Filter getFilter();
+    /**
+     * @param inactiveFilter
+     */
+    void setFilter(Filter inactiveFilter);
 
 // (PN)
 //    void close();

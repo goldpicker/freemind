@@ -17,7 +17,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapMapModel.java,v 1.36.14.10 2005-04-27 21:45:30 christianfoltin Exp $*/
+/*$Id: MindMapMapModel.java,v 1.36.14.10.2.1.2.7 2006-01-22 12:24:39 dpolivaev Exp $*/
 
 package freemind.modes.mindmapmode;
 
@@ -31,6 +31,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
@@ -38,8 +39,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.nio.channels.FileLock;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,6 +57,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import freemind.controller.MindMapNodesSelection;
+import freemind.main.FreeMind;
 import freemind.main.FreeMindMain;
 import freemind.main.Tools;
 import freemind.main.XMLParseException;
@@ -65,6 +65,7 @@ import freemind.modes.LinkRegistryAdapter;
 import freemind.modes.MapAdapter;
 import freemind.modes.MindMapLinkRegistry;
 import freemind.modes.MindMapNode;
+import freemind.modes.ModeController;
 
 
 public class MindMapMapModel extends MapAdapter  {
@@ -72,17 +73,18 @@ public class MindMapMapModel extends MapAdapter  {
     LockManager lockManager;
     private LinkRegistryAdapter linkRegistry;
     private Timer timerForAutomaticSaving;
+    private static final String EXPECTED_START_STRINGS[] = {
+            "<map version=\"" + FreeMind.XML_VERSION + "\"",
+            "<map version=\"0.7.1\"",
+            "<map version=\"0.8.0\""};
 
     //
     // Constructors
     //
 
-    public MindMapMapModel(FreeMindMain frame) {
-        this(new MindMapNodeModel( frame.getResourceString("new_mindmap"), frame), frame);
-    }
-    
-    public MindMapMapModel( MindMapNodeModel root, FreeMindMain frame ) {
-        super(frame);
+    public MindMapMapModel( FreeMindMain frame , ModeController modeController) {
+        super(frame, modeController);
+        MindMapNodeModel root = new MindMapNodeModel( frame.getResourceString("new_mindmap"), frame, this);
         lockManager = frame.getProperty("experimental_file_locking_on").equals("true") ? 
            new LockManager() : new DummyLockManager();
 
@@ -127,160 +129,6 @@ public class MindMapMapModel extends MapAdapter  {
     public String getRestoreable() {
        return getFile()==null ? null : "MindMap:"+getFile().getAbsolutePath(); }
 
-    //  All these methods do redisplay, because they are offered to controller for use.
-    // __________________________________________________________________________
-/*
-    public void setNodeColor(MindMapNodeModel node, Color color) {
-        node.setColor(color);
-        nodeChanged(node); }
-
-    public void blendNodeColor(MindMapNodeModel node) {
-        Color mapColor = getBackgroundColor();
-        Color nodeColor = node.getColor();
-        if (nodeColor == null) {
-           nodeColor = Tools.xmlToColor(getFrame().getProperty("standardnodecolor")); }
-        node.setColor( new Color ( (3*mapColor.getRed() + nodeColor.getRed()) / 4,
-                                   (3*mapColor.getGreen() + nodeColor.getGreen()) / 4,
-                                   (3*mapColor.getBlue() + nodeColor.getBlue()) / 4));
-        nodeChanged(node); }
-
-    public void setNodeFont(MindMapNodeModel node, Font font) {
-        node.setFont(font);
-        nodeChanged(node); }
-
-    public void setEdgeColor(MindMapNodeModel node, Color color) {
-        ((MindMapEdgeModel)node.getEdge()).setColor(color);
-        nodeChanged(node); }
-
-    public void setEdgeWidth(MindMapNodeModel node, int width) {
-        ((MindMapEdgeModel)node.getEdge()).setWidth(width);
-        nodeChanged(node); }
-
-    public void setNodeStyle(MindMapNodeModel node, String style) {
-        node.setStyle(style);
-        nodeStructureChanged(node); }
-
-    public void setEdgeStyle(MindMapNodeModel node, String style) {
-        MindMapEdgeModel edge = (MindMapEdgeModel)node.getEdge();
-        edge.setStyle(style);
-        nodeStructureChanged(node); }
-
-    public void setBold(MindMapNodeModel node) {
-        node.setBold(!node.isBold());
-        nodeChanged(node); }
-
-    public void setCloud(MindMapNodeModel node) {
-        if(node.getCloud() == null) {
-            node.setCloud(new MindMapCloudModel(node, getFrame()));
-        } else {
-            node.setCloud(null);
-        }
-        nodeChanged(node); 
-    }
-
-    public void setCloudColor(MindMapNodeModel node, Color color) {
-        // the root node must not have a cloud
-		if (node.isRoot() == false) {
-        if(node.getCloud() == null) {
-            setCloud(node);
-        }
-        ((MindMapCloudModel)node.getCloud()).setColor(color);
-	        nodeChanged(node); 	        
-		}
-	}
-
-    public void setCloudWidth(MindMapNodeModel node, int width) {
-        // the root node must not have a cloud
-		if (node.isRoot() == false) {
-        if(node.getCloud() == null) {
-            setCloud(node);
-        }
-        ((MindMapCloudModel)node.getCloud()).setWidth(width);
-        nodeChanged(node); }
-    }
-
-    public void setCloudStyle(MindMapNodeModel node, String style) {
-        // the root node must not have a cloud
-		if (node.isRoot() == false) {
-        if(node.getCloud() == null) {
-            setCloud(node);
-        }
-        MindMapCloudModel cloud = (MindMapCloudModel)node.getCloud();
-        cloud.setStyle(style);
-        nodeStructureChanged(node); }
-    }
-
-    public void addIcon(MindMapNodeModel node, MindIcon icon) {
-        node.addIcon(icon);
-        nodeChanged(node); }
-
-    public int removeLastIcon(MindMapNodeModel node) {
-        int retval = node.removeLastIcon();
-        nodeChanged(node); 
-        return retval;
-    }
-
-    // Source holds the MindMapArrowLinkModel and points to the id placed in target.
-    public void addLink(MindMapNodeModel source, MindMapNodeModel target) {
-        if(getLinkRegistry().getLabel(target) == null) {
-            // call registry to give new label
-            getLinkRegistry().registerLinkTarget(target);
-        }
-        MindMapArrowLinkModel linkModel = new MindMapArrowLinkModel(source, target, getFrame());
-        linkModel.setDestinationLabel(getLinkRegistry().getLabel(target));
-        // register link.
-        getLinkRegistry().registerLink(linkModel);
-        nodeChanged(target); 
-        nodeChanged(source); 
-    }
-
-    public void removeReference(MindMapNode source, MindMapArrowLinkModel arrowLink) {
-        getLinkRegistry().deregisterLink(arrowLink);
-        nodeChanged(source);
-        nodeChanged(arrowLink.getTarget());
-    }
-
-    public void changeArrowsOfArrowLink(MindMapNode source, MindMapArrowLinkModel arrowLink, boolean hasStartArrow, boolean hasEndArrow) {
-        arrowLink.setStartArrow((hasStartArrow)?"Default":"None");
-        arrowLink.setEndArrow((hasEndArrow)?"Default":"None");
-        nodeChanged(source);
-    }
-
-    public void setArrowLinkColor(MindMapNode source, MindMapArrowLinkModel arrowLink, Color color) {
-        arrowLink.setColor(color);
-        nodeChanged(source); 
-    }
-
-    public void setItalic(MindMapNodeModel node) {
-        node.setItalic(!node.isItalic());
-        nodeChanged(node); }
-
-    public void setUnderlined(MindMapNodeModel node) {
-        node.setUnderlined(!node.isUnderlined());
-        nodeChanged(node); }
-
-    public void setNormalFont(MindMapNodeModel node) {
-        node.setItalic(false);
-        node.setBold(false);
-        node.setUnderlined(false);
-        nodeChanged(node); }
-
-    public void setFontFamily(MindMapNodeModel node, String fontFamily) {
-        node.estabilishOwnFont();
-        node.setFont(getFrame().getController().getFontThroughMap
-                     (new Font(fontFamily,node.getFont().getStyle(),node.getFont().getSize())));
-        nodeChanged(node); }
-
-    public void setFontSize(MindMapNodeModel node, int fontSize) {
-        node.estabilishOwnFont();
-        node.setFont(node.getFont().deriveFont((float)fontSize));
-        nodeChanged(node); }
-
-    public void increaseFontSize(MindMapNodeModel node, int increment) {
-        node.estabilishOwnFont();
-        node.setFontSize(node.getFont().getSize() + increment);
-        nodeChanged(node); }
-*/
     //
     // Other methods
     //
@@ -596,8 +444,9 @@ public class MindMapMapModel extends MapAdapter  {
 	 * @throws IOException
 	 */
 	public void getXml(Writer fileout) throws IOException {
-		fileout.write("<map version=\""+getFrame().getFreemindVersion()+"\">\n");
+		fileout.write("<map version=\""+FreeMind.XML_VERSION+"\">\n");
 		fileout.write("<!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->\n");
+		getRegistry().save(fileout);
 		((MindMapNodeModel)getRoot()).save(fileout, this.getLinkRegistry());
 		fileout.write("</map>\n");
 		fileout.close();
@@ -657,45 +506,125 @@ public class MindMapMapModel extends MapAdapter  {
     }
 
     MindMapNodeModel loadTree(File file) throws XMLParseException, IOException {
-        MindMapXMLElement mapElement = new MindMapXMLElement(getFrame());
+        MindMapXMLElement mapElement = new MindMapXMLElement(getFrame(), this);
+        int versionInfoLength = EXPECTED_START_STRINGS[0].length();
+        // reading the start of the file:
+        StringBuffer buffer = readFileStart(file, versionInfoLength);
+        String mapStart = "";
+        if(buffer.length() >= versionInfoLength){
+        		mapStart = buffer.substring(0, versionInfoLength);
+        }
         // the resulting file is accessed by the reader:
         Reader reader = null;
-        try{
-	        // try to convert map with xslt:
-	        URL updaterUrl = getFrame().getResource("freemind/modes/mindmapmode/freemind_version_updater.xslt");
-	        if(updaterUrl == null) {
-	            throw new IllegalArgumentException("freemind_version_updater.xslt not found.");
-	        }
-	        Source xsltSource =  new StreamSource(updaterUrl.openStream());
-	        // get output:
-	        StringWriter writer = new StringWriter();
-	        Result result = new StreamResult(writer);
-	        // create an instance of TransformerFactory
-            TransformerFactory transFact = TransformerFactory.newInstance();
-            Transformer trans = transFact.newTransformer(xsltSource);
-            trans.transform(new StreamSource(file), result);
-            reader = new StringReader(writer.getBuffer().toString());
-        } catch(Exception ex) {
-            ex.printStackTrace();
-            // exception: we take the file itself:
-            reader = new BufferedReader(new FileReader(file));
+        for(int i = 0; i < EXPECTED_START_STRINGS.length; i++){
+            if (mapStart.equals(EXPECTED_START_STRINGS[i])) {
+                // actual version:
+                reader = getActualReader(file);
+                break;
+            } 
+        }
+        if (reader == null) {
+            // other version:
+            reader = getUpdateReader(file);
         }
         try {
-            mapElement
-                    .parseFromReader(reader);
+            mapElement.parseFromReader(reader);
         } catch (Exception ex) {
             System.err.println("Error while parsing file:" + ex);
             ex.printStackTrace();
             return null;
+        } finally {
+            if (reader != null) {
+                reader.close();
+            }
         }
         // complete the arrow links:
         mapElement.processUnfinishedLinks(getLinkRegistry());
         // we wait with "invokeHooksRecursively" until the map is fully
         // registered.
-        return (MindMapNodeModel) mapElement.getMapChild(); 
+        return (MindMapNodeModel) mapElement.getMapChild();
+    }
+
+    /** Returns pMinimumLength bytes of the files content.
+     * @param file
+     * @param pMinimumLength
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    private StringBuffer readFileStart(File file, int pMinimumLength) {
+    	BufferedReader in=null;
+    	StringBuffer buffer = new StringBuffer();
+        try {
+			// get the file start into the memory:
+			in = new BufferedReader(new FileReader(file));
+			String str;
+			while ((str = in.readLine()) != null) {
+				buffer.append(str);
+				if (buffer.length() >= pMinimumLength)
+					break;
+			}
+			in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new StringBuffer();
+		}
+		return buffer;
     }
 
     
+
+    /** Creates a reader that pipes the input file through a XSLT-Script that
+     *  updates the version to the current.
+     * @param file
+     * @return 
+     * @throws IOException
+     */
+    private Reader getUpdateReader(File file) throws IOException {
+        StringWriter writer = null;
+        InputStream inputStream = null;
+        logger.info("Updating the file "+file.getName()+" to the current version.");
+        try{
+            // try to convert map with xslt:
+            URL updaterUrl=null;
+            updaterUrl = getFrame().getResource("freemind/modes/mindmapmode/freemind_version_updater.xslt");
+            if(updaterUrl == null) {
+                throw new IllegalArgumentException("freemind_version_updater.xslt not found.");
+            }
+            Source xsltSource=null;
+            inputStream = updaterUrl.openStream();
+            xsltSource = new StreamSource(inputStream);
+            // get output:
+            writer = new StringWriter();
+            Result result = new StreamResult(writer);
+            // create an instance of TransformerFactory
+            TransformerFactory transFact = TransformerFactory.newInstance();
+            Transformer trans = transFact.newTransformer(xsltSource);
+            trans.transform(new StreamSource(file), result);
+            logger.info("Updating the file "+file.getName()+" to the current version. Done.");
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            // exception: we take the file itself:
+            return getActualReader(file);
+        } finally {
+            if(inputStream!= null) {
+                inputStream.close();
+            }
+            if(writer != null) {
+                writer.close();
+            }
+        }
+        return new StringReader(writer.getBuffer().toString());
+    }
+
+    /** Creates a default reader that just reads the given file.
+     * @param file
+     * @return
+     * @throws FileNotFoundException
+     */
+    private Reader getActualReader(File file) throws FileNotFoundException {
+        return new BufferedReader(new FileReader(file));
+    }
 
     //
     // cut'n'paste

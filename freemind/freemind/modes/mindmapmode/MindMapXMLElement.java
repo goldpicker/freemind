@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapXMLElement.java,v 1.13.18.1 2004-12-19 09:00:41 christianfoltin Exp $*/
+/*$Id: MindMapXMLElement.java,v 1.13.18.1.8.2 2005-12-05 20:44:40 dpolivaev Exp $*/
 
 
 package freemind.modes.mindmapmode;
@@ -30,6 +30,8 @@ import freemind.main.XMLElement;
 import freemind.modes.ArrowLinkAdapter;
 import freemind.modes.CloudAdapter;
 import freemind.modes.EdgeAdapter;
+import freemind.modes.MindMap;
+import freemind.modes.MindMapNode;
 import freemind.modes.NodeAdapter;
 import freemind.modes.XMLElementAdapter;
 
@@ -39,13 +41,13 @@ public class MindMapXMLElement extends XMLElementAdapter {
 	// Logging: 
 	private static java.util.logging.Logger logger;
 
-   public MindMapXMLElement(FreeMindMain frame) {
-       super(frame);
+   public MindMapXMLElement(FreeMindMain frame, MindMap map) {
+       super(frame, map);
        init();
    }
 
-    protected MindMapXMLElement(FreeMindMain frame, Vector ArrowLinkAdapters, HashMap IDToTarget) {
-        super(frame, ArrowLinkAdapters, IDToTarget);
+    protected MindMapXMLElement(FreeMindMain frame, Vector ArrowLinkAdapters, HashMap IDToTarget, MindMap map) {
+        super(frame, ArrowLinkAdapters, IDToTarget, map);
         init();
     }
 
@@ -61,11 +63,11 @@ public class MindMapXMLElement extends XMLElementAdapter {
     /** abstract method to create elements of my type (factory).*/
     protected XMLElement  createAnotherElement(){
     // We do not need to initialize the things of XMLElement.
-        return new MindMapXMLElement(getFrame(), ArrowLinkAdapters, IDToTarget);
+        return new MindMapXMLElement(getFrame(), ArrowLinkAdapters, IDToTarget, getMap());
     }
     protected NodeAdapter createNodeAdapter(FreeMindMain     frame, String nodeClass){
         if (nodeClass==null) {
-            return new MindMapNodeModel(frame);
+            return new MindMapNodeModel(frame, getMap());
         }
         // reflection:
 		try {
@@ -73,8 +75,8 @@ public class MindMapXMLElement extends XMLElementAdapter {
             ClassLoader loader = this.getClass().getClassLoader();
 		    // constructed.
 			Class nodeJavaClass = Class.forName(nodeClass, true, loader);
-			Class[] constrArgs = new Class[]{Object.class, FreeMindMain.class};
-			Object[] constrObjs = new Object[]{null, frame};
+			Class[] constrArgs = new Class[]{Object.class, FreeMindMain.class, MindMap.class};
+			Object[] constrObjs = new Object[]{null, frame, getMap()};
 			Constructor constructor = nodeJavaClass.getConstructor(constrArgs);
 			NodeAdapter nodeImplementor =
 				(NodeAdapter) constructor.newInstance(constrObjs);
@@ -82,7 +84,8 @@ public class MindMapXMLElement extends XMLElementAdapter {
 		} catch (Exception e) {
 			logger.severe("Error occurred loading node implementor: " + nodeClass + "\nException:"+e.toString());
 			// the best we can do is to return the normal class:
-			return new MindMapNodeModel(frame);
+			NodeAdapter node = new MindMapNodeModel(frame, getMap());
+			return node ;
 		}
     }
     protected EdgeAdapter createEdgeAdapter(NodeAdapter node, FreeMindMain frame){

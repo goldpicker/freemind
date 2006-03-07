@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: EncryptNode.java,v 1.1.2.6 2005-04-20 16:52:20 christianfoltin Exp $*/
+/*$Id: EncryptNode.java,v 1.1.2.6.6.4 2006-01-22 12:24:37 dpolivaev Exp $*/
 
 /*
  * Created on 14.12.2004
@@ -57,7 +57,8 @@ public class EncryptNode extends NodeHookAdapter {
         private final ModeController controller;
         private final MindMap mMap;
         private final java.util.logging.Logger logger;
-
+        private boolean enabled = false;
+        
         public Registration(ModeController controller, MindMap map) {
             this.controller = controller;
             mMap = map;
@@ -65,29 +66,37 @@ public class EncryptNode extends NodeHookAdapter {
         }
 
 		public void register() {
+            enabled = true;
 		}
 
 		public void deRegister() {
+            enabled = false;
 		}
 
 		/* (non-Javadoc)
 		 * @see freemind.controller.MenuItemEnabledListener#isEnabled(javax.swing.JMenuItem, javax.swing.Action)
 		 */
 		public boolean isEnabled(JMenuItem item, Action action) {
+		    String hookName = ((NodeHookAction)action).getHookName();
+            // the following function does not work without a running valid controller, so we comment it out.
+//            if(hookName.equals("accessories/plugins/NewEncryptedMap.properties")) {
+//                return true;
+//            }   
+            if(!enabled)
+                return false;
 			boolean isEncryptedNode = false;
 			boolean isOpened = false;
 			if(controller.getSelected() != null && controller.getSelected() instanceof EncryptedMindMapNode) {
 				isEncryptedNode = true;
 			    EncryptedMindMapNode enode = (EncryptedMindMapNode) controller.getSelected() ;
-				isOpened = enode.isVisible();
+				isOpened = enode.isAccessable();
 			}
-			String hookName = ((NodeHookAction)action).getHookName();
 			if (hookName.equals("accessories/plugins/EnterPassword.properties")) {
 				return isEncryptedNode;
 			} else {
 			    /* you can insert an encrypted node, if the current selected node is 
 			     * not encrypted, or if it is opened. */ 
-				return !isEncryptedNode || isOpened ;
+				return (!isEncryptedNode || isOpened) ;
 			}
 		}
     }
@@ -124,11 +133,13 @@ public class EncryptNode extends NodeHookAdapter {
         if(password == null) {
             return;
         }
+        MapAdapter newModel = new MindMapMapModel(getController().getFrame(), getController());
         EncryptedMindMapNode encryptedMindMapNode = new EncryptedMindMapNode(
                 getController().getText("accessories/plugins/EncryptNode.properties_select_me"), 
-                getController().getFrame());
+                getController().getFrame(),
+                newModel);
+        newModel.setRoot(encryptedMindMapNode);
         encryptedMindMapNode.setPassword(password);
-        MapAdapter newModel = new MindMapMapModel(encryptedMindMapNode, getController().getFrame());
         MindMapController mindmapcontroller = (MindMapController) getController();
         mindmapcontroller.newMap(newModel);
     }
@@ -145,9 +156,9 @@ public class EncryptNode extends NodeHookAdapter {
         // FIXME: not multithreading safe
         mindmapcontroller.setNewNodeCreator(new NewNodeCreator() {
 
-            public MindMapNode createNode(Object userObject) {
+            public MindMapNode createNode(Object userObject, MindMap map) {
                 EncryptedMindMapNode encryptedMindMapNode = new EncryptedMindMapNode(
-                        userObject, getController().getFrame());
+                        userObject, getController().getFrame(), map);
                 encryptedMindMapNode.setPassword(password);
                 return encryptedMindMapNode;
             }
@@ -183,7 +194,7 @@ public class EncryptNode extends NodeHookAdapter {
     private void toggleCryptState(MindMapNode node) {
         if (node instanceof EncryptedMindMapNode) {
             EncryptedMindMapNode encNode = (EncryptedMindMapNode) node;
-            if (encNode.isVisible()) {
+            if (encNode.isAccessable()) {
                 // to remove all children views:
                 encNode.encrypt();
                 encNode.setShuttingDown(true);

@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: FileNodeModel.java,v 1.11 2003-11-03 11:00:13 sviles Exp $*/
+/*$Id: FileNodeModel.java,v 1.11.28.2 2005-07-12 15:41:16 dpolivaev Exp $*/
 
 package freemind.modes.filemode;
 
@@ -27,7 +27,9 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import freemind.main.FreeMindMain;
+import freemind.modes.MindMap;
 import freemind.modes.MindMapNode;
+import freemind.modes.ModeController;
 import freemind.modes.NodeAdapter;
 
 
@@ -43,8 +45,8 @@ public class FileNodeModel extends NodeAdapter {
     //  Constructors
     //
 
-    public FileNodeModel( File file, FreeMindMain frame ) {
-	super(frame);
+    public FileNodeModel( File file, FreeMindMain frame , MindMap map) {
+	super(frame, map);
 	setEdge(new FileEdgeModel(this,getFrame()));
 	this.file = file;
 	setFolded(!file.isFile());
@@ -52,14 +54,15 @@ public class FileNodeModel extends NodeAdapter {
 
     //Overwritten get Methods
     public String getStyle() {
-        // This condition shows the code is not quite logical:
-        // ordinary file should not be considered folded and 
-        // therefore the clause !isLeaf() should not be necessary.       
-       if (isFolded()) { // && !isLeaf()) {
-	    return MindMapNode.STYLE_BUBBLE;
-	} else {
  	    return MindMapNode.STYLE_FORK;
-	}
+		//        // This condition shows the code is not quite logical:
+		//        // ordinary file should not be considered folded and 
+		//        // therefore the clause !isLeaf() should not be necessary.       
+		//       if (isFolded()) { // && !isLeaf()) {
+		//	    return MindMapNode.STYLE_BUBBLE;
+		//	} else {
+		// 	    return MindMapNode.STYLE_FORK;
+		//	}
     }
     /*
 	if (file.isFile()) {
@@ -135,7 +138,7 @@ public class FileNodeModel extends NodeAdapter {
 		for(int i = 0; i < files.length; i++) {
 		    File childFile = new File(path, files[i]);
 		    if (!childFile.isHidden()) {
-			insert(new FileNodeModel(childFile,getFrame()),0);
+			insert(new FileNodeModel(childFile,getFrame(), getMap()),0);
 		    }
 		}
 	    }

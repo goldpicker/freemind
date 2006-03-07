@@ -16,12 +16,13 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: EdgeView.java,v 1.13.14.1 2004-10-17 20:01:08 dpolivaev Exp $*/
+/*$Id: EdgeView.java,v 1.13.14.1.6.1.2.1 2005-07-12 15:41:18 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
 import freemind.modes.MindMapEdge;
 import java.awt.*;
+
 import javax.swing.JLabel;
 
 /**
@@ -34,6 +35,7 @@ public abstract class EdgeView {
     private static int i;
 
     static final Stroke DEF_STROKE = new BasicStroke();
+    static Stroke ECLIPSED_STROKE = null;
 	
     protected EdgeView(NodeView source, NodeView target) {
 	this.source = source;
@@ -128,10 +130,23 @@ public abstract class EdgeView {
       if (getMap().getController().getAntialiasEdges() || getMap().getController().getAntialiasAll()) {
          g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); }}
 
-   public boolean isAntialiasAll() {
-      return true; }
+   protected static Stroke getEclipsedStroke() {
+       if(ECLIPSED_STROKE == null){
+           float dash[] = {3.0f, 9.0f};           
+           ECLIPSED_STROKE = new BasicStroke(3.0f,
+                   BasicStroke.CAP_BUTT,
+                   BasicStroke.JOIN_MITER,
+                   12.0f, dash, 0.0f);            
+       }
+       return ECLIPSED_STROKE;
+   }
 
-   public boolean isAntialiasEdges() {
-      return true; }
-
+   protected boolean isTargetEclipsed(Graphics2D g) {
+       if( target.isParentHidden()){
+           g.setColor(g.getBackground());
+           g.setStroke(getEclipsedStroke());
+	    return true;
+       }
+       return false;
+   }
 }

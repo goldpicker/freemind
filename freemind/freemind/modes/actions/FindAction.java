@@ -167,8 +167,12 @@ public class FindAction extends AbstractAction {
                     nodesUnfoldedByDisplay.add(nodeOnPath);
                 controller.setFolded(nodeOnPath, false);
             }
+            nodeOnPath.getFilterInfo().setAncestor();
         }
-
+        if (node.getViewer() != null && ! node.getViewer().isVisible()){
+        	node.getFilterInfo().reset();
+        	controller.getMap().nodeChanged(node);
+        }
     }
 
     public boolean findNext() {

@@ -19,7 +19,7 @@
  *
  * Created on 05.05.2004
  */
-/*$Id: NewChildAction.java,v 1.1.4.8 2005-04-12 21:12:16 christianfoltin Exp $*/
+/*$Id: NewChildAction.java,v 1.1.4.8.6.2 2005-07-12 15:41:16 dpolivaev Exp $*/
 
 package freemind.modes.actions;
 
@@ -43,7 +43,6 @@ import freemind.modes.ControllerAdapter;
 import freemind.modes.MindMapNode;
 import freemind.modes.NodeAdapter;
 import freemind.modes.MindMapLinkRegistry.ID_Registered;
-import freemind.modes.MindMapNode.HistoryInformation;
 
 
 public class NewChildAction extends AbstractAction implements ActorXml {
@@ -69,7 +68,7 @@ public class NewChildAction extends AbstractAction implements ActorXml {
 		NewNodeAction addNodeAction = (NewNodeAction) action;
 		NodeAdapter parent = this.c.getNodeFromID(addNodeAction.getNode());
 		int index = addNodeAction.getIndex();
-		MindMapNode newNode = c.newNode("");
+		MindMapNode newNode = c.newNode("", parent.getMap());
 		String newId = addNodeAction.getNewId();
 		ID_Registered reg = c.getModel().getLinkRegistry().registerLinkTarget(newNode,newId);
 		if(!reg.getID().equals(newId)) {

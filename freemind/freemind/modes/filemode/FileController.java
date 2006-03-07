@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: FileController.java,v 1.11.18.3 2005-02-10 23:01:23 christianfoltin Exp $*/
+/*$Id: FileController.java,v 1.11.18.3.6.3 2006-01-22 12:24:38 dpolivaev Exp $*/
 
 package freemind.modes.filemode;
 
@@ -52,11 +52,11 @@ public class FileController extends ControllerAdapter {
     }
 
     public MapAdapter newModel() {
-	return new FileMapModel(getFrame());
+	return new FileMapModel(getFrame(), this);
     }
 
-    public MindMapNode newNode(Object userObject) {
-        return new FileNodeModel((File) userObject, getFrame());
+    public MindMapNode newNode(Object userObject, MindMap map) {
+        return new FileNodeModel((File) userObject, getFrame(), map);
     }
     public JPopupMenu getPopupMenu() {
       return this.popupmenu;
@@ -77,7 +77,7 @@ public class FileController extends ControllerAdapter {
 	}
 	public void actionPerformed(ActionEvent e) {
 	    if (getSelected() != null) {
-		MindMap map = new FileMapModel(((FileNodeModel)getSelected()).getFile(), getFrame());
+		MindMap map = new FileMapModel(((FileNodeModel)getSelected()).getFile(), getFrame(), FileController.this);
 		newMap(map);
 	    }
 	}
@@ -93,7 +93,7 @@ public class FileController extends ControllerAdapter {
            if (inputValue != null) {
               File newCenter = new File(inputValue);
               if (newCenter.exists()) { // and is a folder
-		MindMap map = new FileMapModel(newCenter, getFrame());
+		MindMap map = new FileMapModel(newCenter, getFrame(), FileController.this);
 		newMap(map);
               }
            }
@@ -109,4 +109,6 @@ public class FileController extends ControllerAdapter {
 		add(holder, MenuBar.EDIT_MENU+"/openPath", openPath, null);
     }
 
+  
+    
 }

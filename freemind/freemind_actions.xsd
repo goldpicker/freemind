@@ -44,6 +44,20 @@
 					<xs:element ref="arrow_link_color_xml_action"/>
 					<xs:element ref="arrow_link_arrow_xml_action"/>
 					<xs:element ref="arrow_link_point_xml_action"/>
+
+					<xs:element ref="set_attribute_name_elementary_action"/>
+					<xs:element ref="set_attribute_value_elementary_action"/>
+					<xs:element ref="insert_attribute_elementary_action"/>
+					<xs:element ref="delete_attribute_elementary_action"/>
+					<xs:element ref="set_attribute_column_width_elementary_action"/>
+					<xs:element ref="registry_attribute_elementary_action"/>
+					<xs:element ref="unregistry_attribute_elementary_action"/>
+					<xs:element ref="registry_attribute_value_elementary_action"/>
+					<xs:element ref="unregistry_attribute_value_elementary_action"/>
+					<xs:element ref="replace_attribute_value_elementary_action"/>
+					<xs:element ref="set_attribute_font_size_elementary_action"/>
+					<xs:element ref="set_attribute_visible_elementary_action"/>
+					<xs:element ref="set_attribute_restricted_elementary_action"/>
 				</xs:choice>
 			</xs:extension>
 		</xs:complexContent>
@@ -173,7 +187,7 @@
 		<xs:complexContent>
 			<xs:extension base="node_action">
 		      <xs:attribute name="enabled" use="required" type="xs:boolean"/>
-		      <!-- <xs:attribute name="color" use="optional" type="xs:string"/>-->
+		      <xs:attribute name="color" use="optional" type="xs:string"/>
 			</xs:extension>
 		</xs:complexContent>
 	  </xs:complexType>
@@ -522,11 +536,166 @@
     	      <xs:element ref="node_list_member" maxOccurs="unbounded" minOccurs="1"/>				
           </xs:sequence>
 		      <xs:attribute name="hook_name" use="required" type="xs:string"/>
+		      <xs:attribute name="content" use="optional" type="xs:string"/>
 			</xs:extension>
 		</xs:complexContent>
 	  </xs:complexType>
 	</xs:element>
 
+	<!-- Set attribute name Action -->
+	<xs:element name="set_attribute_name_elementary_action">
+	  <xs:complexType>
+		<xs:complexContent>
+			<xs:extension base="node_action">
+				<xs:attribute name="row"    use="optional" type="xs:int"/>
+				<xs:attribute name="name"   use="optional" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+	</xs:element>
+
+	<!-- Set attribute value Action -->
+	<xs:element name="set_attribute_value_elementary_action">
+	  <xs:complexType>
+		<xs:complexContent>
+			<xs:extension base="node_action">
+				<xs:attribute name="row"    use="optional" type="xs:int"/>
+				<xs:attribute name="value"   use="optional" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+	</xs:element>
+
+	<!-- Insert attribute Action -->
+	<xs:element name="insert_attribute_elementary_action">
+	  <xs:complexType>
+		<xs:complexContent>
+			<xs:extension base="node_action">
+				<xs:attribute name="row"    use="optional" type="xs:int"/>
+				<xs:attribute name="name"   use="optional" type="xs:string"/>
+				<xs:attribute name="value"   use="optional" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+	</xs:element>
+
+	<!-- Delete attribute Action -->
+	<xs:element name="delete_attribute_elementary_action">
+	  <xs:complexType>
+		<xs:complexContent>
+			<xs:extension base="node_action">
+				<xs:attribute name="row"    use="optional" type="xs:int"/>
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+	</xs:element>
+
+	<!-- Set attribute column width Action -->
+	<xs:element name="set_attribute_column_width_elementary_action">
+	  <xs:complexType>
+		<xs:complexContent>
+			<xs:extension base="node_action">
+				<xs:attribute name="column" use="optional" type="xs:int"/>
+				<xs:attribute name="width"  use="optional" type="xs:int"/>
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+	</xs:element>
+
+	<!-- Registry attribute Action -->
+	<xs:element name="registry_attribute_elementary_action">
+	  <xs:complexType>
+		<xs:complexContent>
+			<xs:extension base="xml_action">
+				<xs:attribute name="name"  use="optional" type="xs:string"/>
+				<xs:attribute name="value" use="optional" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+	</xs:element>
+
+	<!-- Unregistry attribute Action -->
+	<xs:element name="unregistry_attribute_elementary_action">
+	  <xs:complexType>
+		<xs:complexContent>
+			<xs:extension base="xml_action">
+				<xs:attribute name="name" use="optional" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+	</xs:element>
+
+	<!-- Registry attribute value Action -->
+	<xs:element name="registry_attribute_value_elementary_action">
+	  <xs:complexType>
+		<xs:complexContent>
+			<xs:extension base="xml_action">
+				<xs:attribute name="name"  use="optional" type="xs:string"/>
+				<xs:attribute name="value" use="optional" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+	</xs:element>
+
+	<!-- Unregistry attribute value Action -->
+	<xs:element name="unregistry_attribute_value_elementary_action">
+	  <xs:complexType>
+		<xs:complexContent>
+			<xs:extension base="xml_action">
+				<xs:attribute name="name"  use="optional" type="xs:string"/>
+				<xs:attribute name="value" use="optional" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+	</xs:element>
+
+		<!-- Replace attribute value Action -->
+	<xs:element name="replace_attribute_value_elementary_action">
+	  <xs:complexType>
+		<xs:complexContent>
+			<xs:extension base="xml_action">
+				<xs:attribute name="name"  use="optional" type="xs:string"/>
+				<xs:attribute name="old_value" use="optional" type="xs:string"/>
+				<xs:attribute name="new_value" use="optional" type="xs:string"/>
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+	</xs:element>
+
+	<!-- Set attribute font size Action -->
+	<xs:element name="set_attribute_font_size_elementary_action">
+	  <xs:complexType>
+		<xs:complexContent>
+			<xs:extension base="xml_action">
+				<xs:attribute name="size" use="optional" type="xs:int"/>
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+	</xs:element>
+
+	<!-- Set attribute visibility elementary Action -->
+	<xs:element name="set_attribute_visible_elementary_action">
+	  <xs:complexType>
+		<xs:complexContent>
+			<xs:extension base="xml_action">
+			      <xs:attribute name="index" use="required" type="xs:int"/>
+			      <xs:attribute name="isVisible" use="required" type="xs:boolean"/>
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+	</xs:element>
+
+	<!-- Set attribute restriction elementary Action -->
+	<xs:element name="set_attribute_restricted_elementary_action">
+	  <xs:complexType>
+		<xs:complexContent>
+			<xs:extension base="xml_action">
+			      <xs:attribute name="index" use="required" type="xs:int"/>
+			      <xs:attribute name="isRestricted" use="required" type="xs:boolean"/>
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+	</xs:element>
 
 	<!-- Collaboration actions (not usable inside FreeMind but only in between different 
 		 instances (and thus not contained in compound_action). -->
@@ -555,19 +724,51 @@
 	  </xs:complexType>
 	</xs:element>
 		
+	<!-- ======================================================================================= 
+						Window positions to be stored in the auto.properties
+		   ======================================================================================= -->
+	<!-- Windowpositionstorage stores the window configuration of some windows. -->
+	  <xs:complexType name="window_configuration_storage">
+		<xs:complexContent>
+			<xs:extension base="xml_action">
+		      <xs:attribute name="x" use="required" type="xs:int"/>
+		      <xs:attribute name="y" use="required" type="xs:int"/>
+		      <xs:attribute name="width" use="required" type="xs:int"/>
+		      <xs:attribute name="height" use="required" type="xs:int"/>
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+	
+	<xs:element name="normal_window_configuration_storage">
+	  <xs:complexType>
+		<xs:complexContent>
+			<xs:extension base="window_configuration_storage">
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+	</xs:element>
+
+	<!-- Windowpositionstorage stores the window configuration of the 
+		 option panel window. -->
+	<xs:element name="option_panel_window_configuration_storage">
+	  <xs:complexType>
+		<xs:complexContent>
+			<xs:extension base="window_configuration_storage">
+			<xs:attribute use="optional" name="panel" type="xs:string"/>				
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+	</xs:element>
+
 	<!-- Windowpositionstorage stores the window configuration of the 
 		 time list window. -->
 	<xs:element name="time_window_configuration_storage">
 	  <xs:complexType>
 		<xs:complexContent>
-			<xs:extension base="xml_action">
+			<xs:extension base="window_configuration_storage">
 	          <xs:sequence>
 	    	      <xs:element ref="time_window_column_setting" maxOccurs="unbounded" minOccurs="0"/>				
 	          </xs:sequence>
-		      <xs:attribute name="x" use="required" type="xs:int"/>
-		      <xs:attribute name="y" use="required" type="xs:int"/>
-		      <xs:attribute name="width" use="required" type="xs:int"/>
-		      <xs:attribute name="height" use="required" type="xs:int"/>
 			</xs:extension>
 		</xs:complexContent>
 	  </xs:complexType>
@@ -723,6 +924,7 @@
 	          <xs:element ref="menu_submenu"/>
 	          <xs:element ref="menu_action"/>
 	          <xs:element ref="menu_checked_action"/>
+	          <xs:element ref="menu_radio_action"/>
 	          <xs:element ref="menu_separator"/>
        </xs:choice>
 	</xs:group>
@@ -787,6 +989,16 @@
 	  <xs:complexType>
 		<xs:complexContent>
 			<xs:extension base="menu_action_base">
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+  </xs:element>
+
+  <xs:element name="menu_radio_action">
+	  <xs:complexType>
+		<xs:complexContent>
+			<xs:extension base="menu_action_base">
+			      <xs:attribute name="selected" use="optional" default ="false" type="xs:boolean"/>
 			</xs:extension>
 		</xs:complexContent>
 	  </xs:complexType>

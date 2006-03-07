@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: BrowseMapModel.java,v 1.9.18.4 2005-04-26 21:41:00 christianfoltin Exp $*/
+/*$Id: BrowseMapModel.java,v 1.9.18.4.6.2 2006-01-22 12:24:38 dpolivaev Exp $*/
 
 package freemind.modes.browsemode;
 
@@ -33,6 +33,7 @@ import java.security.AccessControlException;
 import freemind.modes.LinkRegistryAdapter;
 import freemind.modes.MindMapLinkRegistry;
 import freemind.modes.MindMapNode;
+import freemind.modes.ModeController;
 
 
 public class BrowseMapModel extends MapAdapter {
@@ -43,16 +44,16 @@ public class BrowseMapModel extends MapAdapter {
     //
     // Constructors
     //
-    public BrowseMapModel(FreeMindMain frame) {
-        this(null, frame);
+    public BrowseMapModel(FreeMindMain frame, ModeController modeController) {
+        this(null, frame, modeController);
     }
 
-    public BrowseMapModel( BrowseNodeModel root, FreeMindMain frame ) {
-        super(frame);
+    public BrowseMapModel( BrowseNodeModel root, FreeMindMain frame , ModeController modeController) {
+        super(frame, modeController);
         if(root != null)
             setRoot(root);
         else
-           setRoot(new BrowseNodeModel(getFrame().getResourceString("new_mindmap"), getFrame())); 
+           setRoot(new BrowseNodeModel(getFrame().getResourceString("new_mindmap"), getFrame(), this)); 
         // register new LinkRegistryAdapter
         linkRegistry = new LinkRegistryAdapter();
     }
@@ -122,7 +123,7 @@ public class BrowseMapModel extends MapAdapter {
 
 	//NanoXML Code
 	//XMLElement parser = new XMLElement();
-        BrowseXMLElement mapElement = new BrowseXMLElement(getFrame());
+        BrowseXMLElement mapElement = new BrowseXMLElement(getFrame(), this);
 
         InputStreamReader urlStreamReader = null;
         URLConnection uc = null;
