@@ -117,7 +117,8 @@ class FilterToolbar extends JToolBar {
          */
         private FilterComposerDialog getFilterDialog() {
             if (filterDialog == null){
-                filterDialog = new FilterComposerDialog(c, FilterToolbar.this);                
+                filterDialog = new FilterComposerDialog(c, FilterToolbar.this);
+                getFilterDialog().setLocationRelativeTo(FilterToolbar.this);
             }
             return filterDialog;
         }
@@ -127,7 +128,6 @@ class FilterToolbar extends JToolBar {
                 getFilterDialog().setSelectedItem(selectedItem);
             }
             if(getFilterDialog().isVisible() == false){
-                getFilterDialog().setLocationRelativeTo(FilterToolbar.this);
                 getFilterDialog().setVisible(true);
             }
         }
