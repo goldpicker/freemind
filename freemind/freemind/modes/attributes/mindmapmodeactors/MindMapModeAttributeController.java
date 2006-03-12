@@ -381,9 +381,11 @@ public class MindMapModeAttributeController implements AttributeController{
         final ActionPair unregistryOldAttributeActionPair = unregistryAttributeActor.createActionPair(oldName);
         controller.getActionFactory().executeAction(unregistryOldAttributeActionPair);
             final SortedComboBoxModel values = oldElement.getValues();
-            for(int i = 0; i < values.getSize(); i++){
-                final ActionPair registryNewAttributeActionPair = registryAttributeActor.createActionPair(newName, values.getElementAt(i).toString());                
-                controller.getActionFactory().executeAction(registryNewAttributeActionPair);
+            final ActionPair registryNewAttributeActionPair = registryAttributeActor.createActionPair(newName, values.getElementAt(0).toString());                
+            controller.getActionFactory().executeAction(registryNewAttributeActionPair);
+            for(int i = 1; i < values.getSize(); i++){
+                final ActionPair registryNewAttributeValueActionPair = registryAttributeValueActor.createActionPair(newName, values.getElementAt(i).toString());                
+                controller.getActionFactory().executeAction(registryNewAttributeValueActionPair);
             }
             Visitor replacer = new AttributeRenamer(oldName, newName); 
             Iterator iterator = new Iterator(replacer);
