@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: NodeAdapter.java,v 1.20.16.10.2.4.2.9 2006-03-11 16:42:37 dpolivaev Exp $ */
+/* $Id: NodeAdapter.java,v 1.20.16.10.2.4.2.10 2006-03-15 21:47:44 dpolivaev Exp $ */
 
 package freemind.modes;
 
@@ -861,7 +861,7 @@ public abstract class NodeAdapter implements MindMapNode {
 	    return controller.getNodeID(this);
 	}
 
-    public XMLElement save(Writer writer, MindMapLinkRegistry registry) throws IOException {
+    public XMLElement save(Writer writer, MindMapLinkRegistry registry, boolean saveInvisible) throws IOException {
     	XMLElement node = new XMLElement();
 
 //    	if (!isNodeClassToBeSaved()) {
@@ -984,15 +984,22 @@ public abstract class NodeAdapter implements MindMapNode {
         if (childrenUnfolded().hasNext()) {
             node.writeWithoutClosingTag(writer);
             //recursive
-            for (ListIterator e = childrenUnfolded(); e.hasNext();) {
-                NodeAdapter child = (NodeAdapter) e.next();
-                child.save(writer, registry);
-            }
+            saveChildren(writer, registry, this, saveInvisible);
             node.writeClosingTag(writer);
         } else {
             node.write(writer);
         }
         return node;
+    }
+
+    private void saveChildren(Writer writer, MindMapLinkRegistry registry, NodeAdapter node, boolean saveHidden) throws IOException {
+        for (ListIterator e = node.childrenUnfolded(); e.hasNext();) {
+            NodeAdapter child = (NodeAdapter) e.next();
+            if(saveHidden || child.isVisible())
+                child.save(writer, registry, saveHidden);
+            else
+                saveChildren(writer, registry, child, saveHidden);
+        }
     }
 
 	public int getShiftY() {

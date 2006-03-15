@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: SchemeMapModel.java,v 1.11.18.3.2.1.2.3 2006-03-11 16:42:38 dpolivaev Exp $ */
+/* $Id: SchemeMapModel.java,v 1.11.18.3.2.1.2.4 2006-03-15 21:47:45 dpolivaev Exp $ */
 
 package freemind.modes.schememode;
 
@@ -157,5 +157,13 @@ public class SchemeMapModel extends MapAdapter {
 	public void getXml(Writer fileout) throws IOException {
 		fileout.write(getCode());
 	}
+    /* (non-Javadoc)
+     * @see freemind.modes.MindMap#getFilteredXml(java.io.Writer)
+     */
+    public void getFilteredXml(Writer fileout) throws IOException {
+        // nothing.
+        //FIXME: Implement me if you need me.
+        throw new RuntimeException("Unimplemented method called.");
+    }
 
 }

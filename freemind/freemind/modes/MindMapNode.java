@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: MindMapNode.java,v 1.15.18.10.2.4.2.6 2006-03-11 16:42:37 dpolivaev Exp $ */
+/* $Id: MindMapNode.java,v 1.15.18.10.2.4.2.7 2006-03-15 21:47:44 dpolivaev Exp $ */
 
 package freemind.modes;
 
@@ -203,7 +203,7 @@ public interface MindMapNode extends MutableTreeNode {
 	public String getAdditionalInfo();
 
     MindMapNode shallowCopy();
-    public XMLElement save(Writer writer, MindMapLinkRegistry registry) throws IOException;
+    public XMLElement save(Writer writer, MindMapLinkRegistry registry, boolean saveHidden) throws IOException;
 
     // fc, 10.2.2005:
     /** State icons are icons that are not saved. They indicate that

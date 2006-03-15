@@ -16,7 +16,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-/* $Id: EncryptedMindMapNode.java,v 1.1.2.9.6.5 2006-03-11 16:42:37 dpolivaev Exp $ */
+/* $Id: EncryptedMindMapNode.java,v 1.1.2.9.6.6 2006-03-15 21:47:45 dpolivaev Exp $ */
 
 package freemind.modes.mindmapmode;
 
@@ -235,7 +235,7 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
      *  
      */
 
-    public XMLElement save(Writer writer, MindMapLinkRegistry registry)
+    public XMLElement save(Writer writer, MindMapLinkRegistry registry, boolean saveHidden)
             throws IOException {
         if (isDecrypted) {
             generateEncryptedContent(registry);
@@ -244,7 +244,7 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
         setAccessable(false);
         XMLElement ret = null;
         try {
-            ret = super.save(writer, registry);
+            ret = super.save(writer, registry, saveHidden);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -260,7 +260,7 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
         StringWriter sWriter = new StringWriter();
         for (Iterator i = super.childrenUnfolded(); i.hasNext();) {
             MindMapNode child = (MindMapNode) i.next();
-            child.save(sWriter, registry);
+            child.save(sWriter, registry, true);
             if (i.hasNext()) {
                 sWriter.write(ModeController.NODESEPARATOR);
             }

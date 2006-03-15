@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: BrowseMapModel.java,v 1.9.18.4.6.3 2006-03-11 16:42:37 dpolivaev Exp $ */
+/* $Id: BrowseMapModel.java,v 1.9.18.4.6.4 2006-03-15 21:47:44 dpolivaev Exp $ */
 
 package freemind.modes.browsemode;
 
@@ -159,9 +159,18 @@ public class BrowseMapModel extends MapAdapter {
 	/* (non-Javadoc)
 	 * @see freemind.modes.MindMap#getXml(java.io.Writer)
 	 */
-	public void getXml(Writer fileout) throws IOException {
-		// nothing.
-		//FIXME: Implement me if you need me.
-		throw new RuntimeException("Unimplemented method called.");
-	}
+    public void getXml(Writer fileout) throws IOException {
+        // nothing.
+        //FIXME: Implement me if you need me.
+        throw new RuntimeException("Unimplemented method called.");
+    }
+
+    /* (non-Javadoc)
+     * @see freemind.modes.MindMap#getFilteredXml(java.io.Writer)
+     */
+    public void getFilteredXml(Writer fileout) throws IOException {
+        // nothing.
+        //FIXME: Implement me if you need me.
+        throw new RuntimeException("Unimplemented method called.");
+    }
 }

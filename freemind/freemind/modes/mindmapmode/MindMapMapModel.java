@@ -17,7 +17,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: MindMapMapModel.java,v 1.36.14.10.2.1.2.8 2006-03-11 16:42:37 dpolivaev Exp $ */
+/* $Id: MindMapMapModel.java,v 1.36.14.10.2.1.2.9 2006-03-15 21:47:45 dpolivaev Exp $ */
 
 package freemind.modes.mindmapmode;
 
@@ -83,7 +83,7 @@ public class MindMapMapModel extends MapAdapter  {
     //
 
     public MindMapMapModel(FreeMindMain frame, ModeController modeController) {
-        this(new MindMapNodeModel( frame.getResourceString("new_mindmap"), frame, modeController.getMap()), frame, modeController );
+        this(null, frame, modeController );
     }
 
     public MindMapMapModel( MindMapNodeModel root, FreeMindMain frame, ModeController modeController ) {
@@ -94,6 +94,8 @@ public class MindMapMapModel extends MapAdapter  {
         // register new LinkRegistryAdapter
         linkRegistry = new LinkRegistryAdapter();
 
+        if(root == null)
+            root = new MindMapNodeModel( frame.getResourceString("new_mindmap"), frame, this);
         setRoot(root);
         readOnly = false;
 
@@ -446,14 +448,21 @@ public class MindMapMapModel extends MapAdapter  {
 	 * @param fileout
 	 * @throws IOException
 	 */
-	public void getXml(Writer fileout) throws IOException {
+	private void getXml(Writer fileout, boolean saveInvisible) throws IOException {
 		fileout.write("<map version=\""+FreeMind.XML_VERSION+"\">\n");
 		fileout.write("<!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->\n");
 		getRegistry().save(fileout);
-		((MindMapNodeModel)getRoot()).save(fileout, this.getLinkRegistry());
+		((MindMapNodeModel)getRoot()).save(fileout, this.getLinkRegistry(), saveInvisible);
 		fileout.write("</map>\n");
 		fileout.close();
 	}
+    public void getXml(Writer fileout) throws IOException{
+        getXml(fileout, true);
+    }
+    
+    public void getFilteredXml(Writer fileout) throws IOException{
+        getXml(fileout, false);
+    }
 
 	/**
      * Attempts to lock the map using a semaphore file
@@ -648,7 +657,7 @@ public class MindMapMapModel extends MapAdapter  {
     public Transferable copy(MindMapNode node) {
        StringWriter stringWriter = new StringWriter();
        try {
-          ((MindMapNodeModel)node).save(stringWriter, this.getLinkRegistry()); }
+          ((MindMapNodeModel)node).save(stringWriter, this.getLinkRegistry(), true); }
        catch (IOException e) {}
        return new MindMapNodesSelection(stringWriter.toString(), null, null, null, null, null); }
 

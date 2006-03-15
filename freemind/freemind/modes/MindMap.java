@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: MindMap.java,v 1.14.14.6.2.1.2.4 2006-03-11 16:42:37 dpolivaev Exp $ */
+/* $Id: MindMap.java,v 1.14.14.6.2.1.2.5 2006-03-15 21:47:44 dpolivaev Exp $ */
 
 package freemind.modes;
 
@@ -90,10 +90,16 @@ public interface MindMap extends TreeModel {
     URL getURL() throws MalformedURLException;
 
     /** writes the content of the map to a writer.
-	 * @param fileout
-	 * @throws IOException
-	 */
-	void getXml(Writer fileout) throws IOException;
+     * @param fileout
+     * @throws IOException
+     */
+    void getXml(Writer fileout) throws IOException;
+
+    /** writes the content of the map to a writer.
+     * @param fileout
+     * @throws IOException
+     */
+    void getFilteredXml(Writer fileout) throws IOException;
 
     /**
      * Returns a string that may be given to the modes restore()

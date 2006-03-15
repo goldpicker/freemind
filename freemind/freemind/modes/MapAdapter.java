@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: MapAdapter.java,v 1.24.14.7.2.1.2.6 2006-03-11 16:42:37 dpolivaev Exp $ */
+/* $Id: MapAdapter.java,v 1.24.14.7.2.1.2.7 2006-03-15 21:47:44 dpolivaev Exp $ */
 
 package freemind.modes;
 
@@ -26,6 +26,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -653,5 +654,6 @@ public abstract class MapAdapter implements MindMap {
     public void setFilter(Filter filter) {
         this.filter = filter;
     }
+
 }
 
