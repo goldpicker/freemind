@@ -1,3 +1,16 @@
+Changes made in FreeMind 0.8.1 FA Alpha 9.03
+===============================
+*The export plugins using XSLT changed: 
+	Only nodes passed the filter condition inclusive settings 
+	in the "Show Ancestors" and "Show Descendants" - checkboxes in the Filter Toolbar 
+	are exported in OOWriter and generally by the XSLT exporter.
+*Bugfixes	
+
+
+Changes made in FreeMind 0.8.1 FA Alpha 9.01
+===============================
+Merge with FreeMind 0.8.1 beta 3
+
 Changes made in FreeMind 0.8.FA Alpha 8
 ===============================
 * Undo for all attribute operations
