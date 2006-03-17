@@ -1,0 +1,92 @@
+--- freemind/freemind.sh	2005-05-31 07:16:24.000000000 +0200
++++ freemind/freemind.sh	2005-11-11 09:45:36.275922112 +0100
+@@ -7,6 +7,7 @@
+ # 2005-01-16, added usage of FREEMIND_BASE_DIR variable
+ # 2005-02-18, add -Dfreemind.base.dir to make plugins work, add some ""
+ #             and enhance debug mode.
++# 2005-11-09, add some dpkg/rpm information and check for Sun/Blackdown VM.
+ 
+ _debug() {
+ 	if [ -n "${DEBUG}" ]
+@@ -60,12 +61,24 @@
+ 		_debug "Using '$JAVACMD' as java virtual machine..."
+ 		if [ -n "${DEBUG}" ]
+ 		then
+-			"$JAVACMD" -version
++			"$JAVACMD" -version >&2
++		fi
++		if (! "${JAVACMD}" -version 2>&1 | grep -qe \
++			'Java(TM) 2 Runtime Environment, Standard Edition')
++		then
++			_error "Your Java virtual machine is neither Sun nor Blackdown," \
++			       "=======================================" \
++			       "FREEMIND WILL MOST PROBABLY *NOT* WORK," \
++			       "=======================================" \
++			       "define JAVACMD, JAVA_BINDIR, JAVA_HOME or PATH in order" \
++			       "to point to such a VM. See the manpage of freemind(1) for details."
++			return 0
+ 		fi
+ 		return 0
+ 	else
+ 		_error "Couldn't find a java virtual machine," \
+-		       "define JAVACMD, JAVA_BINDIR, JAVA_HOME or PATH."
++		       "define JAVACMD, JAVA_BINDIR, JAVA_HOME or PATH." \
++		       "See the manpage of freemind(1) for details."
+ 		return 1
+ 	fi
+ }
+@@ -78,8 +91,25 @@
+ 	fi
+ }
+ 
+-_debug "Freemind parameters are '${@}'."
+-_debug "$(uname -a)"
++output_info() {
++	if [ -z "${DEBUG}" ]
++	then
++		return 0
++	fi
++	_debug "Freemind parameters are '${@}'."
++	_debug "$(uname -a)"
++	if [ -x "$(which dpkg 2>/dev/null)" ]
++	then
++		_debug "The following DEB packages are installed:"
++		COLUMNS=132 dpkg -l \*freemind\* \*j\* | grep -v '<none>' >&2
++	elif [ -x "$(which rpm 2>/dev/null)" ]
++	then
++		_debug "The following RPM packages are installed:"
++		rpm -qa | grep -i -e freemind -e j >&2
++	else
++		_debug "Neither dpkg nor rpm is installed."
++	fi
++}
+ 
+ _source /etc/freemind/freemindrc
+ _source ~/.freemind/freemindrc
+@@ -90,6 +120,8 @@
+ 	exit 1
+ fi
+ 
++output_info
++
+ freepath=$(dirname "$0")
+ freepath="${freepath%/bin}" # nothing happens if freemind is not installed
+                             # under something/bin
+@@ -131,12 +163,12 @@
+ ${freedir}/lib/ant/lib/jaxb-impl.jar:\
+ ${freedir}/lib/ant/lib/jaxb-libs.jar:\
+ ${freedir}/lib/ant/lib/namespace.jar:\
+-${freedir}/lib/ant/lib/relaxngDatatype.jar:\
+-${freedir}/lib/ant/lib/xsdlib.jar:\
++/usr/share/java/relaxngDatatype.jar:\
++/usr/share/java/xsdlib.jar:\
+ ${freedir}/lib/ant/lib/jax-qname.jar:\
+-${freedir}/lib/ant/lib/sax.jar:\
+-${freedir}/lib/ant/lib/dom.jar:\
+-${freedir}/lib/forms-1.0.5.jar:\
++/usr/share/java/xml-commons-apis.jar:\
++/usr/share/java/forms-1.0.5.jar:\
++/usr/share/java/commons-lang-2.1.jar:\
+ ${freedir}"
+ _debug "Calling: '${JAVACMD} -Dfreemind.base.dir=${freedir} -cp ${CLASSPATH} freemind.main.FreeMind  $@'."
+ "${JAVACMD}" -Dfreemind.base.dir="${freedir}" -cp "${CLASSPATH}" freemind.main.FreeMind "$@"
