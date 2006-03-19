@@ -33,7 +33,7 @@
 	<classpathentry kind="lib" path="plugins/collaboration/jabber/jdom.jar"/>
 	<classpathentry kind="lib" path="plugins/collaboration/jabber/log4j.jar"/>
 	<classpathentry kind="lib" path="plugins/collaboration/jabber/commons-logging.jar"/>
-	<classpathentry sourcepath="D:/JavaPro/forms-1_0_5-20041010/forms-1.0.5/forms-1.0.5-src.zip" kind="lib" path="lib/forms-1.0.5.jar"/>
+	<classpathentry sourcepath="lib/forms-1.0.5-src.zip" kind="lib" path="lib/forms-1.0.5.jar"/>
 	<classpathentry kind="lib" path="lib/jibx/jibx-bind.jar"/>
 	<classpathentry kind="lib" path="lib/bindings.jar"/>
 	<classpathentry kind="lib" path="lib/jibx/jibx-run.jar"/>

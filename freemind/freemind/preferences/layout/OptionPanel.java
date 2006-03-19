@@ -19,7 +19,7 @@
  *
  * Created on 06.05.2005
  */
-/* $Id: OptionPanel.java,v 1.1.4.2.2.5 2006-03-11 16:42:38 dpolivaev Exp $ */
+/* $Id: OptionPanel.java,v 1.1.4.2.2.6 2006-03-19 17:35:41 dpolivaev Exp $ */
 package freemind.preferences.layout;
 
 import java.awt.BorderLayout;
@@ -48,6 +48,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 
 import freemind.common.BooleanProperty;
 import freemind.common.ColorProperty;
@@ -336,11 +337,13 @@ public class OptionPanel implements TextTranslator {
 
 	private static class KeyProperty extends PropertyBean implements
 			PropertyControl {
-		String description;
+        String description;
 
 		String label;
 
 		JButton mButton = new JButton();
+
+        private static RowSpec rowSpec;
 		/**
 		 * @param description
 		 * @param label
@@ -384,10 +387,18 @@ public class OptionPanel implements TextTranslator {
 		}
 
 		public void layout(DefaultFormBuilder builder, TextTranslator pTranslator) {
-			JLabel label = builder
-					.append(pTranslator.getText(getLabel()), mButton);
-			label.setToolTipText(pTranslator.getText(getDescription()));
-		}
+        	JLabel label = new JLabel(pTranslator.getText(getLabel()));
+            label.setToolTipText(pTranslator.getText(getDescription()));
+            if(rowSpec == null){
+                rowSpec = new RowSpec("fill:20dlu");
+            }
+            builder.appendRelatedComponentsGapRow();
+            builder.appendRow(rowSpec);
+            builder.nextLine(2);
+            builder.add(label);
+            builder.nextColumn(2);
+            builder.add(mButton);
+        }
 
 	}
 
@@ -946,6 +957,15 @@ controls.add(new KeyProperty(frame, null, "keystroke_accessories/plugins/UnfoldA
 controls.add(new KeyProperty(frame, null, "keystroke_accessories/plugins/UnfoldAll.keystroke.alt_PAGE_DOWN"));
 controls.add(new KeyProperty(frame, null, "keystroke_accessories/plugins/UnfoldAll.keystroke.alt_HOME"));
 controls.add(new KeyProperty(frame, null, "keystroke_accessories/plugins/UnfoldAll.keystroke.alt_END"));
+
+controls.add(new NextLineProperty());
+controls.add(new SeparatorProperty("attributes"));
+controls.add(new KeyProperty(frame, null, "keystroke_edit_attributes")); //  control
+controls.add(new KeyProperty(frame, null, "keystroke_show_all_attributes")); //  control
+controls.add(new KeyProperty(frame, null, "keystroke_show_selected_attributes")); //  control
+controls.add(new KeyProperty(frame, null, "keystroke_hide_all_attributes")); //  control
+controls.add(new KeyProperty(frame, null, "keystroke_show_attribute_manager")); //  control
+controls.add(new KeyProperty(frame, null, "keystroke_assign_attributes")); //  control
 
 
 

@@ -1,3 +1,9 @@
+Changes made in FreeMind 0.8.1 FA Alpha 9.04
+===============================
+* Key strokes for attributes can be set using the preferences Dialog
+* Save as HTML, RTF and Text consider filter settings
+* Size of buttons with empty key strokes in the Option Panel are set correctly
+
 Changes made in FreeMind 0.8.1 FA Alpha 9.03
 ===============================
 *The export plugins using XSLT changed: 
@@ -5,7 +11,6 @@ Changes made in FreeMind 0.8.1 FA Alpha 9.03
 	in the "Show Ancestors" and "Show Descendants" - checkboxes in the Filter Toolbar 
 	are exported in OOWriter and generally by the XSLT exporter.
 *Bugfixes	
-
 
 Changes made in FreeMind 0.8.1 FA Alpha 9.01
 ===============================

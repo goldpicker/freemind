@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: MindMapNode.java,v 1.15.18.10.2.4.2.7 2006-03-15 21:47:44 dpolivaev Exp $ */
+/* $Id: MindMapNode.java,v 1.15.18.10.2.4.2.8 2006-03-19 17:35:40 dpolivaev Exp $ */
 
 package freemind.modes;
 
@@ -223,17 +223,11 @@ public interface MindMapNode extends MutableTreeNode {
     HistoryInformation getHistoryInformation();
 
     void setHistoryInformation(HistoryInformation historyInformation);
-    /**
-     * @return
-     */
+
     boolean isVisible();
-    /**
-     * @return
-     */
+
     boolean hasOneVisibleChild();
-    /**
-     * @return
-     */
+
     MindMap getMap();
 
     NodeAttributeTableModel getAttributes();
