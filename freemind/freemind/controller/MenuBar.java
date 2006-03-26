@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MenuBar.java,v 1.24.14.8.4.5 2006-03-11 16:42:36 dpolivaev Exp $*/
+/*$Id: MenuBar.java,v 1.24.14.8.4.6 2006-03-26 10:49:22 dpolivaev Exp $*/
 
 package freemind.controller;
 
@@ -246,9 +246,12 @@ public class MenuBar extends JMenuBar {
     private void updateFileMenu() {
 	
 		menuHolder.addAction(c.page, FILE_MENU+"print/pageSetup");
-		JMenuItem print = menuHolder.addAction(c.print, FILE_MENU+"print/print");
-		print.setAccelerator(KeyStroke.getKeyStroke(c.getFrame().getProperty("keystroke_print")));
-	
+        JMenuItem print = menuHolder.addAction(c.print, FILE_MENU+"print/print");
+        print.setAccelerator(KeyStroke.getKeyStroke(c.getFrame().getProperty("keystroke_print")));
+    
+        JMenuItem printPreview = menuHolder.addAction(c.printPreview, FILE_MENU+"print/printPreview");
+        printPreview.setAccelerator(KeyStroke.getKeyStroke(c.getFrame().getProperty("keystroke_print_preview")));
+    
 		JMenuItem close = menuHolder.addAction(c.close, FILE_MENU+"close/close");
 		close.setAccelerator(KeyStroke.getKeyStroke(c.getFrame().getProperty("keystroke_close")));
 		

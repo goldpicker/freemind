@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: Controller.java,v 1.40.14.10.2.3.2.14 2006-03-11 18:50:00 dpolivaev Exp $*/
+/*$Id: Controller.java,v 1.40.14.10.2.3.2.15 2006-03-26 10:49:22 dpolivaev Exp $*/
 
 package freemind.controller;
 
@@ -76,6 +76,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import freemind.controller.filter.FilterController;
+import freemind.controller.printpreview.PreviewDialog;
 
 import freemind.controller.MapModuleManager.MapModuleChangeOberser;
 import freemind.main.FreeMind;
@@ -136,6 +137,7 @@ public class Controller  implements MapModuleChangeOberser {
     public CloseAction close; 
     public Action print; 
     public Action printDirect; 
+    public Action printPreview;
     public Action page; 
     public Action quit;
     public Action background; 
@@ -194,6 +196,7 @@ public class Controller  implements MapModuleChangeOberser {
 
         print = new PrintAction(this,true);
         printDirect = new PrintAction(this,false);
+        printPreview = new PrintPreviewAction(this);
         page = new PageAction(this);
         quit = new QuitAction(this);
         background = new BackgroundAction(this,bswatch);
@@ -876,6 +879,23 @@ public class Controller  implements MapModuleChangeOberser {
         }
     }
 
+    private class PrintPreviewAction extends AbstractAction {
+        Controller controller;
+        PrintPreviewAction(Controller controller) {
+            super(controller.getResourceString("print_preview"));
+            this.controller = controller;
+        }
+        public void actionPerformed(ActionEvent e) {
+            if (!acquirePrinterJobAndPageFormat()) {
+               return; }
+            PreviewDialog previewDialog = new PreviewDialog(controller.getResourceString("print_preview"), getView());
+            previewDialog.pack();
+            previewDialog.setLocationRelativeTo(JOptionPane.getFrameForComponent(getView()));
+            previewDialog.setVisible(true);
+       }
+    }
+
+
 
     private class PageAction extends AbstractAction {
         Controller controller;
@@ -1290,6 +1310,7 @@ public class Controller  implements MapModuleChangeOberser {
         public void actionPerformed(ActionEvent e) {
             Color color = showCommonJColorChooserDialog(getView(),getResourceString("choose_background_color"),getView().getBackground() );
             getModel().setBackgroundColor(color);
+            
         }
     }
 
@@ -1386,6 +1407,10 @@ public class Controller  implements MapModuleChangeOberser {
 
     public FilterController getFilterController() {
         return fc;
+    }
+
+    public PageFormat getPageFormat() {
+        return pageFormat;
     }
     
 }//Class Controller
