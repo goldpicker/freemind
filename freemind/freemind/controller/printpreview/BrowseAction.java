@@ -34,7 +34,7 @@ class BrowseAction extends AbstractAction {
         this.pageNumber = pageNumber;
         pageIndexPainter = new Runnable(){
                     public void run() {
-                        BrowseAction.this.pageNumber.setText(String.valueOf(BrowseAction.this.preview.getPageIndex()));
+                        BrowseAction.this.pageNumber.setText(String.valueOf(1 + BrowseAction.this.preview.getPageIndex()));
                     }            
                 };
     }
