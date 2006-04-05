@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMap.java,v 1.14.14.7 2005-07-18 20:46:44 christianfoltin Exp $*/
+/*$Id: MindMap.java,v 1.14.14.7.2.1 2006-04-05 19:19:42 dpolivaev Exp $*/
 
 package freemind.modes;
 
@@ -53,6 +53,7 @@ public interface MindMap extends TreeModel {
     public Transferable copy(List selectedNodes, String inPlainText);
     String getAsPlainText(List mindMapNodes);
     String getAsRTF(List mindMapNodes);
+    String getAsHTML(List mindMapNodes);
 
 	void insertNodeInto(
 			MindMapNode newChild,

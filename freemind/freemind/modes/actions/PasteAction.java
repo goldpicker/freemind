@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2004  Joerg Mueller, Daniel Polansky, Christian Foltin and others.
+ *Copyright (C) 2000-2006  Joerg Mueller, Daniel Polansky, Christian Foltin and others.
  *
  *See COPYING for Details
  *
@@ -19,7 +19,7 @@
  *
  * Created on 09.05.2004
  */
-/*$Id: PasteAction.java,v 1.1.4.4 2005-02-02 21:23:24 christianfoltin Exp $*/
+/*$Id: PasteAction.java,v 1.1.4.4.8.1 2006-04-05 19:19:42 dpolivaev Exp $*/
 
 package freemind.modes.actions;
 
@@ -90,6 +90,7 @@ public class PasteAction extends AbstractAction implements ActorXml {
       */
     public void act(XmlAction action) {
     	PasteNodeAction pasteAction = (PasteNodeAction) action;
+        Object transferable = pasteAction.getTransferableContent();
         _paste(
             c.cut.getTransferable(pasteAction.getTransferableContent()),
             c.getNodeFromID(pasteAction.getNode()),
@@ -105,8 +106,7 @@ public class PasteAction extends AbstractAction implements ActorXml {
 
 
 	public PasteNodeAction getPasteNodeAction(Transferable t, NodeCoordinate coord) throws JAXBException {
-		PasteNodeAction pasteAction =
-			c.getActionXmlFactory().createPasteNodeAction();
+		PasteNodeAction pasteAction = c.getActionXmlFactory().createPasteNodeAction();
 		pasteAction.setNode(c.getNodeID(coord.target));
 		pasteAction.setTransferableContent(c.cut.getTransferableContent(t));
 		pasteAction.setAsSibling(coord.asSibling);
@@ -124,29 +124,31 @@ public class PasteAction extends AbstractAction implements ActorXml {
 	}
 
 
-	public void paste(Transferable t, MindMapNode target, boolean asSibling, boolean isLeft) {
+	public void paste(Transferable transferable, MindMapNode target, boolean asSibling, boolean isLeft) {
 		try {
-			PasteNodeAction pasteAction = getPasteNodeAction(t,new NodeCoordinate(target,asSibling, isLeft));
-			long amountOfCuts = 1;
+                   PasteNodeAction pasteAction = getPasteNodeAction(transferable,new NodeCoordinate(target,asSibling, isLeft));
+			long numberOfCuts = 1;
     	   	DataFlavorHandler[] dataFlavorHandlerList = getFlavorHandlers();
     	   	for (int i = 0; i < dataFlavorHandlerList.length; i++) {
                 DataFlavorHandler handler = dataFlavorHandlerList[i];
                 DataFlavor 		  flavor  = handler.getDataFlavor();
-                if(t.isDataFlavorSupported(flavor)) {
-                    amountOfCuts = handler.getNumberOfObjects(t.getTransferData(flavor), t);
+                if(transferable.isDataFlavorSupported(flavor)) {
+                    numberOfCuts = handler.getNumberOfObjects(transferable.getTransferData(flavor), transferable);
                     break;
                 }
             }
-            CompoundAction compound = c.getActionXmlFactory().createCompoundAction();
-    	   	for(long i = 0; i < amountOfCuts; ++i) {
-    			CutNodeAction cutNodeAction = c.cut.getCutNodeAction(t, new NodeCoordinate(target,asSibling, isLeft));
-    			compound.getCompoundActionOrSelectNodeActionOrCutNodeAction().add(cutNodeAction);
+            // At this point, the DataFlavor and its handler has been chosen.
+            CompoundAction inverseAction = c.getActionXmlFactory().createCompoundAction();
+    	   	for(long i = 0; i < numberOfCuts; ++i) {
+    			CutNodeAction cutNodeAction = c.cut.getCutNodeAction(transferable,
+                                                                             new NodeCoordinate(target,asSibling, isLeft));
+    			inverseAction.getCompoundActionOrSelectNodeActionOrCutNodeAction().add(cutNodeAction);
     	   	}
 
 				
 			// Undo-action
 			c.getActionFactory().startTransaction(text);
-			c.getActionFactory().executeAction(new ActionPair(pasteAction, compound));
+			c.getActionFactory().executeAction(new ActionPair(pasteAction, inverseAction));
 			c.getActionFactory().endTransaction(text);
 		} catch (JAXBException e) {
 			e.printStackTrace();
@@ -230,7 +232,6 @@ public class PasteAction extends AbstractAction implements ActorXml {
 	private class MindMapNodesFlavorHandler implements DataFlavorHandler {
 
         public void paste(Object TransferData, MindMapNode target, boolean asSibling, boolean isLeft, Transferable t) {
-			  //System.err.println("mindMapNodesFlavor");
 			 String textFromClipboard =
 				(String)TransferData;
 			 if (textFromClipboard != null) {
@@ -248,8 +249,8 @@ public class PasteAction extends AbstractAction implements ActorXml {
            }
         }
 
-        public long getNumberOfObjects(Object TransferData, Transferable transfer) {
-            String textFromClipboard = (String) TransferData;
+        public long getNumberOfObjects(Object transferData, Transferable transfer) {
+            String textFromClipboard = (String) transferData;
             if (textFromClipboard != null) {
                 String[] textLines = textFromClipboard.split(NODESEPARATOR);
                 return textLines.length;
@@ -261,12 +262,45 @@ public class PasteAction extends AbstractAction implements ActorXml {
             return MindMapNodesSelection.mindMapNodesFlavor;
         }
     }
+
+        private class DirectHtmlFlavorHandler implements DataFlavorHandler {
+           public void paste(Object transferData, MindMapNode target,
+                             boolean asSibling, boolean isLeft, Transferable t)
+              throws UnsupportedFlavorException, IOException {
+              String textFromClipboard = (String) transferData;              
+              // ^ This outputs transfer data to standard output. I don't know
+              // why.
+             //{ Alternative pasting of HTML
+             c.getFrame().setWaitingCursor(true);
+             textFromClipboard = textFromClipboard.
+                replaceFirst("(?i)(?s)<head>.*</head>","").
+                replaceFirst("(?i)(?s)^.*<html[^>]*>","<html>").
+                replaceFirst("(?i)(?s)<body [^>]*>","<body>").
+                replaceAll("(?i)(?s)<script.*?>.*?</script>","").
+                replaceAll("(?i)(?s)</?tbody.*?>",""). // Java HTML Editor does not like the tag.
+                replaceAll("(?i)(?s)<!--.*?-->","").   // Java HTML Editor shows comments in not very nice manner.
+                replaceAll("(?i)(?s)</?o[^>]*>","");   // Java HTML Editor does not like Microsoft Word's <o> tag.
+
+             if (Tools.safeEquals(c.getFrame().getProperty("cut_out_pictures_when_pasting_html"),"true")) {
+                textFromClipboard = textFromClipboard.replaceAll("(?i)(?s)<img[^>]*>",""); } // Cut out images.
+
+             textFromClipboard = Tools.unescapeHTMLUnicodeEntity(textFromClipboard);
+
+             MindMapNodeModel node = new MindMapNodeModel(textFromClipboard, c.getFrame());
+             insertNodeInto(node, target);
+             //nodeStructureChanged(target);
+             c.getFrame().setWaitingCursor(false); }
+
+        public DataFlavor getDataFlavor() {
+            return MindMapNodesSelection.htmlFlavor; }
+        public long getNumberOfObjects(Object transferData, Transferable transfer) {
+           return transferData != null ? 1: 0; }}
+
 	private class HtmlFlavorHandler implements DataFlavorHandler {
 
         public void paste(Object TransferData, MindMapNode target,
                 boolean asSibling, boolean isLeft, Transferable t)
                 throws UnsupportedFlavorException, IOException {
-            //System.err.println("htmlFlavor");
             String textFromClipboard = (String) TransferData;
             // ^ This outputs transfer data to standard output. I don't know
             // why.
@@ -353,7 +387,6 @@ public class PasteAction extends AbstractAction implements ActorXml {
         public void paste(Object TransferData, MindMapNode target,
                 boolean asSibling, boolean isLeft, Transferable t)
                 throws UnsupportedFlavorException, IOException {
-            //System.err.println("stringFlavor");
             String textFromClipboard = (String) t
                     .getTransferData(DataFlavor.stringFlavor);
             pasteStringWithoutRedisplay(textFromClipboard, target, asSibling);
@@ -376,13 +409,7 @@ public class PasteAction extends AbstractAction implements ActorXml {
 		  return; }
 	   try {
 		   // Uncomment to print obtained data flavours
-
-		   /*
-		   DataFlavor[] fl = t.getTransferDataFlavors(); 
-		   for (int i = 0; i < fl.length; i++) {
-			  System.out.println(fl[i]); }
-		   */
-
+              
 	   	DataFlavorHandler[] dataFlavorHandlerList = getFlavorHandlers();
 	   	for (int i = 0; i < dataFlavorHandlerList.length; i++) {
             DataFlavorHandler handler = dataFlavorHandlerList[i];
@@ -403,7 +430,9 @@ public class PasteAction extends AbstractAction implements ActorXml {
     private DataFlavorHandler[] getFlavorHandlers() {
         DataFlavorHandler[] dataFlavorHandlerList = new DataFlavorHandler[] {
                     new FileListFlavorHandler(),
-                    new MindMapNodesFlavorHandler(), new HtmlFlavorHandler(),
+                    new MindMapNodesFlavorHandler(),
+                    new DirectHtmlFlavorHandler(), // %%% Make dependent on an option?
+                    //new HtmlFlavorHandler(),
                     new StringFlavorHandler() };
         return dataFlavorHandlerList;
     }

@@ -1,3 +1,63 @@
+Changes made in Freemind 0.8.0-ALPHA-DAN-5:
+===============================
+    * HTML selections are pasted directly as rich text, whether they
+      were made in a web browser, Microsoft Word document, or any
+      other application that puts HTML to the clipboard. Whether the
+      picture elements should be pasted or filtered away is driven by
+      the user property cut_out_pictures_when_pasting_html (=true or
+      =false),
+ 
+    * HTML nodes are edited using WYSIWYG editor,
+ 
+    * HTML nodes with <body> tag get limited width, like plain text
+      nodes. To have HTML nodes with unlimited width, use the tag
+      <body width=""> or the like of <body width="900">,
+ 
+    * after a single HTML node is copied to the clipboard, it is
+      pasted by applications understanding HTML directly, as rich
+      text. An example of such an application is Microsoft Word,
+
+    * copying of HTML nodes and pasting them as plain text does not
+      paste HTML tags
+ 
+    * when exporting to HTML, title of the web page does not show HTML
+      tags
+
+    * there is a new function Use Rich Formatting that turns plain
+      text node into HTML node
+
+    * action Use Plain Text added 
+
+    * after Use Rich Formatting action, new long nodes are rich
+      formatted. After Use Plain Text action, new long nodes are plain
+      text
+
+    * scrollbars can be switched off using the property no_scrollbar =
+      true; can be only set manually in user.properties,
+ 
+    * user icons can be added. PNG files of the icons have to be added
+      to the folder .../.freemind/icons; the comma separated list of
+      icon names without the .png extension has to be set in the user
+      property user_icons,
+ 
+    * style to be used in HTML nodes can be determined by setting the
+      user property html_long_node_head, like html_long_node_head =
+      <style><!-- td { border-style: solid } th { border-style: solid
+      } table { border-style: solid } --></style>,
+ 
+    * in the long node editor, SHIFT+ENTER enters a new line,
+      regardless of the "Enter Confirms" setting. Also, ALT+ENTER
+      confirms regardless of the "Enter Confirms" setting,
+ 
+    * when exporting to HTML using the exporting function as of
+      FreeMind 0.7.1, the list bullets in exported HTML nodes are
+      shown. HTML link contained in HTML nodes are styled normally and
+      underlined.
+
+    * find function now works as a keyword search. An example of
+      search is - word "two other"; node matches if it (a) contains
+      substring "word", and (b) it contains substring "two other".
+      
 Changes made in Freemind 0.8.0:
 ===============================
 * From Koh (thanks): Standard Macintosh application use Command(meta) key based Keyboard shortcut. (ex. copy is Command(meta) + C). I think that mac version's freemind should allow to assign meta key based shortcut. 

@@ -1,8 +1,24 @@
 /*
+ * FreeMind - A Program for creating and viewing Mindmaps
+ * Copyright (C) 2000-2006 Joerg Mueller, Daniel Polansky, Christian Foltin and others.
+ * See COPYING for Details
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
+ * 
  * Created on 05.05.2004
  *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 package freemind.modes.actions;
 
@@ -17,14 +33,16 @@ import freemind.controller.actions.ActionPair;
 import freemind.controller.actions.ActorXml;
 import freemind.controller.actions.generated.instance.EditNodeAction;
 import freemind.controller.actions.generated.instance.XmlAction;
+import freemind.main.Tools;
 import freemind.modes.ControllerAdapter;
 import freemind.modes.MindMapNode;
 import freemind.modes.NodeAdapter;
 import freemind.view.mindmapview.EditNodeBase;
 import freemind.view.mindmapview.EditNodeDialog;
+import freemind.view.mindmapview.EditNodeWYSIWYG;
+import freemind.view.mindmapview.EditNodeExternalApplication;
 import freemind.view.mindmapview.EditNodeTextField;
 import freemind.view.mindmapview.NodeView;
-
 
 //
 // Node editing
@@ -134,9 +152,48 @@ public class EditAction extends AbstractAction implements ActorXml {
 				}
 
 		//EditNodeBase.closeEdit();
+                
 		c.setBlocked(true); // locally "modal" stated
 
 		String text = node.getModel().toString();
+                String htmlEditingOption = c.getController().getProperty("html_editing_option");
+                String useRichTextInNewLongNodes = c.getController().getProperty("use_rich_text_in_new_long_nodes");
+
+                if ((node.getIsLong() || editLong) && 
+                    Tools.safeEquals(useRichTextInNewLongNodes,"true") &&
+                    !text.startsWith("<html>")) {
+                   text = Tools.plainToHTML(text); }
+
+                if (text.startsWith("<html>") && Tools.safeEquals(htmlEditingOption,"internal-wysiwyg")) {
+                   EditNodeWYSIWYG editNodeWYSIWYG = new EditNodeWYSIWYG
+                      (node, text, firstEvent, c,
+                       new EditNodeBase.EditControl() {
+                          public void cancel() {}
+                          public void ok(String newText) {
+                             setNodeText(node.getModel(), newText); }
+                          public void split(String newText, int position) {
+                             c.splitNode(node.getModel(), position, newText);
+                             c.getController().obtainFocusForSelected(); }}); // focus fix 
+                   editNodeWYSIWYG.show();
+                   if (editNodeWYSIWYG.lastEditingWasSuccessful()) {
+                      c.setBlocked(false);
+                      return; }}
+
+                if (text.startsWith("<html>") && Tools.safeEquals(htmlEditingOption,"external")) {
+                   EditNodeExternalApplication editNodeExternalApplication = new EditNodeExternalApplication
+                      (node, text, firstEvent, c,
+                       new EditNodeBase.EditControl() {
+                          public void cancel() {}
+                          public void ok(String newText) {
+                             c.setBlocked(false);
+                             setNodeText(node.getModel(), newText); }
+                          public void split(String newText, int position) {
+                             c.splitNode(node.getModel(), position, newText);
+                             c.getController().obtainFocusForSelected(); }}); // focus fix 
+                   editNodeExternalApplication.show();
+                   // We come here before quitting the editor window.
+                   return; }
+
 		if (node.getIsLong() || editLong) {
 			EditNodeDialog nodeEditDialog =
 				new EditNodeDialog(

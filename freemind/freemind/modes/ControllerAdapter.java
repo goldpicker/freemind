@@ -16,12 +16,13 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: ControllerAdapter.java,v 1.41.14.31 2005-07-26 20:52:34 christianfoltin Exp $*/
+/*$Id: ControllerAdapter.java,v 1.41.14.31.2.1 2006-04-05 19:19:42 dpolivaev Exp $*/
 
 package freemind.modes;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.BorderLayout;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -37,13 +38,19 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.event.WindowListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowAdapter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.*;
+import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -61,6 +68,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -133,6 +141,8 @@ import freemind.modes.actions.ToggleChildrenFoldedAction;
 import freemind.modes.actions.ToggleFoldedAction;
 import freemind.modes.actions.UnderlinedAction;
 import freemind.modes.actions.UndoAction;
+import freemind.modes.actions.UseRichFormattingAction;
+import freemind.modes.actions.UsePlainTextAction;
 import freemind.modes.actions.FindAction.FindNextAction;
 import freemind.modes.actions.NodeBackgroundColorAction.RemoveNodeBackgroundColorAction;
 import freemind.modes.mindmapmode.MindMapArrowLinkModel;
@@ -179,6 +189,8 @@ public abstract class ControllerAdapter implements ModeController {
 	public EditAction edit = null;
 	public NewChildAction newChild = null;
 	public DeleteChildAction deleteChild = null;
+    public UseRichFormattingAction useRichFormatting = null;
+    public UsePlainTextAction usePlainText = null;
 	public ToggleFoldedAction toggleFolded = null;
     public ToggleChildrenFoldedAction toggleChildrenFolded = null;
     public NodeUpAction nodeUp = null;
@@ -266,6 +278,8 @@ public abstract class ControllerAdapter implements ModeController {
 		edit = new EditAction(this);
 		newChild = new NewChildAction(this);
 		deleteChild = new DeleteChildAction(this);
+		useRichFormatting = new UseRichFormattingAction(this);
+		usePlainText = new UsePlainTextAction(this);
 		toggleFolded = new ToggleFoldedAction(this);
 		toggleChildrenFolded = new ToggleChildrenFoldedAction(this);
 		nodeUp = new NodeUpAction(this);
@@ -752,11 +766,13 @@ public abstract class ControllerAdapter implements ModeController {
      * characters special for building file paths shall be removed (rather than
      * replaced with _), like : or /. The exact list of dangeous characters
      * needs to be investigated. 0.8.0RC3.
+     *
+     * Keywords: suggest file name.
      * 
      * @return
      */
     private String getFileNameProposal() {
-        String rootText = ((MindMapNode)getMap().getRoot()).toString();
+        String rootText = ((MindMapNode)getMap().getRoot()).getPlainTextContent();
         rootText = rootText.replaceAll("[&:/\\\\\0%$#~\\?\\*]+", "");
         return rootText;
     }

@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000-2006  Joerg Mueller, Daniel Polansky, Christian Foltin and others.
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,11 +16,12 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindIcon.java,v 1.1.18.5 2005-05-03 05:29:50 christianfoltin Exp $*/
+/*$Id: MindIcon.java,v 1.1.18.5.6.1 2006-04-05 19:19:42 dpolivaev Exp $*/
 
 package freemind.modes;
 
 import java.net.URL;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -120,10 +121,14 @@ public class MindIcon {
         if (iconNotFound == null) {
            iconNotFound = new ImageIcon(frame.getResource("images/IconNotFound.png")); }
 
-        if(associatedIcon != null)
+        if (associatedIcon != null)
             return associatedIcon;
         if ( name != null ) {
            URL imageURL = frame.getResource(getIconFileName());
+           if (imageURL == null) {       //As standard icon not found, try user's
+              try {
+                 imageURL = new File (frame.getFreemindDirectory(),"icons/"+getName()+".png").toURL(); }
+              catch (Exception e) {}}
            ImageIcon icon = imageURL == null ? iconNotFound : new ImageIcon(imageURL);
            setIcon(icon);
            return icon; }
@@ -139,7 +144,7 @@ public class MindIcon {
        this.associatedIcon = _associatedIcon; }
 
     public static Vector getAllIconNames () {
-        if(mAllIconNames != null)
+        if (mAllIconNames != null)
             return mAllIconNames;
         Vector mAllIconNames = new Vector();
         mAllIconNames.add("help");

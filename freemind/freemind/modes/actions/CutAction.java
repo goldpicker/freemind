@@ -19,7 +19,7 @@
  *
  * Created on 09.05.2004
  */
-/*$Id: CutAction.java,v 1.1.4.7 2005-06-16 19:54:35 christianfoltin Exp $*/
+/*$Id: CutAction.java,v 1.1.4.7.2.1 2006-04-05 19:19:42 dpolivaev Exp $*/
 
 package freemind.modes.actions;
 
@@ -182,16 +182,13 @@ public class CutAction extends AbstractAction implements ActorXml {
 
     public Transferable getTransferable(TransferableContentType trans) {
         // create Transferable:
-        //URGENT: Add file list to this selection.
-        Transferable copy =
-            new MindMapNodesSelection(
-                trans.getTransferable(),
-        		trans.getTransferableAsPlainText(),
+        return new MindMapNodesSelection(
+                trans.getTransferable(), 
+                trans.getTransferableAsPlainText(),
                 trans.getTransferableAsRTF(),
-                trans.getTransferableAsDrop(), 
-                trans.getTransferableAsHtml(), 
+                trans.getTransferableAsHtml(),
+                trans.getTransferableAsDrop(),
             	trans.getTransferableAsFileList());
-        return copy;
     }
     /* (non-Javadoc)
      * @see freemind.controller.actions.ActorXml#getDoActionClass()

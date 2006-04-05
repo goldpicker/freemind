@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapNodeModel.java,v 1.21.14.4 2005-08-03 20:09:26 christianfoltin Exp $*/
+/*$Id: MindMapNodeModel.java,v 1.21.14.4.2.1 2006-04-05 19:19:42 dpolivaev Exp $*/
 
 package freemind.modes.mindmapmode;
 
@@ -134,7 +134,7 @@ public class MindMapNodeModel extends NodeAdapter {
             basedOnHeadings || isRoot) {
            createFolding = false; }
 
-        fileout.write(treatAsParagraph || basedOnHeadings ? "<p>" : "<li>");
+        fileout.write(treatAsParagraph || basedOnHeadings ? "<p>" : "<li class=\"mapnode\">");
 
         String localParentID = parentID;
 	if (createFolding) {
@@ -157,7 +157,7 @@ public class MindMapNodeModel extends NodeAdapter {
            String link = getLink();
            if (link.endsWith(".mm")) {
               link += ".html"; }
-           fileout.write("<a href=\""+link+"\" target=\"_blank\"><span class=l>~</span>&nbsp;"); }
+           fileout.write("<a class=\"mapnode\" href=\""+link+"\" target=\"_blank\"><span class=l>~</span>&nbsp;"); }
 
         String fontStyle="";
 	
@@ -196,7 +196,7 @@ public class MindMapNodeModel extends NodeAdapter {
            String output = this.toString().substring(6); // do not write <html>
            if (output.endsWith("</html>")) {
               output = output.substring(0,output.length()-7); }
-           fileout.write(saveHTML_escapeUnicode(output)); }
+           fileout.write(Tools.unicodeToHTMLUnicodeEntity(output)); }
         else {
            fileout.write(saveHTML_escapeUnicodeAndSpecialCharacters(toString())); }
 
@@ -272,20 +272,22 @@ public class MindMapNodeModel extends NodeAdapter {
 
         return lastChildNumber;
     }
+    public String getPlainTextContent() {
+       return Tools.htmlToPlain(toString()); }
     public void saveTXT(Writer fileout,int depth) throws IOException {
+       String plainTextContent = getPlainTextContent();
         for (int i=0; i < depth; ++i) {
            fileout.write("    "); }
-        if (this.toString().matches(" *")) {
+        if (plainTextContent.matches(" *")) {
            fileout.write("o"); }
         else {
            if (getLink() != null) {
               String link = getLink();
-              if (!link.equals(this.toString())) {
-                 fileout.write(this.toString()+" "); }              
+              if (!link.equals(plainTextContent)) {
+                 fileout.write(plainTextContent+" "); }              
               fileout.write("<"+link+">"); }
            else {
-              fileout.write(this.toString()); }}
-
+              fileout.write(plainTextContent); }}
 
         fileout.write("\n");
         //fileout.write(System.getProperty("line.separator"));

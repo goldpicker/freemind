@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapNode.java,v 1.15.18.13 2005-07-06 06:00:03 christianfoltin Exp $*/
+/*$Id: MindMapNode.java,v 1.15.18.13.2.1 2006-04-05 19:19:42 dpolivaev Exp $*/
 
 package freemind.modes;
 
@@ -108,6 +108,8 @@ public interface MindMapNode extends MutableTreeNode {
     void setViewer( NodeView viewer );
 
     String toString();
+
+    String getPlainTextContent();
 	 
     TreePath getPath();
     

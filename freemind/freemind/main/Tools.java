@@ -1,6 +1,7 @@
 /*
- * FreeMind - A Program for creating and viewing Mindmaps Copyright (C)
- * 2000-2001 Joerg Mueller <joergmueller@bigfoot.com> See COPYING for Details
+ * FreeMind - a program for creating and viewing mindmaps
+ * Copyright (C) 2000-2006  Joerg Mueller, Daniel Polansky, Christian Foltin and others.
+ * See COPYING for details
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -16,7 +17,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-/* $Id: Tools.java,v 1.17.18.5 2005-04-15 22:28:09 christianfoltin Exp $ */
+/* $Id: Tools.java,v 1.17.18.5.8.1 2006-04-05 19:19:42 dpolivaev Exp $ */
 
 package freemind.main;
 
@@ -25,6 +26,8 @@ package freemind.main;
 import java.awt.Color;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -235,41 +238,133 @@ public class Tools {
                 "&quot;", "\"").replaceAll("&amp;", "&");
     }
 
-    public static String toXMLEscapedTextWithNBSPizedSpaces(String text) {
+    public static String toXMLEscapedTextExpandingWhitespace(String text) {
+        // Spaces and tabs are handled
+        text = text.replaceAll("\t","         "); // Use eight spaces as tab width.
         int len = text.length();
         StringBuffer result = new StringBuffer(len);
         int intValue;
         char myChar;
-        boolean previousSpace = false;
-        boolean spaceOccured = false;
         for (int i = 0; i < len; ++i) {
             myChar = text.charAt(i);
-            spaceOccured = false;
             switch (myChar) {
-            case '&':
-                result.append("&amp;");
-                break;
-            case '<':
-                result.append("&lt;");
-                break;
-            case '>':
-                result.append("&gt;");
-                break;
+            case '&': result.append("&amp;"); break;
+            case '<': result.append("&lt;"); break;
+            case '>': result.append("&gt;"); break;
             case ' ':
-                spaceOccured = true;
-                if (previousSpace) {
-                    result.append("&nbsp;");
-                } else {
-                    result.append(" ");
-                }
-                break;
+               if ( i > 0 && i < len-1 &&
+                    (int)text.charAt(i-1) > 32 && (int)text.charAt(i+1) > 32 ) {
+                  result.append(' '); }
+               else {
+                  result.append("&nbsp;"); }
+               break;
             default:
                 result.append(myChar);
             }
-            previousSpace = spaceOccured;
         }
         return result.toString();
     }
+
+    public static String unicodeToHTMLUnicodeEntity(String text) {
+       StringBuffer result = new StringBuffer((int)(text.length()*1.2)); // Heuristic reserve for expansion: factor 1.2
+       int intValue;
+       char myChar;
+       for (int i = 0; i < text.length(); ++i) {
+          myChar = text.charAt(i);
+          intValue = (int) text.charAt(i);
+          if (intValue > 128) {
+             result.append("&#").append(intValue).append(';'); }
+          else {
+             result.append(myChar); }}
+       return result.toString(); };
+
+    public static String unescapeHTMLUnicodeEntity(String text) {
+       StringBuffer result = new StringBuffer(text.length());
+       StringBuffer entity = new StringBuffer();
+       boolean readingEntity = false;
+       char myChar;
+       for (int i = 0; i < text.length(); ++i) {
+          myChar = text.charAt(i);
+          if (readingEntity) {
+             if (myChar == ';') {
+                if (entity.charAt(0) == '#') {
+                   try {
+                      if (entity.charAt(1) == 'x') {
+                         result.append((char) Integer.parseInt(entity.substring(2), 16)); }
+                      else {
+                         result.append((char) Integer.parseInt(entity.substring(1), 10)); }}
+                   catch (NumberFormatException e) {
+                      result.append('&').append(entity).append(';'); }}
+                else {
+                   result.append('&').append(entity).append(';'); }
+                entity.setLength(0);
+                readingEntity = false; }
+             else {
+                entity.append(myChar); }}
+          else {
+             if (myChar == '&') {
+                readingEntity = true; }
+             else {                
+                result.append(myChar); }}}
+       if (entity.length() > 0) {
+          result.append('&').append(entity); }
+       return result.toString(); }
+
+    public static String plainToHTML(String text) {
+       char myChar;
+       String textTabsExpanded = text.replaceAll("\t","         "); // Use eight spaces as tab width.
+       StringBuffer result = new StringBuffer(textTabsExpanded.length()); // Heuristic
+       int lengthMinus1 = textTabsExpanded.length() - 1;
+       result.append("<html><body>");
+       for (int i = 0; i < textTabsExpanded.length(); ++i) {
+          myChar = textTabsExpanded.charAt(i);
+          switch (myChar) {
+          case '&': result.append("&amp;"); break;
+          case '<': result.append("&lt;"); break;
+          case '>': result.append("&gt;"); break;
+          case ' ':
+             if ( i > 0 && i < lengthMinus1 &&
+                  (int)textTabsExpanded.charAt(i-1) > 32 && (int)textTabsExpanded.charAt(i+1) > 32 ) {
+                result.append(' '); }
+             else {
+                result.append("&nbsp;"); }
+             break;
+          case '\n': result.append("<br>"); break;
+          default:  result.append(myChar); }}
+       return result.toString(); }
+
+    public static String htmlToPlain(String text) {
+       // 0. remove all newlines
+       // 1. replace newlines, paragraphs, and table rows
+       // 2. remove XML tags
+       // 3. replace HTML entities including &nbsp;
+       // 4. unescape unicode entities
+       // This is a very basic conversion, fixing the most annoying
+       // inconvenience.  You can imagine much better conversion of
+       // HTML to plain text. Most of HTML tags can be handled
+       // sensibly, like web browsers do it.
+       if (!text.startsWith("<html")) {
+          return text; }
+       //System.err.println("base:"+text);
+       String intermediate = text.
+          replaceAll("(?ims)[\n\t]","").        // Remove newlines
+          replaceAll("(?ims) +"," ").           // Condense spaces
+          replaceAll("(?ims)<br.*?>","\n").
+          replaceAll("(?ims)<p.*?>","\n\n").    // Paragraph
+          replaceAll("(?ims)<div.*?>","\n").  // Div - block
+          replaceAll("(?ims)<tr.*?>","\n").
+          replaceAll("(?ims)<dt.*?>","\n").     // Defined term
+          replaceAll("(?ims)<dd.*?>","\n   ").  // Definition of defined term
+          replaceAll("(?ims)<td.*?>"," ").
+          replaceAll("(?ims)<[uo]l.*?>","\n").  // Beginning of a list
+          replaceAll("(?ims)<li.*?>","\n   * ").
+          replaceAll("(?ims) *</[^>]*>","").    // Remaining closing HTML tags
+          replaceAll("(?ims)<[^/][^>]*> *",""). // Remaining opening HTML tags
+          replaceAll("(?ims)&lt;", "<").replaceAll("(?ims)&gt;", ">").
+          replaceAll("(?ims)&quot;", "\"").replaceAll("(?ims)&amp;", "&").
+          replaceAll("(?ims)&nbsp;", " ");
+       //System.err.println("intermediate:"+intermediate);
+       return unescapeHTMLUnicodeEntity(intermediate); }
 
     public static boolean isAbsolutePath(String path) {
         // On Windows, we cannot just ask if the file name starts with file
@@ -681,6 +776,19 @@ public class Tools {
     	 return Long.toString(date.getTime());
     }
 
+
+   public static void logTransferable(Transferable t) {
+      System.err.println();
+      System.err.println("BEGIN OF Transferable:\t"+t);		   
+      DataFlavor[] dataFlavors = t.getTransferDataFlavors(); 
+      for (int i = 0; i < dataFlavors.length; i++) {
+         System.out.println("  Flavor:\t"+dataFlavors[i]);
+         System.out.println("    Supported:\t"+t.isDataFlavorSupported(dataFlavors[i]));
+         try {
+            System.out.println("    Content:\t"+t.getTransferData(dataFlavors[i])); }
+         catch (Exception e) {}}
+      System.err.println("END OF Transferable");
+      System.err.println(); }
 
 }
 

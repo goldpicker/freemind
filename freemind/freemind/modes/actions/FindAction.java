@@ -1,9 +1,11 @@
 package freemind.modes.actions;
 
 import java.awt.event.ActionEvent;
+import java.util.Collection;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Iterator;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -11,6 +13,7 @@ import javax.swing.JOptionPane;
 
 import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
+import freemind.main.Tools;
 
 public class FindAction extends AbstractAction {
     private final ModeController controller;
@@ -19,17 +22,26 @@ public class FindAction extends AbstractAction {
 
     private MindMapNode findFromNode;
 
-    private String findWhat;
+    private String searchTerm;
+
+    private Collection subterms;
 
     /**
-     * @return Returns the findWhat.
+     * @return Returns the subterms.
      */
-    public String getFindWhat() {
-        return findWhat;
+    public Collection getSubterms() {
+        return subterms;
+    }
+
+    public String getSearchTerm() {
+        return searchTerm;
     }
 
     public String getFindFromText() {
-        return findFromNode.toString();
+       String plainNodeText = Tools.htmlToPlain(findFromNode.toString()).replaceAll("\n"," ");
+       return plainNodeText.length() <= 30
+          ? plainNodeText
+          : plainNodeText.substring(0,30)+"...";
     }
 
     private boolean findCaseSensitive;
@@ -48,15 +60,22 @@ public class FindAction extends AbstractAction {
         if (what == null || what.equals("")) {
             return;
         }
-        boolean found = find(controller.getSelected(), what, /* caseSensitive= */
+        Collection subterms = breakSearchTermIntoSubterms(what);
+        this.searchTerm = what;
+        //System.err.println(subterms);
+        boolean found = find(controller.getSelected(), subterms, /* caseSensitive= */
         false);
         controller.getView().repaint();
         if (!found) {
-            controller.getController().informationMessage(
-                    controller.getText("no_found_from")
-                            .replaceAll("\\$1", what).replaceAll("\\$2",
-                                    getFindFromText()),
-                    controller.getView().getSelected());
+           String messageText = controller.getText("no_found_from");
+           String searchTerm = messageText.startsWith("<html>")
+              ? Tools.toXMLEscapedText(getSearchTerm())
+              : getSearchTerm();
+           controller.getController().informationMessage
+              (messageText.
+               replaceAll("\\$1", searchTerm).
+               replaceAll("\\$2", getFindFromText()),
+               controller.getView().getSelected());
         }
     }
 
@@ -72,8 +91,8 @@ public class FindAction extends AbstractAction {
         }
 
         public void actionPerformed(ActionEvent e) {
-            String what = find.getFindWhat();
-            if (what == null) {
+            Collection subterms = find.getSubterms();
+            if (subterms == null) {
                 controller.getController().informationMessage(
                         controller.getText("no_previous_find"),
                         controller.getView().getSelected());
@@ -82,28 +101,35 @@ public class FindAction extends AbstractAction {
             boolean found = find.findNext();
             controller.getView().repaint();
             if (!found) {
-                controller.getController().informationMessage(
-                        controller.getText("no_more_found_from").replaceAll(
-                                "\\$1", what).replaceAll("\\$2",
-                                find.getFindFromText()),
-                        controller.getView().getSelected());
+                String messageText = controller.getText("no_more_found_from");
+                String searchTerm = messageText.startsWith("<html>")
+                   ? Tools.toXMLEscapedText(find.getSearchTerm())
+                   : find.getSearchTerm();
+                controller.getController().informationMessage
+                   (messageText.
+                    replaceAll("\\$1", searchTerm).
+                    replaceAll("\\$2", find.getFindFromText()),
+                    controller.getView().getSelected());
             }
         }
     }
 
-    public boolean find(MindMapNode node, String what, boolean caseSensitive) {
+    public boolean find(MindMapNode node, Collection subterms, boolean caseSensitive) {
         findNodesUnfoldedByLastFind = new ArrayList();
         LinkedList nodes = new LinkedList();
         nodes.addFirst(node);
         findFromNode = node;
+        Collection finalizedSubterms;
         if (!caseSensitive) {
-            what = what.toLowerCase();
-        }
-        return find(nodes, what, caseSensitive);
-    }
+           finalizedSubterms = new ArrayList();
+           for (Iterator i = subterms.iterator(); i.hasNext(); ) {
+              finalizedSubterms.add(((String)i.next()).toLowerCase()); }}
+        else {
+           finalizedSubterms = subterms; }
+        return find(nodes, finalizedSubterms, caseSensitive); }
 
     private boolean find(LinkedList /* queue of MindMapNode */nodes,
-            String what, boolean caseSensitive) {
+            Collection subterms, boolean caseSensitive) {
         // Precondition: if !caseSensitive then >>what<< is in lowercase.
 
         // Fold the path of previously found node
@@ -134,12 +160,19 @@ public class FindAction extends AbstractAction {
 
             String nodeText = caseSensitive ? node.toString() : node.toString()
                     .toLowerCase();
-            if (nodeText.indexOf(what) >= 0) { // Found
+
+            boolean found = true;
+            for (Iterator i = subterms.iterator(); i.hasNext();) {
+               if (nodeText.indexOf((String)i.next()) < 0 ) { // Subterm not found
+                  found = false;
+                  break; }}
+
+            if (found) { // Found
                 displayNode(node, findNodesUnfoldedByLastFind);
                 centerNode(node);
 
                 // Save the state for find next
-                findWhat = what;
+                this.subterms = subterms;
                 findCaseSensitive = caseSensitive;
                 findNodeQueue = nodes;
 
@@ -150,6 +183,36 @@ public class FindAction extends AbstractAction {
         centerNode(findFromNode);
         return false;
     }
+
+    private Collection breakSearchTermIntoSubterms(String searchTerm) {
+       ArrayList subterms = new ArrayList();
+       StringBuffer subterm = new StringBuffer();
+       int len = searchTerm.length();
+       char myChar;
+       char previousChar = 'a';
+       boolean withinQuotes = false;
+       for (int i = 0; i < len; ++i) {
+          myChar = searchTerm.charAt(i);
+          if (myChar == ' ' && withinQuotes ) {
+             subterm.append(myChar); }
+          else if ((myChar == ' ' && !withinQuotes )) {
+             subterms.add(subterm.toString());
+             subterm.setLength(0); }
+          else if (myChar == '"' &&
+                   i > 0 && i < len-1 &&
+                   searchTerm.charAt(i-1) != ' ' &&
+                   searchTerm.charAt(i+1) != ' ') {
+             // Character " surrounded by non-spaces
+             subterm.append(myChar); }
+          else if (myChar == '"' && withinQuotes) {
+             withinQuotes = false; }
+          else if (myChar == '"' && !withinQuotes) {
+             withinQuotes = true; }
+          else {
+             subterm.append(myChar); }
+          previousChar = myChar; }
+       subterms.add(subterm.toString());
+       return subterms; }
 
     /**
      * Display a node in the display (used by find and the goto action by arrow
@@ -172,7 +235,7 @@ public class FindAction extends AbstractAction {
     }
 
     public boolean findNext() {
-        // Precodition: findWhat != null. We check the precodition but give no
+        // Precodition: subterms != null. We check the precodition but give no
         // message.
 
         // The logic of find next is vulnerable. find next relies on the queue
@@ -186,8 +249,8 @@ public class FindAction extends AbstractAction {
         // perhaps for some uncaught exceptions. As a result, it is not very
         // nice, but far from critical and working quite fine.
 
-        if (findWhat != null) {
-            return find(findNodeQueue, findWhat, findCaseSensitive);
+        if (subterms != null) {
+            return find(findNodeQueue, subterms, findCaseSensitive);
         }
         return false;
     }

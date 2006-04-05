@@ -37,10 +37,6 @@ import freemind.modes.mindmapmode.MindMapMapModel;
 import freemind.modes.mindmapmode.MindMapNodeModel;
 import freemind.view.mindmapview.NodeView;
 
-//import ublic class MindMapNodesSelection implements Transferable, ClipboardOwner {
-   //   public static DataFlavor fileListFlavor = null;
-
-
 public class NodeDropListener implements DropTargetListener {
 
     private final Controller c;

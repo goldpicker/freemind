@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: Controller.java,v 1.40.14.16 2005-06-14 20:38:06 christianfoltin Exp $*/
+/*$Id: Controller.java,v 1.40.14.16.2.1 2006-04-05 19:19:42 dpolivaev Exp $*/
 
 package freemind.controller;
 
@@ -993,7 +993,7 @@ public class Controller {
             this.controller = controller;
         }
         public void actionPerformed(ActionEvent e) {
-           JOptionPane.showMessageDialog(getFrame().getViewport(),controller.getResourceString("about_text")+FreeMind.version);
+           JOptionPane.showMessageDialog(getFrame().getViewport(),controller.getResourceString("about_text")+FreeMind.getVersion());
         }
     }
 

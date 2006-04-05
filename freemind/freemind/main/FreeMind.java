@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000-2006  Joerg Mueller, Daniel Polansky, Christian Foltin and others.
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: FreeMind.java,v 1.32.14.25 2005-08-19 20:11:29 christianfoltin Exp $*/
+/*$Id: FreeMind.java,v 1.32.14.25.2.1 2006-04-05 19:19:42 dpolivaev Exp $*/
 
 package freemind.main;
 
@@ -85,7 +85,7 @@ public class FreeMind extends JFrame implements FreeMindMain {
     
     private static final String DEFAULT_LANGUAGE = "en";
     private HookFactory nodeHookFactory;
-	public static final String version = "0.8.0";
+    static public final String version = "0.8.0-ALPHA-DAN-5";
     //    public static final String defaultPropsURL = "freemind.properties";
     public URL defaultPropsURL;
     //    public static Properties defaultProps;
@@ -101,6 +101,9 @@ public class FreeMind extends JFrame implements FreeMindMain {
     
     private JPanel southPanel;
     private static PropertyResourceBundle languageResources;
+
+    public static String getVersion() {
+      return version; }
 
     private PropertyResourceBundle defaultResources;
 	public FreeMind() {
@@ -266,6 +269,9 @@ public class FreeMind extends JFrame implements FreeMindMain {
         win_height = (win_height > 0) ? win_height : 440;
         getRootPane().setPreferredSize(new Dimension( win_width, win_height ));
 
+	if (Tools.safeEquals(getProperty("no_scrollbar"),"true")) {
+           scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER); 
+           scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); }
 	getContentPane().add( scrollPane, BorderLayout.CENTER );
 
 //	status = new JLabel();
