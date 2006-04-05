@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: AttributeView.java,v 1.1.2.17 2006-03-11 18:38:56 dpolivaev Exp $*/
+/*$Id: AttributeView.java,v 1.1.2.18 2006-04-05 18:54:32 dpolivaev Exp $*/
 
 package freemind.view.mindmapview.attributeview;
 
@@ -234,7 +234,7 @@ public class AttributeView implements ChangeListener, NodeViewEventListener, Tab
         ? getAttributeRegistry().getAttributeViewType()
         : AttributeTableLayoutModel.SHOW_ALL;
     }
-    public void edit() {
+    public void startEditing() {
         provideAttributeTable();
         final String registryAttributeViewType = getAttributeRegistry().getAttributeViewType();
         if(registryAttributeViewType == AttributeTableLayoutModel.SHOW_SELECTED
@@ -266,5 +266,15 @@ public class AttributeView implements ChangeListener, NodeViewEventListener, Tab
             return object;
         }
         return getAncestorComponent(object.getParent(), ancestorClass);
+    }
+    public void stopEditing() {
+        if(attributeTable.isEditing()){
+            attributeTable.getCellEditor().stopCellEditing();
+        }
+        final String registryAttributeViewType = getAttributeRegistry().getAttributeViewType();
+        if(registryAttributeViewType != getViewType()){
+            setViewType(registryAttributeViewType);
+        }
+        getNodeView().requestFocus();
     }
 }

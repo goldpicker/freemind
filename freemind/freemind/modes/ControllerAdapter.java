@@ -16,12 +16,13 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: ControllerAdapter.java,v 1.41.14.22.2.2.2.18 2006-03-11 18:38:56 dpolivaev Exp $ */
+/* $Id: ControllerAdapter.java,v 1.41.14.22.2.2.2.19 2006-04-05 18:54:32 dpolivaev Exp $ */
 
 package freemind.modes;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -88,6 +89,7 @@ import freemind.modes.mindmapmode.attributeactors.MindMapModeAttributeController
 import freemind.view.MapModule;
 import freemind.view.mindmapview.MapView;
 import freemind.view.mindmapview.NodeView;
+import freemind.view.mindmapview.attributeview.AttributeTable;
 import freemind.view.mindmapview.attributeview.AttributeView;
 
 
@@ -791,8 +793,15 @@ public abstract class ControllerAdapter implements ModeController {
                 super(Resources.getInstance().getResourceString("attributes_edit_in_place"));
             };
             public void actionPerformed(ActionEvent e) {
+                final Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
                 final AttributeView attributeView = getView().getSelected().getAttributeView();
-                attributeView.edit();
+                boolean attributesClosed = null == AttributeView.getAncestorComponent(focusOwner, AttributeTable.class);
+                if(attributesClosed){
+                    attributeView.startEditing();
+                }
+                else{
+                    attributeView.stopEditing();
+                }
             }
         }
 
