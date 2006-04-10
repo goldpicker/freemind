@@ -184,7 +184,7 @@ class ImportAttributesDialog extends JDialog implements TreeSelectionListener {
                 if(attributeNameRegistered == false){
                     attributeNameRegistered = true;
                     if(-1 == currentAttributes.indexOf(name)){
-                       currentAttributes.getAttributeController().performRegistryAttribute(name, null);
+                       currentAttributes.getAttributeController().performRegistryAttribute(name);
                        int index = currentAttributes.indexOf(name);
                        currentAttributes.getAttributeController().performSetRestriction(index, ((AttributeTreeNodeInfo)info).isRestricted());
                     }
@@ -192,7 +192,7 @@ class ImportAttributesDialog extends JDialog implements TreeSelectionListener {
                 TreeNodeInfo childInfo = (TreeNodeInfo) childNode.getUserObject();
                 if(childInfo.getSelected() == TreeNodeInfo.FULL_SELECTED){
                     String value = childInfo.getInfo();
-                    currentAttributes.getAttributeController().performRegistryAttribute(name, value);
+                    currentAttributes.getAttributeController().performRegistryAttributeValue(name, value);
                 }                
             }
             else{
