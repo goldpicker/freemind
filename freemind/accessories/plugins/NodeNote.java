@@ -16,34 +16,18 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: NodeNote.java,v 1.1.4.7.2.4 2006-04-24 22:23:33 dpolivaev Exp $ */
+/*$Id: NodeNote.java,v 1.1.4.7.2.4.2.1 2006-04-29 15:52:27 dpolivaev Exp $*/
 package accessories.plugins;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.HashMap;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JMenuBar;
-import javax.swing.JRootPane;
-import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
-import de.xeinfach.kafenio.KafenioPanel;
-import de.xeinfach.kafenio.KafenioPanelConfiguration;
-import de.xeinfach.kafenio.SplashScreen;
-import de.xeinfach.kafenio.interfaces.KafenioContainerInterface;
 import freemind.controller.actions.generated.instance.EditNoteToNodeAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.extensions.HookFactory;
 import freemind.extensions.HookRegistration;
-import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
 import freemind.modes.MindMap;
@@ -59,34 +43,6 @@ import freemind.modes.mindmapmode.actions.xml.ActorXml;
  *
  */
 public class NodeNote extends NodeNoteBase {
-
-    private class KafenioPane extends Box implements KafenioContainerInterface{
-        public KafenioPane() {
-            super(BoxLayout.Y_AXIS ); 
-            setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
-        }
-
-        public void detachFrame() {
-        }
-
-        public void setJMenuBar(JMenuBar newMenuBar) {
-            newMenuBar.setAlignmentX(LEFT_ALIGNMENT);
-            add(newMenuBar, 0);
-        }
-
-        protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
-            if( ks.getKeyCode() == KeyEvent.VK_SPACE
-                    && e.getModifiers() == 0
-                    && pressed){
-                return true;            
-            }
-            return super.processKeyBinding(ks, e, condition, pressed);
-        }
-        
-    }
-    static private NodeTextListener listener;
-    static private KafenioPanelConfiguration kafenioPanelConfiguration;
-    static private KafenioPanel htmlEditorPanel;
 
     public static class Registration implements HookRegistration, ActorXml {
 
@@ -133,10 +89,15 @@ public class NodeNote extends NodeNoteBase {
                     hook.setMyNodeText(newText);
                     // FIXME: This is ugly code as we are fishing in the waters
                     // of NodeNote.
-                    if (htmlEditorPanel != null) {
-                        if (!newText.equals(htmlEditorPanel
-                                .getDocumentText())) {
-                            htmlEditorPanel.setDocumentText(newText);
+                    if (hook.text != null) {
+                        // check if document is different:
+                        try {
+                            if (!newText.equals(getDocumentText(hook.text
+                                    .getDocument()))) {
+                                hook.text.setText(newText);
+                            }
+                        } catch (BadLocationException e) {
+                            e.printStackTrace();
                         }
                     }
                     controller.nodeChanged(node);
@@ -149,6 +110,8 @@ public class NodeNote extends NodeNoteBase {
         }
 
     }
+
+    private NodeTextListener listener;
 
     /*
      * (non-Javadoc)
@@ -188,9 +151,15 @@ public class NodeNote extends NodeNoteBase {
          * @see javax.swing.event.DocumentListener#changedUpdate(DocumentEvent)
          */
         public void changedUpdate(DocumentEvent e) {
-            if (pNote != null) {
-                String text = htmlEditorPanel.getDocumentText();
-                pNote.changeNodeText(text);
+            try {
+                if (pNote != null) {
+                    Document document = e.getDocument();
+                    String text = getDocumentText(document);
+                    pNote.changeNodeText(text);
+                }
+            } catch (BadLocationException ex) {
+                System.err.println("Could not fetch nodeText content"
+                        + ex.toString());
             }
         }
 
@@ -203,6 +172,15 @@ public class NodeNote extends NodeNoteBase {
 
     }
 
+    /**
+     * @param document
+     * @return
+     * @throws BadLocationException
+     */
+    private static String getDocumentText(Document document)
+            throws BadLocationException {
+        return document.getText(0, document.getLength());
+    }
 
     protected void nodeRefresh(MindMapNode node) {
         getMindMapController().nodeRefresh(node);
@@ -242,79 +220,14 @@ public class NodeNote extends NodeNoteBase {
     }
 
     protected void receiveFocusAddons() {
-        if(listener == null){
-            listener = new NodeTextListener();
-        }
+        listener = new NodeTextListener();
         listener.setNote(this);
-        htmlEditorPanel.getExtendedHtmlDoc().addDocumentListener(listener);
+        text.getDocument().addDocumentListener(listener);
     }
 
     protected void looseFocusAddons() {
-        htmlEditorPanel.getExtendedHtmlDoc().removeDocumentListener(listener);
         listener.setNote(null);
+
     }
 
-    protected Container getNoteViewerComponent() throws Exception {
-        createKafenioPanel();
-        logger.fine("Text ctrl. set for node "+getNode()+" as "+getMyNodeText());
-        // panel:
-        
-        htmlEditorPanel.setDocumentText(getMyNodeText());
-        htmlEditorPanel.setDocumentConfirmed(false);
-        return htmlEditorPanel.getKafenioParent();
-    }
-    private void createKafenioPanel() throws Exception {
-        if(htmlEditorPanel == null){
-            final SplashScreen splashScreen = new SplashScreen();
-            splashScreen.setVisible(true);
-            final JRootPane rootPane = splashScreen.getRootPane();
-            rootPane.paintImmediately(0, 0, rootPane.getWidth(), rootPane.getHeight());
-            createKafenioConfiguration();
-            htmlEditorPanel  = new KafenioPanel(kafenioPanelConfiguration);
-            htmlEditorPanel.getJToolBar1().setRollover(true);
-            //htmlEditorPanel.getJToolBar2().setRollover(true);          
-            htmlEditorPanel.getHTMLScrollPane().setPreferredSize(new Dimension(1, 200));
-            htmlEditorPanel.getSrcScrollPane().setPreferredSize(new Dimension(1, 200));
-            htmlEditorPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-            htmlEditorPanel.getKafenioParent().add(htmlEditorPanel);
-            splashScreen.setVisible(false);
-        }
-    }
-
-    private void createKafenioConfiguration() {
-        if(kafenioPanelConfiguration  == null){
-            String language = Resources.getInstance().getProperty("language");
-            HashMap countryMap = Resources.getInstance().getCountryMap(); 
-            kafenioPanelConfiguration = new KafenioPanelConfiguration();
-            kafenioPanelConfiguration.setImageDir("file://");
-            kafenioPanelConfiguration.setDebugMode(true); 
-            //kafenioPanelConfiguration.setLanguage("sk");
-            //kafenioPanelConfiguration.setCountry("SK");
-            kafenioPanelConfiguration.setLanguage(language);
-            kafenioPanelConfiguration.setCountry((String)countryMap.get(language));
-            kafenioPanelConfiguration.setCustomMenuItems("edit" 
-                    // + " view"
-                    +" font format insert table forms search tools help");
-            // In the following excluded: new, open, styleselect
-            kafenioPanelConfiguration.setCustomToolBar1(
-                    "cut copy paste bold italic underline" 
-                    + " left center right justify ulist olist deindent indent anchor" 
-                    +" image clearformats strike superscript subscript insertcharacter"
-                    + " find color table"
-                    // + " viewsource"
-                    );
-            // All available tool bar items:
-            // new open save cut copy paste bold italic underline left center right justify styleselect ulist olist deindent indent anchor
-            // image clearformats viewsource strike superscript subscript insertcharacter find color table
-            
-            kafenioPanelConfiguration.setShowToolbar2(false);
-            kafenioPanelConfiguration.setProperty("escapeCloses","false");
-            kafenioPanelConfiguration.setProperty("confirmRatherThanPost","true");
-            //kafenioPanelConfiguration.setProperty("alternativeLanguage","en");
-            //kafenioPanelConfiguration.setProperty("alternativeCountry","US");
-            kafenioPanelConfiguration.setKafenioParent(new KafenioPane());
-        }
-    }
-    
 }
