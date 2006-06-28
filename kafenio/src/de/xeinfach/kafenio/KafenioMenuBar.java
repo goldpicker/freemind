@@ -20,6 +20,8 @@ import de.xeinfach.kafenio.util.LeanLogger;
  */
 public class KafenioMenuBar {
 
+	static final int BLIND_ICON_WIDTH = 23;
+
 	private static LeanLogger log = new LeanLogger("KafenioMenuBar.class");
 	
 	public static final String KEY_MENU_FILE   = "file";
@@ -257,7 +259,7 @@ public class KafenioMenuBar {
 
     /** @todo RLR et FF rajout d'un subMenu si on est pas en Applet sinon on met que image Serveur*/
     if (!config.isApplet()) {
-      JMenu imgMenu = getNewMenu("InsertLocalImage");
+      JMenu imgMenu = getNewSubMenu("InsertLocalImage");
       imgMenu.setIcon(getParent().getMenuIcon("InsertImage"));
       imgMenu.add(new KafenioMenuItem(this,
                                       getString("InsertLocalImage") + DOTS,
@@ -344,7 +346,7 @@ public class KafenioMenuBar {
 	 * @return returns the format -> heading submenu
 	 */
 	public JMenu getFormatHeadingMenu() {
-		JMenu formatHeadingMenu = getNewMenu("Heading");
+		JMenu formatHeadingMenu = getNewSubMenu("Heading");
 	
 		formatHeadingMenu.add(new KafenioMenuItem(this, getActionList().getActionHeading1(), null, null));
 		formatHeadingMenu.add(new KafenioMenuItem(this, getActionList().getActionHeading2(), null, null));
@@ -360,7 +362,7 @@ public class KafenioMenuBar {
 	 * @return returns the format -> align submenu
 	 */
 	public JMenu getFormatAlignMenu() {
-		JMenu formatAlignMenu = getNewMenu("Align");
+		JMenu formatAlignMenu = getNewSubMenu("Align");
 
 		formatAlignMenu.add(new KafenioMenuItem(this, 
 												getActionList().getActionAlignLeft(), 
@@ -450,7 +452,7 @@ public class KafenioMenuBar {
 	 */
 	public JMenu getFontColorMenu() {
 		Hashtable customAttr;
-		JMenu fontColorMenu = getNewMenu("Color");
+		JMenu fontColorMenu = getNewSubMenu("Color");
 		fontColorMenu.setIcon(getParent().getMenuIcon("Color"));
 
 		customAttr = new Hashtable(); customAttr.put("color","black");
@@ -478,7 +480,7 @@ public class KafenioMenuBar {
 	 * @return returns font -> fontsize submenu
 	 */
 	public JMenu getFontSizeMenu() {
-		JMenu fontSizeMenu = getNewMenu("FontSize");
+		JMenu fontSizeMenu = getNewSubMenu("FontSize");
 
 		fontSizeMenu.add(new KafenioMenuItem(this, getActionList().getActionFontSize1(), null, null));
 		fontSizeMenu.add(new KafenioMenuItem(this, getActionList().getActionFontSize2(), null, null));
@@ -703,6 +705,17 @@ public class KafenioMenuBar {
 	public JMenu getNewMenu(String translationID) {
 		JMenu newMenu = new JMenu(getString(translationID));
 		newMenu.setBackground(config.getBgcolor());
+		return newMenu;
+	}
+	
+	/**
+	 * creates a new JMenu Object and sets the background color and blind icon.
+	 * @param translationID menuname to translate
+	 * @return returns a new JMenu Object.
+	 */
+	public JMenu getNewSubMenu(String translationID) {
+		JMenu newMenu = getNewMenu(translationID);
+		newMenu.setIcon(new BlindIcon(BLIND_ICON_WIDTH));
 		return newMenu;
 	}
 	

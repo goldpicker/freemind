@@ -80,56 +80,20 @@ public class FormatAction extends StyledEditorKit.StyledTextAction {
 	 * @param ae the ActionEvent to handle
 	 */
 	public void actionPerformed(ActionEvent ae) {
-		System.out.println(ae);
+		/* Begin Change by fc on 13.06.2006: 
+		 * insertion of <p> did not work properly, 
+		 * so I removed all this unnecessary selection stuff.*/
 		JTextPane parentTextPane = parentKafenio.getTextPane();
-		String selText = parentTextPane.getSelectedText();
-		HTMLDocument doc = (HTMLDocument) parentTextPane.getDocument();
-		boolean noselection = selText == null || selText.length() < 1;
-		int pos = 0;
-		// insert whitespace before processing non-selected text
-		if (noselection) {
-			pos = parentTextPane.getCaretPosition();
-			try {
-				try {
-					doc.insertString(pos, " ", null);
-					parentTextPane.setSelectionStart(pos);
-					parentTextPane.setSelectionEnd(pos + 1);
-					selText = parentTextPane.getSelectedText();
-					log.debug("selectedText: " + selText);
-				} catch (BadLocationException e1) {}
-			} catch (Exception e) {
-				System.out.println(e);
-			}
-		}
+		SimpleAttributeSet sasText = new SimpleAttributeSet(parentTextPane
+				.getCharacterAttributes());
 
-		int textLength = -1;
-		textLength = selText.length();
-
-		SimpleAttributeSet sasText = new SimpleAttributeSet(parentTextPane.getCharacterAttributes());
-		
-		if (htmlAttr == null) {
-			sasText.addAttribute(htmlTag, new SimpleAttributeSet());
-		} else {
-			SimpleAttributeSet attribs = new SimpleAttributeSet();
-			attribs.addAttribute(HTML.Attribute.ALIGN, htmlAttr);
-			sasText.addAttribute(htmlTag, attribs);
+		SimpleAttributeSet simpleAttributeSet = new SimpleAttributeSet();
+		if (htmlAttr != null) {
+			simpleAttributeSet.addAttribute(HTML.Attribute.ALIGN, htmlAttr);
 		}
-		
-		int caretOffset = parentTextPane.getSelectionStart();
-		parentTextPane.select(caretOffset, caretOffset + textLength);
+		sasText.addAttribute(htmlTag, simpleAttributeSet);
 		parentTextPane.setCharacterAttributes(sasText, true);
-		if (noselection) {
-			try {
-				parentKafenio.refreshOnUpdate();
-				doc.remove(caretOffset, 1);
-				parentTextPane.select(caretOffset, caretOffset + textLength);
-				parentTextPane.setCaretPosition(caretOffset);
-			} catch (Exception e) {}
-		} else {
-			parentTextPane.setCaretPosition(caretOffset + textLength);
-			parentKafenio.refreshOnUpdate();
-			parentTextPane.select(caretOffset, caretOffset + textLength);
-		}
+		/* End Change by fc on 13.06.2006*/
 	}
 }
 

@@ -54,9 +54,13 @@ public class SplashScreen extends JWindow implements Runnable {
 		try {
 			int secs = 1;
 			while (secs <= timeout) {
-				for(int k=0; k < 1000; k++) { 
-					Thread.sleep(1);
-				}
+/* Begin Change by fc on 13.06.2006*/
+				/*FIXME: I don't understand this.*/
+//				for(int k=0; k < 1000; k++) { 
+//					Thread.sleep(1);
+//				}
+				Thread.sleep(1000);
+/* End Change by fc on 13.06.2006*/
 				secs++;
 			}
 			destroy();

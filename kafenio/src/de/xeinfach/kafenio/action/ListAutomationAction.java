@@ -26,10 +26,12 @@ import java.awt.event.ActionEvent;
 import java.util.StringTokenizer;
 
 import javax.swing.JEditorPane;
+import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.HTML.Tag;
 
 import de.xeinfach.kafenio.KafenioPanel;
 import de.xeinfach.kafenio.component.HTMLUtilities;
@@ -93,26 +95,15 @@ public class ListAutomationAction extends HTMLEditorKit.InsertHTMLTextAction {
 
 				listType = (baseTag == HTML.Tag.OL ? "ol" : "ul");
 				StringBuffer sbNew = new StringBuffer();
+				Tag beginTag = null;
 				if(htmlUtilities.checkParentsTag(baseTag)) {
 					sbNew.append("<li></li>");
-					insertHTML(	parentKafenioPanel.getTextPane(), 
-								parentKafenioPanel.getExtendedHtmlDoc(), 
-								parentKafenioPanel.getTextPane().getCaretPosition(), 
-								sbNew.toString(), 
-								0, 
-								0, 
-								HTML.Tag.LI);
+					beginTag = HTML.Tag.LI;
 				} else {
 					sbNew.append("<" + listType + "><li></li></" + listType + ">&nbsp;");
-					insertHTML(	parentKafenioPanel.getTextPane(), 
-								parentKafenioPanel.getExtendedHtmlDoc(), 
-								parentKafenioPanel.getTextPane().getCaretPosition(), 
-								sbNew.toString(), 
-								0, 
-								0, 
-								(listType.equals("ol") ? HTML.Tag.OL : HTML.Tag.UL));
+					beginTag = (listType.equals("ol") ? HTML.Tag.OL : HTML.Tag.UL);
 				}
-				parentKafenioPanel.refreshOnUpdate();
+				insertHTMLAtPosition(sbNew.toString(), beginTag);
 			} else {
 				listType = (baseTag == HTML.Tag.OL ? "ol" : "ul");
 				HTMLDocument htmlDoc = (HTMLDocument)(jepEditor.getDocument());
@@ -138,6 +129,21 @@ public class ListAutomationAction extends HTMLEditorKit.InsertHTMLTextAction {
 		}
 		
 		parentKafenioPanel.repaint();
+	}
+
+	private void insertHTMLAtPosition(String insertString, Tag beginTag) {
+		JTextPane textPane = parentKafenioPanel.getTextPane();
+		int caretPosition = textPane.getCaretPosition();
+		insertHTML(	textPane, 
+					parentKafenioPanel.getExtendedHtmlDoc(), 
+					caretPosition, 
+					insertString, 
+					0, 
+					0, 
+					beginTag);
+		parentKafenioPanel.refreshOnUpdate();
+//		textPane.setCaretPosition(caretPosition);
+
 	}
 
 	/**

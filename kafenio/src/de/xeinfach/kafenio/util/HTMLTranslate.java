@@ -66,7 +66,9 @@ public final class HTMLTranslate {
 			log.error("could not load HTML-reference-to-character mappings." + e.fillInStackTrace());
 		}
 		
-		log.error("creating the character-to-reference mapping table");
+		/* Begin Change by fc on 13.06.2006*/
+		log.info("creating the character-to-reference mapping table");
+		/* End Change by fc on 13.06.2006*/
         char2RefMap = new HashMap(ref2CharMap.size());
         Iterator iterator = ref2CharMap.keySet().iterator();
         while (iterator.hasNext()) {

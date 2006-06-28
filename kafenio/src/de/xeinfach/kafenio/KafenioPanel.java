@@ -285,7 +285,9 @@ public class KafenioPanel extends JPanel implements ActionListener, KeyListener,
 		}
 		
 		/* Insert raw document, if exists */
-		String content = "<html><body></body></html>";
+		/* Begin Change by fc on 13.06.2006: added paragraph to get proper >ENTER< support.*/
+		String content = "<html><body><p align=\"left\"></p></body></html>";
+		/* End Change by fc on 13.06.2006*/
 		if(kafenioConfig.getRawDocument() != null && kafenioConfig.getRawDocument().length() > 0) {
 			if(kafenioConfig.isBase64()) {
 				content = Base64Codec.decode(kafenioConfig.getRawDocument()); 
@@ -782,7 +784,7 @@ public class KafenioPanel extends JPanel implements ActionListener, KeyListener,
 		} else if(ke.getKeyChar() == KeyEvent.VK_ENTER) {
 			try {
 				if(	htmlUtils.checkParentsTag(HTML.Tag.UL) 
-					| htmlUtils.checkParentsTag(HTML.Tag.OL)) 
+					|| htmlUtils.checkParentsTag(HTML.Tag.OL)) //fc: double || is faster, AFAIK.
 				{
 					if (ke.isShiftDown()) {
 						log.debug("shift-enter pressed inside list item.");

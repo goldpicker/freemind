@@ -98,7 +98,12 @@ public class KafenioMenuItem extends JMenuItem {
 		setBackground(parent.getParent().getConfig().getBgcolor());
 		if (labelText != null) this.setText(labelText);
 		if (shortcut != null) this.setAccelerator(shortcut);
-		if (menuIcon != null) this.setIcon(menuIcon);
+		if (menuIcon != null) {
+			this.setIcon(menuIcon);
+		} else {
+			// blind icon:
+			this.setIcon(new BlindIcon(KafenioMenuBar.BLIND_ICON_WIDTH));
+		}
 		log.debug("new KafenioMenuItem created: " + this.getText());
 	}
 
