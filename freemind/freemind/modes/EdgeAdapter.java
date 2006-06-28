@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,29 +16,32 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: EdgeAdapter.java,v 1.14 2003-11-16 22:15:15 christianfoltin Exp $*/
 
 package freemind.modes;
 
-import freemind.main.FreeMindMain;
+import freemind.main.FreeMind;
+import freemind.modes.MindMapNode;
+import freemind.modes.MindMapEdge;
 import freemind.main.Tools;
 import java.awt.Color;
-import java.awt.Stroke;
-import java.awt.BasicStroke;
 
-public abstract class EdgeAdapter extends LineAdapter implements MindMapEdge {
+import  org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-	public static final int WIDTH_PARENT = -1;
-	public static final int WIDTH_THIN = 0;
 
-    public EdgeAdapter(MindMapNode target,FreeMindMain frame) {
-        this(target, frame, "standardedgecolor", "standardedgestyle");
-    }
+public abstract class EdgeAdapter implements MindMapEdge {
 
-    /** For derived classes.*/
-    protected  EdgeAdapter(MindMapNode target,FreeMindMain frame, String standardColorPropertyString, String standardStylePropertyString)  {
-        super(target, frame, standardColorPropertyString, standardStylePropertyString);
-        NORMAL_WIDTH = WIDTH_PARENT;
+    private MindMapNode target;
+    
+    //recursive attributes. may be accessed directly by the save() method.
+    protected Color color; 
+    protected String style;
+
+    //
+    // Constructors
+    //
+    public EdgeAdapter(MindMapNode target) {
+	this.target = target;
     }
 
     //
@@ -46,58 +49,50 @@ public abstract class EdgeAdapter extends LineAdapter implements MindMapEdge {
     //
 
     public Color getColor() {
-        if(color==null) {
-            if (getTarget().isRoot()) {
-                String stdcolor = getFrame().getProperty(standardColorPropertyString);
-                if (stdcolor.length() == 7) {
-                    return Tools.xmlToColor(stdcolor);
-                }
-                return Color.blue;
-            }
-            return getSource().getEdge().getColor();
-        }
-        return color;
+	if(color==null) {
+	    if (getTarget().isRoot()) {
+		String stdcolor = FreeMind.userProps.getProperty("standardedgecolor");
+		if (stdcolor.length() == 7) {
+		    return Tools.xmlToColor(stdcolor);
+		}
+		return Color.blue;
+	    }
+	    return getSource().getEdge().getColor();
+	}
+	return color;
     }
 
-    public int getWidth() {
-        if (width==WIDTH_PARENT) {
-            if (getTarget().isRoot()) {
-                return WIDTH_THIN; }
-            return getSource().getEdge().getWidth(); }
-        return width; }
-
-    public Stroke getStroke() {
-        if (width==WIDTH_THIN)
-            return null;
-        if(stroke==null) {
-            if (getTarget().isRoot()) {
-                return null;
-            }
-            return getSource().getEdge().getStroke();
-        }
-        return stroke;
+    protected void setColor(Color color) {
+	this.color = color;
     }
-		
-    public void setWidth(int width) {
-        this.width = width;
-        stroke = ((width==WIDTH_PARENT) || (width==WIDTH_THIN)) ? null :
-            new BasicStroke(getWidth(),BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER); }
 
     public String getStyle() {
-        if(style==null) {
-            if (getTarget().isRoot()) {
-                return getFrame().getProperty(standardStylePropertyString);
-            }
-            return getSource().getEdge().getStyle();
-        }
-        return style;
+	if(style==null) {
+	    if (getTarget().isRoot()) {
+		return FreeMind.userProps.getProperty("standardedgestyle");
+	    }
+	    return getSource().getEdge().getStyle();
+	}
+	return style;
+    }
+
+    protected void setStyle(String style) {
+	this.style = style;
+    }
+
+    public String toString() {
+	return null;
     }
 
     ///////////
     // Private Methods
     /////////
 
+    private MindMapNode getTarget() {
+  	return target;
+    }
+    
     private MindMapNode getSource() {
-        return target.getParentNode();
+ 	return (MindMapNode)target.getParent();
     }
 }

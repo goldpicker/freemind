@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,60 +16,53 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: FileController.java,v 1.11 2003-11-03 11:00:13 sviles Exp $*/
 
 package freemind.modes.filemode;
 
-import freemind.modes.Mode;
+import freemind.main.FreeMind;
+import freemind.controller.Controller;
+import freemind.view.MapModule;
 import freemind.modes.MindMap;
-import freemind.modes.MapAdapter;
 import freemind.modes.MindMapNode;
+import freemind.modes.MindMapEdge;
+import freemind.modes.Mode;
 import freemind.modes.ControllerAdapter;
-import java.io.File;
+import freemind.modes.MapAdapter;
+import freemind.view.mindmapview.MapView;
 import java.awt.event.ActionEvent;
-import javax.swing.*;
+import java.awt.event.ActionListener;
+import javax.swing.Action;
+import javax.swing.AbstractAction;
+import java.awt.Color;
+import javax.swing.JColorChooser;
+import javax.swing.ImageIcon;
+import java.io.File;
+import javax.swing.filechooser.FileFilter;
 
 public class FileController extends ControllerAdapter {
 
-    Action find = new FindAction();
-    Action findNext = new FindNextAction();
-
     Action newMap = new NewMapAction(this);
+
     Action center = new CenterAction();
-    Action openPath = new OpenPathAction();
-
-    private JPopupMenu popupmenu = new FilePopupMenu(this);
-
 
     public FileController(Mode mode) {
 	super(mode);
     }
 
     public MapAdapter newModel() {
-	return new FileMapModel(getFrame());
+	return new FileMapModel();
     }
 
     public MindMapNode newNode() {
-	File newNode = new File(((FileNodeModel)getSelected()).getFile(),"new_Directory");
+	File newNode = new File(((FileNodeModel)getSelected()).getFile(), "new_Directory");
 	newNode.mkdir();
-	return new FileNodeModel(newNode,getFrame());
+	return new FileNodeModel(newNode);
     }
 
-    public JMenu getEditMenu() {
-	JMenu editMenu = new JMenu();
-        add(editMenu, find, "keystroke_find");
-        add(editMenu, findNext, "keystroke_find_next"); 
-        add(editMenu, openPath);
-        return editMenu; }
 
-    public JPopupMenu getPopupMenu() {
-      return this.popupmenu;
-    }
-    //-----------------------------------------------------------------------------------
 
-    // Private
-    // 
 
+    //private
     private MindMap getModel() {
  	return (MindMap)getController().getModel();
     }
@@ -81,34 +74,18 @@ public class FileController extends ControllerAdapter {
 	    return null;
 	}
     }
-    
+
     private class CenterAction extends AbstractAction {
 	CenterAction() {
-	    super(getController().getResourceString("center"));
+	    super(FreeMind.getResources().getString("center"));
 	}
 	public void actionPerformed(ActionEvent e) {
 	    if (getSelected() != null) {
-		MindMap map = new FileMapModel(((FileNodeModel)getSelected()).getFile(), getFrame());
-		newMap(map);
+		MindMap map = new FileMapModel(((FileNodeModel)getSelected()).getFile());
+		getController().newMapModule(map);
 	    }
 	}
     }
 
-    private class OpenPathAction extends AbstractAction {
-	OpenPathAction() {
-	    super(getController().getResourceString("open"));
-	}
-	public void actionPerformed(ActionEvent e) {
-           String inputValue = JOptionPane.showInputDialog
-              (getText("open"), "");
-           if (inputValue != null) {
-              File newCenter = new File(inputValue);
-              if (newCenter.exists()) { // and is a folder
-		MindMap map = new FileMapModel(newCenter, getFrame());
-		newMap(map);
-              }
-           }
-        }
-    }
 
 }

@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,21 +16,27 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: NodeAdapter.java,v 1.20 2003-12-17 21:04:53 christianfoltin Exp $*/
 
 package freemind.modes;
 
-import freemind.modes.MindIcon;
-import freemind.main.FreeMindMain;
-import freemind.main.Tools;
-import freemind.view.mindmapview.NodeView;
-import java.util.*;
 import java.awt.Color;
-import java.awt.Font;
+import freemind.modes.MindMapEdge;
+import freemind.modes.MindMapNode;
+import freemind.view.mindmapview.NodeView;
+import freemind.main.Tools;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
+import java.util.Enumeration;
 import java.util.Vector;
+import java.net.URL;
+import java.net.MalformedURLException;
+import freemind.main.FreeMind;
+//XML Definition (Interfaces)
+import  org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 
 /**
  * This class represents a single Node of a Tree. It contains direct handles 
@@ -38,36 +44,28 @@ import java.util.Vector;
  */
 public abstract class NodeAdapter implements MindMapNode {
 	
-    protected Object userObject = "no text";
-    private String link = null; //Change this to vector in future for full graph support
+    private Object userObject = "no text";
+    private URL link;//Change this to vector in future for full graph support
 
     //these Attributes have default values, so it can be useful to directly access them in
     //the save() method instead of using getXXX(). This way the stored file is smaller and looks better.
     //(if the default is used, it is not stored) Look at mindmapmode for an example.
     protected String style;
-    /**stores the icons associated with this node.*/
-    protected Vector/*<MindIcon>*/ icons = new Vector();
-//     /**stores the label associated with this node:*/
-//     protected String mLabel;
-    /** parameters of an eventually associated cloud*/
-    protected MindMapCloud cloud;
-
     protected Color color;
     protected boolean folded;
-    private Tools.BooleanHolder left;
-
-    protected List children;
-    private MindMapNode preferredChild; 
-
-    protected Font font;
+    protected int fontSize;
+    protected String font;
+    protected boolean bold = false;
+    protected boolean italic = false;
     protected boolean underlined = false;
 
-    private MindMapNode parent;
+    protected Vector children;
+
+    private MutableTreeNode parent;
     private MindMapEdge edge;//the edge which leads to this node, only root has none
     //In future it has to hold more than one view, maybe with a Vector in which the index specifies
     //the MapView which contains the NodeViews
-    private NodeView viewer = null;
-    private FreeMindMain frame;
+    private NodeView viewer;
     private static final boolean ALLOWSCHILDREN = true;
     private static final boolean ISLEAF = false; //all nodes may have children
 
@@ -75,25 +73,20 @@ public abstract class NodeAdapter implements MindMapNode {
     // Constructors
     //
 
-    protected NodeAdapter(FreeMindMain frame) {
-	this.frame = frame;
+    protected NodeAdapter() {
     }
 
-    protected NodeAdapter(Object userObject, FreeMindMain frame) {
+    protected NodeAdapter(Object userObject) {
+	children = new Vector();
 	this.userObject = userObject;
-	this.frame = frame;
     }
 
-    public String getLink() {
+    public URL getLink() {
  	return link;
     }
     
-    public void setLink(String link) {
+    public void setLink(URL link) {
  	this.link = link;
-    }
-
-    public FreeMindMain getFrame() {
-	return frame;
     }
 
     //
@@ -129,21 +122,13 @@ public abstract class NodeAdapter implements MindMapNode {
 	this.edge = edge;
     }
 
-    public MindMapCloud getCloud() {
-        return cloud;
-    }
-
-    public void setCloud( MindMapCloud cloud ) {
-        this.cloud = cloud;
-    }
-
-    /**A Node-Style like MindMapNode.STYLE_FORK or MindMapNode.STYLE_BUBBLE*/
+    /**A Node-Style like "fork" or "bubble"*/
     public String getStyle() {
-	if (style==null) {
+	if(style==null) {
 	    if(this.isRoot()) {
-		return getFrame().getProperty("standardnodestyle");
+		return FreeMind.userProps.getProperty("standardnodestyle");
 	    }
-	    return getParentNode().getStyle();
+	    return ( (MindMapNode)getParent() ).getStyle();
 	}
 	return style;
     }
@@ -151,224 +136,72 @@ public abstract class NodeAdapter implements MindMapNode {
 
     /**The Foreground/Font Color*/
     public Color getColor() {
-       return color; }
-
-    //////
-    // The set methods. I'm not sure if they should be here or in the implementing class.
-    /////
-
-    public void setStyle(String style) {
-	this.style = style;
-    }
-
-    public void setColor(Color color) {
-	this.color = color;
-    }
-
-    //   
-    //  font handling
-    // 
-
-    
-    //   Remark to setBold and setItalic implemetation
-    //
-    // Using deriveFont() is a bad idea, because it does not really choose
-    // the appropriate face. For example, instead of choosing face
-    // "Arial Bold", it derives the bold face from "Arial".
-
-    // Node holds font only in the case that the font is not default.
-
-    public void estabilishOwnFont() {
-       font = (font != null) ? font : getFrame().getController().getDefaultFont(); }
-
-    public void setBold(boolean bold) {
-	if (bold != isBold()) {
-           toggleBold(); }}
-
-    public void toggleBold() {
-       estabilishOwnFont();
-       setFont(getFrame().getController().getFontThroughMap
-               (new Font(font.getFamily(), font.getStyle() ^ Font.BOLD, font.getSize()))); }
-
-    public void setItalic(boolean italic) {
-        if (italic != isItalic()) {
-           toggleItalic(); }}
-
-    public void toggleItalic() {
-       estabilishOwnFont();
-       setFont(getFrame().getController().getFontThroughMap
-               (new Font(font.getFamily(), font.getStyle() ^ Font.ITALIC, font.getSize()))); }
-
-    public void setUnderlined(boolean underlined) {
-       this.underlined = underlined; }
-
-    public void setFont(Font font) {
-       this.font = font; }
-
-    public MindMapNode getParentNode() {
-       return parent; }
-
-    public void setFontSize(int fontSize) {
-       estabilishOwnFont();
-       setFont(getFrame().getController().getFontThroughMap
-               (new Font(font.getFamily(), font.getStyle(), fontSize))); }
-
-    public Font getFont() {
-       return font; }
-
-    public String getFontSize(){
-       if (getFont() != null){
-          return new Integer (getFont().getSize()).toString();}
-       else {
-          return getFrame().getProperty("defaultfontsize");}
-    }
-
-    public String getFontFamilyName(){
-       if (getFont() != null){
-          return getFont().getFamily();}
-       else {
-          return getFrame().getProperty("defaultfont");}
+	if(color==null) {
+	    if(this.isRoot()) {
+		String stdcolor = FreeMind.userProps.getProperty("standardnodecolor");
+		if (stdcolor.length() == 7) {
+		    return Tools.xmlToColor(stdcolor);
+		}
+		return Color.blue;
+	    }
+	    return ( (MindMapNode)getParent() ).getColor();
+	}
+	return color;
     }
 
     public boolean isBold() {
-       return font != null ? font.isBold() : false; }
+	return bold;
+    }
 
     public boolean isItalic() {
-       return font != null ? font.isItalic() : false; }
+	return italic;
+    }
 
-    public boolean isUnderlined() {        // not implemented
-       return underlined; }
+    public boolean isUnderlined() {
+	return underlined;
+    }
+
+    public int getFontSize() {
+	if (fontSize==0) return Integer.parseInt(FreeMind.userProps.getProperty("standardfontsize"));
+	return fontSize;
+    }
+
+    /**Maybe implement handling for cases when the font is not available on this system*/
+    public String getFont() {
+	if (font==null) return FreeMind.userProps.getProperty("standardfont");
+	return font;
+    }
 
     public boolean isFolded() {
-       return folded; }
-
-    // fc, 24.9.2003:
-    public Vector/*<MindIcon>*/ getIcons() { return icons;};
-
-    public void   addIcon(MindIcon _icon) { icons.add(_icon); };
-
-    public int   removeLastIcon() { if(icons.size() > 0) icons.setSize(icons.size()-1); return icons.size();};
-
-    // end, fc, 24.9.2003
-
-//     public     String getLabel() { return mLabel; }
-
-//     public     void setLabel(String newLabel) { mLabel = newLabel; /* bad hack: registry fragen.*/ };
-
-//     public Vector/* of NodeLinkStruct*/ getReferences() { return mNodeLinkVector; };
-
-//     public void removeReferenceAt(int i) {
-//         if(mNodeLinkVector.size() > i) {
-//             mNodeLinkVector.removeElementAt(i);
-//         } else {
-//             /* exception. */
-//         }
-//     }
-    
-//     public     void addReference(MindMapLink mindMapLink) { mNodeLinkVector.add(mindMapLink); };
-
-
-    /**
-     *  True iff one of node's <i>strict</i> descendants is folded. A node N
-     *  is not its strict descendant - the fact that node itself is folded
-     *  is not sufficient to return true.
-     */
-    public boolean hasFoldedStrictDescendant() {
-       
-       for (ListIterator e = childrenUnfolded(); e.hasNext(); ) {
-          NodeAdapter child = (NodeAdapter)e.next();
-          if (child.isFolded() || child.hasFoldedStrictDescendant()) {
-             return true; }}
-
-	return false;
+	return folded;
     }
 
     public void setFolded(boolean folded) {
 	this.folded = folded;
     }
-
-    protected MindMapNode basicCopy() {
-       return null; }
 	
-    public MindMapNode shallowCopy() {
-       MindMapNode copy = basicCopy();
-       copy.setColor(getColor());
-       copy.setFont(getFont());
-       copy.setLink(getLink());
-       if(isLeft() != null)
-           copy.setLeft(isLeft().getValue());
-       Vector icons = getIcons();
-       for(int i = 0; i < icons.size(); ++i) {
-           copy.addIcon((MindIcon) icons.get(i));
-       }
-       return copy; }
 
     //
     // other
     //
 
     public String toString() {
-	String string = userObject.toString();
-// (PN) %%%
-// Why? If because of presentation, this level shall be self responsible... 
-// Model shall NOT change the real data!!!
-//
-//	if (string.equals("")) {
-//	    string = "   ";
-//	}
-	return string;
+	return userObject.toString();
     }
-
-    /**
-     * Returns whether the argument is parent
-     * or parent of one of the grandpa's of this node.
-     * (transitive)
-     */
-    public boolean isDescendantOf(MindMapNode node) {
-	if(this.isRoot())
-	    return false;
-	else if (node == getParentNode())
-	    return true;
-	else
-	    return getParentNode().isDescendantOf(node);
-    }	    
 	 
     public boolean isRoot() {
 	return (parent==null);
-    }
-
-    public boolean hasChildren() {
-        return children != null && !children.isEmpty(); }
-
-    public int getChildPosition(MindMapNode childNode) {
-       int position = 0;
-       for (ListIterator i=children.listIterator(); i.hasNext(); ++position) {
-          if (((MindMapNode)i.next()) == childNode) {
-             return position; }}
-       return -1;
-    }
-
-    public ListIterator childrenUnfolded() {
-        return children != null ? children.listIterator() :
-           Collections.EMPTY_LIST.listIterator(); }
-
-    public ListIterator childrenFolded() {
-       if (isFolded()) {
-          return Collections.EMPTY_LIST.listIterator();
-       }
-       return childrenUnfolded();
     }
 
     //
     //  Interface TreeNode
     //
 
-    /**
-     * AFAIK there is no way to get an enumeration out of a linked list. So this exception must be
-     * thrown, or we can't implement TreeNode anymore (maybe we shouldn't?)
-     */
     public Enumeration children() {
-	throw new UnsupportedOperationException("Use childrenFolded or childrenUnfolded instead");
+	if (isFolded()) {
+	    return new Vector().elements();//return empty Enumeration
+	}
+	return children.elements();
     }
 	
     public boolean getAllowsChildren() {
@@ -379,22 +212,15 @@ public abstract class NodeAdapter implements MindMapNode {
 	if (isFolded()) {
 	    return null;
 	}
-	return (TreeNode)children.get( childIndex );
+	return (TreeNode)children.elementAt( childIndex );
     }
 
     public int getChildCount() {
-       return children == null ? 0 : children.size();
+	if (isFolded()) {
+	    return 0;
+	}
+	return children.size();
     }
-
-// (PN)
-//    public int getChildCount() {
-//	if (isFolded()) {
-//	    return 0;
-//	}
-//	return children.size();
-//    }
-//    // Daniel: ^ The name of this method is confusing. It does nto convey
-//    // the meaning, at least not to me.
 
     public int getIndex( TreeNode node ) {
 	return children.indexOf( (MindMapNode)node ); //uses equals()
@@ -408,17 +234,6 @@ public abstract class NodeAdapter implements MindMapNode {
 	return getChildCount() == 0;
     }
 
-    // fc, 16.12.2003 left-right bug:
-    public Tools.BooleanHolder isLeft() {
-        return left;
-    }
-    
-    public void setLeft(boolean isLeft){
-        if(left == null)
-            left = new Tools.BooleanHolder();
-        left.setValue(isLeft);
-    }
-
     //
     //  Interface MutableTreeNode
     //
@@ -427,68 +242,16 @@ public abstract class NodeAdapter implements MindMapNode {
     //Garbage Collection work (Nodes in removed Sub-Trees reference each other)?
     
     public void insert( MutableTreeNode child, int index) {
-        if (index < 0) { // add to the end (used in xml load) (PN) 
-          index = getChildCount();
-          children.add( index, child );
-        }
-        else {           // mind preferred child :-)
-          children.add( index, child );
-          preferredChild = (MindMapNode)child;
-        }
+      	children.add( index, child );
     	child.setParent( this );
     }
     
-    
     public void remove( int index ) {
-        MutableTreeNode node = (MutableTreeNode)children.get(index);
-        if (node == this.preferredChild) { // mind preferred child :-) (PN) 
-          if (children.size() > index + 1) {
-            this.preferredChild = (MindMapNode)(children.get(index + 1));
-          }
-          else {
-            this.preferredChild = (index > 0) ? 
-                (MindMapNode)(children.get(index - 1)) : null;
-          }
-        }
-        node.setParent(null);
-        children.remove( index );
+	children.remove( index );
     }
     
     public void remove( MutableTreeNode node ) {
-        if (node == this.preferredChild) { // mind preferred child :-) (PN) 
-          int index = children.indexOf(node);
-          if (children.size() > index + 1) {
-            this.preferredChild = (MindMapNode)(children.get(index + 1));
-          }
-          else {
-            this.preferredChild = (index > 0) ? 
-                (MindMapNode)(children.get(index - 1)) : null;
-          }
-        }
-        node.setParent(null);
     	children.remove( node );
-    }
-    
-    public MindMapNode getPreferredChild() { // mind preferred child :-) (PN) 
-      if (this.children.contains(this.preferredChild)) {
-        return this.preferredChild;
-      }
-      else if (!isLeaf()) {
-        return (MindMapNode)(this.children.get((getChildCount() + 1) / 2 - 1));
-      }
-      else {
-        return null;
-      }
-    }
-    public void setPreferredChild(MindMapNode node) {
-      this.preferredChild = node;
-      if (node == null) {
-        return;
-      }
-      else if (this.parent != null) {
-        // set also preffered child of parents...
-        this.parent.setPreferredChild(this);
-      }
     }
 
     public void removeFromParent() {
@@ -496,10 +259,6 @@ public abstract class NodeAdapter implements MindMapNode {
     }
 
     public void setParent( MutableTreeNode newParent ) {
-        parent = (MindMapNode) newParent;
-    }
-
-    public void setParent( MindMapNode newParent ) {
     	parent = newParent;
     }
 
@@ -518,13 +277,11 @@ public abstract class NodeAdapter implements MindMapNode {
 	    ( (NodeAdapter)parent ).addToPathVector( pathVector );
 	}
     }
-
-    public int getNodeLevel() {  //for cursor navigation within a level (PN)  
-      int level = 0;
-      MindMapNode parent;
-      for (parent = this; !parent.isRoot(); parent = parent.getParentNode()) {
-        level++;
-      }
-      return level;
-    }
 }
+
+	
+
+
+
+
+

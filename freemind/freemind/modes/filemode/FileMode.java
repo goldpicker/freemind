@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,34 +16,33 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: FileMode.java,v 1.14 2003-11-03 11:00:13 sviles Exp $*/
 
 package freemind.modes.filemode;
 
-import freemind.modes.Mode;
-import freemind.modes.ModeController;
 import freemind.controller.Controller;
-
+import freemind.modes.Mode;
+import freemind.modes.MindMap;
+import freemind.modes.ModeController;
+import freemind.view.mindmapview.MapView;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JToolBar;
+import javax.swing.JPopupMenu;
 
 public class FileMode implements Mode {
 
     private Controller c;
     private FileController modecontroller;
     private JToolBar toolbar;
-    private static final String MODENAME = "File";
-    private static boolean isRunning = false;
+    private JPopupMenu popupmenu;
+    private final String MODENAME = "File";
 
-    public FileMode() {
-    }
-
-    public void init(Controller c) {
+    public FileMode(Controller c) {
 	this.c = c;
 	modecontroller = new FileController(this);
 	toolbar = new FileToolBar(modecontroller);
+	popupmenu = new FilePopupMenu(modecontroller);
     }
-    
 
     public String toString() {
 	return MODENAME;
@@ -53,21 +52,10 @@ public class FileMode implements Mode {
      * Called whenever this mode is chosen in the program.
      * (updates Actions etc.)
      */
-    public void activate() {
-	if (!isRunning) {
-	    getModeController().newMap();
-	    isRunning = true;
-	} else {
-            c.getMapModuleManager().changeToMapOfMode(this);
-	}
-	//	menu.add( ((FileController)getModeController()).center );
-// 	getController().cut.setEnabled(false);
-// 	getController().paste.setEnabled(false);
+    public void activate(JMenu menu) {
+	//	menu.add(new JMenuItem("test"));
     }
     
-    public void restore(String restoreable) {
-    }
-
     public Controller getController() {
 	return c;
     }
@@ -76,19 +64,11 @@ public class FileMode implements Mode {
 	return modecontroller;
     }
 
-    public JMenu getModeFileMenu() {
-	return null;
-    }
-
-    public JMenu getModeEditMenu() {
-       return ((FileController)getModeController()).getEditMenu();
-    }
-
     public JToolBar getModeToolBar() {
 	return toolbar;
     }
 
-    public JToolBar getLeftToolBar() {
-	return null;
+    public JPopupMenu getPopupMenu() {
+	return popupmenu;
     }
 }

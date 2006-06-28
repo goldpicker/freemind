@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,30 +16,32 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapMode.java,v 1.17 2003-11-03 11:00:21 sviles Exp $*/
 
 package freemind.modes.mindmapmode;
 
 import freemind.controller.Controller;
 import freemind.modes.Mode;
+import freemind.modes.MindMap;
 import freemind.modes.ModeController;
-
-import java.io.File;
+import freemind.view.mindmapview.MapView;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JToolBar;
+import javax.swing.JPopupMenu;
 
 public class MindMapMode implements Mode {
 
     private Controller c;
     private MindMapController modecontroller;
+    private JToolBar toolbar;
+    private JPopupMenu popupmenu;
     private final String MODENAME = "MindMap";
 
-    public MindMapMode() {
-    }
-
-    public void init (Controller c) {
+    public MindMapMode(Controller c) {
 	this.c = c;
 	modecontroller = new MindMapController(this);
+	toolbar = new MindMapToolBar(modecontroller);
+	popupmenu = new MindMapPopupMenu(modecontroller);
     }
 
     public String toString() {
@@ -50,17 +52,11 @@ public class MindMapMode implements Mode {
      * Called whenever this mode is chosen in the program.
      * (updates Actions etc.)
      */
-    public void activate() {
-       c.getMapModuleManager().changeToMapOfMode(this);
-    }
-
-    public void restore(String restoreable) {
-	try {
-	    getModeController().load(new File(restoreable));
-	} catch (Exception e) {
-	    System.err.println("Error restoring file:"+e);
-        e.printStackTrace();
-	}
+    public void activate(JMenu menu) {
+	menu.add(getMindMapController().newMap);
+	menu.add(getMindMapController().open);
+	menu.add(getMindMapController().save);
+	menu.add(getMindMapController().saveAs);
     }
     
     public Controller getController() {
@@ -76,18 +72,10 @@ public class MindMapMode implements Mode {
     }
 
     public JToolBar getModeToolBar() {
-	return ((MindMapController)getModeController()).getToolBar();
+	return toolbar;
     }
 
-    public JToolBar getLeftToolBar() {
-	return ((MindMapController)getModeController()).getLeftToolBar();
-    }
-
-    public JMenu getModeFileMenu() {
-	return ((MindMapController)getModeController()).getFileMenu();
-    }
-
-    public JMenu getModeEditMenu() {
-	return ((MindMapController)getModeController()).getEditMenu();
+    public JPopupMenu getPopupMenu() {
+	return popupmenu;
     }
 }

@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,19 +16,24 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: FileNodeModel.java,v 1.11 2003-11-03 11:00:13 sviles Exp $*/
 
 package freemind.modes.filemode;
 
 import java.awt.Color;
-import java.io.File;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.ListIterator;
-
-import freemind.main.FreeMindMain;
+import freemind.modes.MindMapEdge;
 import freemind.modes.MindMapNode;
 import freemind.modes.NodeAdapter;
+import freemind.view.mindmapview.NodeView;
+import freemind.main.Tools;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreePath;
+import java.util.Enumeration;
+import java.util.Vector;
+import java.net.URL;
+import java.net.MalformedURLException;
+import freemind.main.FreeMind;
+import java.io.File;
 
 
 /**
@@ -37,60 +42,28 @@ import freemind.modes.NodeAdapter;
  */
 public class FileNodeModel extends NodeAdapter {
     private File file;
-    private Color color;
 	
     //
     //  Constructors
     //
 
-    public FileNodeModel( File file, FreeMindMain frame ) {
-	super(frame);
-	setEdge(new FileEdgeModel(this,getFrame()));
+    public FileNodeModel( File file ) {
+	setEdge(new FileEdgeModel(this));
 	this.file = file;
-	setFolded(!file.isFile());
+	setFolded(true);
     }
 
     //Overwritten get Methods
     public String getStyle() {
-        // This condition shows the code is not quite logical:
-        // ordinary file should not be considered folded and 
-        // therefore the clause !isLeaf() should not be necessary.       
-       if (isFolded()) { // && !isLeaf()) {
-	    return MindMapNode.STYLE_BUBBLE;
+	if(file.isFile()) {
+	    return "bubble";
 	} else {
- 	    return MindMapNode.STYLE_FORK;
+	    return "fork";
 	}
     }
-    /*
-	if (file.isFile()) {
-	    return MindMapNode.STYLE_FORK;
-	} else {
-	    return MindMapNode.STYLE_BUBBLE;
-	}
-    }
-    */
 
     File getFile() {
 	return file;
-    }
-
-    /**
-     * This could be a nice feature. Improve it!
-     */
-    public Color getColor() {
-	if (color == null) {
-
-	    //float hue = (float)getFile().length() / 100000;
-	    // float hue = 6.3F;
-	   //  if (hue > 1) {
-// 		hue = 1;
-// 	    }
-	    //	    color = Color.getHSBColor(hue,0.5F, 0.5F);
-// 	    int red = (int)(1 / (getFile().length()+1) * 255);
-// 	    color = new Color(red,0,0);
-	    color = isLeaf() ? Color.BLACK: Color.GRAY;
-	}
-	return color;
     }
 
 //     void setFile(File file) {
@@ -105,51 +78,69 @@ public class FileNodeModel extends NodeAdapter {
 	return name;
     }
 
-    public boolean hasChildren() {
-        return !file.isFile() || (children != null && !children.isEmpty()); }
-
     /**
      * 
      */
-    public ListIterator childrenFolded() {
+    public Enumeration children() {
 	if (!isRoot()) {
 	    if (isFolded() || isLeaf()) {
-                return Collections.EMPTY_LIST.listIterator();
-		//return null;//Empty Enumeration
+		return new Vector().elements();//Empty Enumeration
 	    }
 	}
-        return childrenUnfolded();
-    }
-   
-    public ListIterator childrenUnfolded() {
-        if (children != null) {
-	    return children.listIterator(); 
+	if (children != null) {
+	    return children.elements(); 
 	}
-        // Create new nodes by reading children from file system
 	try {
 	    String[] files = file.list();
-	    if (files != null) {
-		children = new LinkedList();
+	    if(files != null) {
+		children = new Vector();
 
 		String path = file.getPath();
 		for(int i = 0; i < files.length; i++) {
 		    File childFile = new File(path, files[i]);
 		    if (!childFile.isHidden()) {
-			insert(new FileNodeModel(childFile,getFrame()),0);
+			insert(new FileNodeModel(childFile),0);
 		    }
 		}
 	    }
 	} catch (SecurityException se) {}
-	//return children.listIterator(); 
-        return children != null ? children.listIterator() 
-           : Collections.EMPTY_LIST.listIterator(); }
+	return children.elements(); 
+    }
 
     public boolean isLeaf() {
 	return file.isFile();
     }
 
-    public String getLink() {
-	return file.toString();
-    }
-
 }
+
+// /* A FileNode is a derivative of the File class - though we delegate to 
+//  * the File object rather than subclassing it. It is used to maintain a 
+//  * cache of a directory's children and therefore avoid repeated access 
+//  * to the underlying file system during rendering. 
+//  */
+// class FileNode { 
+//     File     file; 
+//     Object[] children; 
+
+//     public FileNode(File file) { 
+// 	this.file = file; 
+//     }
+
+//     // Used to sort the file names.
+//     static private MergeSort  fileMS = new MergeSort() {
+// 	public int compareElementsAt(int a, int b) {
+// 	    return ((String)toSort[a]).compareTo((String)toSort[b]);
+// 	}
+//     };
+
+//     /**
+//      * Returns the the string to be used to display this leaf in the JTree.
+//      */
+//     public String toString() { 
+// 	return file.getName();
+//     }
+
+//     public File getFile() {
+// 	return file; 
+//     }
+// }

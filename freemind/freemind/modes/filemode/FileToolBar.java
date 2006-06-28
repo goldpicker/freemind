@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,7 +16,6 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: FileToolBar.java,v 1.7 2003-11-03 11:00:18 sviles Exp $*/
 
 package freemind.modes.filemode;
 
@@ -29,8 +28,6 @@ public class FileToolBar extends JToolBar {
 
     public FileToolBar(FileController controller) {
 	this.c=controller;
-        this.setRollover(true);
-
 	JButton button;
 
 	button = add(c.newMap);

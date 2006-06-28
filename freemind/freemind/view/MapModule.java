@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,7 +16,6 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MapModule.java,v 1.4 2001-04-19 16:20:38 ponder Exp $*/
 
 package freemind.view;
 
@@ -57,8 +56,7 @@ public class MapModule {
 	if (getModel().toString() != null) {
 	    name = getModel().toString();
 	} else {
-	    name = mode.getController().getFrame().getResources().getString("mindmap")
-		       +unnamedMapsNumber++;
+	    name = "mindmap"+unnamedMapsNumber++;
 	}
     }
 

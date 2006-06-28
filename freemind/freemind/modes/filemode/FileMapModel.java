@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,36 +16,34 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: FileMapModel.java,v 1.7 2003-11-03 11:00:13 sviles Exp $*/
 
 package freemind.modes.filemode;
 
-import freemind.main.FreeMindMain;
+import freemind.modes.MindMap;
 import freemind.modes.MindMapNode;
+import freemind.modes.MindMapEdge;
 import freemind.modes.MapAdapter;
 import java.io.File;
 
 public class FileMapModel extends MapAdapter {
     
+    int i = 0;
     //
     // Constructors
     //
 
-    public FileMapModel(FreeMindMain frame) {
-	super(frame);
-	setRoot(new FileNodeModel(new File(File.separator), getFrame()));
+    public FileMapModel() {
+	setRoot(new FileNodeModel(new File(File.separator)));
     }
     
-    public FileMapModel( File root , FreeMindMain frame) {
-	super(frame);
- 	setRoot(new FileNodeModel(root,getFrame()));
+    public FileMapModel( File root ) {
+ 	setRoot(new FileNodeModel(root));
     }
 
     //
     // Other methods
     //
-    public boolean save(File file) {
-    	return true;
+    public void save(File file) {
     }
     
     public void load(File file) {
@@ -60,17 +58,24 @@ public class FileMapModel extends MapAdapter {
     }
 
     public void changeNode(MindMapNode node, String newText) {
-// 	File file = ((FileNodeModel)node).getFile();
-// 	File newFile = new File(file.getParentFile(), newText);
-// 	file.renameTo(newFile);
-// 	System.out.println(file);
-// 	FileNodeModel parent = (FileNodeModel)node.getParent();
-// 	//	removeNodeFromParent(node);
+	System.out.println(i++);
+	if (i>10) System.exit(i);
 	
-// 	insertNodeInto(new FileNodeModel(newFile),parent,0);
+	File file = ((FileNodeModel)node).getFile();
+	File newFile = new File(file.getParentFile(), newText);
+	file.renameTo(newFile);
+	System.out.println(file);
+	FileNodeModel parent = (FileNodeModel)node.getParent();
+	System.out.println("A");
+	//	removeNodeFromParent(node);
+	System.out.println("B");
+	
+	insertNodeInto(new FileNodeModel(newFile),parent,0);
 
 
-// 	nodeChanged(node);
+	nodeChanged(node);
+	System.out.println("end");
+	
     }
 }
 

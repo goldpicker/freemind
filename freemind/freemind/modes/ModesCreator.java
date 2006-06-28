@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,15 +16,14 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: ModesCreator.java,v 1.9 2003-11-03 11:00:12 sviles Exp $*/
 
 package freemind.modes;
 
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
-
+import freemind.modes.mindmapmode.MindMapMode;
+import freemind.modes.filemode.FileMode;
 import freemind.controller.Controller;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 /**
@@ -41,45 +40,15 @@ public class ModesCreator {
     }
 
     public Map getAllModes() {
-	Mode mode;
+
 	//Copy these two lines for every new Mode,
 	//and replace MindMapMode(c) with YourNewMode(c)
 
-	String modestring = c.getFrame().getProperty("modes");
-
-	StringTokenizer tokens = new StringTokenizer(modestring,",");
-
-	while (tokens.hasMoreTokens()) {
-	    String modename = tokens.nextToken();
-	    try {
-		mode = (Mode)Class.forName(modename).newInstance();
-		mode.init(c);
-		modes.put(mode.toString(), mode);
-	    } catch (Exception ex) {
-		System.err.println("Mode "+modename+" could not be loaded.");
-		ex.printStackTrace();
-	    }
-	}
-
-	
-
-	//	mode = new MindMapMode(c);
-	//	modes.put(mode.toString(), mode);
-	/*	try {
-	mode = (Mode)Class.forName("freemind.modes.browsemode.BrowseMode").newInstance();
-	mode.init(c);
+	Mode mode = new MindMapMode(c);
 	modes.put(mode.toString(), mode);
 
-	} catch (Exception ex) {
-	    System.err.println("Tjuschi");
-	ex.printStackTrace();}
-
-	//	mode = new FileMode(c);
-	//	modes.put(mode.toString(), mode);
-
-	//	mode = new SchemeMode(c);
-	//	modes.put(mode.toString(), mode);
-	*/
+	mode = new FileMode(c);
+	modes.put(mode.toString(), mode);
 
 
 	return modes;

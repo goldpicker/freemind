@@ -1,5 +1,4 @@
-Manifest-Version: 1.0
+Manifest-Version: 2.0
 Main-Class: freemind.main.FreeMind
-Class-Path: silk.jar nanoxml.jar
 Created-By: Joerg Mueller
 

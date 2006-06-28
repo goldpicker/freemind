@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,44 +16,30 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapToolBar.java,v 1.12 2003-11-09 22:09:26 christianfoltin Exp $*/
 
 package freemind.modes.mindmapmode;
 
 import freemind.main.Tools;
-import freemind.modes.MindIcon;
-
+import freemind.controller.Controller;
 import java.lang.Integer;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
-import java.awt.BorderLayout;
 import javax.swing.JComboBox;
 import javax.swing.JToolBar;
 import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.Icon;
-import javax.swing.Action;
-import javax.swing.plaf.basic.BasicComboBoxEditor; 
-import java.util.List;
-import java.util.Vector;
-import java.util.Enumeration;
-
+import javax.swing.ImageIcon;
+import javax.swing.BorderFactory;
 
 public class MindMapToolBar extends JToolBar {
 
     private static final String[] sizes = {"8","10","12","14","16","18","20","24","28"};
     private MindMapController c;
-    private JComboBox fonts, size;
-    private JToolBar buttonToolBar;    
-    private boolean fontSize_IgnoreChangeEvent = false;
-    private boolean fontFamily_IgnoreChangeEvent = false;
 
     public MindMapToolBar(MindMapController controller) {
 	
 	this.c=controller;
-        this.setRollover(true);
-
 	JButton button;
+	JComboBox fonts, size;
 
 	button = add(c.newMap);
 	button.setText("");
@@ -64,15 +50,6 @@ public class MindMapToolBar extends JToolBar {
 	button = add(c.saveAs);
 	button.setText("");
 
-	button = add(c.cut);
-	button.setText("");
-
-	button = add(c.copy);
-	button.setText("");
-
-	button = add(c.paste);
-	button.setText("");
-
 	button = add(c.italic);
 	button.setText("");
 	button = add(c.bold);
@@ -81,93 +58,23 @@ public class MindMapToolBar extends JToolBar {
 	//	button.setText("");
 	button = add(c.normalFont);
 	button.setText("");
-	button = add(c.cloud);
-	button.setText("");
-	button = add(c.cloudColor);
 
-	fonts = new JComboBox(Tools.getAvailableFontFamilyNamesAsVector());
+	fonts = new JComboBox(Tools.getAllFonts());
 	fonts.setMaximumRowCount(9);
 	add(fonts);
 	fonts.addItemListener(new ItemListener(){
-              public void itemStateChanged(ItemEvent e) {
-                 if (e.getStateChange() != ItemEvent.SELECTED) {
-                    return; }
-                 // TODO: this is super-dirty, why doesn't the toolbar know the model?
-                 if (fontFamily_IgnoreChangeEvent) {
-                    fontFamily_IgnoreChangeEvent = false;
-                    return; }
-                 
-                 c.setFontFamily((String)e.getItem());
-              }
-           });
+		public void itemStateChanged(ItemEvent e) {
+		    c.setFont((String)e.getItem());
+		}
+	    });
 
 	size = new JComboBox(sizes);
-	size.setEditor(new BasicComboBoxEditor());
-	size.setEditable(true);
 	add(size);
 	size.addItemListener(new ItemListener(){
-              public void itemStateChanged(ItemEvent e) {
-                 //System.err.println("ce:"+e);
-                 if (e.getStateChange() != ItemEvent.SELECTED) {
-                    return; }
-                 // change the font size                 
-                 // TODO: this is super-dirty, why doesn't the toolbar know the model?
-                 if (fontSize_IgnoreChangeEvent) {
-                    fontSize_IgnoreChangeEvent = false;
-                    return; }
-                 try {
+		public void itemStateChanged(ItemEvent e) {
 		    c.setFontSize(Integer.parseInt((String)e.getItem(),10));
-                 }
-                 catch (NumberFormatException nfe) {
-                 }
-                 //  		    c.setFont(c.getFont()
-                 //  			      .deriveFont((float)Integer.parseInt((String)e.getItem(),10)));
-              }
-           });
-        
-        // button tool bar.
-        buttonToolBar = new JToolBar();
-        buttonToolBar.setRollover(true);
-        button = buttonToolBar.add(c.removeLastIcon);
-        button.setText("");
-        button = buttonToolBar.add(c.removeAllIcons);
-        buttonToolBar.addSeparator();
-        button.setText("");
-        for(int i = 0; i < c.iconActions.size(); ++i) {
-            button = buttonToolBar.add((Action) c.iconActions.get(i));
-        }
-        buttonToolBar.setOrientation(JToolBar.VERTICAL);
-        //c.getFrame().getContentPane().add( buttonToolBar, BorderLayout.WEST );
-   }
+		}
+	    });
 
-   // Daniel Polansky: both the following methods trigger item listeners above.
-   // Those listeners obtain two events: first DESELECTED and then
-   // SELECTED. Both events are to be ignored - we don't want to update
-   // a node with its own font. The item listeners should react only
-   // to a user change, not to our change.
-
-   public void selectFontSize(String fontSize) // (DiPo)
-   {
-      fontSize_IgnoreChangeEvent = true;
-      size.setSelectedItem(fontSize);
-      fontSize_IgnoreChangeEvent = false;
-   }
-
-   JToolBar getLeftToolBar() {
-       return buttonToolBar;
-   }
-   
-   public void selectFontName(String fontName) // (DiPo)
-   {
-      fontFamily_IgnoreChangeEvent = true;
-      fonts.setEditable(true);
-      fonts.setSelectedItem(fontName) ;
-      fonts.setEditable(false);
-      fontFamily_IgnoreChangeEvent = false;
-   }
-    
-    void setAllActions(boolean enabled) {
-	fonts.setEnabled(enabled);
-	size.setEnabled(enabled);
     }
 }

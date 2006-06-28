@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,49 +16,22 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: ModeController.java,v 1.14 2004-01-25 16:41:15 christianfoltin Exp $*/
 
 package freemind.modes;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import javax.swing.JPopupMenu;
-
-import freemind.main.XMLParseException;
+import javax.swing.filechooser.FileFilter;
 import freemind.view.mindmapview.NodeView;
 
 public interface ModeController {
 
-    public void load(File file) throws FileNotFoundException, IOException, XMLParseException;
-    public boolean save(File file);
-    public void addNew(NodeView target, int newNodeMode, KeyEvent e);
+    public void load(File file);
+    public void save(File file);
+    public void addNew(NodeView parent);
     public void newMap();
-    public boolean save();
-    public boolean saveAs();
+    public void save();
+    public void saveAs();
     public void open();
-    //    public void edit(NodeView node, NodeView toBeSelected);
-    public boolean close();
-    public void doubleClick(MouseEvent e);
-    public void plainClick(MouseEvent e);
-    public void toggleFolded();
-
-    public boolean isBlocked();
-    public void edit(KeyEvent e, boolean addNew, boolean editLong);
-    public void mouseWheelMoved(MouseWheelEvent e);
-    /** This extends the currently selected nodes. 
-        @return true, if the method changed the selection.*/
-    public boolean extendSelection(MouseEvent e);
-
-    public JPopupMenu getPopupMenu();
-    public void showPopupMenu(MouseEvent e);
-    /** This returns a context menu for an object placed in the background pane.*/
-    public JPopupMenu getPopupForModel(java.lang.Object obj);
-
-    public void nodeChanged(MindMapNode n);
-    public void anotherNodeSelected(MindMapNode n);
+    public void edit(NodeView node, NodeView toBeSelected);
+    public void close() throws Exception;
 }

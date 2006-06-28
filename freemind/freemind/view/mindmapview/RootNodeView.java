@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,14 +16,18 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: RootNodeView.java,v 1.14 2004-01-24 22:36:48 christianfoltin Exp $*/
 
 package freemind.view.mindmapview;
 
 import freemind.modes.MindMapNode;
-import java.util.LinkedList;
-import java.util.ListIterator;
-import java.awt.*;
+import java.util.Vector;
+import java.util.Enumeration;
+import java.awt.Dimension;
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.BasicStroke;
 
 /**
  * This is a RootNode with different placing of children
@@ -69,22 +73,22 @@ public class RootNodeView extends NodeView {
     void setEdge(EdgeView edge) {
     }
 
-    LinkedList getLeft() {
-	LinkedList all = getChildrenViews();
-	LinkedList left = new LinkedList();
-	for (ListIterator e = all.listIterator();e.hasNext();) {
-	    NodeView node = (NodeView)e.next();
+    Vector getLeft() {
+	Vector all = getChildrenViews();
+	Vector left = new Vector();
+	for (Enumeration e = all.elements();e.hasMoreElements();) {
+	    NodeView node = (NodeView)e.nextElement();
 	    if (node == null) continue;
 	    if (node.isLeft()) left.add(node);
 	}
 	return left;
     }
 
-    LinkedList getRight() {
-	LinkedList all = getChildrenViews();
-	LinkedList right = new LinkedList();
-	for (ListIterator e = all.listIterator();e.hasNext();) {
-	    NodeView node = (NodeView)e.next();
+    Vector getRight() {
+	Vector all = getChildrenViews();
+	Vector right = new Vector();
+	for (Enumeration e = all.elements();e.hasMoreElements();) {
+	    NodeView node = (NodeView)e.nextElement();
 	    if (node == null) continue;
 	    if (!node.isLeft()) right.add(node);
 	}
@@ -92,32 +96,18 @@ public class RootNodeView extends NodeView {
     }
 
     void insert(MindMapNode newNode) {
-        NodeView newView = newNodeView(newNode,getMap());
-        newView.update();
-        // decide left or right only if not actually set:
-        if(newNode.isLeft()==null)
-            newView.setLeft( getLeft().size() <= getRight().size() );
-        ListIterator it = newNode.childrenFolded();
-        if (it != null) {
-            for (;it.hasNext();) {
-                MindMapNode child = (MindMapNode)it.next();
-                newView.insert(child);
-            }
-        }
-    }	
-
-    public boolean dropAsSibling (double xCoord) {
-        return false;
-    }
-
-    /** @return true if should be on the left, false otherwise.*/
-    public boolean dropPosition (double xCoord) {
-       return xCoord < getSize().width*1/2 ; 
-    }
-
-    public void setDraggedOver(Point p) {
-        setDraggedOver ((dropPosition(p.getX())) ? NodeView.DRAGGED_OVER_SON_LEFT : NodeView.DRAGGED_OVER_SON); 
-    }
+  	NodeView newView = newNodeView(newNode,getMap());
+	newView.update();
+	//balancing should depend from Treeheight, not simply size
+	if ( getRight().size() > getLeft().size() ) {
+	    newView.setPosition(-1,0);
+	    //Set it to be recognized left on next layout... bad solution
+    	}
+	for (Enumeration e = newNode.children();e.hasMoreElements();) {
+	    MindMapNode child = (MindMapNode)e.nextElement();
+	    newView.insert(child);
+	}
+      }	
 
     //
     // Navigation
@@ -136,19 +126,17 @@ public class RootNodeView extends NodeView {
     // Layout
     //
 
+    /**
+     * Determines the logical Position of all of its direct children.
+     */
+    public void layoutChildren() {
+	if (getChildrenViews().size() == 0) return;//nothing to do
+	layoutRoot();
+    } 
+  
     public Dimension getPreferredSize() {
-	int width = (int)(super.getPreferredSize().width*1.1);
-	int height = (int)(super.getPreferredSize().height*2);
-	return new Dimension(width,height);
+	return new Dimension((int)(super.getPreferredSize().width*1.2),(int)(super.getPreferredSize().height*1.5));
     }	
-
-    public void paintSelected(Graphics2D graphics, Dimension size) {
-       if( this.isSelected() ) {
-          graphics.setColor(selectedColor);
-          graphics.fillOval(1,1,size.width-1,size.height-1);
-       }
-    }
-
 
     /**
      * Paints the node
@@ -157,48 +145,42 @@ public class RootNodeView extends NodeView {
 	Graphics2D g = (Graphics2D)graphics;
 	Dimension size = getSize();
 	if (this.getModel()==null) return;
-
-        paintSelected(g, size);
-        paintDragOver(g, size);
-
 	//Draw a root node
 	setHorizontalAlignment(CENTER);
+	g.setColor(Color.red);
+	g.setStroke(new BasicStroke(2.0f));
+	g.drawOval(0,0,size.width-2,size.height-1);
 
-	g.setColor(Color.gray);
-	g.setStroke(new BasicStroke(1.0f));
-        setRendering(g);
-	g.drawOval(1,1,size.width-2,size.height-2);
-        if (!getMap().getController().getAntialiasAll()) {
-           g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF); }
-
+	if( this.isSelected() ) {
+	    g.setColor(selectedColor);
+	    g.drawRect(0,2,size.width-1, size.height-5);
+	}
 	super.paint(g);
     }
+	
 
-   public void paintDragOver(Graphics2D graphics, Dimension size) {
-        if (getDraggedOver() == DRAGGED_OVER_SON) {
-              graphics.setPaint( new GradientPaint(size.width/4,0,map.getBackground(), size.width*3/4, 0, dragColor));
-              graphics.fillRect(size.width/4, 0, size.width-1, size.height-1); 
-        } else if (getDraggedOver() == DRAGGED_OVER_SON_LEFT) {
-              graphics.setPaint( new GradientPaint(size.width*3/4,0,map.getBackground(), size.width/4, 0, dragColor));
-              graphics.fillRect(0, 0, size.width*3/4, size.height-1);
-        }
+
+
+
+    ////////
+    // Private methods. Internal implementation.
+    //////
+
+    /**
+     * Places all the direct children of root, including left/right balancing
+     */
+    private void layoutRoot() {
+	    layout(getRight(),false);
+	    layout(getLeft(),true);
     }
-
-
-   protected void setRendering(Graphics2D g) {
-      if (getMap().getController().getAntialiasEdges() || getMap().getController().getAntialiasAll()) {
-         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); }}
-
 
 }
 
 
 
-//     /**
-//      * Determines the logical Position of all of its direct children.
-//      */
-//     public void layoutChildren() {
-// 	if (getChildrenViews().size() == 0) return;//nothing to do
-// 	layoutRoot();
-    //    } 
-  
+
+
+
+
+
+

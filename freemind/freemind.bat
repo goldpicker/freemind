@@ -1,1 +1,1 @@
-java -jar lib/freemind.jar
+java -jar freemind.jar

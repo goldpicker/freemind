@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,50 +16,49 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: LinearEdgeView.java,v 1.9 2003-11-03 11:00:25 sviles Exp $*/
 
 package freemind.view.mindmapview;
 
+import java.awt.Point;
 import java.awt.Graphics2D;
 import java.awt.Color;
+import freemind.modes.MindMapEdge;
 
 /**
  * This class represents a single Edge of a MindMap.
  */
 public class LinearEdgeView extends EdgeView {
 
+    NodeView source, target;
+    Point start, end;
+
     public LinearEdgeView(NodeView source, NodeView target) {
-	super(source,target);
+	this.source = source;
+	this.target = target;
 	update();
     }
 
     public void update() {
-	super.update();
+	start = source.getOutPoint();
+	end = target.getInPoint();
+	if(source.isRoot()) {
+	    if( target.isLeft() ) {
+		start = source.getInPoint();
+	    }
+	}
     }
 
     public void paint(Graphics2D g) {
 	update();
 	g.setColor(getColor());
-	g.setStroke(getStroke());
-        setRendering(g);
-	int w=getWidth();
-	if (w<=1) {
-		g.drawLine(start.x,start.y,end.x,end.y);
-	}
-	else {
-		// a little horizontal part because of line cap
-		int dx=w/3+1;
-		if(target.isLeft()) dx=-dx;
-		int dy1=getSourceShift();
-		int dy2=getTargetShift();
-		int xs[] = { start.x, start.x+dx, end.x-dx, end.x };
-		int ys[] = { start.y+dy1, start.y+dy1, end.y+dy2, end.y+dy2 };
-		g.drawPolyline(xs,ys,4);
-	}
-	super.paint(g);
+	g.drawLine(start.x,start.y,end.x,end.y);
     }
     
     public Color getColor() {
 	return getModel().getColor();
+    }
+
+    private MindMapEdge getModel() {
+	return target.getModel().getEdge();
     }
 }

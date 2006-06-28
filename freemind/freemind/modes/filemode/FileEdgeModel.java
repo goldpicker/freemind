@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,18 +16,21 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: FileEdgeModel.java,v 1.5 2001-03-24 22:45:46 ponder Exp $*/
 
 package freemind.modes.filemode;
 
-import freemind.main.FreeMindMain;
 import freemind.modes.MindMapNode;
 import freemind.modes.EdgeAdapter;
+import freemind.main.Tools;
+import java.awt.Color;
+
+import  org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 
 public class FileEdgeModel extends EdgeAdapter {
 
-    public FileEdgeModel(MindMapNode node, FreeMindMain frame) {
-	super(node,frame);
+    public FileEdgeModel(MindMapNode node) {
+	super(node);
     }
 }

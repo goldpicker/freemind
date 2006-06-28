@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,29 +16,23 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: FilePopupMenu.java,v 1.8 2003-11-03 11:00:13 sviles Exp $*/
 
 package freemind.modes.filemode;
 
-import javax.swing.*;
+import freemind.main.FreeMind;
+import javax.swing.JPopupMenu;
+import javax.swing.JMenu;
 
 public class FilePopupMenu extends JPopupMenu {
 
     private FileController c;
 
-    protected void add(Action action, String keystroke) { 
-       JMenuItem item = add(action);
-       item.setAccelerator(KeyStroke.getKeyStroke(c.getFrame().getProperty(keystroke))); }
-
     public FilePopupMenu(FileController c) {
 	this.c = c;
 	
 	//Node menu
+	//	JMenu nodeMenu = new JMenu(FreeMind.getResources().getString("node"));
 	this.add(c.center);
-        this.addSeparator();
-        this.add(c.find, "keystroke_find");
-        this.add(c.findNext, "keystroke_find_next");
-
     }
 }
 

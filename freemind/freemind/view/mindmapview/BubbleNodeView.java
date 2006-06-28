@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,12 +16,16 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: BubbleNodeView.java,v 1.14 2004-01-10 18:22:25 christianfoltin Exp $*/
 
 package freemind.view.mindmapview;
 
 import freemind.modes.MindMapNode;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+
 
 /**
  * This class represents a single Bubble-Style Node of a MindMap
@@ -29,14 +33,6 @@ import java.awt.*;
  */
 public class BubbleNodeView extends NodeView {
 
-    private final static Stroke BOLD_STROKE =
-		new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
-					1f, new float[] {2f, 2f}, 0f);  
-    private final static Stroke DEF_STROKE = new BasicStroke();
-
-
-    public final int LEFT_WIDTH_OVERHEAD = 5;
-    public final int LEFT_HEIGHT_OVERHEAD = 2;
 
     //
     // Constructors
@@ -48,20 +44,10 @@ public class BubbleNodeView extends NodeView {
 	setVerticalAlignment(CENTER);
     }
 
-
-
     public Dimension getPreferredSize() {
-	return new Dimension(super.getPreferredSize().width+2*LEFT_WIDTH_OVERHEAD,
-                             super.getPreferredSize().height+4);
-    }	  
-
-    public void paintSelected(Graphics2D graphics, Dimension size) {
-       if( this.isSelected() ) {
-          graphics.setColor(selectedColor);
-          graphics.fillRoundRect(0,0,size.width-1,size.height-1,10,10);
-       }
-    }
-
+	return new Dimension(super.getPreferredSize().width+10, super.getPreferredSize().height+4);
+    }	
+  
     /**
      * Paints the node
      */
@@ -69,35 +55,16 @@ public class BubbleNodeView extends NodeView {
 	Graphics2D g = (Graphics2D)graphics;
 	Dimension size = getSize();
 	if (this.getModel()==null) return;
-
-        paintSelected(g, size);
-        paintDragOver(g, size);
-
-	// change to bold stroke
-	//g.setStroke(BOLD_STROKE);                     // Changed by Daniel
-
-        setRendering(g);
-
 	//Draw a standard node
 	g.setColor(getEdge().getColor());
-	//g.drawOval(0,0,size.width-1,size.height-1);   // Changed by Daniel
+	g.drawOval(0,0,size.width-1,size.height-1);
 
-        if (map.getController().getAntialiasEdges()) {
-           g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); }
-        g.drawRoundRect(0,0,size.width-1,size.height-1,10,10);
-        // this disables the font antialias if only AntialiasEdges is requested.
-        if (map.getController().getAntialiasEdges()) {
-           g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF); }
-
-	// return to std stroke
-	g.setStroke(DEF_STROKE);
-
+	if( this.isSelected() ) {
+	    g.setColor(selectedColor);
+	    g.drawRect(0,2,size.width-1, size.height-5);
+	}
 	super.paint(g);
     }
-
-    public int getLeftWidthOverhead() {
-       return LEFT_WIDTH_OVERHEAD; }
-
     /**
      * Returns the Point where the OutEdge
      * should leave the Node.
@@ -123,12 +90,12 @@ public class BubbleNodeView extends NodeView {
 	    return new Point(getLocation().x, getLocation().y + size.height / 2);
 	}
     }
-
-    /**
-     * Returns the relative position of the Edge
-     */
-    int getAlignment() {
-	    return ALIGN_CENTER;
-	}
 }
+
+
+
+
+
+
+
 

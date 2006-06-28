@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,22 +16,28 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapNodeModel.java,v 1.21 2004-01-25 22:13:55 christianfoltin Exp $*/
 
 package freemind.modes.mindmapmode;
 
-import freemind.main.FreeMind;
-import freemind.main.Tools;
-import freemind.main.FreeMindMain;
-import freemind.main.XMLElement;
+import java.awt.Color;
+import freemind.modes.MindMapEdge;
 import freemind.modes.MindMapNode;
 import freemind.modes.NodeAdapter;
-import freemind.modes.MindIcon;
-
-import java.util.*;
-//import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.Writer;
+import freemind.view.mindmapview.NodeView;
+import freemind.main.Tools;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreePath;
+import java.util.Enumeration;
+import java.util.Vector;
+import java.net.URL;
+import java.net.MalformedURLException;
+import freemind.main.FreeMind;
+//XML Definition (Interfaces)
+import  org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 
 /**
  * This class represents a single Node of a Tree. It contains direct handles 
@@ -43,437 +49,371 @@ public class MindMapNodeModel extends NodeAdapter {
     //  Constructors
     //
 
-    public MindMapNodeModel(FreeMindMain frame) {
-	super(frame);
-	children = new LinkedList();
-	setEdge(new MindMapEdgeModel(this, getFrame()));
+    public MindMapNodeModel() {
+	super();
+	setEdge(new MindMapEdgeModel(this));
+	children = new Vector();
     }
 
 	    
-    public MindMapNodeModel( Object userObject, FreeMindMain frame ) {
-	super(userObject,frame);
-	children = new LinkedList();
-	setEdge(new MindMapEdgeModel(this, getFrame()));
+    public MindMapNodeModel( Object userObject ) {
+	super(userObject);
+	setEdge(new MindMapEdgeModel(this));
+	children = new Vector();
+    }
+
+    //
+    // set Methods for Attributes. They are simply set through the ModeController
+    //
+
+    void setStyle(String style) {
+	super.style = style;
+    }
+
+    void setColor(Color color) {
+	super.color = color;
+    }
+
+    void setBold(boolean bold) {
+	super.bold = bold;
+    }
+
+    void setItalic(boolean italic) {
+	super.italic = italic;
+    }
+
+    void setUnderlined(boolean underlined) {
+	super.underlined = underlined;
+    }
+
+    void setFontSize(int fontSize) {
+	super.fontSize = fontSize;
+    }
+    
+    void setFont(String font) {
+	super.font = font;
     }
 
     //Overwritten get Methods
     public String getStyle() {
-	if (isFolded()) {
-	    return MindMapNode.STYLE_BUBBLE;
+	if(isFolded()) {
+	    return "bubble";
 	} else {
 	    return super.getStyle();
 	}
     }
 
-    protected MindMapNode basicCopy() {
-       return new MindMapNodeModel(userObject, getFrame()); }
-
     //
     // The mandatory load and save methods
     //
 
-    public String saveHTML_escapeUnicodeAndSpecialCharacters(String text) {
-       int len = text.length();
-       StringBuffer result = new StringBuffer(len);
-       int intValue;
-       char myChar;
-       boolean previousSpace = false;
-       boolean spaceOccured = false;
-       for (int i = 0; i < len; ++i) {
-          myChar = text.charAt(i);
-          intValue = (int) text.charAt(i);
-          if (intValue > 128) {
-             result.append("&#").append(intValue).append(';'); }
-          else {
-             spaceOccured = false;
-             switch (myChar) {
-             case '&':
-                result.append("&amp;");
-                break;
-             case '<':
-                result.append("&lt;");
-                break;
-             case '>':
-                result.append("&gt;");
-                break;
-             case ' ':
-                spaceOccured  = true;
-                if (previousSpace) {
-                   result.append("&nbsp;"); }
-                else { 
-                   result.append(" "); }
-                break;                
-             case '\n':
-                result.append("\n<br>\n");
-                break;
-             default:
-                result.append(myChar); }
-             previousSpace = spaceOccured; }}
-       return result.toString(); };
-
-    public int saveHTML(Writer fileout, String parentID, int lastChildNumber,
-                        boolean isRoot, boolean treatAsParagraph, int depth) throws IOException {
-        // return lastChildNumber 
-        // Not very beautiful solution, but working at least and logical too.
-
-        final String el = System.getProperty("line.separator");
-        
-        boolean basedOnHeadings = (getFrame().getProperty("html_export_folding").
-                                   equals("html_export_based_on_headings"));
-
-        boolean createFolding = isFolded();
-        if (getFrame().getProperty("html_export_folding").equals("html_export_fold_all")) {
-           createFolding = hasChildren(); }
-        if (getFrame().getProperty("html_export_folding").equals("html_export_no_folding") ||
-            basedOnHeadings || isRoot) {
-           createFolding = false; }
-
-        fileout.write(treatAsParagraph || basedOnHeadings ? "<p>" : "<li>");
-
-        String localParentID = parentID;
-	if (createFolding) {
-           // lastChildNumber = new Integer lastChildNumber.intValue() + 1; Change value of an integer
-           lastChildNumber++;
-     
-           localParentID = parentID+"_"+lastChildNumber;
-           fileout.write
-              ("<span id=\"show"+localParentID+"\" class=\"foldclosed\" onClick=\"show_folder('"+localParentID+
-               "')\" style=\"POSITION: absolute\">+</span> "+
-               "<span id=\"hide"+localParentID+"\" class=\"foldopened\" onClick=\"hide_folder('"+localParentID+
-               "')\">-</Span>");
-
-           fileout.write("\n"); }
-        
-        if (basedOnHeadings && hasChildren() && depth <= 5) {
-           fileout.write("<h"+depth+">"); }
-
-	if (getLink() != null) {
-           String link = getLink();
-           if (link.endsWith(".mm")) {
-              link += ".html"; }
-           fileout.write("<a href=\""+link+"\" target=\"_blank\"><span class=l>~</span>&nbsp;"); }
-
-        String fontStyle="";
-	
-	if (color != null) {
-           fontStyle+="color: "+Tools.colorToXml(getColor())+";"; }
-
-        if (font!=null && font.getSize()!=0) {
-           int defaultFontSize = Integer.parseInt(getFrame().getProperty("defaultfontsize"));
-           int procentSize = (int)(getFont().getSize()*100/defaultFontSize);
-           if (procentSize != 100) {
-              fontStyle+="font-size: "+procentSize+"%;"; }}
-
-        if (font != null) {
-           String fontFamily = getFont().getFamily();
-           fontStyle+="font-family: "+fontFamily+", sans-serif; "; }
-
-        if (isItalic()) {
-           fontStyle+="font-style: italic; "; }
-
-        if (isBold()) {
-           fontStyle+="font-weight: bold; "; }
-
-        // ------------------------
-
-        if (!fontStyle.equals("")) {
-           fileout.write("<span style=\""+fontStyle+"\">"); }
-
-        if (getFrame().getProperty("export_icons_in_html").equals("true")) {
-           for (int i = 0; i < getIcons().size(); ++i) {
-              fileout.write("<img src=\"" + ((MindIcon) getIcons().get(i)).getIconFileName() +
-                            "\" alt=\""+((MindIcon) getIcons().get(i)).getDescription(getFrame())+"\">"); }}
-
-        if (this.toString().matches(" *")) {
-           fileout.write("&nbsp;"); }
-        else if (this.toString().startsWith("<html>")) {
-           String output = this.toString().substring(6); // do not write <html>
-           if (output.endsWith("</html>")) {
-              output = output.substring(0,output.length()-7); }
-           fileout.write(output); }
-        else {
-           fileout.write(saveHTML_escapeUnicodeAndSpecialCharacters(toString())); }
-
-        if (fontStyle != "") {
-           fileout.write("</span>"); }
-
-        fileout.write(el);
-
-        if (getLink() != null) {
-           fileout.write("</a>"+el); }
-
-        if (basedOnHeadings && hasChildren() && depth <= 5) {
-           fileout.write("</h"+depth+">"); }
-        
-        // Are the children to be treated as paragraphs?
-        
-        boolean treatChildrenAsParagraph = false;
-        for (ListIterator e = childrenUnfolded(); e.hasNext(); ) {
-           if (((MindMapNodeModel)e.next()).toString().length() > 100) { // TODO: replace heuristic constant
-              treatChildrenAsParagraph = true;
-              break; }}
-
-        // Write the children
-
-        //   Export based on headings
-
-        if (getFrame().getProperty("html_export_folding").equals("html_export_based_on_headings")) {
-           for (ListIterator e = childrenUnfolded(); e.hasNext(); ) {
-              MindMapNodeModel child = (MindMapNodeModel)e.next();            
-              lastChildNumber =
-                 child.saveHTML(fileout,parentID,lastChildNumber,/*isRoot=*/false,
-                                treatChildrenAsParagraph, depth + 1); }
-           return lastChildNumber; }
-       
-        //   Export not based on headings
-
-        if (hasChildren()) {
-           if (getFrame().getProperty("html_export_folding").equals("html_export_based_on_headings")) {
-              for (ListIterator e = childrenUnfolded(); e.hasNext(); ) {
-                 MindMapNodeModel child = (MindMapNodeModel)e.next();            
-                 lastChildNumber =
-                    child.saveHTML(fileout,parentID,lastChildNumber,/*isRoot=*/false,
-                                   treatChildrenAsParagraph, depth + 1); }}              
-           else if (createFolding) {
-              fileout.write("<ul id=\"fold"+localParentID+
-                            "\" style=\"POSITION: relative; VISIBILITY: visible;\">");
-              if (treatChildrenAsParagraph) {
-                 fileout.write("<li>"); }
-              int localLastChildNumber = 0;
-              for (ListIterator e = childrenUnfolded(); e.hasNext(); ) {
-                 MindMapNodeModel child = (MindMapNodeModel)e.next();            
-                 localLastChildNumber =
-                    child.saveHTML(fileout,localParentID,localLastChildNumber,/*isRoot=*/false, 
-                                   treatChildrenAsParagraph, depth + 1); }}
-           else {
-              fileout.write("<ul>"); 
-              if (treatChildrenAsParagraph) {
-                 fileout.write("<li>"); }
-              for (ListIterator e = childrenUnfolded(); e.hasNext(); ) {
-                 MindMapNodeModel child = (MindMapNodeModel)e.next();            
-                 lastChildNumber =
-                    child.saveHTML(fileout,parentID,lastChildNumber,/*isRoot=*/false,
-                                   treatChildrenAsParagraph, depth + 1); }}
-           if (treatChildrenAsParagraph) {
-              fileout.write("</li>"); }
-           fileout.write(el);
-           fileout.write("</ul>"); }
-
-        // End up the node
-        
-        if (!treatAsParagraph) {
-           fileout.write(el+"</li>"+el); }
-
-        return lastChildNumber;
-    }
-    public void saveTXT(Writer fileout,int depth) throws IOException {
-        for (int i=0; i < depth; ++i) {
-           fileout.write("    "); }
-        if (this.toString().matches(" *")) {
-           fileout.write("o"); }
-        else {
-           if (getLink() != null) {
-              String link = getLink();
-              if (!link.equals(this.toString())) {
-                 fileout.write(this.toString()+" "); }              
-              fileout.write("<"+link+">"); }
-           else {
-              fileout.write(this.toString()); }}
-
-
-        fileout.write("\n");
-        //fileout.write(System.getProperty("line.separator"));
-        //fileout.newLine();
-
-        // ^ One would rather expect here one of the above commands
-        // commented out. However, it does not work as expected on
-        // Windows. My unchecked hypothesis is, that the String Java stores
-        // in Clipboard carries information that it actually is \n
-        // separated string. The current coding works fine with pasting on
-        // Windows (and I expect, that on Unix too, because \n is a Unix
-        // separator). This method is actually used only for pasting
-        // purposes, it is never used for writing to file. As a result, the
-        // writing to file is not tested.
-        
-        // Another hypothesis is, that something goes astray when creating
-        // StringWriter.
-
-        for (ListIterator e = childrenUnfolded(); e.hasNext(); ) {
-           ((MindMapNodeModel)e.next()).saveTXT(fileout,depth + 1); }
-    }
-    public void collectColors(HashSet colors) {
-       if (color != null) {
-          colors.add(getColor()); }
-       for (ListIterator e = childrenUnfolded(); e.hasNext(); ) {
-          ((MindMapNodeModel)e.next()).collectColors(colors); }}
-
-    private String saveRFT_escapeUnicodeAndSpecialCharacters(String text) {
-       int len = text.length();
-       StringBuffer result = new StringBuffer(len);
-       int intValue;
-       char myChar;
-       for (int i = 0; i < len; ++i) {
-          myChar = text.charAt(i);
-          intValue = (int) text.charAt(i);
-          if (intValue > 128) {
-             result.append("\\u").append(intValue).append("?"); }
-          else {
-             switch (myChar) {
-             case '\\':
-                result.append("\\\\");
-                break;
-             case '{':
-                result.append("\\{");
-                break;
-             case '}':
-                result.append("\\}");
-                break;                
-			case '\n':
-				result.append(" \\line ");
-				break;                
-             default:
-                result.append(myChar); }}}
-       return result.toString(); }
-
-    public void saveRTF(Writer fileout, int depth, HashMap colorTable) throws IOException {
-        String pre="{"+"\\li"+depth*350;
-        String level;
-        if (depth <= 8){
-           level = "\\outlinelevel" + depth;
-        }
-        else
-        { 
-           level = "";
-        }
-        String fontsize="";
-	if (color != null) {
-           pre += "\\cf"+((Integer)colorTable.get(getColor())).intValue(); }
-
-        if (isItalic()) {
-           pre += "\\i "; }
-        if (isBold()) {
-           pre += "\\b "; }
-        if (font != null && font.getSize() != 0) {
-           fontsize="\\fs"+Math.round(1.5*getFont().getSize());
-           pre += fontsize; }
-
-        pre += "{}"; // make sure setting of properties is separated from the text itself
-
-        fileout.write("\\li"+depth*350+level+"{}");
-        if (this.toString().matches(" *")) {
-           fileout.write("o"); }
-        else {
-           String text = saveRFT_escapeUnicodeAndSpecialCharacters(this.toString());
-           if (getLink() != null) {
-              String link = saveRFT_escapeUnicodeAndSpecialCharacters(getLink());
-              if (link.equals(this.toString())) {
-                 fileout.write(pre+"<{\\ul\\cf1 "+link+"}>"+"}"); }
-              else {
-                 fileout.write("{"+fontsize+pre+text+"} ");
-                 fileout.write("<{\\ul\\cf1 "+link+"}}>"); }}
-           else {
-              fileout.write(pre+text+"}"); }}
-        
-        fileout.write("\\par");
-        fileout.write("\n");
-
-        for (ListIterator e = childrenUnfolded(); e.hasNext(); ) {
-           ((MindMapNodeModel)e.next()).saveRTF(fileout,depth + 1,colorTable); }
-    }
-
-    //NanoXML save method
-    public void save(Writer writer, MindMapMapModel model) throws IOException {
-	XMLElement node = new XMLElement();
-	node.setName("node");
-
+    public void save(Document doc, Element xmlParent) {
+	Element node = doc.createElement( "node" );
+	xmlParent.appendChild(node);
+	((MindMapEdgeModel)getEdge()).save(doc,node);
 	node.setAttribute("text",this.toString());
-
-	//	((MindMapEdgeModel)getEdge()).save(doc,node);
-
-	XMLElement edge = ((MindMapEdgeModel)getEdge()).save();
-	if (edge != null) {
-           node.addChild(edge); }
-
-    if(getCloud() != null) {
-        XMLElement cloud = ((MindMapCloudModel)getCloud()).save();
-        node.addChild(cloud); 
-    }
-
-//     // fc, 31.12.2003: For SVG export
-//     if(getViewer() != null) {
-//         node.setAttribute("SCREEN_POSITION_X", Integer.toString(getViewer().getX()));
-//         node.setAttribute("SCREEN_POSITION_Y", Integer.toString(getViewer().getY()));
-//         node.setAttribute("SCREEN_HEIGHT", Integer.toString(getViewer().getHeight()));
-//         node.setAttribute("SCREEN_WIDTH", Integer.toString(getViewer().getWidth()));
-//     }
-
-    Vector linkVector = model.getLinkRegistry().getAllLinksFromMe(this); /* Puh... */
-    for(int i = 0; i < linkVector.size(); ++i) {
-        if(linkVector.get(i) instanceof MindMapArrowLinkModel) {
-            XMLElement arrowLinkElement = ((MindMapArrowLinkModel) linkVector.get(i)).save();
-            node.addChild(arrowLinkElement);
-        }
-    }
-        
-	if (isFolded()) {
-           node.setAttribute("folded","true"); }
-	
-    // fc, 17.12.2003: Remove the left/right bug.
-    //                       VVV  save if and only if parent is root.
-	if ((isLeft()!= null) && !(isRoot()) && (getParentNode().isRoot())) {
-        node.setAttribute("POSITION",(isLeft().getValue())?"left":"right"); 
-    }
-	
-    String label = model.getLinkRegistry().getLabel(this); /* Puh... */
-	if (label!=null) {
-           node.setAttribute("id",label); }
 	
 	if (color != null) {
-           node.setAttribute("color", Tools.colorToXml(getColor())); }
+	    node.setAttribute("color", Tools.colorToXml(getColor()));
+	}
 
 	if (style != null) {
-           node.setAttribute("style", super.getStyle()); }
-	    //  ^ Here cannot be just getStyle() without super. This is because
-	    //  getStyle's style depends on folded / unfolded. For example, when
-	    //  real style is fork and node is folded, getStyle returns
-	    //  MindMapNode.STYLE_BUBBLE, which is not what we want to save.
+	    node.setAttribute("style", getStyle());
+	}
 
 	//link
 	if (getLink() != null) {
-           node.setAttribute("link", getLink()); }
+	    node.setAttribute("link", getLink().toExternalForm());
+	}
 
 	//font
-	if (font!=null) {
-	    XMLElement fontElement = new XMLElement();
-	    fontElement.setName("font");
-
+	if (font!=null || fontSize!=0 || isBold() || isItalic() || isUnderlined() ) {
+	    Element fontElement = doc.createElement( "font" );
 	    if (font != null) {
-               fontElement.setAttribute("name",font.getFamily()); }
-	    if (font.getSize() != 0) {
-               fontElement.setAttribute("size",Integer.toString(font.getSize())); }
+		fontElement.setAttribute("name",getFont());
+	    }
+	    if (fontSize != 0) {
+		fontElement.setAttribute("size",Integer.toString(getFontSize()));
+	    }
 	    if (isBold()) {
-               fontElement.setAttribute("bold","true"); }
+		fontElement.setAttribute("bold","true");
+	    }
 	    if (isItalic()) {
-               fontElement.setAttribute("italic","true"); }
+		fontElement.setAttribute("italic","true");
+	    }
 	    if (isUnderlined()) {
-               fontElement.setAttribute("underline","true"); }
-	    node.addChild(fontElement); }
-    for(int i = 0; i < getIcons().size(); ++i) {
-	    XMLElement iconElement = new XMLElement();
-	    iconElement.setName("icon");
-        iconElement.setAttribute("builtin", ((MindIcon) getIcons().get(i)).getName());
-        node.addChild(iconElement);
+		fontElement.setAttribute("underline","true");
+	    }
+	    node.appendChild(fontElement);
+	}
+
+	//recursive
+	for (Enumeration e = children(); e.hasMoreElements(); ) {
+	    MindMapNodeModel child = (MindMapNodeModel)e.nextElement();
+	    child.save(doc, node);
+	}
     }
-        
 
-        if (childrenUnfolded().hasNext()) {
-           node.writeWithoutClosingTag(writer);
-           //recursive
-           for (ListIterator e = childrenUnfolded(); e.hasNext(); ) {
-              MindMapNodeModel child = (MindMapNodeModel)e.next();
-              child.save(writer, model); }
-           node.writeClosingTag(writer); }
-        else {
-           node.write(writer); }}
-
+    public void load(Node node_) {
+	Element node = (Element)node_;
+	setUserObject( node.getAttribute("text") );
+	if (node.getAttribute("color").length() == 7) {
+	    setColor(Tools.xmlToColor(node.getAttribute("color") ) );
+	}
+	if (!node.getAttribute("style").equals("")) {
+	    setStyle(node.getAttribute("style"));
+	}
+	if (!node.getAttribute("link").equals("")) {
+	    try {
+		setLink(new URL(node.getAttribute("link")));
+	    } catch (MalformedURLException ex) {
+		System.err.println("Malformed URL: "+node.getAttribute("link"));
+	    }
+	}
+	NodeList childNodes = node.getChildNodes();
+	for(int i=0; i < childNodes.getLength(); i++) {
+	    //this has to be improved!
+	    //edge
+	    if ( ((Node)childNodes.item(i)).getNodeName().equals("edge")) {
+		Element edge = (Element)childNodes.item(i);
+		setEdge(new MindMapEdgeModel(this) );
+		((MindMapEdgeModel)getEdge()).load(edge);
+	    }
+	    //font
+	    if ( ((Node)childNodes.item(i)).getNodeName().equals("font")) {
+		Element font =((Element)childNodes.item(i));
+		String name = font.getAttribute("name"); 
+		if (Tools.isValidFont(name)) {
+		    setFont(name);
+		}
+		if (font.getAttribute("bold").equals("true")) setBold(true);
+		if (font.getAttribute("italic").equals("true")) setItalic(true);
+		if (font.getAttribute("underline").equals("true")) setUnderlined(true);
+		if (font.getAttribute("size")!="") {
+		    setFontSize(Integer.parseInt(font.getAttribute("size")));
+		}
+	    }
+	    //node
+	    if ( ((Node)childNodes.item(i)).getNodeName().equals("node")) {
+		MindMapNodeModel child = new MindMapNodeModel();
+		insert(child,getChildCount());
+		child.load( (Node)childNodes.item(i) );//recursive
+	    }
+	}
+    }
 }
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//     private Object userObject;
+//     private URL link;//Change this to vector in future for full graph support
+//     private String style;
+//     private Color color;
+//     private MindMapNodeVector children;
+//     private MutableTreeNode parent;
+//     private EdgeModel edge;//the edge which leads to this node, only root has none
+//     //In future it has to hold more than one view, maybe with a Vector in which the index specifies
+//     //the MapView which contains the NodeViews
+//     private NodeView viewer;
+//     private static final boolean ALLOWSCHILDREN = true;
+//     private static final boolean ISLEAF = false; //all nodes may have children
+//     private boolean bold;
+//     private boolean italic;
+//     private boolean underlined;
+//     private int fontSize;
+//     private String font;
+	
+//     /**The Foreground/Font Color*/
+//     public Color getColor() {
+// 	if(color==null) {
+// 	    if(this.isRoot()) {
+// 		String stdcolor = FreeMind.userProps.getProperty("standardnodecolor");
+// 		if (stdcolor.length() == 7) {
+// 		    return Tools.xmlToColor(stdcolor);
+// 		}
+// 		return Color.blue;
+// 	    }
+// 	    return ( (MindMapNode)getParent() ).getColor();
+// 	}
+// 	return color;
+//     }
+
+    //
+    // Interface MindMapNode
+    //
+
+    //
+    // get/set methods
+    //
+
+//     public NodeView getViewer() {
+// 	return viewer;
+//     }
+
+//     public void setViewer( NodeView viewer ) {
+// 	this.viewer = viewer;
+//     }
+
+//     /** Creates the TreePath recursively */
+//     public TreePath getPath() {
+// 	Vector pathVector = new Vector();
+// 	TreePath treePath;
+// 	this.addToPathVector( pathVector );
+// 	treePath = new TreePath( pathVector.toArray() );
+// 	return treePath;
+//     }
+
+//     public MindMapEdge getEdge() {
+// 	return edge;
+//     }
+
+//     public void setEdge( EdgeModel edge ) {
+// 	this.edge = edge;
+//     }
+
+//     /**A Node-Style like "fork" or "bubble"*/
+//     public String getStyle() {
+// 	if(style==null) {
+// 	    if(this.isRoot()) {
+// 		return FreeMind.userProps.getProperty("standardnodestyle");
+// 	    }
+// 	    return ( (MindMapNode)getParent() ).getStyle();
+// 	}
+// 	return style;
+//     }
+//     public boolean isBold() {
+// 	return bold;
+//     }
+//     public boolean isItalic() {
+// 	return italic;
+//     }
+//     public boolean isUnderlined() {
+// 	return underlined;
+//     }
+//     public int getFontSize() {
+// 	if (fontSize==0) return Integer.parseInt(FreeMind.userProps.getProperty("standardfontsize"));
+// 	return fontSize;
+//     }
+//     /**Maybe implement handling for cases when the font is not available on this system*/
+//     public String getFont() {
+// 	if (font==null) return FreeMind.userProps.getProperty("standardfont");
+// 	return font;
+//     }
+
+//     //
+//     // other
+//     //
+
+//     public String toString() {
+// 	return userObject.toString();
+//     }
+	 
+//     public void add( MindMapNode child ) {
+// 	insert(child,0);
+//     }
+
+//     public boolean isRoot() {
+// 	return (parent==null);
+//     }
+	
+//     //
+//     //  Interface TreeNode
+//     //
+
+//     public Enumeration children() { 
+// 	return children.elements();
+//     }
+	
+//     public boolean getAllowsChildren() {
+// 	return ALLOWSCHILDREN;
+//     }
+	
+//     public TreeNode getChildAt( int childIndex ) {
+// 	return children.elementAt( childIndex );
+//     }
+
+//     public int getChildCount() {
+// 	return children.size();
+//     }
+
+//     public int getIndex( TreeNode node ) {
+// 	return children.indexOf( (NodeModel)node ); //uses equals()
+//     } 
+
+//     public TreeNode getParent() {
+// 	return parent;
+//     }
+
+//     public boolean isLeaf() {
+// 	return getChildCount() == 0;
+//     }
+
+//     //
+//     //  Interface MutableTreeNode
+//     //
+    
+//     //do all remove methods have to work recursively to make the 
+//     //Garbage Collection work (Nodes in removed Sub-Trees reference each other)?
+    
+//     public void insert( MutableTreeNode child, int index) {
+//       	children.add( index, (NodeModel)child );
+//     	child.setParent( this );
+//     }
+    
+//     public void remove( int index ) {
+// 	children.remove( index );
+//     }
+    
+//     public void remove( MutableTreeNode node ) {
+//     	children.remove( (MindMapNode)node );
+//     }
+
+//     public void removeFromParent() {
+//     	parent.remove( this );
+//     }
+
+//     public void setParent( MutableTreeNode newParent ) {
+//     	parent = newParent;
+// 	getEdge().setSource( (MindMapNode)newParent );
+//     }
+
+//     public void setUserObject( Object object ) {
+// 	userObject = object;
+//     }
+
+//     ////////////////
+//     // Private methods. Internal Implementation
+//     //////////////
+
+//     /** Recursive Method for getPath() */
+//     public void addToPathVector( Vector pathVector ) {
+// 	pathVector.add( 0, this ); //Add myself to beginning of Vector
+// 	if ( parent != null ) {
+// 	    ( (NodeModel)parent ).addToPathVector( pathVector );
+// 	}
+//     }
+
+
+
+
+
+
+
+

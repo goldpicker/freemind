@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,35 +16,60 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapPopupMenu.java,v 1.12 2003-11-03 11:00:21 sviles Exp $*/
 
 package freemind.modes.mindmapmode;
 
+import freemind.main.FreeMind;
 import javax.swing.JPopupMenu;
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.MenuElement;
-import javax.swing.KeyStroke;
-import java.awt.Component;
-
 
 public class MindMapPopupMenu extends JPopupMenu {
 
     private MindMapController c;
 
     public MindMapPopupMenu(MindMapController c) {
-       	this.c = c;
-        JMenu leading = c.getLeadingNodeMenu();
-        Component[] mc = leading.getMenuComponents();
-        for (int i = 0; i < mc.length; i++) {
-           this.add(mc[i]); }
+	this.c = c;
 
-        this.addSeparator();
-        
-       	this.add(c.getNodeMenu());
-       	this.add(c.getBranchMenu());
-       	this.add(c.getEdgeMenu());
-       	this.add(c.getExtensionMenu());
-       	this.add(c.getIconMenu());
+	this.add(c.followLink);
+	this.add(c.setLink);
+	
+	//Node menu
+	JMenu nodeMenu = new JMenu(FreeMind.getResources().getString("node"));
+	this.add(nodeMenu);
+
+	JMenu nodeStyle = new JMenu(FreeMind.getResources().getString("style"));
+	nodeMenu.add(nodeStyle);
+
+	nodeStyle.add(c.fork);
+
+	nodeStyle.add(c.bubble);
+
+	JMenu nodeFont = new JMenu(FreeMind.getResources().getString("font"));
+	nodeMenu.add(nodeFont);
+
+	nodeFont.add(c.italic);
+
+	nodeFont.add(c.bold);
+
+	nodeFont.add(c.underline);
+
+	nodeMenu.add(c.nodeColor);
+
+	//Edge menu
+	JMenu edgeMenu = new JMenu(FreeMind.getResources().getString("edge"));
+	this.add(edgeMenu);
+
+	JMenu edgeStyle = new JMenu(FreeMind.getResources().getString("style"));
+	edgeMenu.add(edgeStyle);
+	
+	edgeStyle.add(c.linear);
+
+	edgeStyle.add(c.bezier);
+
+	edgeMenu.add(c.edgeColor);
     }
 }
+
+			   
+			   
+			   

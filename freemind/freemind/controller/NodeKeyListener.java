@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2001  Joerg Mueller <joergmueller@bigfoot.com>
+ *Copyright (C) 2000  Joerg Mueller <joergmueller@bigfoot.com>
  *See COPYING for Details
  *
  *This program is free software; you can redistribute it and/or
@@ -16,17 +16,13 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: NodeKeyListener.java,v 1.16 2003-11-09 22:09:25 christianfoltin Exp $*/
 
 package freemind.controller;
 
-import java.awt.event.KeyEvent;
+import freemind.view.mindmapview.MapView;
+import freemind.view.mindmapview.NodeView;
 import java.awt.event.KeyListener;
-import java.io.Externalizable;
-
-import javax.swing.KeyStroke;
-
-import freemind.main.Tools;
+import java.awt.event.KeyEvent;
 
 /**
  * The KeyListener which belongs to the node and cares for
@@ -36,23 +32,9 @@ import freemind.main.Tools;
 public class NodeKeyListener implements KeyListener {
 
     private Controller c;
-    private String up, down, left, right;
-    private boolean disabledKeyType = true;
-    private boolean keyTypeAddsNew  = false;
 
     public NodeKeyListener(Controller controller ) {
 	c = controller;
-	up = c.getFrame().getProperty("keystroke_move_up");
-	down = c.getFrame().getProperty("keystroke_move_down");
-	left = c.getFrame().getProperty("keystroke_move_left");
-	right = c.getFrame().getProperty("keystroke_move_right");
-
-      // like in excel - write a letter means edit (PN)
-      // on the other hand it doesn't allow key navigation (sdfe)
-      disabledKeyType = Tools.safeEquals(
-          c.getFrame().getProperty("disable_key_type"),"true");
-      keyTypeAddsNew = Tools.safeEquals(
-          c.getFrame().getProperty("key_type_adds_new"),"true");
     }
 
     //
@@ -64,75 +46,98 @@ public class NodeKeyListener implements KeyListener {
 
     public void keyPressed( KeyEvent e ) {
 
-	if (e.isAltDown() || e.isControlDown()) {
-	    return;
+	//Control is for navigation (emacs-style)
+	if ( e.isControlDown() ) {
+	    switch ( e.getKeyCode() ) {
+	    case KeyEvent.VK_P:
+		c.moveUp();
+		e.consume();
+		return;
+	    case KeyEvent.VK_N:
+		c.moveDown();
+		e.consume();
+		return;
+	    case KeyEvent.VK_F:
+		c.moveRight();
+		e.consume();
+		return;
+	    case KeyEvent.VK_B:
+		c.moveLeft();
+		e.consume();
+		return;
+	    }
 	}
+
+	//Alt is for editing
+	if ( e.isAltDown() ) {
+	    switch ( e.getKeyCode() ) {
+	    case KeyEvent.VK_D:
+		c.delete( (NodeView)e.getSource() );
+		e.consume();
+		return;
+	    case KeyEvent.VK_N:
+		c.addNew( (NodeView)e.getSource() );
+		e.consume();
+		return;
+	    case KeyEvent.VK_C:
+		c.centerNode();
+		e.consume();
+		return;
+	    }
+	}
+
 
 	switch ( e.getKeyCode() ) {
-    
-        case KeyEvent.VK_ENTER:
-        case KeyEvent.VK_ESCAPE:
-        case KeyEvent.VK_SHIFT:
-        case KeyEvent.VK_DELETE:
-        case KeyEvent.VK_SPACE:
-        case KeyEvent.VK_INSERT:
-            return; // processed by Adapters ActionListener
-                     // explicitly what is not catched in e.isActionKey()
-                     
 	case KeyEvent.VK_UP:
+	    c.moveUp();
+	    e.consume();
+	    return;
+
 	case KeyEvent.VK_DOWN:
+	    c.moveDown();
+	    e.consume();
+	    return;
+
 	case KeyEvent.VK_LEFT:
+	    c.moveLeft();
+	    e.consume();
+	    return;
+
 	case KeyEvent.VK_RIGHT:
-        case KeyEvent.VK_PAGE_UP: 
-        case KeyEvent.VK_PAGE_DOWN: 
-            c.getView().move(e);
-            return;
+	    c.moveRight();
+	    e.consume();
+	    return;
 
-        case KeyEvent.VK_HOME:
-        case KeyEvent.VK_END:
-        case KeyEvent.VK_BACK_SPACE:
-            c.getMode().getModeController().edit(e, false, false);
-            return;
+	case KeyEvent.VK_ESCAPE:
+	    c.moveToRoot();
+	    e.consume();
+	    return;
 
-//        case KeyEvent.VK_SPACE:
-//	    c.getMode().getModeController().toggleFolded();
-//            e.consume();
-//	    return;
+	case KeyEvent.VK_DELETE:
+	    c.delete( (NodeView)e.getSource() );
+	    e.consume();
+	    return;
+
+	case KeyEvent.VK_INSERT:
+	    c.addNew( (NodeView)e.getSource() );
+	    e.consume();
+	    return;
+	
+	case KeyEvent.VK_ENTER:
+	    c.edit( (NodeView)e.getSource() );
+	    e.consume();
+	    return;
 	}
-  
-        // printable key creates new node in edit mode (PN)
-        if (!disabledKeyType) {
-          if (!e.isActionKey() 
-               && e.getKeyChar() != KeyEvent.CHAR_UNDEFINED) {
-            c.getMode().getModeController().edit(e, keyTypeAddsNew, false);
-            return; // do not process the (sdfe) navigation
-          }
-        }
-        
-        // printable key used for navigation
-        boolean doMove = false; // unified call of the move method (PN)
-	if ( KeyStroke.getKeyStroke(up) != null &&
-             e.getKeyCode() == KeyStroke.getKeyStroke(up).getKeyCode()) {
-            e.setKeyCode(KeyEvent.VK_UP);
-            doMove = true;
-	} else if ( KeyStroke.getKeyStroke(down) != null &&
-                    e.getKeyCode() == KeyStroke.getKeyStroke(down).getKeyCode()) {
-            e.setKeyCode(KeyEvent.VK_DOWN);
-            doMove = true;
-	} else if ( KeyStroke.getKeyStroke(left) != null &&
-                    e.getKeyCode() == KeyStroke.getKeyStroke(left).getKeyCode()) {
-            e.setKeyCode(KeyEvent.VK_LEFT);
-            doMove = true;
-	} else if ( KeyStroke.getKeyStroke(right) != null &&
-                    e.getKeyCode() == KeyStroke.getKeyStroke(right).getKeyCode()) {
-            e.setKeyCode(KeyEvent.VK_RIGHT);
-            doMove = true;
+	//Workaround because KeyCodes for these characters are 0
+	if (e.getKeyChar() == '>') {
+	    c.nextMap();
+	    e.consume();
+	    return;
+	} else if (e.getKeyChar() == '<') {
+	    c.previousMap();
+	    e.consume();
+	    return;
 	}
-        if (doMove) {
-          c.getView().move(e);
-          e.consume();
-          return;
-        }
     }
 
     public void keyReleased( KeyEvent e ) {
