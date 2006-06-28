@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<documentation-page>
+	<title>Kafenio.editor Applet Parameters</title>
+
+	<section>
+		<headline>The Kafenio Editor applet takes the following applet parameters:</headline>
+		<parameters>
+			<parameter-description>
+				<item>Name</item>
+				<item>Type</item>
+				<item>Description</item>
+			</parameter-description>
+			<parameter>
+				<name>CODEBASE</name>
+				<type>mandatory</type>
+				<description>the applet's codebase and at the same time the base directory for relative image paths</description>
+			</parameter>
+			<parameter>
+				<name>BGCOLOR</name>
+				<type>optional</type>
+				<description> default is Color.light_grey. the background-color of the applet. NOTE: this does not affect the background color of the editor panel! the background-color for the editor panel is set using stylesheets</description>
+			</parameter>
+			<parameter>
+				<name>DOCUMENT</name>
+				<type>optional</type>
+				<description>parameter that takes either base64 or urlencoded html-content that is displayed on startup. NOTE: if the "BASE64" parameter is "true" the content in this tag must be base64 encoded, if the "BASE64 parameter is not "true" the content must be urlencoded html-content.</description>
+			</parameter>
+			<parameter>
+				<name>SOURCEVIEW</name>
+				<type>optional</type>
+				<description>parameter that defines if the sourcecode-view of the html is shown on startup or not.</description>
+			</parameter>
+			<parameter>
+				<name>BASE64</name>
+				<type>optional</type>
+				<description>if this parameter is "true" the content loaded from the "DOCUMENT" tag is decoded as base64 string.</description>
+			</parameter>
+			<parameter>
+				<name>UNICODE</name>
+				<type>optional</type>
+				<description>if this parameter is "true" the text that exportet from the html-document is using unicode characters instead of html-entities. this feature allows to save a file and edit in other editors without wondering about what the html-entity means. NOTE: exporting unicode-characters makes the html-code incompatible with browsers that do not support the unicode characters (most browsers will show question marks instead of the correct character.)</description>
+			</parameter>
+			<parameter>
+				<name>STYLESHEET</name>
+				<type>optional</type>
+				<description>zero or more URLs of stylesheet files to be loaded. separate more than one filename with a comma.</description>
+			</parameter>
+			<parameter>
+				<name>TOOLBAR</name>
+				<type>mandatory</type>
+				<description>if this parameter is "true", the first toolbar is shown in the applet. the buttons to show on this toolbar are defined in the "BUTTONS" parameter.</description>
+			</parameter>
+			<parameter>
+				<name>TOOLBAR2</name>
+				<type>mandatory</type>
+				<description>if this parameter is "true", the second toolbar is shown in the applet. the buttons to show on this toolbar are defined in the "BUTTONS2" parameter.</description>
+			</parameter>
+			<parameter>
+				<name>MENUBAR</name>
+				<type>mandatory</type>
+				<description>if this parameter is "true", the menubar is shown in the applet. if false, the menubar will not be displayed.</description>
+			</parameter>
+			<parameter>
+				<name>LANGCODE</name>
+				<type>optional</type>
+				<description>if this parameter is not set, the default language settings apply.</description>
+			</parameter>
+			<parameter>
+				<name>LANGCOUNTRY</name>
+				<type>optional</type>
+				<description>if this parameter is not set, the default language settings apply.</description>
+			</parameter>
+			<parameter>
+				<name>MENUICONS</name>
+				<type>mandatory</type>
+				<description>if set to "true" icons for are displayed for some menuitems in the menubar.</description>
+			</parameter>
+			<parameter>
+				<name>IMAGEDIR</name>
+				<type>optional</type>
+				<description>if servletmode is set to "java" this parameter defines the relative path to the image-directory on a cms server.</description>
+			</parameter>
+			<parameter>
+				<name>FILEDIR</name>
+				<type>optional</type>
+				<description>if servletmode is set to "java" this parameter defines the relative path to server files on a cms server</description>
+			</parameter>
+			<parameter>
+				<name>SYSTEMID</name>
+				<type>optional</type>
+				<description>system id that defines the system on the server side.</description>
+			</parameter>
+			<parameter>
+				<name>SERVLETURL</name>
+				<type>mandatory</type>
+				<description>only mandatory if servletmode is set to "java". not needed otherwise. it is used to identify the applet on the server.</description>
+			</parameter>
+			<parameter>
+				<name>SERVLETMODE</name>
+				<type>mandatory</type>
+				<description>this parameter defines wich interface is used for parsing server-side data. the value can be either "cgi" or "java".</description>
+			</parameter>
+			<parameter>
+				<name>POSTCONTENTURL</name>
+				<type>optional</type>
+				<description>the url to wich content is posted when pressing the "save content" button.</description>
+			</parameter>
+			<parameter>
+				<name>CONTENTPARAMETER</name>
+				<type>mandatory</type>
+				<description>mandatory if postcontenturl is defined. this is the parameter-name that contains the content of the edited html document between the &lt;body&gt; tags.</description>
+			</parameter>
+			<parameter>
+				<name>OUTPUTMODE</name>
+				<type>mandatory</type>
+				<description>can be either "off", "normal" or "base64". this parameter defines if and how the content is posted to the url specified in "POSTCONTENTURL" is encoded. if OUTPUTMODE is set to "base64", the document body is encoded using base64. if OUTPUTMODE is set to "normal" the document body will be urlencoeded. if set to "off", no content will be posted at all.</description>
+			</parameter>
+			<parameter>
+				<name>DEBUG</name>
+				<type>optional</type>
+				<description>if "true" the applet runs in debug mode. default is "false".</description>
+			</parameter>
+			<parameter>
+				<name>BUTTONS</name>
+				<type>optional</type>
+				<description>specifies the buttons to be displayed on the first toolbar. a list of space separated button-names.</description>
+			</parameter>
+			<parameter>
+				<name>BUTTONS2</name>
+				<type>optional</type>
+				<description>specifies the buttons to be displayed on the second toolbar. a list of space separated button-names.</description>
+			</parameter>
+			<parameter>
+				<name>MENUITEMS</name>
+				<type>optional</type>
+				<description>specifies the top-level menuitems to be displayed. a list of space separated item names.</description>
+			</parameter>
+		</parameters>
+	</section>
+	<section>
+		<headline>Possible Values for the "BUTTONS" and "BUTTONS2" parameters:</headline>
+		<parameters>
+			<parameter-description>
+				<item>Name</item>
+				<item>Description</item>
+			</parameter-description>
+			<parameter>
+				<name>NEW</name>
+				<description>button to create a new document</description>
+			</parameter>
+			<parameter>
+				<name>OPEN</name>
+				<description>button to open a local document from the filechooser</description>
+			</parameter>
+			<parameter>
+				<name>SAVE</name>
+				<description>button to open the save file dialog</description>
+			</parameter>
+			<parameter>
+				<name>CUT</name>
+				<description>button to cut selected text and store it in the clipboard</description>
+			</parameter>
+			<parameter>
+				<name>COPY</name>
+				<description>button to copy selected text to the clipboard</description>
+			</parameter>
+			<parameter>
+				<name>PASTE</name>
+				<description>button to paste content from the clipboard into the editor</description>
+			</parameter>
+			<parameter>
+				<name>FIND</name>
+				<description>button to open the search dialog</description>
+			</parameter>
+			<parameter>
+				<name>BOLD</name>
+				<description>button to format selected text bold / normal</description>
+			</parameter>
+			<parameter>
+				<name>ITALIC</name>
+				<description>button to format selected text italic / normal</description>
+			</parameter>
+			<parameter>
+				<name>UNDERLINE</name>
+				<description>button to format the selected text underlined / normal</description>
+			</parameter>
+			<parameter>
+				<name>STRIKE</name>
+				<description>button to format the selected text striked through / normal</description>
+			</parameter>
+			<parameter>
+				<name>SUPERSCRIPT</name>
+				<description>button to superscript the selected text</description>
+			</parameter>
+			<parameter>
+				<name>SUBSCRIPT</name>
+				<description>button to subscript the selected text</description>
+			</parameter>
+			<parameter>
+				<name>ULIST</name>
+				<description>button to create a new unordered list</description>
+			</parameter>
+			<parameter>
+				<name>OLIST</name>
+				<description>button to create a new ordered list</description>
+			</parameter>
+			<parameter>
+				<name>CLEARFORMATS</name>
+				<description>button to clear all formattings on the selected text</description>
+			</parameter>
+			<parameter>
+				<name>INSERTCHARACTER</name>
+				<description>button to open the insert special character dialog.</description>
+			</parameter>
+			<parameter>
+				<name>ANCHOR</name>
+				<description>button to add a hyperlink to the selected text </description>
+			</parameter>
+			<parameter>
+				<name>VIEWSOURCE</name>
+				<description>button to switch between wysiwyg and html-sourcecode view.</description>
+			</parameter>
+			<parameter>
+				<name>STYLESELECT</name>
+				<description>combobox that formats the selected text using the selected css-style</description>
+			</parameter>
+			<parameter>
+				<name>LEFT</name>
+				<description>button to align current paragraph on the left</description>
+			</parameter>
+			<parameter>
+				<name>CENTER</name>
+				<description>button to align current paragraph centered</description>
+			</parameter>
+			<parameter>
+				<name>RIGHT</name>
+				<description>button to align current paragraph on the right</description>
+			</parameter>
+			<parameter>
+				<name>JUSTIFY</name>
+				<description>button to align current paragraph justified</description>
+			</parameter>
+			<parameter>
+				<name>DEINDENT</name>
+				<description>button to de-indent the current paragraph</description>
+			</parameter>
+			<parameter>
+				<name>INDENT</name>
+				<description>button to indent the current paragraph</description>
+			</parameter>
+			<parameter>
+				<name>IMAGE</name>
+				<description>button to open the insert image from server dialog</description>
+			</parameter>
+			<parameter>
+				<name>COLOR</name>
+				<description>button that opens a colorpicker dialog to set the selected text's foreground color</description>
+			</parameter>
+			<parameter>
+				<name>TABLE</name>
+				<description>button to open a create table dialog</description>
+			</parameter>
+			<parameter>
+				<name>SAVECONTENT</name>
+				<description>button that saves the content between the &lt;body&gt; tags to the url defined in "POSTCONTENTURL" parameter</description>
+			</parameter>
+			<parameter>
+				<name>DETACHFRAME</name>
+				<description>button that pops the editor applet out of the browser into a separate window and back.</description>
+			</parameter>
+			<parameter>
+				<name>SEPARATOR</name>
+				<description>adds a separator between two buttons.</description>
+			</parameter>
+		</parameters>
+	</section>
+	<section>
+		<headline>Possible Values for the "MENUITEMS" parameter:</headline>
+		<parameters>
+			<parameter-description>
+				<item>Name</item>
+				<item>Description</item>
+			</parameter-description>
+			<parameter>
+				<name>FILE</name>
+				<description>show file menu</description>
+			</parameter>
+			<parameter>
+				<name>EDIT</name>
+				<description>show edit menu</description>
+			</parameter>
+			<parameter>
+				<name>VIEW</name>
+				<description>show view menu</description>
+			</parameter>
+			<parameter>
+				<name>FONT</name>
+				<description>show font menu</description>
+			</parameter>
+			<parameter>
+				<name>FORMAT</name>
+				<description>show format menu</description>
+			</parameter>
+			<parameter>
+				<name>INSERT</name>
+				<description>show insert menu</description>
+			</parameter>
+			<parameter>
+				<name>TABLE</name>
+				<description>show insert new table menu</description>
+			</parameter>
+			<parameter>
+				<name>FORMS</name>
+				<description>show html-forms menu</description>
+			</parameter>
+			<parameter>
+				<name>SEARCH</name>
+				<description>show search menu</description>
+			</parameter>
+			<parameter>
+				<name>TOOLS</name>
+				<description>show tools menu</description>
+			</parameter>
+			<parameter>
+				<name>HELP</name>
+				<description>show help menu</description>
+			</parameter>
+			<parameter>
+				<name>DEBUG</name>
+				<description>show debug menu</description>
+			</parameter>
+		</parameters>
+	</section>
+</documentation-page>

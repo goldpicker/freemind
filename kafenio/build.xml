@@ -1,0 +1,155 @@
+<!-- PLEASE READ THE COMMENTS IN THE INIT SECTION FIRST!!! -->
+<project name="Kafenio" default="all" basedir=".">
+
+	<target name="init">
+		<tstamp>
+			<format property="NOW" pattern="yyyyMMddHHmm"/>
+			<format property="TODAY" pattern="dd.MM.yyyy HH:mm:ss"/>
+		</tstamp>
+		<!-- 
+			parameters in build.personal override all parameters that are loaded later.
+			build.personal shall NEVER EVER be checked into cvs as it may contain
+			passwords, aliases and usernames. build.personal should contain 
+			"jarsigner.alias" and "jarsigner.pwd" parameters.
+		-->
+		<property file="build.personal"/>
+
+		<!-- load the standard property files -->
+		<propertyfile file="build.number">
+			<entry  key="build.number" type="int" operation="+" default="0"/>
+		</propertyfile>
+		<property file="build.number"/>
+
+		<!-- always define build.number before including build.properties! -->
+		<property file="build.properties"/>
+
+		<!-- set current version number in default language properties -->
+		<propertyfile file="${language.resources.file}">
+			<entry  key="VersionNumber" value="${major.version}.${minor.version} Build ${build.number}"/>
+		</propertyfile>
+	</target>
+
+	<target name="clean" depends="init">
+		<!-- delete all directories created during build and remove files if necessary -->
+		<delete dir="${dist}" failonerror="false"/>
+		<delete dir="${build}" failonerror="false"/>
+		<delete dir="${docs}" failonerror="false"/>
+		<delete failonerror="false">
+			<fileset dir="${test}" includes="**/*"/>
+		</delete>
+		<!-- create directories again -->
+		<mkdir dir="${dist}"/>
+		<mkdir dir="${build}"/>
+		<mkdir dir="${docs}"/>
+		<!--mkdir dir="${dedi.dist.wysiwyg.dir}"/-->
+	</target>
+	
+	<target name="compile" depends="init,clean" description="compiles the project">
+		<javac srcdir="${src}" listfiles="true" includes="**/*.java" destdir="${build}" classpath="${regexjar}" debug="${debug.compile}"/>
+		<copy todir="${build}">
+			<fileset dir="${src}" excludes="**/*.java,**/*.bak"/>
+		</copy>
+	</target>
+	
+	<!-- this target requires the environment-variable CVS_RSH to be set and pageant or another ssh-agent to be running on your machine-->
+	<target name="get-cvs-changelog" depends="init" description="fetches the current changelog from the cvs (only works with pserver protocol!)">
+		<cvschangelog destfile="${changelog.xml.file}" cvsRsh="C:\Programme\TortoiseCVS\TortoisePlink.exe"/>
+	</target>
+	
+	<target name="changelog" depends="init,clean" description="creates text and html changelog based on xml-file">
+		<style in="${changelog.xml.file}" out="${changelog.html.out.file}" style="${changelog.html.xsl.file}">
+			<param name="title" expression="Changelog for Kafenio.editor ${major.version}.${minor.version}.${build.number}"/>
+			<param name="module" expression="kafenio/kafenio_main"/>
+			<param name="cvsweb" expression="http://cvs.sourceforge.net/viewcvs.py/"/>
+		</style>
+		<style in="${changelog.xml.file}" out="${changelog.txt.out.file}" style="${changelog.txt.xsl.file}">
+			<param name="title" expression="Kafenio Editor Changelog, created on ${TODAY}"/>
+		</style>
+	</target>
+
+	<target name="docs" depends="init,clean,changelog" description="creates javadocs and other documents">
+		<javadoc destdir="${docs}" packagenames="*" sourcepath="${src}" use="true" windowtitle="Kafenio.editor ${major.version}.${minor.version}.${build.number}">
+			<doctitle><![CDATA[<h1>Kafenio.editor ${major.version}.${minor.version}.${build.number}</h1>]]></doctitle>
+			<header>Kafenio.editor ${major.version}.${minor.version}.${build.number}</header>
+			<footer>Kafenio.editor ${major.version}.${minor.version}.${build.number}</footer>
+			<bottom><![CDATA[<i>Copyright &#169; 2003-2004 by Karsten Pawlik. All Rights Reserved. Published under the Lesser General Public License (LGPL)</i>]]></bottom>	  		
+		</javadoc>
+		<style in="${parameter.doc.xml.file}" out="${parameter.doc.out.file}" style="${parameter.doc.xsl.file}"/>
+	</target>
+
+	<target name="src-dist" depends="init,clean" description="creates the source distribution file">
+		<jar basedir="${basedir}" destfile="${srcdistfilename}" excludes="**/.*,**/*.class,**/signjar.bat,**/build.personal"/>
+	</target>
+
+	<target name="create-editor-jars" depends="init,clean,compile" description="creates the binary distribution file">
+		<jar basedir="${build}" destfile="${appletjar}" manifest="${basedir}/etc/MANIFEST.MF"/>
+		<jar basedir="${conf}" destfile="${configjar}"/>
+		<jar basedir="${defaulticons}" destfile="${iconjar}"/>
+		<copy failonerror="true" file="${regexjar}" todir="${dist}"/>
+		<signjar jar="${appletjar}" alias="${jarsigner.alias}" storepass="${jarsigner.pwd}"/>
+	</target>
+
+	<target name="bin-dist" depends="create-editor-jars" description="creates the demo distribution file">
+		<copy todir="${bin.dist.dir}">
+			<fileset file="${changelog.html.out.file}"/>
+			<fileset file="${parameter.doc.out.file}"/>
+			<fileset file="${contributors.txt.file}"/>
+		</copy>
+		<copy todir="${bin.dist.dir}/demo">
+			<fileset file="${appletjar}"/>
+			<fileset file="${configjar}"/>
+			<fileset file="${iconjar}"/>
+			<fileset file="${regexjar}" />
+			<fileset dir="${demo}"/>
+		</copy>
+		<copy todir="${bin.dist.dir}/docs">
+			<fileset dir="${docs}"/>
+		</copy>
+		<copy todir="${bin.dist.dir}/screenshots">
+			<fileset dir="${screenshots}"/>
+		</copy>
+		<jar basedir="${bin.dist.dir}" destfile="${bindistfilename}" />
+	</target>	
+
+	<target name="dev-demo" depends="create-editor-jars" description="creates demo-folder in basedir for easy testing">
+		<copy todir="${test}">
+			<fileset file="${appletjar}"/>
+			<fileset file="${configjar}"/>
+			<fileset file="${iconjar}"/>
+			<fileset file="${regexjar}" />
+			<fileset dir="${demo}"/>
+		</copy>
+	</target>
+	
+	<target name="dedi-dist" depends="create-editor-jars" description="creates the cms-plugin for the cms der-dirigent">
+		<copy todir="${dedi.dist.dir}">
+			<fileset file="${changelog.html.out.file}"/>
+			<fileset file="${parameter.doc.out.file}"/>
+			<fileset dir="${dedi.content.dir}"/>
+		</copy>
+		<copy todir="${dedi.dist.wysiwyg.dir}" flatten="true">
+			<fileset file="${appletjar}"/>
+			<fileset file="${configjar}"/>
+			<fileset file="${iconjar}"/>
+			<fileset file="${regexjar}"/>
+		</copy>		
+		<jar basedir="${dedi.dist.dir}" destfile="${dedipatchfilename}"/>
+	</target>
+
+	<target name="dist" depends="src-dist,bin-dist,dedi-dist" description="create distribution files.">
+		<echo message="Creation of Distribution Files Complete"/>
+	</target>
+
+	<target name="all" depends="src-dist,docs,bin-dist,dedi-dist,dev-demo">
+		<echo message="Full Build Complete"/>
+	</target>
+
+	<target name="dev" depends="dev-demo">
+		<echo message="Full Development Build Complete"/>
+	</target>
+
+	<target name="release" depends="get-cvs-changelog,all">
+		<echo message="Full Release Build Complete"/>
+	</target>
+
+</project>

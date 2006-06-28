@@ -1,0 +1,109 @@
+CONTRIBUTORS to the kafenio project
+-----------------------------------
+Maxym Mykhalchuk
+     - the new "insert hyperlink"-dialog
+     - Ukrainian translation
+Jason P. Kitcat
+     - feature requests
+     - bug reports
+Romuald Lorthioir
+     - fix for image-loading issue 
+     - fixed issue with behaviour on shift-return and return
+Sietse
+     - fixed bug with font size selection from font menu
+Daniel Polansky
+     - added interface support to KafenioPanel and KafenioPanelConfiguration
+     - suggested to rename applet.jar to kafenio.jar, config.jar to 
+       kafenio-config.jar and icons.jar to kafenio-icons.jar
+
+CONTRIBUTORS to the original ekit code
+--------------------------------------
+
+Thanks to the many people who have downloaded and used Ekit, as well as
+providing valuable feedback. The following people have made additional
+contributions to Ekit. (List in is chronological order of contribution.)
+
+Yaodong Liu (yaodongliu@yahoo.com)
+    - CSS Support Code
+    - HTML Insertion Support Code
+Gyoergy Magoss (GYOERGY.MAGOSS@bhf-bank.com)
+    - Table Support Code
+Oliver Moser (omoser@dkf.de)
+    - HTML Insertion Support Code
+Michael Goldberg (MGoldberg@yet2.com)
+    - README Support
+Cecile Rostaing (cecile.rostaing@free.fr)
+    - Feature Suggestions
+Thomas Gauweiler (gauweiler@fzi.de)
+    - EkitAppletDemo2.html & ShowAppletOutput.php demo files
+Frits Jalvingh (jal@grimor.com)
+    - Correct image rendering and character encoding support
+    - CSS Styles Selector
+    - Original ExtendedHTMLEditorKit & RelativeImageView classes
+    - Original ImageFileChooser & ImageFileChooserPreview classes
+Ruud Noordermeer (ruud.noordermeer@back2front.nl)
+    - Fix for split-pane rendering issue in EkitApplet
+Mindaugas Idzelis (aim4min@users.sourceforge.net)
+    - Provided the excellent Jazzy spellchecker
+Raymond Penners (dotsphinx@users.sourceforge.net)
+    - Fix for IMG tag SRC URLs containing spaces
+Steve Birmingham (steve.birmingham@c3bgroup.com)
+    - Server image support classes and methods
+    - Color picker code in font dialog
+    - Numerous bug fixes, including the dispose() for the SpellChecker
+Rafael Cieplinski (cieplinski@web.de)
+    - Better auto-bulleting function
+    - Improved table handling
+    - Original HTMLUtilities class
+Nico Mack (nico.mack@mmp.lu)
+    - System clipboard access code
+    - Other bug fixes
+
+
+TRANSLATIONS
+--------------------------
+
+Thanks also to the people who volunteered to translate Ekit into their
+languages. The following people have made translations available.
+(List in is chronological order of contribution. Any current errors in the
+language files are most likely do to my own attempts to add new terms to them,
+and I appreciate receiving any corrections.)
+
+Nick Schwendener (nschwendener@vtxnet.ch)
+    - Italian
+        LanguageResources_it_CH.properties
+        LanguageResources_it_IT.properties
+Gyoergy Magoss (GYOERGY.MAGOSS@bhf-bank.com)
+    - German
+        LanguageResources_de_DE.properties
+Jesus Escanero (jescanero@yahoo.es)
+    - Spanish
+        LanguageResources_es_ES.properties
+Fernando Luiz (responsavel2@hotmail.com)
+    - Portuguese
+        LanguageResources_pt_BR.properties
+        LanguageResources_pt_PT.properties
+Jernej Vicic (jernej@activetools.si)
+    - Slovenian
+        LanguageResources_sl_SI.properties
+Gerald Estadieu (gerald.estadieu@cem-macau.com)
+    - French
+        LanguageResources_fr_FR.properties
+Anders Bjorvand (anders@kommunion.no)
+    - Norwegian
+        LanguageResources_no_NO.properties
+Vesa Kotilainen (vesa.kotilainen@sonera.com)
+    - Finnish
+        LanguageResources_fi_FI.properties
+Mark de Haan (mark@starwave.nl)
+    - Dutch
+        LanguageResources_nl_NL.properties
+Samuel Dmaz
+    - Spanish (Mexican)
+        LanguageResources_es_MX.properties
+Tamás Érdfalvi (devnull@eagent.hu)
+    - Hungarian
+        LanguageResources_hu_HU.properties
+Yang Yu (yangyu@users.sourceforge.net)
+    - Chinese
+        LanguageResources_zh_CN.properties
