@@ -1,0 +1,8 @@
+signjar.bat
+docs
+dist
+build
+test
+build.personal
+build.number
+project.index
