@@ -26,7 +26,7 @@ import javax.swing.text.html.HTMLEditorKit;
  * 
  * @author Karsten Pawlik, Howard Kistler
  */
-public interface KafenioPanelInterface  extends ActionListener, KeyListener, DocumentListener {
+public interface KafenioPanelInterface  extends ActionListener, DocumentListener {
 
 	public JMenuBar getJMenuBar();
 	public JToolBar getJToolBar1();
@@ -36,14 +36,10 @@ public interface KafenioPanelInterface  extends ActionListener, KeyListener, Doc
 	public Hashtable getTActions();
 	public void actionPerformed(ActionEvent ae);
 	public void detachFrame();
-	public void keyTyped(KeyEvent ke);
-	public void keyPressed(KeyEvent e);
-	public void keyReleased(KeyEvent e);
 	public void handleDocumentChange(DocumentEvent de);
 	public JScrollPane getHTMLScrollPane();
 	public JScrollPane getSrcScrollPane();
 	public void registerDocumentStyles();
-	public void manageListElement(Element element);
 	public String insertFile();
 	public void serializeOut(HTMLDocument doc) throws IOException;
 	public void serializeIn() throws IOException, ClassNotFoundException;

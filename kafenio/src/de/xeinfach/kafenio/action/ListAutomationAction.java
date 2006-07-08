@@ -23,11 +23,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package de.xeinfach.kafenio.action;
 
 import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.StringTokenizer;
 
 import javax.swing.JEditorPane;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.EditorKit;
+import javax.swing.text.Element;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
@@ -49,8 +54,6 @@ public class ListAutomationAction extends HTMLEditorKit.InsertHTMLTextAction {
 	
 	private KafenioPanel parentKafenioPanel;
 	private HTML.Tag baseTag;
-	private String listType;
-	private HTMLUtilities htmlUtilities;
 
 	/**
 	 * creates a new ListAutomationAction using the given parameters.
@@ -62,89 +65,52 @@ public class ListAutomationAction extends HTMLEditorKit.InsertHTMLTextAction {
 		super(sLabel, "", newListType, HTML.Tag.LI);
 		parentKafenioPanel = kafenio;
 		baseTag    = newListType;
-		htmlUtilities = new HTMLUtilities(kafenio);
 		log.debug("created new ListAutomationAction.");
 	}
 
 	/**
-	 * method that handles the given ActionEvent
-	 * @param ae the ActionEvent to handle
-	 */
-	public void actionPerformed(ActionEvent ae) {
-		try {
-			JEditorPane jepEditor = (JEditorPane)(parentKafenioPanel.getTextPane());
-			String selTextBase = jepEditor.getSelectedText();
-			int textLength = -1;
-			if(selTextBase != null) {
-				textLength = selTextBase.length();
-			}
-			if(selTextBase == null || textLength < 1) {
-				int pos = parentKafenioPanel.getCaretPosition();
-				parentKafenioPanel.setCaretPosition(pos);
-				if(ae.getActionCommand() != "newListPoint") {
-					if(	htmlUtilities.checkParentsTag(HTML.Tag.OL) 
-						|| htmlUtilities.checkParentsTag(HTML.Tag.UL)) 
-					{
-						new SimpleInfoDialog(	parentKafenioPanel, 
-												getString("Error"), 
-												true, 
-												getString("ErrorNestedListsNotSupported"));
-						return;
-					}
-				}
-
-				listType = (baseTag == HTML.Tag.OL ? "ol" : "ul");
-				StringBuffer sbNew = new StringBuffer();
-				Tag beginTag = null;
-				if(htmlUtilities.checkParentsTag(baseTag)) {
-					sbNew.append("<li></li>");
-					beginTag = HTML.Tag.LI;
-				} else {
-					sbNew.append("<" + listType + "><li></li></" + listType + ">&nbsp;");
-					beginTag = (listType.equals("ol") ? HTML.Tag.OL : HTML.Tag.UL);
-				}
-				insertHTMLAtPosition(sbNew.toString(), beginTag);
-			} else {
-				listType = (baseTag == HTML.Tag.OL ? "ol" : "ul");
-				HTMLDocument htmlDoc = (HTMLDocument)(jepEditor.getDocument());
-				int iStart = jepEditor.getSelectionStart();
-				int iEnd   = jepEditor.getSelectionEnd();
-				String selText = htmlDoc.getText(iStart, iEnd - iStart);
-				StringBuffer sbNew = new StringBuffer();
-				String sToken = ((selText.indexOf("\r") > -1) ? "\r" : "\n");
-				StringTokenizer stTokenizer = new StringTokenizer(selText, sToken);
-				sbNew.append("<" + listType + ">");
-				while(stTokenizer.hasMoreTokens()) {
-					sbNew.append("<li>");
-					sbNew.append(stTokenizer.nextToken());
-					sbNew.append("</li>");
-				}
-				sbNew.append("</" + listType + ">&nbsp;");
-				htmlDoc.remove(iStart, iEnd - iStart);
-				insertHTML(jepEditor, htmlDoc, iStart, sbNew.toString(), 1, 1, null);
-				parentKafenioPanel.refreshOnUpdate();
-			}
-		} catch (BadLocationException ble) {
-			log.error("BadLocationException: " + ble.fillInStackTrace());
-		}
-		
-		parentKafenioPanel.repaint();
-	}
-
-	private void insertHTMLAtPosition(String insertString, Tag beginTag) {
-		JTextPane textPane = parentKafenioPanel.getTextPane();
-		int caretPosition = textPane.getCaretPosition();
-		insertHTML(	textPane, 
-					parentKafenioPanel.getExtendedHtmlDoc(), 
-					caretPosition, 
-					insertString, 
-					0, 
-					0, 
-					beginTag);
-		parentKafenioPanel.refreshOnUpdate();
-//		textPane.setCaretPosition(caretPosition);
-
-	}
+     * method that handles the given ActionEvent
+     * @param ae the ActionEvent to handle
+     */
+    public void actionPerformed(ActionEvent ae) {
+    	JEditorPane jepEditor = (parentKafenioPanel.getTextPane());
+        HTMLDocument htmlDoc = (HTMLDocument)(jepEditor.getDocument());
+        final int selectionStart = jepEditor.getSelectionStart();
+        final int selectionEnd = jepEditor.getSelectionEnd();
+        Element item = HTMLUtilities.getInstance().getOuterElement(htmlDoc, HTML.Tag.LI, selectionStart);            
+        if(item != null){ 
+            Element listRootElement = item.getParentElement();
+            int listStartOffset = item.getStartOffset();
+            int listEndOffset = item.getEndOffset();
+            if(selectionStart >= listStartOffset && selectionEnd < listEndOffset){
+                if (listRootElement.getName() == baseTag.toString()){
+                    HTMLUtilities.getInstance().convertListToParagraphs(listRootElement);
+                }
+                else{
+                    HTMLUtilities.getInstance().convertParagraphsToList(listRootElement, listRootElement, baseTag.toString());
+                }
+                return;
+            }
+        }
+        if(item != null) {
+            item = item.getParentElement();
+        }
+        else{
+            item = HTMLUtilities.getInstance().getOuterElement(htmlDoc, HTML.Tag.P, selectionStart);
+        }
+        if(item == null)
+            return;
+        Element first = item;
+        final Element listParent = item.getParentElement();
+        int index = listParent.getElementIndex(item.getStartOffset());
+        do{
+            item = listParent.getElement(++index);
+        }
+        while(item != null && item.getStartOffset() <= selectionEnd);
+        --index;
+        item = listParent.getElement(index);
+        HTMLUtilities.getInstance().convertParagraphsToList(first, item, baseTag.toString());
+    }
 
 	/**
 	 * returns a translated representation of the given string.

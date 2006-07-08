@@ -16,6 +16,7 @@ import javax.swing.event.UndoableEditEvent;
 
 import de.xeinfach.kafenio.util.LeanLogger;
 
+import java.io.IOException;
 import java.util.Enumeration;
 /**
  * Description: Adds new Features to the standard Java HTMLDocument class.
@@ -50,84 +51,72 @@ public class ExtendedHTMLDocument extends HTMLDocument {
 		super(styles);
 	}
 	
-	/**
-	 * Überschreibt die Attribute des Elements.
-	 * @param element Element bei dem die Attribute geändert werden sollen
-	 * @param attributes AttributeSet mit den neuen Attributen
-	 * @param tag Angabe was für ein Tag das Element ist
-	 */
-	public void replaceAttributes(Element element, AttributeSet attributes, HTML.Tag tag) {
-		if( (element != null) && (attributes != null)) {
-			try {
-				writeLock();
-				int start = element.getStartOffset();
+    /**
+     * removes the given element between index and index+count.
+     * @param element element to delete
+     * @param index text index
+     * @param count character count
+     * @throws BadLocationException if thrown if index or index+count does not exist.
+     */
+    public void removeElement(Element element) throws BadLocationException {
+        Element parent = element.getParentElement();
+        final int index = parent.getElementIndex(element.getStartOffset());
+        removeElements(element, index, 1);
+    }
+    /**
+     * removes the given element between index and index+count.
+     * @param element element to delete
+     * @param index text index
+     * @param count character count
+     * @throws BadLocationException if thrown if index or index+count does not exist.
+     */
+    public void removeElements(Element element, int index, int count) throws BadLocationException {
+        writeLock();
+        int start = element.getElement(index).getStartOffset();
+        int end = element.getElement(index + count - 1).getEndOffset();
+        try {
+            Element[] removed = new Element[count];
+            Element[] added = new Element[0];
+    
+            for (int counter = 0; counter < count; counter++) {
+                removed[counter] = element.getElement(counter + index);
+            }
+    
+            DefaultDocumentEvent dde = new DefaultDocumentEvent(start, end - start, DocumentEvent.EventType.REMOVE);
+            ((AbstractDocument.BranchElement)element).replace(index, removed.length,added);
+            dde.addEdit(new ElementEdit(element, index, removed, added));
+            UndoableEdit u = getContent().remove(start, end - start);
+    
+            if(u != null) {
+                dde.addEdit(u);
+            }
+    
+            postRemoveUpdate(dde);
+            dde.end();
+            fireRemoveUpdate(dde);
+    
+            if(u != null) {
+                fireUndoableEditUpdate(new UndoableEditEvent(this, dde));
+            }
+        } finally {
+            writeUnlock();
+        }
+    }
+     public void replaceHTML(Element firstElement, int number, String htmlText) throws
+     BadLocationException, IOException {
+         if(number > 1){
+             if (firstElement != null && firstElement.getParentElement() != null &&
+                     htmlText != null) {
+                 int start = firstElement.getStartOffset();
+                 Element parent = firstElement.getParentElement();
+                 int removeIndex = parent.getElementIndex(start);
+                 removeElements(parent, removeIndex, number - 1);
+                 setOuterHTML(parent.getElement(removeIndex), htmlText);
+             }
+         }
+         else if (number == 1) {             
+             setOuterHTML(firstElement, htmlText);
+         }
+    }
 
-				DefaultDocumentEvent changes = new DefaultDocumentEvent(start,
-				element.getEndOffset() - start, DocumentEvent.EventType.CHANGE);
-
-				AttributeSet sCopy = attributes.copyAttributes();
-				changes.addEdit(new AttributeUndoableEdit(element, sCopy, false));
-
-				MutableAttributeSet attr = (MutableAttributeSet) element.getAttributes();
-				Enumeration aNames = attr.getAttributeNames();
-				Object value;
-				Object aName;
-				while (aNames.hasMoreElements()) {
-					aName = aNames.nextElement();
-					value = attr.getAttribute(aName);
-					if(value != null && !value.toString().equalsIgnoreCase(tag.toString())) {
-						attr.removeAttribute(aName);
-					}
-				}
-				attr.addAttributes(attributes);
-				changes.end();
-
-				fireChangedUpdate(changes);
-				fireUndoableEditUpdate(new UndoableEditEvent(this, changes));
-			} finally {
-				writeUnlock();
-			}
-		}
-	}
-	
-	
-	/**
-	 * removes the given element between index and index+count.
-	 * @param element element to delete
-	 * @param index text index
-	 * @param count character count
-	 * @throws BadLocationException if thrown if index or index+count does not exist.
-	 */
-	public void removeElements(Element element, int index, int count) throws BadLocationException {
-		writeLock();
-		int start = element.getElement(index).getStartOffset();
-		int end = element.getElement(index + count - 1).getEndOffset();
-		try {
-			Element[] removed = new Element[count];
-			Element[] added = new Element[0];
-	
-			for (int counter = 0; counter < count; counter++) {
-				removed[counter] = element.getElement(counter + index);
-			}
-	
-			DefaultDocumentEvent dde = new DefaultDocumentEvent(start, end - start, DocumentEvent.EventType.REMOVE);
-			((AbstractDocument.BranchElement)element).replace(index, removed.length,added);
-			dde.addEdit(new ElementEdit(element, index, removed, added));
-			UndoableEdit u = getContent().remove(start, end - start);
-	
-			if(u != null) {
-				dde.addEdit(u);
-			}
-	
-			postRemoveUpdate(dde);
-			dde.end();
-			fireRemoveUpdate(dde);
-	
-			if(u != null) {
-				fireUndoableEditUpdate(new UndoableEditEvent(this, dde));
-			}
-		} finally {
-			writeUnlock();
-		}
-	}
 }

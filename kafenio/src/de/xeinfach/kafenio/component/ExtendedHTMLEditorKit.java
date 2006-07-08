@@ -22,14 +22,22 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package de.xeinfach.kafenio.component;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.URL;
 
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
 import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.HTMLWriter;
+import javax.swing.text.html.MinimalHTMLWriter;
 
 import javax.swing.text.html.StyleSheet;
 import javax.swing.text.Document;
@@ -123,4 +131,20 @@ public class ExtendedHTMLEditorKit extends HTMLEditorKit
 			return super.create(elem);
 		}
 	}
+
+    public void read(Reader in, Document doc, int pos) throws IOException, BadLocationException {
+        if(pos == 0 && doc.getLength() > 0){
+            pos = doc.getDefaultRootElement().getElement(0).getEndOffset();
+        }
+        super.read(in, doc, pos);
+    }
+    public void write(Writer out, Document doc, int pos, int len) 
+    throws IOException, BadLocationException {
+    if (doc instanceof HTMLDocument) {
+        HTMLWriter w = new ExtendedHTMLWriter(out, (HTMLDocument)doc);
+        w.write();
+    } else {
+        super.write(out, doc, pos, len);
+    }
+    }
 }

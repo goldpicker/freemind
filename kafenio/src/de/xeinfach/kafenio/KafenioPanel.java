@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.Toolkit;
@@ -25,6 +26,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -73,7 +75,9 @@ import javax.swing.undo.UndoManager;
 
 import de.xeinfach.kafenio.component.ExtendedHTMLDocument;
 import de.xeinfach.kafenio.component.ExtendedHTMLEditorKit;
+import de.xeinfach.kafenio.component.ExtendedHTMLWriter;
 import de.xeinfach.kafenio.component.HTMLUtilities;
+import de.xeinfach.kafenio.component.HtmlPane;
 import de.xeinfach.kafenio.component.ImageFileChooser;
 import de.xeinfach.kafenio.component.MutableFilter;
 import de.xeinfach.kafenio.component.NameValuePair;
@@ -97,7 +101,7 @@ import de.xeinfach.kafenio.util.Utils;
  * 
  * @author Karsten Pawlik, Howard Kistler
  */
-public class KafenioPanel extends JPanel implements ActionListener, KeyListener, DocumentListener, KafenioPanelInterface {
+public class KafenioPanel extends JPanel implements ActionListener, DocumentListener, KafenioPanelInterface {
 	/* Constants. */
 	private static LeanLogger log = new LeanLogger("KafenioPanel.class");
 	private static ResourceBundle treepilotProperties;
@@ -118,7 +122,7 @@ public class KafenioPanel extends JPanel implements ActionListener, KeyListener,
 	private KafenioToolBar kafenioToolBar2;
 	private KafenioPanelConfiguration kafenioConfig;
 	private Frame frameHandler;
-	private JTextPane htmlPane;
+	private HtmlPane htmlPane;
 	private SyntaxPane srcPane;
 	private JScrollPane srcScrollPane;
 	private JScrollPane htmlScrollPane;
@@ -128,7 +132,6 @@ public class KafenioPanel extends JPanel implements ActionListener, KeyListener,
 	private ExtendedHTMLDocument htmlDoc;
 	private StyleSheet styleSheet;
 	private UndoManager undoManager;
-	private HTMLUtilities htmlUtils = new HTMLUtilities(this);
 	private java.awt.datatransfer.Clipboard sysClipboard;
 	protected boolean documentConfirmed = false;
 	private SecurityManager secManager;
@@ -153,223 +156,223 @@ public class KafenioPanel extends JPanel implements ActionListener, KeyListener,
 	private KafenioPanelActions kafenioActions;
 
 	/**
-	 * Contructs a new KafenioPanel using the given configuration object.
-	 * @param config the configuration to use for creation.
-	 */
-	public KafenioPanel(KafenioPanelConfigurationInterface iConfiguration) {
-		super();
-		log.info("1");
-		kafenioConfig = (KafenioPanelConfiguration)iConfiguration;
-		log.info("12");
-
-		// Determine if system clipboard is available
-		secManager = System.getSecurityManager();
-		if(secManager != null) {
-			try {
-				secManager.checkSystemClipboardAccess();
-				sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-			} catch (SecurityException se) {
-				sysClipboard = null;
-			} catch (Exception se) {
-				sysClipboard = null;
-			} finally {
-				log.debug("System clipboard is not available. Possible reason: no permission.");
-			}
-		}
-		log.info("13");
-		
-		/* Localize for language */
-		translatrix = new Translatrix("de.xeinfach.kafenio.LanguageResources");
-		log.info("14");
-		Locale baseLocale = (Locale)null;
-		log.info("15");
-		if(kafenioConfig.getLanguage() != null && kafenioConfig.getCountry() != null) {
-			log.info("16");
-			baseLocale = new Locale(kafenioConfig.getLanguage(), kafenioConfig.getCountry());
-			log.info("17");
-		}
-		translatrix.setLocale(baseLocale);
-		log.info("18");
-		
-		/* initialize all other components */
-		kafenioParent = (Container)kafenioConfig.getKafenioParent();
-		frameHandler = new Frame();
-		toolbarPanel = new JPanel();
-		kafenioActions = new KafenioPanelActions(this);
-		undoManager = new UndoManager();
-		undoAction = new UndoAction();
-		redoAction = new RedoAction();
-		toolbarPanel = new JPanel();
-		log.info("19");
-
-		/* Load TreePilot properties */
-		try {
-			treepilotProperties = ResourceBundle.getBundle("de.xeinfach.kafenio.TreePilot");
-		} catch(MissingResourceException mre) {
-			log.error("MissingResourceException while loading treepilot file: " + mre.fillInStackTrace());
-		}
-		
-		/* Create the editor kit, document, and stylesheet */
-		htmlPane = new JTextPane();
-		htmlKit = new ExtendedHTMLEditorKit();
-		try {
-			htmlDoc = (ExtendedHTMLDocument) (htmlKit.createDefaultDocument(new URL(getConfig().getCodeBase())));
-		} catch (Exception e) {
-			htmlDoc = (ExtendedHTMLDocument) (htmlKit.createDefaultDocument());
-		}
-		htmlDoc.putProperty("de.xeinfach.kafenio.docsource", getConfig().getCodeBase());
-		styleSheet = htmlDoc.getStyleSheet();
-		htmlKit.setDefaultCursor(new Cursor(Cursor.TEXT_CURSOR));
-
-		/* Set up the text pane */
-		htmlPane.setEditorKit(htmlKit);
-		htmlPane.setDocument(htmlDoc);
-		htmlPane.setMargin(new Insets(0, 0, 0, 0));
-		htmlPane.addKeyListener(this);
-		
-		/* Create the source text area */
-		srcPane = new SyntaxPane();
-		srcPane.setBackground(new Color(255,255,255));
-		srcPane.setSelectionColor(new Color(255, 192, 192));
-		srcPane.setText(htmlPane.getText());
-		srcPane.getDocument().addDocumentListener(this);
-
-		/* Add CaretListener for tracking caret location events */
-		htmlPane.addCaretListener(new CaretListener() {
-			public void caretUpdate(CaretEvent ce) {
-				handleCaretPositionChange(ce);
-			}
-		});
-		htmlPane.getDocument().addUndoableEditListener(new CustomUndoableEditListener());
-
-		/* create menubar and toolbar objects before loading the document
-		 * (we need the styles-combo-box for registering a document) */
-		kafenioMenuBar = new KafenioMenuBar(this);
-		kafenioToolBar1 = new KafenioToolBar(this);
-		kafenioToolBar2 = new KafenioToolBar(this);
-
-		/* create menubar */
-		if (getConfig().isShowMenuBar()) {
-			if (kafenioConfig.getCustomMenuItems() != null) {
-				jMenuBar = kafenioMenuBar.createCustomMenuBar(kafenioConfig.getCustomMenuItems());
-			} else {
-				jMenuBar = kafenioMenuBar.createDefaultKafenioMenuBar();
-			}
-			kafenioMenuBar.getViewToolbarItem().setSelected(getConfig().isShowToolbar() || getConfig().isShowToolbar2());
-			kafenioMenuBar.getViewSourceItem().setSelected(getConfig().isShowViewSource());
-			if (kafenioParent != null) {
-				if (kafenioParent instanceof JDialog) {
-				    ((JDialog)kafenioParent).setJMenuBar(jMenuBar); 
-				} else if (kafenioParent instanceof JFrame) {
-				    ((JFrame)kafenioParent).setJMenuBar(jMenuBar); 
-				} else if (kafenioParent instanceof KafenioContainerInterface) {
-				    ((KafenioContainerInterface)kafenioParent).setJMenuBar(jMenuBar); 
-				}
-			}
-		}
-
-		/* create toolbars */ 
-		log.debug("config: " + getConfig());
-		toolbarPanel.setLayout(new BorderLayout());
-		toolbarPanel.setBackground(getConfig().getBgcolor());
-		// TODO: refactor code - duplicate method calls are used...
-		if (getConfig().isShowToolbar()) {
-			toolbar1 = kafenioToolBar1.createToolbar(getConfig().getCustomToolBar1(), getConfig().isShowToolbar());
-			toolbarPanel.add(toolbar1, BorderLayout.NORTH);
-			toolbars.add(toolbar1);
-		}
-		if (getConfig().isShowToolbar2()) {
-			toolbar2 = kafenioToolBar2.createToolbar(getConfig().getCustomToolBar2(), getConfig().isShowToolbar2());
-			toolbarPanel.add(toolbar2, BorderLayout.SOUTH);
-			toolbars.add(toolbar2);
-		}
-		
-		/* Insert raw document, if exists */
-		/* Begin Change by fc on 13.06.2006: added paragraph to get proper >ENTER< support.*/
-		String content = "<html><body><p align=\"left\"></p></body></html>";
-		/* End Change by fc on 13.06.2006*/
-		if(kafenioConfig.getRawDocument() != null && kafenioConfig.getRawDocument().length() > 0) {
-			if(kafenioConfig.isBase64()) {
-				content = Base64Codec.decode(kafenioConfig.getRawDocument()); 
-			} else {
-				content = kafenioConfig.getRawDocument();
-			}
-			// insert full url for images before setting the document text:
-			content = addURLPrefixToImagePath(content);
-		}
-		setDocumentText(content);
-		htmlPane.setCaretPosition(0);
-		htmlPane.getDocument().addDocumentListener(this);
-		
-		if (kafenioConfig.getStyleSheetFileList() != null) {
-			try {
-				loadStyleSheets(kafenioConfig.getStyleSheetFileList(), kafenioConfig.getCodeBase());
-			} catch(Exception e) {
-				log.warn("could not load stylesheet file list: " + e.fillInStackTrace());
-			}
-		}
-		
-		/* Import CSS from reference, if exists */
-		if(kafenioConfig.getUrlStyleSheet() != null) {
-			String[] urlcss = new String[] {kafenioConfig.getUrlStyleSheet().toString()};
-			try {
-				loadStyleSheets(urlcss, kafenioConfig.getCodeBase());
-			} catch(Exception e) {
-				log.warn("could not load stylesheet from url: " + e.fillInStackTrace());
-			}
-		}
-		
-		/* Preload the specified HTML document, if exists */
-		if(kafenioConfig.getDocument() != null) {
-			File defHTML = new File(kafenioConfig.getDocument());
-			if(defHTML.exists()) {
-				try {
-					openDocument(defHTML);
-				} catch(Exception e) {
-					log.error("Exception in preloading HTML document: " + e.fillInStackTrace());
-				}
-			}
-		}
-		
-		/* Preload the specified CSS document, if exists */
-		if(kafenioConfig.getStyleSheet() != null) {
-			File defCSS = new File(kafenioConfig.getStyleSheet());
-			if(defCSS.exists()) {
-				try {
-					openStyleSheet(defCSS);
-				} catch(Exception e) {
-					log.error("Exception in preloading CSS stylesheet: " + e.fillInStackTrace());
-				}
-			}
-		}
-
-		/* Create the scroll area for the text pane */
-		htmlScrollPane = new JScrollPane(htmlPane);
-		htmlScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		htmlScrollPane.setPreferredSize(new Dimension(400, 400));
-		htmlScrollPane.setMinimumSize(new Dimension(128, 128));
-		
-		/* Create the scroll area for the source viewer */
-		srcScrollPane = new JScrollPane(srcPane);
-		srcScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		srcScrollPane.setPreferredSize(new Dimension(400, 100));
-		srcScrollPane.setMinimumSize(new Dimension(64, 64));
-		
-		mainPane = new JPanel();
-		mainPane.setLayout(new BorderLayout());
-		if(kafenioConfig.isShowViewSource()) {
-			mainPane.add(srcScrollPane, BorderLayout.CENTER);
-		} else {
-			mainPane.add(htmlScrollPane, BorderLayout.CENTER);
-		}
-		registerDocumentStyles();
-		
-		/* Add the components to the app */
-		this.setLayout(new BorderLayout());
-		this.add(toolbarPanel, BorderLayout.NORTH);
-		this.add(mainPane, BorderLayout.CENTER);
-		this.validate();
-	}
+     * Contructs a new KafenioPanel using the given configuration object.
+     * @param config the configuration to use for creation.
+     */
+    public KafenioPanel(KafenioPanelConfigurationInterface iConfiguration) {
+    	super();
+    	log.info("1");
+    	kafenioConfig = (KafenioPanelConfiguration)iConfiguration;
+    	log.info("12");
+    
+    	// Determine if system clipboard is available
+    	secManager = System.getSecurityManager();
+    	if(secManager != null) {
+    		try {
+    			secManager.checkSystemClipboardAccess();
+    			sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+    		} catch (SecurityException se) {
+    			sysClipboard = null;
+    		} catch (Exception se) {
+    			sysClipboard = null;
+    		} finally {
+    			log.debug("System clipboard is not available. Possible reason: no permission.");
+    		}
+    	}
+    	log.info("13");
+    	
+    	/* Localize for language */
+    	translatrix = new Translatrix("de.xeinfach.kafenio.LanguageResources");
+    	log.info("14");
+    	Locale baseLocale = (Locale)null;
+    	log.info("15");
+    	if(kafenioConfig.getLanguage() != null && kafenioConfig.getCountry() != null) {
+    		log.info("16");
+    		baseLocale = new Locale(kafenioConfig.getLanguage(), kafenioConfig.getCountry());
+    		log.info("17");
+    	}
+    	translatrix.setLocale(baseLocale);
+    	log.info("18");
+    	
+    	/* initialize all other components */
+    	kafenioParent = (Container)kafenioConfig.getKafenioParent();
+    	frameHandler = new Frame();
+    	toolbarPanel = new JPanel();
+    	kafenioActions = new KafenioPanelActions(this);
+    	undoManager = new UndoManager();
+    	undoAction = new UndoAction();
+    	redoAction = new RedoAction();
+    	toolbarPanel = new JPanel();
+    	log.info("19");
+    
+    	/* Load TreePilot properties */
+    	try {
+    		treepilotProperties = ResourceBundle.getBundle("de.xeinfach.kafenio.TreePilot");
+    	} catch(MissingResourceException mre) {
+    		log.error("MissingResourceException while loading treepilot file: " + mre.fillInStackTrace());
+    	}
+    	
+    	/* Create the editor kit, document, and stylesheet */
+    	htmlPane = new HtmlPane(this);
+    	htmlKit = new ExtendedHTMLEditorKit();
+    	try {
+    		htmlDoc = (ExtendedHTMLDocument) (htmlKit.createDefaultDocument(new URL(getConfig().getCodeBase())));
+    	} catch (Exception e) {
+    		htmlDoc = (ExtendedHTMLDocument) (htmlKit.createDefaultDocument());
+    	}
+    	htmlDoc.putProperty("de.xeinfach.kafenio.docsource", getConfig().getCodeBase());
+    	styleSheet = htmlDoc.getStyleSheet();
+    	htmlKit.setDefaultCursor(new Cursor(Cursor.TEXT_CURSOR));
+    
+    	/* Set up the text pane */
+    	htmlPane.setEditorKit(htmlKit);
+    	htmlPane.setDocument(htmlDoc);
+    	htmlPane.setMargin(new Insets(0, 0, 0, 0));
+    	
+    	/* Create the source text area */
+    	srcPane = new SyntaxPane();
+    	srcPane.setBackground(new Color(255,255,255));
+    	srcPane.setSelectionColor(new Color(255, 192, 192));
+    	srcPane.getDocument().addDocumentListener(this);
+    
+    	/* Add CaretListener for tracking caret location events */
+    	htmlPane.addCaretListener(new CaretListener() {
+    		public void caretUpdate(CaretEvent ce) {
+    			handleCaretPositionChange(ce);
+    		}
+    	});
+    	htmlPane.getDocument().addUndoableEditListener(new CustomUndoableEditListener());
+    
+    	/* create menubar and toolbar objects before loading the document
+    	 * (we need the styles-combo-box for registering a document) */
+    	kafenioMenuBar = new KafenioMenuBar(this);
+    	kafenioToolBar1 = new KafenioToolBar(this);
+    	kafenioToolBar2 = new KafenioToolBar(this);
+    
+    	/* create menubar */
+    	if (getConfig().isShowMenuBar()) {
+    		if (kafenioConfig.getCustomMenuItems() != null) {
+    			jMenuBar = kafenioMenuBar.createCustomMenuBar(kafenioConfig.getCustomMenuItems());
+    		} else {
+    			jMenuBar = kafenioMenuBar.createDefaultKafenioMenuBar();
+    		}
+    		kafenioMenuBar.getViewToolbarItem().setSelected(getConfig().isShowToolbar() || getConfig().isShowToolbar2());
+    		kafenioMenuBar.getViewSourceItem().setSelected(getConfig().isShowViewSource());
+    		if (kafenioParent != null) {
+    			if (kafenioParent instanceof JDialog) {
+    			    ((JDialog)kafenioParent).setJMenuBar(jMenuBar); 
+    			} else if (kafenioParent instanceof JFrame) {
+    			    ((JFrame)kafenioParent).setJMenuBar(jMenuBar); 
+    			} else if (kafenioParent instanceof KafenioContainerInterface) {
+    			    ((KafenioContainerInterface)kafenioParent).setJMenuBar(jMenuBar); 
+    			}
+    		}
+    	}
+    
+    	/* create toolbars */ 
+    	log.debug("config: " + getConfig());
+    	toolbarPanel.setLayout(new BorderLayout());
+    	toolbarPanel.setBackground(getConfig().getBgcolor());
+    	// TODO: refactor code - duplicate method calls are used...
+    	if (getConfig().isShowToolbar()) {
+    		toolbar1 = kafenioToolBar1.createToolbar(getConfig().getCustomToolBar1(), getConfig().isShowToolbar());
+    		toolbarPanel.add(toolbar1, BorderLayout.NORTH);
+    		toolbars.add(toolbar1);
+    	}
+    	if (getConfig().isShowToolbar2()) {
+    		toolbar2 = kafenioToolBar2.createToolbar(getConfig().getCustomToolBar2(), getConfig().isShowToolbar2());
+    		toolbarPanel.add(toolbar2, BorderLayout.SOUTH);
+    		toolbars.add(toolbar2);
+    	}
+    	
+    	htmlPane.setCaretPosition(0);
+    	htmlPane.getDocument().addDocumentListener(this);
+    	
+    	if (kafenioConfig.getStyleSheetFileList() != null) {
+    		try {
+    			loadStyleSheets(kafenioConfig.getStyleSheetFileList(), kafenioConfig.getCodeBase());
+    		} catch(Exception e) {
+    			log.warn("could not load stylesheet file list: " + e.fillInStackTrace());
+    		}
+    	}
+    	
+    	/* Import CSS from reference, if exists */
+    	if(kafenioConfig.getUrlStyleSheet() != null) {
+    		String[] urlcss = new String[] {kafenioConfig.getUrlStyleSheet().toString()};
+    		try {
+    			loadStyleSheets(urlcss, kafenioConfig.getCodeBase());
+    		} catch(Exception e) {
+    			log.warn("could not load stylesheet from url: " + e.fillInStackTrace());
+    		}
+    	}
+    	
+    	/* Preload the specified HTML document, if exists */
+    	if(kafenioConfig.getDocument() != null) {
+    		File defHTML = new File(kafenioConfig.getDocument());
+    		if(defHTML.exists()) {
+    			try {
+    				openDocument(defHTML);
+    			} catch(Exception e) {
+    				log.error("Exception in preloading HTML document: " + e.fillInStackTrace());
+    			}
+    		}
+    	}
+    	
+    	/* Preload the specified CSS document, if exists */
+    	if(kafenioConfig.getStyleSheet() != null) {
+    		File defCSS = new File(kafenioConfig.getStyleSheet());
+    		if(defCSS.exists()) {
+    			try {
+    				openStyleSheet(defCSS);
+    			} catch(Exception e) {
+    				log.error("Exception in preloading CSS stylesheet: " + e.fillInStackTrace());
+    			}
+    		}
+    	}
+    
+    	/* Create the scroll area for the text pane */
+    	htmlScrollPane = new JScrollPane(htmlPane);
+    	htmlScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+    	htmlScrollPane.setPreferredSize(new Dimension(400, 400));
+    	htmlScrollPane.setMinimumSize(new Dimension(128, 128));
+    	
+    	/* Create the scroll area for the source viewer */
+    	srcScrollPane = new JScrollPane(srcPane);
+    	srcScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+    	srcScrollPane.setPreferredSize(new Dimension(400, 100));
+    	srcScrollPane.setMinimumSize(new Dimension(64, 64));
+    	
+    	mainPane = new JPanel();
+    	mainPane.setLayout(new BorderLayout());
+    	if(kafenioConfig.isShowViewSource()) {
+    		mainPane.add(srcScrollPane, BorderLayout.CENTER);
+    	} else {
+    		mainPane.add(htmlScrollPane, BorderLayout.CENTER);
+    	}
+    	registerDocumentStyles();
+    	
+        /* Insert raw document, if exists */
+        /* Begin Change by fc on 13.06.2006: added paragraph to get proper >ENTER< support.*/
+        String content = "<html>\n<body>\n<p align=\"left\">\n\n</p>\n</body>\n</html>";
+        /* End Change by fc on 13.06.2006*/
+        if(kafenioConfig.getRawDocument() != null && kafenioConfig.getRawDocument().length() > 0) {
+            if(kafenioConfig.isBase64()) {
+                content = Base64Codec.decode(kafenioConfig.getRawDocument()); 
+            } else {
+                content = kafenioConfig.getRawDocument();
+            }
+            // insert full url for images before setting the document text:
+            content = addURLPrefixToImagePath(content);
+        }
+        setDocumentText(content);
+        purgeUndos();
+        /* Add the components to the app */
+    	this.setLayout(new BorderLayout());
+    	this.add(toolbarPanel, BorderLayout.NORTH);
+    	this.add(mainPane, BorderLayout.CENTER);
+    	this.revalidate();
+        
+    }
 
 	/**
 	 * @see de.xeinfach.kafenio.interfaces.KafenioPanelInterface#getTActions()
@@ -717,208 +720,122 @@ public class KafenioPanel extends JPanel implements ActionListener, KeyListener,
 		}
 	}
 
-	/**
-	 * KeyListener method, handles the given KeyEvent
-	 * @param ke a KeyEvent to handle 
-	 */
-	public void keyTyped(KeyEvent ke) {
-		log.debug("key-event caught: " + ke);
-		Element elem;
-		String selectedText;
-		int pos = this.getCaretPosition();
-		int repos = -1;
-		if(	ke.getKeyChar() == KeyEvent.VK_BACK_SPACE) {
-			try {
-				if(pos > 0) {
-					if((selectedText = htmlPane.getSelectedText()) != null) {
-						htmlPane.replaceSelection("");
-						refreshOnUpdate();
-						return;
-					} else {
-						int sOffset = htmlDoc.getParagraphElement(pos).getStartOffset();
-						if(sOffset == htmlPane.getSelectionStart()) {
-							boolean content = true;
-							if(htmlUtils.checkParentsTag(HTML.Tag.LI)) {
-								elem = htmlUtils.getListItemParent();
-								content = false;
-								int so = elem.getStartOffset();
-								int eo = elem.getEndOffset();
-								if(so + 1 < eo) {
-									char[] temp = htmlPane.getText(so, eo - so).toCharArray();
-									for(int i=0; i < temp.length; i++) {
-										if(!(Character.isWhitespace(temp[i]))) {
-											content = true;
-										}
-									}
-								}
-								if(!content) {
-									Element listElement = elem.getParentElement();
-									htmlUtils.removeTag(elem, true);
-									this.setCaretPosition(sOffset - 1);
-									return;
-								} else {
-									htmlPane.setCaretPosition(htmlPane.getCaretPosition() - 1);
-									htmlPane.moveCaretPosition(htmlPane.getCaretPosition() - 2);
-									htmlPane.replaceSelection("");
-									return;
-								}
-							} else if(htmlUtils.checkParentsTag(HTML.Tag.TABLE)) {
-								htmlPane.setCaretPosition(htmlPane.getCaretPosition() - 1);
-								ke.consume();
-								return;
-							}
-						}
-						htmlPane.replaceSelection("");
-						return;
-					}
-				}
-			} catch (BadLocationException ble) {
-				log.error("BadLocationException in keyTyped method: " + ble.fillInStackTrace());
-				SimpleInfoDialog sidAbout = 
-					new SimpleInfoDialog(	this, 
-											translatrix.getTranslationString("Error"), 
-											true, 
-											translatrix.getTranslationString("ErrorBadLocationException"), 
-											SimpleInfoDialog.ERROR);
-			}
-		} else if(ke.getKeyChar() == KeyEvent.VK_ENTER) {
-			try {
-				if(	htmlUtils.checkParentsTag(HTML.Tag.UL) 
-					|| htmlUtils.checkParentsTag(HTML.Tag.OL)) //fc: double || is faster, AFAIK.
-				{
-					if (ke.isShiftDown()) {
-						log.debug("shift-enter pressed inside list item.");
-					} else {
-						log.debug("enter pressed inside list item.");
-						elem = htmlUtils.getListItemParent();
-						int so = elem.getStartOffset();
-						int eo = elem.getEndOffset();
-						char[] temp = this.getTextPane().getText(so,eo-so).toCharArray();
-						boolean content = false;
+		public boolean keyPressed(KeyEvent ke) {
+    		log.debug("key-event caught: " + ke);
+    		int caretPosition = this.getCaretPosition();
+    //		if(true) return false;
+            if(ke.getKeyChar() == KeyEvent.VK_BACK_SPACE) {
+    		    String selectedText = htmlPane.getSelectedText();
+    		    if(selectedText  != null) {
+    		        return false;
+    		    }
+                HTMLUtilities htmlUtils = HTMLUtilities.getInstance();
+    		    if(htmlUtils.checkParentsTag(htmlDoc, HTML.Tag.LI, caretPosition)) {
+    		        Element elem;
+    		        elem = htmlUtils.getOuterElement(htmlDoc, HTML.Tag.LI, caretPosition);
+    		        int so = elem.getStartOffset();
+    		        if(so != caretPosition)
+    		            return false;
+    		        Element listElement = elem.getParentElement();
+    		        if(listElement.getElementCount() != 1){
+    		            return true;
+    		        }
+    		        htmlUtils.convertListToParagraphs(listElement);
+    		        this.setCaretPosition(caretPosition - 1);
+    		        return true;
+    		    } else if(htmlUtils.checkParentsTag(htmlDoc, HTML.Tag.TABLE, caretPosition)) {
+    		        htmlPane.setCaretPosition(htmlPane.getCaretPosition() - 1);
+    		        return true;
+    		    }
+    		} else if(ke.getKeyChar() == KeyEvent.VK_ENTER) {
+    		    try {
+                    if (ke.isShiftDown()) {
+                        log.debug("shift-enter pressed inside list item.");
+                        return false;
+                    }                   
+                    HTMLUtilities htmlUtils = HTMLUtilities.getInstance();
+    		        if(	htmlUtils.checkParentsTag(htmlDoc, HTML.Tag.UL, caretPosition) 
+    		                || htmlUtils.checkParentsTag(htmlDoc, HTML.Tag.OL, caretPosition)) //fc: double || is faster, AFAIK.
+    				{
+    					log.debug("enter pressed inside list item.");
+    					Element elem = htmlUtils.getOuterElement(htmlDoc, HTML.Tag.LI, caretPosition);
+    					int so = elem.getStartOffset();
+    					int eo = elem.getEndOffset();
+    					if(so != eo) {
+                            StringWriter writer = new StringWriter();
+                            ExtendedHTMLWriter htmlwriter = new ExtendedHTMLWriter(writer, elem);
+                            htmlwriter.write();
+                            String text = writer.toString();
+                            htmlDoc.setOuterHTML(elem, text + "\n" + text);
+                            elem = htmlUtils.getOuterElement(htmlDoc, HTML.Tag.LI, caretPosition);
+                            int so2 = elem.getStartOffset();
+                            caretPosition += so2 - so;
+                            int eo2 = elem.getEndOffset();
+                            htmlDoc.remove(caretPosition, eo2 - caretPosition - 1);
+                            htmlDoc.remove(caretPosition + 1, caretPosition - so2);
+                            setCaretPosition(caretPosition + 1);
+                            return true;
+    					}
+    					return true;
+    				}
+    		    } catch (BadLocationException ble) {
+    		        log.error("BadLocationException in keyTyped method: " + ble.fillInStackTrace());
+    		        SimpleInfoDialog sidAbout = 
+    					new SimpleInfoDialog(	this, 
+    											translatrix.getTranslationString("Error"), 
+    											true, 
+    											translatrix.getTranslationString("ErrorBadLocationException"), 
+    											SimpleInfoDialog.ERROR);
+    			} catch (IOException ioe) {
+    				log.error("IOException in keyTyped method: " + ioe.fillInStackTrace());
+    				SimpleInfoDialog sidAbout = 
+    					new SimpleInfoDialog(	this, 
+    											translatrix.getTranslationString("Error"), 
+    											true, 
+    											translatrix.getTranslationString("ErrorIOException"), 
+    											SimpleInfoDialog.ERROR);
+    			}
+    		} else if(ke.getKeyChar() == KeyEvent.VK_SPACE) {
+    			try {
+    				int caret = this.getCaretPosition();
+    				String tempString = this.getTextPane().getText(caret -1, 1);
+    				if("&".equals(tempString)) {
+    					insertNonbreakingSpace();
+    				}
+    			} catch (BadLocationException ble) {
+    				log.error("BadLocationException in keyTyped method: " + ble.fillInStackTrace());
+    				SimpleInfoDialog sidAbout = 
+    					new SimpleInfoDialog(	this, 
+    											translatrix.getTranslationString("Error"), 
+    											true, 
+    											translatrix.getTranslationString("ErrorBadLocationException"), 
+    											SimpleInfoDialog.ERROR);
+    			} catch (IOException ioe) {
+    				log.error("IOException in keyTyped method: " + ioe.fillInStackTrace());
+    				SimpleInfoDialog sidAbout = 
+    					new SimpleInfoDialog(	this, 
+    											translatrix.getTranslationString("Error"), 
+    											true, 
+    											translatrix.getTranslationString("ErrorIOException"), 
+    											SimpleInfoDialog.ERROR);
+    			}
+    		} else if (ke.getKeyChar() == KeyEvent.VK_ESCAPE &&
+    		           getConfig().getProperty("escapeCloses").equals("true")) 
+    		{
+    		    getKafenioParent().hide();
+    		}
+            return false;
+    	}
 	
-						for(int i=0;i<temp.length;i++) {
-							if(!Character.isWhitespace(temp[i])) {
-								content = true;
-							}
-						}
-	
-						if(content) {
-							int end = -1;
-							int j = temp.length;
-							do {
-								j--;
-								if(Character.isLetterOrDigit(temp[j])) {
-									end = j;
-								}
-							} while (end == -1 && j >= 0);
-							j = end;
-							do {
-								j++;
-								if(!Character.isSpaceChar(temp[j])) {
-									repos = j - end -1;
-								}
-							} while (repos == -1 && j < temp.length);
-							if(repos == -1) {
-								repos = 0;
-							}
-						}
-						if(elem.getStartOffset() == elem.getEndOffset() || !content) {
-							manageListElement(elem);
-						} else {
-							if(this.getCaretPosition() + 1 == elem.getEndOffset()) {
-								insertListStyle(elem);
-								this.setCaretPosition(pos - repos);
-							} else {
-								int caret = this.getCaretPosition();
-								String tempString = this.getTextPane().getText(caret, eo - caret);
-								this.getTextPane().select(caret, eo - 1);
-								this.getTextPane().replaceSelection("");
-								htmlUtils.insertListElement(tempString);
-								Element newLi = htmlUtils.getListItemParent();
-								this.setCaretPosition(newLi.getEndOffset() - 1);
-							}
-						}
-					}
-				} else {
-					if(!ke.isShiftDown()){
-						getKafenioActions().getActionAddParagraph().actionPerformed(
-							new ActionEvent(ke.getSource(), 10, ""));
-					}
-				}
-			} catch (BadLocationException ble) {
-				log.error("BadLocationException in keyTyped method: " + ble.fillInStackTrace());
-				SimpleInfoDialog sidAbout = 
-					new SimpleInfoDialog(	this, 
-											translatrix.getTranslationString("Error"), 
-											true, 
-											translatrix.getTranslationString("ErrorBadLocationException"), 
-											SimpleInfoDialog.ERROR);
-			} catch (IOException ioe) {
-				log.error("IOException in keyTyped method: " + ioe.fillInStackTrace());
-				SimpleInfoDialog sidAbout = 
-					new SimpleInfoDialog(	this, 
-											translatrix.getTranslationString("Error"), 
-											true, 
-											translatrix.getTranslationString("ErrorIOException"), 
-											SimpleInfoDialog.ERROR);
-			}
-		} else if(ke.getKeyChar() == KeyEvent.VK_SPACE) {
-			try {
-				int caret = this.getCaretPosition();
-				String tempString = this.getTextPane().getText(caret -1, 1);
-				if("&".equals(tempString)) {
-					insertNonbreakingSpace();
-				}
-			} catch (BadLocationException ble) {
-				log.error("BadLocationException in keyTyped method: " + ble.fillInStackTrace());
-				SimpleInfoDialog sidAbout = 
-					new SimpleInfoDialog(	this, 
-											translatrix.getTranslationString("Error"), 
-											true, 
-											translatrix.getTranslationString("ErrorBadLocationException"), 
-											SimpleInfoDialog.ERROR);
-			} catch (IOException ioe) {
-				log.error("IOException in keyTyped method: " + ioe.fillInStackTrace());
-				SimpleInfoDialog sidAbout = 
-					new SimpleInfoDialog(	this, 
-											translatrix.getTranslationString("Error"), 
-											true, 
-											translatrix.getTranslationString("ErrorIOException"), 
-											SimpleInfoDialog.ERROR);
-			}
-		} else if (ke.getKeyChar() == KeyEvent.VK_ESCAPE &&
-		           getConfig().getProperty("escapeCloses").equals("true")) 
-		{
-		    getKafenioParent().hide();
-		}
-	}
-	
-	/**
-	 * handles the given KeyEvent if key was pressed down (do nothing)
-	 * @param e a KeyEvent to handle
-	 */
-	public void keyPressed(KeyEvent e) {}
-	
-	/**
-	 * handles the given KeyEvent if key was released (do nothing)
-	 * @param e a KeyEvent to handle
-	 */
-	public void keyReleased(KeyEvent e) {}
-
 	/**
 	 * inserts a list item into the document at "element"'s position.
 	 * @param element the element to add the list to
+	 * @param pos 
 	 * @throws BadLocationException is thrown if something went wrong during insertion
 	 * @throws IOException is thrown if an io exception occured.
 	 */
-	public void insertListStyle(Element element) throws BadLocationException,IOException {
-		if(element.getParentElement().getName() == "ol") {
-			getKafenioActions().getActionListOrdered().actionPerformed(
-				new ActionEvent(new Object(), 0, "newListPoint"));
-		} else {
-			getKafenioActions().getActionListUnordered().actionPerformed(
-				new ActionEvent(new Object(), 0, "newListPoint"));
-		}
+	public void insertListStyle(Element element, int pos) throws BadLocationException,IOException {
+        htmlKit.insertHTML(htmlDoc, pos, "<li></li>", 1, 1, HTML.Tag.LI);
 	}
 
 	/**
@@ -1368,18 +1285,6 @@ public class KafenioPanel extends JPanel implements ActionListener, KeyListener,
 							fieldTypes, 
 							new String[fieldNames.length], 
 							hasClosingTag);
-	}
-
-	/** 
-	 * Method that handles initial list insertion and deletion
-	 * @param element list element to manage
-	 */
-	public void manageListElement(Element element) {
-		Element h = htmlUtils.getListItemParent();
-		Element listElement = h.getParentElement();
-		if(h != null) {
-			htmlUtils.removeTag(h, true);
-		}
 	}
 
 	/** 
@@ -2314,6 +2219,7 @@ public class KafenioPanel extends JPanel implements ActionListener, KeyListener,
 		}
 		htmlPane.setText(HTMLTranslate.decode(addURLPrefixToImagePath(sText)));
 		srcPane.setText(htmlPane.getText());
+        purgeUndos();
 	}
 
 	/** 
@@ -2338,8 +2244,8 @@ public class KafenioPanel extends JPanel implements ActionListener, KeyListener,
 	 * Convenience method for refreshing and displaying changes
 	 */
 	public void refreshOnUpdate() {
-		setDocumentText(addURLPrefixToImagePath(htmlPane.getText()));
-		validate();
+		setDocumentText(htmlPane.getText());
+		revalidate();
 	}
 
 	/** 
@@ -2428,7 +2334,20 @@ public class KafenioPanel extends JPanel implements ActionListener, KeyListener,
 	 * @param ce the CaretEvent to handle
 	 */
 	private void handleCaretPositionChange(CaretEvent ce) {
-		int caretPos = ce.getDot();
+        int caretPos = ce.getDot();
+        if(caretPos == 0){
+            final Element firstElement = htmlDoc.getDefaultRootElement().getElement(0);
+            if(firstElement.getName().equals("head")){
+                final int newCaretPos = firstElement.getEndOffset();
+                EventQueue.invokeLater(new Runnable() {
+                    public void run() {
+                        if(htmlPane.getSelectionEnd() < newCaretPos){
+                            setCaretPosition(newCaretPos);                        
+                        }
+                    }                
+                });
+            }
+        }
 		Element	element = htmlDoc.getCharacterElement(caretPos);
 		if(element == null) {
 			return;
@@ -2590,11 +2509,17 @@ public class KafenioPanel extends JPanel implements ActionListener, KeyListener,
 		 * handles the given ActionEvent
 		 */
 		public void actionPerformed(ActionEvent e) {
+            if (htmlDoc.getDefaultRootElement().getElementCount() != 2){
+                int debug = 0;
+            }
 			try {
 				undoManager.undo();
 			} catch(CannotUndoException ex) {
 				log.warn("Exception while performing undo: " + ex.fillInStackTrace());
 			}
+            if (htmlDoc.getDefaultRootElement().getElementCount() != 2){
+                int debug = 0;
+            }
 			updateUndoState();
 			redoAction.updateRedoState();
 		}
@@ -2630,10 +2555,17 @@ public class KafenioPanel extends JPanel implements ActionListener, KeyListener,
 		 */
 		public void actionPerformed(ActionEvent e) {
 			try {
+                if (htmlDoc.getDefaultRootElement().getElementCount() != 2){
+                    int debug = 0;
+                }
+                    
 				undoManager.redo();
 			} catch(CannotUndoException ex) {
 				log.warn("Exception while performing redo: " + ex.fillInStackTrace());
 			}
+            if (htmlDoc.getDefaultRootElement().getElementCount() != 2){
+                int debug = 0;
+            }
 			updateRedoState();
 			undoAction.updateUndoState();
 		}
