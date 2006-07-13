@@ -59,7 +59,7 @@ public class ToggleCaseAction extends StyledEditorKit.StyledTextAction {
 			}
 			parentTextPane.select(startPos, endPos);
 			parentTextPane.requestFocus();
-			parentKafenioPanel.refreshOnUpdate();
+			// TODO parentKafenioPanel.refreshOnUpdate();
 		}
 	}
 }

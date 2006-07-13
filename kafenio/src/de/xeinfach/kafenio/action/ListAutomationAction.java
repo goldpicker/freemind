@@ -89,6 +89,8 @@ public class ListAutomationAction extends HTMLEditorKit.InsertHTMLTextAction {
                 else{
                     HTMLUtilities.getInstance().convertParagraphsToList(listRootElement, listRootElement, baseTag.toString());
                 }
+                jepEditor.setSelectionStart(selectionStart);
+                jepEditor.setSelectionEnd(selectionEnd);
                 return;
             }
         }
@@ -98,18 +100,26 @@ public class ListAutomationAction extends HTMLEditorKit.InsertHTMLTextAction {
         else{
             item = HTMLUtilities.getInstance().getOuterElement(htmlDoc, HTML.Tag.P, selectionStart);
         }
-        if(item == null)
-            return;
-        Element first = item;
-        final Element listParent = item.getParentElement();
-        int index = listParent.getElementIndex(item.getStartOffset());
-        do{
-            item = listParent.getElement(++index);
+        if(item != null){
+            Element first = item;
+            final Element listParent = item.getParentElement();
+            int index = listParent.getElementIndex(item.getStartOffset());
+            do{
+                item = listParent.getElement(++index);
+            }
+            while(item != null && item.getStartOffset() <= selectionEnd);
+            --index;
+            item = listParent.getElement(index);
+            HTMLUtilities.getInstance().convertParagraphsToList(first, item, baseTag.toString());
         }
-        while(item != null && item.getStartOffset() <= selectionEnd);
-        --index;
-        item = listParent.getElement(index);
-        HTMLUtilities.getInstance().convertParagraphsToList(first, item, baseTag.toString());
+        else{
+            item = HTMLUtilities.getInstance().getOuterElement(htmlDoc, HTML.Tag.TD, selectionStart);
+            if(item != null){
+                    HTMLUtilities.getInstance().insertList(item,baseTag.toString());    
+            }
+        }
+        jepEditor.setSelectionStart(selectionStart);
+        jepEditor.setSelectionEnd(selectionEnd);
     }
 
 	/**

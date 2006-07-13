@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -580,9 +581,10 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
 			} else if(command.equals("readfromser")) {
 				serializeIn();
 			} else if(command.equals("inserttable")) {
-				String[] fieldNames = { "rows", "cols", "border", "cellspacing", "cellpadding", "width" };
+                String[] fieldNames = { "rows", "cols", "border", "cellspacing", "cellpadding", "width" };
 				String[] fieldTypes = { "text", "text", "text",   "text",        "text",        "text" };
-				insertTable((Hashtable)null, fieldNames, fieldTypes);
+                String[] fieldValues = { "1", "3", "1", "0", "0", "100%" };
+				insertTable((Hashtable)null, fieldNames, fieldTypes, fieldValues);
 			} else if(command.equals("inserttablerow")) {
 				insertTableRow();
 			} else if(command.equals("inserttablecolumn")) {
@@ -731,8 +733,7 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
     		    }
                 HTMLUtilities htmlUtils = HTMLUtilities.getInstance();
     		    if(htmlUtils.checkParentsTag(htmlDoc, HTML.Tag.LI, caretPosition)) {
-    		        Element elem;
-    		        elem = htmlUtils.getOuterElement(htmlDoc, HTML.Tag.LI, caretPosition);
+                    Element elem = htmlUtils.getOuterElement(htmlDoc, HTML.Tag.LI, caretPosition);
     		        int so = elem.getStartOffset();
     		        if(so != caretPosition)
     		            return false;
@@ -743,10 +744,13 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
     		        htmlUtils.convertListToParagraphs(listElement);
     		        this.setCaretPosition(caretPosition - 1);
     		        return true;
-    		    } else if(htmlUtils.checkParentsTag(htmlDoc, HTML.Tag.TABLE, caretPosition)) {
-    		        htmlPane.setCaretPosition(htmlPane.getCaretPosition() - 1);
-    		        return true;
-    		    }
+    		    } else {
+                    Element elem = htmlUtils.getOuterElement(htmlDoc, HTML.Tag.TD, caretPosition);
+   		        if(caretPosition > 1 && elem != null && elem.getStartOffset() == caretPosition) {
+    		            htmlPane.setCaretPosition(htmlPane.getCaretPosition() - 1);
+    		            return true;
+    		        }
+                }
     		} else if(ke.getKeyChar() == KeyEvent.VK_ENTER) {
     		    try {
                     if (ke.isShiftDown()) {
@@ -766,13 +770,19 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
                             ExtendedHTMLWriter htmlwriter = new ExtendedHTMLWriter(writer, elem);
                             htmlwriter.write();
                             String text = writer.toString();
-                            htmlDoc.setOuterHTML(elem, text + "\n" + text);
-                            elem = htmlUtils.getOuterElement(htmlDoc, HTML.Tag.LI, caretPosition);
-                            int so2 = elem.getStartOffset();
-                            caretPosition += so2 - so;
-                            int eo2 = elem.getEndOffset();
-                            htmlDoc.remove(caretPosition, eo2 - caretPosition - 1);
-                            htmlDoc.remove(caretPosition + 1, caretPosition - so2);
+                            try{
+                                htmlDoc.startCompoundEdit();
+                                htmlDoc.setOuterHTML(elem, text + "\n" + text);
+                                elem = htmlUtils.getOuterElement(htmlDoc, HTML.Tag.LI, caretPosition);
+                                int so2 = elem.getStartOffset();
+                                caretPosition += so2 - so;
+                                int eo2 = elem.getEndOffset();
+                                htmlDoc.remove(caretPosition, eo2 - caretPosition - 1);
+                                htmlDoc.remove(caretPosition + 1, caretPosition - so2);
+                            }
+                            finally {
+                                htmlDoc.endCompoundEdit();
+                            }
                             setCaretPosition(caretPosition + 1);
                             return true;
     					}
@@ -828,17 +838,6 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
     	}
 	
 	/**
-	 * inserts a list item into the document at "element"'s position.
-	 * @param element the element to add the list to
-	 * @param pos 
-	 * @throws BadLocationException is thrown if something went wrong during insertion
-	 * @throws IOException is thrown if an io exception occured.
-	 */
-	public void insertListStyle(Element element, int pos) throws BadLocationException,IOException {
-        htmlKit.insertHTML(htmlDoc, pos, "<li></li>", 1, 1, HTML.Tag.LI);
-	}
-
-	/**
 	 * handles a DocumentEvent if the document was changed
 	 * @param de DocumentEvent to handle 
 	 */
@@ -878,6 +877,7 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
 		htmlPane.setDocument(newHtmlDoc);
 		htmlPane.getDocument().addUndoableEditListener(new CustomUndoableEditListener());
 		htmlPane.getDocument().addDocumentListener(this);
+        setCaretPosition(1);
 		purgeUndos();
 		registerDocumentStyles();
 	}
@@ -919,8 +919,9 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
 
 	/** 
 	 * Method for inserting an HTML Table
+	 * @param fieldValues 
 	 */
-	private void insertTable(Hashtable attribs, String[] fieldNames, String[] fieldTypes)
+	private void insertTable(Hashtable attribs, String[] fieldNames, String[] fieldTypes, String[] fieldValues)
 		throws IOException, BadLocationException, RuntimeException, NumberFormatException
 	{
 		log.debug("starting insertTable action...");
@@ -943,6 +944,7 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
 				new PropertiesDialog(	this, 
 										fieldNames, 
 										fieldTypes, 
+                                        fieldValues,
 										translatrix.getTranslationString("FormDialogTitle"), 
 										true);
 			String decision = propertiesDialog.getDecisionValue();
@@ -976,10 +978,12 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
 
 			compositeElement.append("</TR>");
 		}
-		compositeElement.append("</TABLE><P>&nbsp;<P>");
-		htmlKit.insertHTML(htmlDoc, caretPos, compositeElement.toString(), 0, 0, HTML.Tag.TABLE);
+		compositeElement.append("</TABLE>");
+        Element para = htmlDoc.getParagraphElement(caretPos);
+          if(para != null) {
+            htmlDoc.insertAfterEnd(para, compositeElement.toString());
+          }
 		htmlPane.setCaretPosition(caretPos + 1);
-		refreshOnUpdate();
 	}
 
 	/** 
@@ -1013,7 +1017,7 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
 													sRow.toString(), 
 													HTML.Tag.TABLE, 
 													HTML.Tag.TR).actionPerformed(actionEvent);
-			refreshOnUpdate();
+			// TODO refreshOnUpdate();
 			htmlPane.setCaretPosition(caretPos);
 		}
 	}
@@ -1065,7 +1069,7 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
 														HTML.Tag.TH, 
 														HTML.Tag.TD).actionPerformed(actionEvent);
 			}
-			refreshOnUpdate();
+			// TODO refreshOnUpdate();
 			htmlPane.setCaretPosition(caretPos);
 		}
 	}
@@ -1082,7 +1086,7 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
 												HTML.Tag.TD, 
 												HTML.Tag.TH, 
 												HTML.Tag.TD).actionPerformed(actionEvent);
-		refreshOnUpdate();
+		// TODO refreshOnUpdate();
 	}
 
 	/** 
@@ -1106,9 +1110,9 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
 		
 		if(startPoint > -1 && endPoint > startPoint) {
 			htmlDoc.remove(startPoint, endPoint - startPoint);
-			htmlPane.setDocument(htmlDoc);
-			registerDocument(htmlDoc);
-			refreshOnUpdate();
+			// TODO htmlPane.setDocument(htmlDoc);
+			// TODO registerDocument(htmlDoc);
+			// refreshOnUpdate();
 			if(caretPos >= htmlDoc.getLength()) {
 				caretPos = htmlDoc.getLength() - 1;
 			}
@@ -1158,9 +1162,9 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
 					int columnCellEnd   = elementCell.getEndOffset();
 					htmlDoc.remove(columnCellStart, columnCellEnd - columnCellStart);
 				}
-				htmlPane.setDocument(htmlDoc);
-				registerDocument(htmlDoc);
-				refreshOnUpdate();
+				// TODO htmlPane.setDocument(htmlDoc);
+				// TODO registerDocument(htmlDoc);
+				// TODO refreshOnUpdate();
 				if(caretPos >= htmlDoc.getLength()) {
 					caretPos = htmlDoc.getLength() - 1;
 				}
@@ -1255,7 +1259,7 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
 			compositeElement.append("<P>&nbsp;</P>");
 		}
 		htmlKit.insertHTML(htmlDoc, caretPos, compositeElement.toString(), 0, 0, baseTag);
-		refreshOnUpdate();
+		// TODO refreshOnUpdate();
 	}
 
 	/** 
@@ -1439,7 +1443,7 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
 			int caretPos = htmlPane.getCaretPosition();
 			htmlKit.insertHTML(htmlDoc, caretPos, "<IMG SRC=\"" + whatImage + "\">", 0, 0, HTML.Tag.IMG);
 			htmlPane.setCaretPosition(caretPos + 1);
-			refreshOnUpdate();
+			// TOFO refreshOnUpdate();
 		}
 	}
 
@@ -1564,7 +1568,7 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
 			fw.close();
 			currentFile = whatFile;
 			updateTitle();
-			refreshOnUpdate();
+			// TODO refreshOnUpdate();
 		}
 	}
 
@@ -1584,7 +1588,6 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
 			fw.write(docContents, 0, docContents.length());
 			fw.flush();
 			fw.close();
-			refreshOnUpdate();
 		}
 	}
 
@@ -1624,7 +1627,7 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
 			fw.write(base64text, 0, base64text.length());
 			fw.flush();
 			fw.close();
-			refreshOnUpdate();
+			// TODO refreshOnUpdate();
 		}
 	}
 
@@ -1845,7 +1848,7 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
 			oos.writeObject(doc);
 			oos.flush();
 			oos.close();
-			refreshOnUpdate();
+			// TODO refreshOnUpdate();
 		}
 	}
 

@@ -9,6 +9,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.html.StyleSheet;
 import javax.swing.text.html.HTML;
 
+import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
 import javax.swing.event.DocumentEvent;
@@ -26,6 +27,7 @@ import java.util.Enumeration;
 public class ExtendedHTMLDocument extends HTMLDocument {
 	
 	private static LeanLogger log = new LeanLogger("ExtendedHTMLDocument.class");
+    private CompoundEdit compoundEdit;
 	
 	/**
 	 * Constructs a new ExtendedHTMLDocument using the given values.
@@ -117,6 +119,31 @@ public class ExtendedHTMLDocument extends HTMLDocument {
          else if (number == 1) {             
              setOuterHTML(firstElement, htmlText);
          }
+    }
+
+    public void startCompoundEdit() {
+        if(compoundEdit == null){
+            compoundEdit = new CompoundEdit();
+        }
+            
+        
+    }
+
+    public void endCompoundEdit() {
+        if(compoundEdit != null){
+            compoundEdit.end();
+            super.fireUndoableEditUpdate(new UndoableEditEvent(this, compoundEdit));
+            compoundEdit = null;
+        }
+    }
+
+    protected void fireUndoableEditUpdate(UndoableEditEvent e) {
+        if(compoundEdit == null){
+            super.fireUndoableEditUpdate(e);
+        }
+        else{
+            compoundEdit.addEdit(e.getEdit());
+        }
     }
 
 }

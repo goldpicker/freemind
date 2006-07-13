@@ -104,6 +104,23 @@ public class HTMLUtilities {
         return ((ExtendedHTMLDocument)elem.getDocument());
     }
 
+    public void insertList(Element item, String listName) {
+        try {
+            Writer writer = new StringWriter();
+            HTMLWriter htmlWriter = new ExtendedHTMLWriter(writer, item);
+            htmlWriter.write();
+            String text = writer.toString();
+            String newHtml = "<" + listName + ">\n<li>" + removeTagInfo(text) + "</li></" + listName + ">\n";
+            getExtendedHtmlDoc(item).setInnerHTML(item, newHtml);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (BadLocationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+    }
     public void convertParagraphsToList(Element firstParagraph, Element lastParagraph, String listName) {
         try {
             String newHtml = ""; 
@@ -189,4 +206,5 @@ public class HTMLUtilities {
 			return null;
 		}
 	}
+
 }

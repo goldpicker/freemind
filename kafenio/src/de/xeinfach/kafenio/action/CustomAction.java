@@ -35,6 +35,7 @@ import javax.swing.text.StyledEditorKit;
 import javax.swing.text.html.HTML;
 
 import de.xeinfach.kafenio.KafenioPanel;
+import de.xeinfach.kafenio.component.ExtendedHTMLDocument;
 import de.xeinfach.kafenio.component.dialogs.FontSelectorDialog;
 import de.xeinfach.kafenio.component.dialogs.HyperlinkDialog;
 import de.xeinfach.kafenio.component.dialogs.SimpleInfoDialog;
@@ -269,7 +270,7 @@ public class CustomAction extends StyledEditorKit.StyledTextAction {
 	}
 
 	private void refreshAndSelect(JTextPane parentTextPane, int caretOffset, int internalTextLength) {
-		parentKafenioPanel.refreshOnUpdate();
+		// TODO parentKafenioPanel.refreshOnUpdate();
 		parentTextPane.select(caretOffset, caretOffset + internalTextLength);
 	}
 
@@ -286,63 +287,70 @@ public class CustomAction extends StyledEditorKit.StyledTextAction {
 										int caretOffset, 
 										String[] additionalAttributes) 
 	{
-		JTextPane parentTextPane = myParentKafenioPanel.getTextPane();
-		int internalTextLength;
-		Vector skipAttributesList = new Vector();
-		skipAttributesList.add(HTML.Attribute.SRC.toString());
-		skipAttributesList.add(HTML.Attribute.BORDER.toString());
-		skipAttributesList.add(HTML.Attribute.WIDTH.toString());
-		skipAttributesList.add(HTML.Attribute.HEIGHT.toString());
-		skipAttributesList.add(HTML.Attribute.ALT.toString());
-		
-		// add any HTML.Attributes to skipList...
-		if (additionalAttributes != null) {
-			for (int i=0; i < additionalAttributes.length; i++) {
-				skipAttributesList.add(additionalAttributes[i].toString());
-			}
-		}
-
-		// clear all paragraph attributes in selection
-		SimpleAttributeSet sasText = 
-			new SimpleAttributeSet(parentTextPane.getParagraphAttributes());
-		for (Enumeration en = sasText.getAttributeNames(); en.hasMoreElements();) {
-			Object elm = en.nextElement();
-			sasText.removeAttribute(sasText.getAttribute(elm));
-		}
-		parentTextPane.setParagraphAttributes(sasText, true);
-
-		// clear all character attributes in selection
-		sasText = null;
-		internalTextLength = selText.length();
-		for(int i = caretOffset; i <= caretOffset + internalTextLength; i++) {
-			parentTextPane.setCaretPosition(i);
-			sasText = new SimpleAttributeSet(parentTextPane.getCharacterAttributes().copyAttributes());
-			Enumeration attribEntries1 = sasText.getAttributeNames();
-			while(attribEntries1.hasMoreElements()) {
-				Object entryKey   = attribEntries1.nextElement();
-				Object entryValue = sasText.getAttribute(entryKey);
-				log.debug(entryKey + "=" + entryValue);
-				try {
-					for (int j=0; j < skipAttributesList.size(); j++) {
-						if (entryKey.toString().equals(skipAttributesList.get(j))) throw new Exception();
-					}
-				} catch (Exception e) {
-					continue;
-				}
-				if (!entryKey.toString().equals(HTML.Attribute.NAME.toString())) {
-					log.debug("removing: " + entryKey.toString() + "=" + entryValue.toString());
-					sasText.removeAttribute(entryKey);
-				}
-			}
-			try {
-				parentTextPane.select(i, i+1);
-				parentTextPane.setCharacterAttributes(sasText, true);
-			} catch (Exception e) {
-				log.error("An Error ocurred: " + e.fillInStackTrace());
-			}
-		}
-		log.debug("cleared everything.");
-		refreshAndSelect(parentTextPane, caretOffset, internalTextLength);
+        final ExtendedHTMLDocument extendedHtmlDoc = myParentKafenioPanel.getExtendedHtmlDoc();
+        extendedHtmlDoc.startCompoundEdit();
+        try{
+            JTextPane parentTextPane = myParentKafenioPanel.getTextPane();
+            int internalTextLength;
+            Vector skipAttributesList = new Vector();
+            skipAttributesList.add(HTML.Attribute.SRC.toString());
+            skipAttributesList.add(HTML.Attribute.BORDER.toString());
+            skipAttributesList.add(HTML.Attribute.WIDTH.toString());
+            skipAttributesList.add(HTML.Attribute.HEIGHT.toString());
+            skipAttributesList.add(HTML.Attribute.ALT.toString());
+            
+            // add any HTML.Attributes to skipList...
+            if (additionalAttributes != null) {
+                for (int i=0; i < additionalAttributes.length; i++) {
+                    skipAttributesList.add(additionalAttributes[i].toString());
+                }
+            }
+            
+            // clear all paragraph attributes in selection
+            SimpleAttributeSet sasText = 
+                new SimpleAttributeSet(parentTextPane.getParagraphAttributes());
+            for (Enumeration en = sasText.getAttributeNames(); en.hasMoreElements();) {
+                Object elm = en.nextElement();
+                sasText.removeAttribute(sasText.getAttribute(elm));
+            }
+            parentTextPane.setParagraphAttributes(sasText, true);
+            
+            // clear all character attributes in selection
+            sasText = null;
+            internalTextLength = selText.length();
+            for(int i = caretOffset; i <= caretOffset + internalTextLength; i++) {
+                parentTextPane.setCaretPosition(i);
+                sasText = new SimpleAttributeSet(parentTextPane.getCharacterAttributes().copyAttributes());
+                Enumeration attribEntries1 = sasText.getAttributeNames();
+                while(attribEntries1.hasMoreElements()) {
+                    Object entryKey   = attribEntries1.nextElement();
+                    Object entryValue = sasText.getAttribute(entryKey);
+                    log.debug(entryKey + "=" + entryValue);
+                    try {
+                        for (int j=0; j < skipAttributesList.size(); j++) {
+                            if (entryKey.toString().equals(skipAttributesList.get(j))) throw new Exception();
+                        }
+                    } catch (Exception e) {
+                        continue;
+                    }
+                    if (!entryKey.toString().equals(HTML.Attribute.NAME.toString())) {
+                        log.debug("removing: " + entryKey.toString() + "=" + entryValue.toString());
+                        sasText.removeAttribute(entryKey);
+                    }
+                }
+                try {
+                    parentTextPane.select(i, i+1);
+                    parentTextPane.setCharacterAttributes(sasText, true);
+                } catch (Exception e) {
+                    log.error("An Error ocurred: " + e.fillInStackTrace());
+                }
+            }
+            log.debug("cleared everything.");
+            refreshAndSelect(parentTextPane, caretOffset, internalTextLength);
+        }
+        finally{
+            extendedHtmlDoc.endCompoundEdit();
+        }
 		return;
 	}
 	
