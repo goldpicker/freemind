@@ -366,6 +366,7 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
             content = addURLPrefixToImagePath(content);
         }
         setDocumentText(content);
+        setCaretPosition(1);
         purgeUndos();
         /* Add the components to the app */
     	this.setLayout(new BorderLayout());
@@ -2512,17 +2513,11 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
 		 * handles the given ActionEvent
 		 */
 		public void actionPerformed(ActionEvent e) {
-            if (htmlDoc.getDefaultRootElement().getElementCount() != 2){
-                int debug = 0;
-            }
 			try {
 				undoManager.undo();
 			} catch(CannotUndoException ex) {
 				log.warn("Exception while performing undo: " + ex.fillInStackTrace());
 			}
-            if (htmlDoc.getDefaultRootElement().getElementCount() != 2){
-                int debug = 0;
-            }
 			updateUndoState();
 			redoAction.updateRedoState();
 		}
@@ -2558,17 +2553,10 @@ public class KafenioPanel extends JPanel implements ActionListener, DocumentList
 		 */
 		public void actionPerformed(ActionEvent e) {
 			try {
-                if (htmlDoc.getDefaultRootElement().getElementCount() != 2){
-                    int debug = 0;
-                }
-                    
 				undoManager.redo();
 			} catch(CannotUndoException ex) {
 				log.warn("Exception while performing redo: " + ex.fillInStackTrace());
 			}
-            if (htmlDoc.getDefaultRootElement().getElementCount() != 2){
-                int debug = 0;
-            }
 			updateRedoState();
 			undoAction.updateUndoState();
 		}
