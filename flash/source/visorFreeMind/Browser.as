@@ -134,16 +134,28 @@ class visorFreeMind.Browser {
 	public function loadImage(fileName,mc_target){
 		mcl.loadClip(fileName,mc_target);
 		numWaitingImages++;
+		trace("waiting: "+numWaitingImages+" add Loading :"+fileName);
 		showLoading();
+	}
+
+	public function onLoadInit(target){
+		trace("init"); 
+	}
+
+	public function onLoadProgress(target){
+		var progress = mcl.getProgress(target);
+		trace("progress Loading :"+progress.bytesLoaded / progress.bytesTotal);
 	}
 
 	public function onLoadComplete(target){
 		numWaitingImages--;
+		trace("rest Loading :"+numWaitingImages);
 		validLoaded();
 	}
 
 	public function onLoadError(target,error){
 		numWaitingImages--;
+		trace("rest Loading :"+numWaitingImages+" "+error);
 		validLoaded();
 	}
 
@@ -158,7 +170,7 @@ class visorFreeMind.Browser {
 
 
 	function relocateMindMap(){
-		relocateNodes(listNodesL[0],0,0,false);
+		relocateNodes(listNodesL[0],0,0,false);//false=left, true=right
 		relocateNodes(listNodesR[0],0,0,true);
 		relocateShifts(listNodesL[0],0,false);
 		relocateShifts(listNodesR[0],0,true);
@@ -348,13 +360,13 @@ class visorFreeMind.Browser {
 		saveOldPosition();
 		//Clean old Data.
 		//trace("jumpType "+jumpType);
-		if(jumpType!=2) {// 2=fold and unfold
+		if(jumpType!=2) {
 			resetData();
 			// clear floor.
 			floor.clear();
 			// generate Tree
 			evalXML(jumpType);
-		}else{
+		}else{ // 2=fold and unfold
 			relocateMindMap();
 		}
 	}
