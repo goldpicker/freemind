@@ -16,35 +16,26 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: NodeNote.java,v 1.1.4.7.2.8 2006-07-25 20:28:19 christianfoltin Exp $ */
+/* $Id: NodeNote.java,v 1.1.4.7.2.8.2.1 2006-08-11 20:33:22 dpolivaev Exp $ */
 package accessories.plugins;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.event.KeyEvent;
-import java.util.HashMap;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JMenuBar;
 import javax.swing.JPanel;
-import javax.swing.JRootPane;
-import javax.swing.KeyStroke;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
-import de.xeinfach.kafenio.KafenioPanel;
-import de.xeinfach.kafenio.KafenioPanelConfiguration;
-import de.xeinfach.kafenio.SplashScreen;
-import de.xeinfach.kafenio.interfaces.KafenioContainerInterface;
+import com.lightdev.app.shtm.SHTMLPanel;
+import com.lightdev.app.shtm.Util;
+
 import freemind.controller.actions.generated.instance.EditNoteToNodeAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.extensions.HookRegistration;
 import freemind.main.FreeMindMain;
-import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.modes.MindMap;
 import freemind.modes.MindMapNode;
@@ -61,293 +52,194 @@ import freemind.modes.mindmapmode.actions.xml.ActorXml;
  */
 public class NodeNote extends NodeNoteBase {
 
-	public final static String NODE_NOTE_PLUGIN = "accessories/plugins/NodeNote.properties";
+    public final static String NODE_NOTE_PLUGIN = "accessories/plugins/NodeNote.properties";
 
-	private static class KafenioPane extends Box implements
-			KafenioContainerInterface {
-		public KafenioPane() {
-			super(BoxLayout.Y_AXIS);
-			setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
-		}
+    public static class Registration implements HookRegistration, ActorXml {
+        // private NodeTextListener listener;
 
-		public void detachFrame() {
-		}
+        private final class NotesManager implements NodeSelectionListener {
 
-		public void setJMenuBar(JMenuBar newMenuBar) {
-			newMenuBar.setAlignmentX(LEFT_ALIGNMENT);
-			add(newMenuBar, 0);
-		}
+            private MindMapNode node;
 
-		protected boolean processKeyBinding(KeyStroke ks, KeyEvent e,
-				int condition, boolean pressed) {
-			if (ks.getKeyCode() == KeyEvent.VK_SPACE && e.getModifiers() == 0
-					&& pressed) {
-				return true;
-			}
-			return super.processKeyBinding(ks, e, condition, pressed);
-		}
+            public NotesManager() {
+            }
 
-	}
+            public void onLooseFocusHook(MindMapNode node) {
+                // store its content:
+                onSaveNode(node);
+                this.node = null;
+                getHtmlEditorPanel().setCurrentDocumentContent("Note", "");
+            }
 
-	public static class Registration implements HookRegistration, ActorXml {
-		// private NodeTextListener listener;
+            public void onReceiveFocusHook(MindMapNode node) {
+                this.node = node;
+                String note = node.getXmlNoteText();
+                if (note != null) {
+                    getHtmlEditorPanel().setCurrentDocumentContent("Note", note);
+                } else {
+                    getHtmlEditorPanel().setCurrentDocumentContent("Note", "");
+                }
+            }
 
-		private final class NotesManager implements NodeSelectionListener {
-			private NoteTextListener listener = null;
+            public void onUpdateNodeHook(MindMapNode node) {
+            }
 
-			public NotesManager() {
-				listener = new NoteTextListener();
-				getHtmlEditorPanel().getExtendedHtmlDoc().addDocumentListener(
-						listener);
-			}
+            public void onSaveNode(MindMapNode node) {
+                if(this.node != node){
+                    return;
+                }
+                boolean editorContentEmpty = true;
+                try {
+                    final Document currentDocument = getHtmlEditorPanel()
+                    .getCurrentDocument();
+                    editorContentEmpty = currentDocument.getText(0, currentDocument.getLength()).matches("[\\s\\n]*");
+                } catch (BadLocationException e) {
+                    e.printStackTrace();
+                }
+                controller.deregisterNodeSelectionListener(this);
+                if (getHtmlEditorPanel().needsSaving()) {
+                    if (editorContentEmpty) {
+                        changeNodeText(null, node);
+                    } else {
+                        changeNodeText(getHtmlEditorPanel().getDocumentText(),
+                                node);
+                    }
+                }
+                controller.registerNodeSelectionListener(this);
+                
+            }
+        }
 
-			public void onLooseFocusHook(MindMapNode node) {
-				// store its content:
-				onSaveNode(node);
-				getHtmlEditorPanel().setDocumentText("");
-				getHtmlEditorPanel().purgeUndos();
-			}
+        static private SHTMLPanel htmlEditorPanel;
 
-			public void onReceiveFocusHook(MindMapNode node) {
-				String note = node.getXmlNoteText();
-				if (note != null) {
-					getHtmlEditorPanel().setDocumentText(note);
-				} else {
-					getHtmlEditorPanel().setDocumentText("");
-				}
-				listener.clearDirtyFlag();
-			}
+        private final MindMapController controller;
 
-			public void onUpdateNodeHook(MindMapNode node) {
-			}
+        protected Container noteViewerComponent;
 
-			public void onSaveNode(MindMapNode node) {
-				boolean editorContentEmpty = getHtmlEditorPanel()
-				.getDocumentBody().matches("[\\s\\n]*");
-				controller.deregisterNodeSelectionListener(this);
-				if (listener.isDirty()) {
-					if (editorContentEmpty) {
-						changeNodeText(null, node);
-					} else {
-						changeNodeText(getHtmlEditorPanel().getDocumentText(),
-								node);
-					}
-				}
-				controller.registerNodeSelectionListener(this);
-				
-			}
-		}
+        private final MindMap mMap;
 
-		private KafenioPanelConfiguration kafenioPanelConfiguration;
+        private final java.util.logging.Logger logger;
 
-		private KafenioPanel htmlEditorPanel;
+        private NotesManager mNotesManager;
 
-		private final MindMapController controller;
+        public Registration(ModeController controller, MindMap map) {
+            this.controller = (MindMapController) controller;
+            mMap = map;
+            logger = controller.getFrame().getLogger(this.getClass().getName());
+        }
 
-		protected Container noteViewerComponent;
+        public void register() {
+            logger.info("Registration of note handler.");
+            controller.getActionFactory().registerActor(this,
+                    getDoActionClass());
+            // moved to registration:
+            noteViewerComponent = getNoteViewerComponent();
+            FreeMindMain frame = controller.getFrame();
+            frame.getSouthPanel().add(noteViewerComponent, BorderLayout.CENTER);
+            noteViewerComponent.setVisible(true);
+            frame.getSouthPanel().revalidate();
 
-		private final MindMap mMap;
+            mNotesManager = new NotesManager();
+            controller.registerNodeSelectionListener(mNotesManager);
+        }
 
-		private final java.util.logging.Logger logger;
+        public void deRegister() {
+            logger.info("Deregistration of note undo handler.");
+            controller.getActionFactory().deregisterActor(getDoActionClass());
+            if (noteViewerComponent != null) {
+                // shut down the display:
+                noteViewerComponent.setVisible(false);
+                JPanel southPanel = controller.getFrame().getSouthPanel();
+                southPanel.remove(noteViewerComponent);
+                southPanel.revalidate();
+                noteViewerComponent = null;
+            }
 
-		private NotesManager mNotesManager;
+        }
 
-		public Registration(ModeController controller, MindMap map) {
-			this.controller = (MindMapController) controller;
-			mMap = map;
-			logger = controller.getFrame().getLogger(this.getClass().getName());
-		}
+        public void act(XmlAction action) {
+            if (action instanceof EditNoteToNodeAction) {
+                EditNoteToNodeAction noteTextAction = (EditNoteToNodeAction) action;
+                MindMapNode node = controller.getNodeFromID(noteTextAction
+                        .getNode());
+                String newText = noteTextAction.getText();
+                String oldText = node.getXmlNoteText();
+                if (!Tools.safeEquals(newText, oldText)) {
+                    node.setXmlNoteText(newText);
+                    // update display only, if the node is displayed.
+                    if (node == controller.getSelected()
+                            && (!Tools.safeEquals(newText, getHtmlEditorPanel()
+                                    .getDocumentText()))) {
+                        getHtmlEditorPanel().setCurrentDocumentContent("Note", 
+                                newText == null ? "" : newText);
+                    }
+                    controller.nodeChanged(node);
+                }
+            }
+        }
 
-		public void register() {
-			logger.info("Registration of note undo handler.");
-			controller.getActionFactory().registerActor(this,
-					getDoActionClass());
-			// moved to registration:
-			noteViewerComponent = getNoteViewerComponent();
-			FreeMindMain frame = controller.getFrame();
-			frame.getSouthPanel().add(noteViewerComponent, BorderLayout.CENTER);
-			noteViewerComponent.setVisible(true);
-			frame.getSouthPanel().revalidate();
+        public Class getDoActionClass() {
+            return EditNoteToNodeAction.class;
+        }
 
-			mNotesManager = new NotesManager();
-			controller.registerNodeSelectionListener(mNotesManager);
-		}
+        /**
+         * Set text with undo:
+         * 
+         */
+        public void changeNodeText(String text, MindMapNode node) {
+            EditNoteToNodeAction doAction = createEditNoteToNodeAction(node,
+                    text);
+            EditNoteToNodeAction undoAction = createEditNoteToNodeAction(node,
+                    node.getXmlNoteText());
+            getMindMapController().getActionFactory().startTransaction(
+                    this.getClass().getName());
+            getMindMapController().getActionFactory().executeAction(
+                    new ActionPair(doAction, undoAction));
+            getMindMapController().getActionFactory().endTransaction(
+                    this.getClass().getName());
+        }
 
-		public void deRegister() {
-			logger.info("Deregistration of note undo handler.");
-			controller.getActionFactory().deregisterActor(getDoActionClass());
-			if (noteViewerComponent != null) {
-				// shut down the display:
-				noteViewerComponent.setVisible(false);
-				JPanel southPanel = controller.getFrame().getSouthPanel();
-				southPanel.remove(noteViewerComponent);
-				southPanel.revalidate();
-				noteViewerComponent = null;
-			}
+        /**
+         */
+        private MindMapController getMindMapController() {
+            return controller;
+        }
 
-		}
+        public EditNoteToNodeAction createEditNoteToNodeAction(
+                MindMapNode node, String text) {
+            EditNoteToNodeAction nodeAction = new EditNoteToNodeAction();
+            nodeAction.setNode(node.getObjectId(controller));
+            nodeAction.setText(text);
+            return nodeAction;
+        }
 
-		public void act(XmlAction action) {
-			if (action instanceof EditNoteToNodeAction) {
-				EditNoteToNodeAction noteTextAction = (EditNoteToNodeAction) action;
-				MindMapNode node = controller.getNodeFromID(noteTextAction
-						.getNode());
-				String newText = noteTextAction.getText();
-				String oldText = node.getXmlNoteText();
-				if (!Tools.safeEquals(newText, oldText)) {
-					node.setXmlNoteText(newText);
-					// update display only, if the node is displayed.
-					if (node == controller.getSelected()
-							&& (!Tools.safeEquals(newText, getHtmlEditorPanel()
-									.getDocumentText()))) {
-						getHtmlEditorPanel().setDocumentText(
-								newText == null ? "" : newText);
-					}
-					controller.nodeChanged(node);
-				}
-			}
-		}
+        protected Container getNoteViewerComponent() {
+             return getHtmlEditorPanel();
+        }
 
-		public Class getDoActionClass() {
-			return EditNoteToNodeAction.class;
-		}
+        public SHTMLPanel getHtmlEditorPanel() {
+            if (htmlEditorPanel == null) {
+                try {
+                    ResourceBundle resources = ResourceBundle.getBundle(
+                            "accessories.plugins.SimplyHTML", Locale.getDefault());
+                    SHTMLPanel.setResources(resources);
+                }
+                catch(MissingResourceException mre) {
+                    Util.errMsg(null, "resources/SimplyHTML.properties not found", mre);
+                }
+                htmlEditorPanel = new SHTMLPanel();
+            }
+            return htmlEditorPanel;
+        }
+    }
 
-		/**
-		 * Set text with undo:
-		 * 
-		 */
-		public void changeNodeText(String text, MindMapNode node) {
-			EditNoteToNodeAction doAction = createEditNoteToNodeAction(node,
-					text);
-			EditNoteToNodeAction undoAction = createEditNoteToNodeAction(node,
-					node.getXmlNoteText());
-			getMindMapController().getActionFactory().startTransaction(
-					this.getClass().getName());
-			getMindMapController().getActionFactory().executeAction(
-					new ActionPair(doAction, undoAction));
-			getMindMapController().getActionFactory().endTransaction(
-					this.getClass().getName());
-		}
+    protected void nodeRefresh(MindMapNode node) {
+    }
 
-		/**
-		 */
-		private MindMapController getMindMapController() {
-			return controller;
-		}
+    protected void receiveFocusAddons() {
+    }
 
-		public EditNoteToNodeAction createEditNoteToNodeAction(
-				MindMapNode node, String text) {
-			EditNoteToNodeAction nodeAction = new EditNoteToNodeAction();
-			nodeAction.setNode(node.getObjectId(controller));
-			nodeAction.setText(text);
-			return nodeAction;
-		}
-
-		protected Container getNoteViewerComponent() {
-			// panel:
-			createKafenioPanel();
-			return htmlEditorPanel.getKafenioParent();
-		}
-
-		private void createKafenioPanel() {
-			if (htmlEditorPanel == null) {
-				final SplashScreen splashScreen = new SplashScreen();
-				splashScreen.setVisible(true);
-				final JRootPane rootPane = splashScreen.getRootPane();
-				rootPane.paintImmediately(0, 0, rootPane.getWidth(), rootPane
-						.getHeight());
-				createKafenioConfiguration();
-				htmlEditorPanel = new KafenioPanel(kafenioPanelConfiguration);
-				htmlEditorPanel.getJToolBar1().setRollover(true);
-				// htmlEditorPanel.getJToolBar2().setRollover(true);
-				htmlEditorPanel.getHTMLScrollPane().setPreferredSize(
-						new Dimension(1, 200));
-				htmlEditorPanel.getSrcScrollPane().setPreferredSize(
-						new Dimension(1, 200));
-				htmlEditorPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-				htmlEditorPanel.getKafenioParent().add(htmlEditorPanel);
-				splashScreen.setVisible(false);
-			}
-		}
-
-		private void createKafenioConfiguration() {
-			if (kafenioPanelConfiguration == null) {
-				String language = Resources.getInstance().getProperty(
-						"language");
-				HashMap countryMap = Resources.getInstance().getCountryMap();
-				kafenioPanelConfiguration = new KafenioPanelConfiguration();
-				kafenioPanelConfiguration.setImageDir("file://");
-				kafenioPanelConfiguration.setDebugMode(true);
-				// kafenioPanelConfiguration.setLanguage("sk");
-				// kafenioPanelConfiguration.setCountry("SK");
-				kafenioPanelConfiguration.setLanguage(language);
-				kafenioPanelConfiguration.setCountry((String) countryMap
-						.get(language));
-				kafenioPanelConfiguration.setCustomMenuItems("edit" + " view"
-						+ " font format insert table search tools help");
-				// In the following excluded: new, open, styleselect
-				kafenioPanelConfiguration
-						.setCustomToolBar1("cut copy paste bold italic underline"
-								+ " left center right justify ulist olist deindent indent anchor"
-								+ " image clearformats strike superscript subscript insertcharacter"
-								+ " find color table"
-						// + " viewsource"
-						);
-				// All available tool bar items:
-				// new open save cut copy paste bold italic underline left
-				// center right justify styleselect ulist olist deindent indent
-				// anchor
-				// image clearformats viewsource strike superscript subscript
-				// insertcharacter find color table
-
-				kafenioPanelConfiguration.setShowToolbar2(false);
-				kafenioPanelConfiguration.setProperty("escapeCloses", "false");
-				// kafenioPanelConfiguration.setProperty("confirmRatherThanPost",
-				// "true");
-				// kafenioPanelConfiguration.setProperty("alternativeLanguage","en");
-				// kafenioPanelConfiguration.setProperty("alternativeCountry","US");
-				kafenioPanelConfiguration.setKafenioParent(new KafenioPane());
-			}
-		}
-
-		public KafenioPanel getHtmlEditorPanel() {
-			return htmlEditorPanel;
-		}
-
-	}
-
-	public static class NoteTextListener implements DocumentListener {
-		boolean dirty = false;
-
-		public void changedUpdate(DocumentEvent arg0) {
-			dirty = true;
-		}
-
-		public boolean isDirty() {
-			return dirty;
-		}
-
-		public void clearDirtyFlag() {
-			dirty = false;
-		}
-
-		public void insertUpdate(DocumentEvent arg0) {
-			dirty = true;
-		}
-
-		public void removeUpdate(DocumentEvent arg0) {
-			dirty = true;
-		}
-	}
-
-	protected void nodeRefresh(MindMapNode node) {
-	}
-
-	protected void receiveFocusAddons() {
-	}
-
-	protected void looseFocusAddons() {
-	}
+    protected void looseFocusAddons() {
+    }
 
 }

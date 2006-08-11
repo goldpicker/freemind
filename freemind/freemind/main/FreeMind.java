@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: FreeMind.java,v 1.32.14.28.2.15 2006-07-30 07:25:11 christianfoltin Exp $*/
+/*$Id: FreeMind.java,v 1.32.14.28.2.15.2.1 2006-08-11 20:33:22 dpolivaev Exp $*/
 
 package freemind.main;
 
@@ -26,6 +26,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -48,12 +49,14 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -64,6 +67,13 @@ import freemind.preferences.FreemindPropertyListener;
 import freemind.view.mindmapview.MapView;
 
 public class FreeMind extends JFrame implements FreeMindMain {
+
+    private static class SouthPanel extends JPanel{
+        public SouthPanel() {
+            super(new BorderLayout());
+            setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
+        }
+     }
 
     private static final String SPLIT_PANE_POSITION = "split_pane_position";
 	public static final String RESOURCE_LOOKANDFEEL = "lookandfeel";
@@ -82,7 +92,7 @@ public class FreeMind extends JFrame implements FreeMindMain {
     private static Logger logger =null;
 
     private static final String DEFAULT_LANGUAGE = "en";
-    public static final String VERSION = "0.9.0 Beta 6";
+    public static final String VERSION = "0.9.0 Beta 7";
 	public static final String XML_VERSION = "0.9.0_Beta_6";
     //    public static final String defaultPropsURL = "freemind.properties";
     public URL defaultPropsURL;
@@ -212,7 +222,7 @@ public class FreeMind extends JFrame implements FreeMindMain {
            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); }
 
-	southPanel = new JPanel(new BorderLayout());
+	southPanel = new SouthPanel();
 	status = new JLabel();
 //	southPanel.add( status, BorderLayout.SOUTH );
 
@@ -617,8 +627,6 @@ public class FreeMind extends JFrame implements FreeMindMain {
         }
 
 		feedBack.increase("FreeMind.progress.buildScreen");
-        frame.pack();
-        feedBack.increase("FreeMind.progress.endStartup");
 
 	try {
            if (frame.getView() != null) {
@@ -649,6 +657,8 @@ public class FreeMind extends JFrame implements FreeMindMain {
         int win_state  = Integer.parseInt(FreeMind.props.getProperty("appwindow_state","0"));
         win_state = ((win_state & ICONIFIED) != 0) ? NORMAL : win_state;
         frame.setExtendedState(win_state);
+        frame.pack();
+        feedBack.increase("FreeMind.progress.endStartup");
         if (splash != null) {
             splash.setVisible(false);
         }        

@@ -165,7 +165,7 @@ public class ImportWizard {
 		Vector classList,
 		File rootDir,
 		File currentDir, int recursionLevel) {
-	    if(recursionLevel >= 2){
+	    if(recursionLevel >= 4){
             // search only the first two levels
 	        return;
         }
@@ -216,7 +216,10 @@ public class ImportWizard {
 
 /*
  * $Log: ImportWizard.java,v $
- * Revision 1.1.4.6.2.7  2006-07-30 07:25:11  christianfoltin
+ * Revision 1.1.4.6.2.7.2.1  2006-08-11 20:33:22  dpolivaev
+ * no message
+ *
+ * Revision 1.1.4.6.2.7  2006/07/30 07:25:11  christianfoltin
  * * Startup shows progress messages.
  * * Limited the plugin search to two directory levels.
  *

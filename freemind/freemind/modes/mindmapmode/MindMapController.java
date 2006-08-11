@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: MindMapController.java,v 1.35.14.21.2.11 2006-07-25 20:54:46 christianfoltin Exp $ */
+/* $Id: MindMapController.java,v 1.35.14.21.2.11.2.1 2006-08-11 20:33:22 dpolivaev Exp $ */
 
 package freemind.modes.mindmapmode;
 
@@ -68,8 +68,6 @@ import javax.swing.filechooser.FileFilter;
 import org.jibx.runtime.IUnmarshallingContext;
 import org.jibx.runtime.JiBXException;
 
-import de.xeinfach.kafenio.KafenioPanel;
-import de.xeinfach.kafenio.KafenioPanelConfiguration;
 import freemind.common.XmlBindingTools;
 import freemind.controller.MenuBar;
 import freemind.controller.StructuredMenuHolder;
@@ -330,8 +328,6 @@ public class MindMapController extends ControllerAdapter implements MindMapActio
     private MenuStructure mMenuStructure;
     private List mRegistrations;
 	private List mPatternsList = new Vector();
-	private KafenioPanelConfiguration mKafenioPanelConfiguration;
-	private KafenioPanel mHtmlEditorPanel;
 
     public MindMapController(Mode mode) {
 	super(mode);
