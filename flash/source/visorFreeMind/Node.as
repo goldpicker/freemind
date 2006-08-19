@@ -20,6 +20,7 @@
  * Created on 25.04.2005
  */
 import visorFreeMind.*;
+import flash.filters.DropShadowFilter;
 
 /**
 * Nodes, represent the mindmaps nodes
@@ -537,6 +538,8 @@ class visorFreeMind.Node {
 		// Style==2 Bubble
 		if  (style==2){
 			round_rectangle(n._width, n._height,colorNoSel,alpha,cf);
+			if( browser.withShadow)
+				addSpaceForShadow();
 			if  ( alpha==100 && cbg!=0 && browser.withShadow && false){
 				if(isSelected){
 					round_rectangle(n._width, n._height,cbg,alpha,cf);
@@ -548,6 +551,9 @@ class visorFreeMind.Node {
 		}// ELLIPSE
 		else if(style==0){
 			circle(n._width+4, n._height+4,colorNoSel,alpha,cf);
+			if(Browser.flashVersion>7 && browser.withShadow){
+				createDropShadowRectangleF8(ref_mc);
+			}
 		}// FORK
 		else{
 			if(alpha==100)//selected
@@ -681,9 +687,27 @@ class visorFreeMind.Node {
 	public function genShadow(){
 		delShadow();
 		if(style==2 && cbg!=0 && browser.withShadow && ref_mc.node_txt._width>0){
-			sombra=ref_mc.createEmptyMovieClip("sombra",10);
-			ref_mc.node_txt.dropShadow(8,6,4,0x555555,sombra);
+			if(Browser.flashVersion>7){
+				createDropShadowRectangleF8(ref_mc);
+			}else{
+				sombra=ref_mc.createEmptyMovieClip("sombra",10);
+				ref_mc.node_txt.dropShadow(8,6,4,0x555555,sombra);
+			}
 		}
+	}
+	
+	function addSpaceForShadow(){
+		box_txt.lineStyle(1,"red",0);
+		box_txt.moveTo(0,ref_mc.node_txt._height);
+		box_txt.lineTo(0,ref_mc.node_txt._height+6);
+	}
+	
+	function createDropShadowRectangleF8(art:MovieClip) {
+		var filter:DropShadowFilter = new DropShadowFilter(4, 45, 0x000000, .6, 4, 4, 1, 3, false, false, false);
+		var filterArray:Array = new Array();
+		filterArray.push(filter);
+		art.filters = filterArray;
+		art.filter=filter;
 	}
 	
 	public function addIcon(icon){
