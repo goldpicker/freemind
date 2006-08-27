@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: HtmlTools.java,v 1.1.2.7 2006-07-25 20:28:20 christianfoltin Exp $*/
+/*$Id: HtmlTools.java,v 1.1.2.7.2.1 2006-08-27 20:49:00 dpolivaev Exp $*/
 
 package freemind.main;
 
@@ -350,7 +350,7 @@ public class HtmlTools {
        String textTabsExpanded = text.replaceAll("\t","         "); // Use eight spaces as tab width.
        StringBuffer result = new StringBuffer(textTabsExpanded.length()); // Heuristic
        int lengthMinus1 = textTabsExpanded.length() - 1;
-       result.append("<html><body>");
+       result.append("<html><body><p>");
        for (int i = 0; i < textTabsExpanded.length(); ++i) {
           myChar = textTabsExpanded.charAt(i);
           switch (myChar) {
