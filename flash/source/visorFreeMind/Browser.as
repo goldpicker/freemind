@@ -63,6 +63,7 @@ class visorFreeMind.Browser {
 	public  var withShadow=getStaticAtr("withShadow",false);
 	public static var startCollapsedToLevel=-1;
 	public static var unfoldAll:Boolean=false;
+	public static var justMap:Boolean=false;
 	public static var flashVersion:Number=0;
 
 	public var text_selectable=null;
@@ -85,7 +86,8 @@ class visorFreeMind.Browser {
 		PrototypesCreator.init();
 		mc_container=_mc;
 		createFloor();
-		buttonsCreator=new ButtonsCreator(this);
+		if(Browser.justMap==false)
+			buttonsCreator=new ButtonsCreator(this);
 		recalcIfResize();
 		createToolTip(); //node_txt en mc_container.
 		createInfoWindow();
@@ -170,10 +172,10 @@ class visorFreeMind.Browser {
 
 
 	function relocateMindMap(){
-		relocateNodes(listNodesL[0],0,0,false);//false=left, true=right
-		relocateNodes(listNodesR[0],0,0,true);
-		relocateShifts(listNodesL[0],0,false);
-		relocateShifts(listNodesR[0],0,true);
+		relocateNodes(listNodesL[0],listNodesL[0].childNodes,0,0,false);//false=left, true=right
+		relocateNodes(listNodesR[0],listNodesR[0].childNodes,0,0,true);
+		relocateShifts(listNodesL[0],listNodesL[0].childNodes,0,false);
+		relocateShifts(listNodesR[0],listNodesR[0].childNodes,0,true);
 		adjustLeftNodes();
 		relocateFloor();
 		floor.clear();
@@ -210,7 +212,7 @@ class visorFreeMind.Browser {
 			txt.multiline = true;
 			txt.wordWrap = true;
 			txt.html = true;
-			txt.htmlText="<font color='#996611'><b>This is a free</b><br>FREEMIND BROWSER v.97<br><b>shortcuts</b><br>"+
+			txt.htmlText="<font color='#996611'><b>This is a free</b><br>FREEMIND BROWSER v.98<br><b>shortcuts</b><br>"+
 			"LEFT : move left<br>"+
 			"RIGHT : move right<br>"+
 			"UP : move up<br>"+
@@ -265,6 +267,8 @@ class visorFreeMind.Browser {
 	function showTooltip(texto){
 		// eliminate \r because of problems of double returns
 		mc_container.tooltip.tex_container.textfield.htmlText=texto.replace("\r","");
+		trace(texto);
+		trace(mc_container.tooltip.tex_container.textfield.htmlText);
 		var tt=mc_container.tooltip;
 		var sombra=tt.createEmptyMovieClip("sombra",9);
 		tt.tex_container.dropShadow(8,4,4,0x777799,sombra);
@@ -410,7 +414,7 @@ class visorFreeMind.Browser {
 		}
 	}
 
-	function relocateShifts(node,incLevel,isRight){
+	function relocateShifts(node,childNodes,incLevel,isRight){
 		var m_decy=0;
 		var m_incy=0;
 		if(node.shift_y>0){
@@ -423,8 +427,8 @@ class visorFreeMind.Browser {
 		node.ref_mc._y+=incLevel;
 		var negvals=0;
 		if(node.folded==false){
-			for(var i=0;i<node.childNodes.length;i++){
-				var mv=relocateShifts(node.childNodes[i],incLevel,isRight);
+			for(var i=0;i<childNodes.length;i++){
+				var mv=relocateShifts(childNodes[i],childNodes[i].childNodes,incLevel,isRight);
 				incLevel=mv[0];
 				negvals+=mv[1];
 				
@@ -434,7 +438,7 @@ class visorFreeMind.Browser {
 		return [incLevel+m_decy,m_decy+negvals];
 	}
 	
-	function relocateNodes(node,x,y,isRight){
+	function relocateNodes(node,childNodes,x,y,isRight){
 		var incy:Number=y;
 		var numE:Number=0;
 		var y1:Node=node;
@@ -456,8 +460,8 @@ class visorFreeMind.Browser {
 		var incx:Number=getIncX(isRight,node,node.ref_mc._x);
 
 		if(node.folded==false){
-			for(var i=0;i<node.childNodes.length;i++){
-				var mv=relocateNodes(node.childNodes[i],incx,incy,isRight);
+			for(var i=0;i<childNodes.length;i++){
+				var mv=relocateNodes(childNodes[i],childNodes[i].childNodes,incx,incy,isRight);
 				numE++;
 				incy=mv[0];
 				if(i==0) {
@@ -655,10 +659,15 @@ class visorFreeMind.Browser {
 		if(node_xml.attributes.FOLDED!="true")
 		  folded=false;
 	
-		var node:Node=new Node(0,0,node_xml,node_xml.attributes.TEXT,"",container,
+		var node:Node;
+
+		node=new Node(0,0,node_xml,"",container,
 							   3,lineColor,lineWidth,(first?0:styleNode),styleLine,folded,isRight,withCloud,
 							   textSize,italic,bold,type,this);
-		node.draw();
+			
+		if(!(first&&(!isRight))){
+			node.draw();
+		}
 
 		if(isRight)
 			listNodesR.push(node);
@@ -680,9 +689,9 @@ class visorFreeMind.Browser {
 		}
 
 		node.childNodes=childNodes;
-
+				
 		for (var i=0; i<childNodes.length;i++){
-			var enl:Edge=new Edge(node,childNodes[i],"",container);
+			var enl:Edge=new Edge(((first&&(!isRight))?this.first_node:node),childNodes[i],"",container);
 			list_edges.push(enl);
 		}
 
