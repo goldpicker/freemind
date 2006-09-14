@@ -92,7 +92,7 @@ class visorFreeMind.Node {
 		return id;
 	}
 
-	function Node(x:Number,y:Number,node_xml:XMLNode,nom:String,coment:String,mc:MovieClip,
+	function Node(x:Number,y:Number,node_xml:XMLNode,coment:String,mc:MovieClip,
 							yy,cf:Number,lineWidth:Number,style:Number,styleLine:Number,
 							folded:Boolean,isRight:Boolean,withCloud:Boolean,
 							textSize:Number,italic:Boolean,bold:Boolean,font:String,browser:Browser){
@@ -102,6 +102,8 @@ class visorFreeMind.Node {
 		this.style=style;
 		if(style==0 && Node.mainNodeShape=="rectangle")
 			this.style=2;
+		if(style==0 && Node.mainNodeShape=="none")
+			this.style=-1;
 		this.styleLine=styleLine;
 		this.folded=folded;
 		this.isRight=isRight;
@@ -113,12 +115,13 @@ class visorFreeMind.Node {
 		this.browser=browser;
 		this.node_xml=node_xml;
 		this.haveEdge=node_xml.attributes.LINK!=undefined?true:false;
-		text=nom;
+		//richtext not suported, quick fix for images.
+		text=getText(node_xml);
 		note=findNote(node_xml);
 		atributes=findAtributes(node_xml);
 		coment=coment;
 		listElements=[];
-		num+=2;
+		num+=4;
 		//creation of asociated movieClip
 		id=node_xml.attributes.ID?node_xml.attributes.ID:"node_"+num;
 		ref_mc=mc.createEmptyMovieClip(id,num);
@@ -171,6 +174,20 @@ class visorFreeMind.Node {
 		activateEvents();
 	}
 
+	function getText(node_xml:XMLNode){
+		if(node_xml.attributes.TEXT!=undefined)
+			return node_xml.attributes.TEXT;
+		else{//richcontent
+			for(var i=0;i<node_xml.childNodes.length;i++){
+				if(node_xml.childNodes[i].nodeName=="richcontent" &&
+					node_xml.childNodes[i].attributes.TYPE=="NODE"){
+					trace(node_xml.childNodes[i].firstChild.toString());
+					return node_xml.childNodes[i].firstChild.toString();
+				}
+			}
+		}
+	}
+	
 	function findNote(node_xml:XMLNode){
 		var lista=getNodesType("hook",node_xml);
 		for(var i=0;i<lista.length;i++){
@@ -178,6 +195,15 @@ class visorFreeMind.Node {
 			if(hook.attributes.NAME.indexOf("NodeNote")!=-1)
 				return hook.firstChild.firstChild.toString();
 		}
+		//version 9
+		for(var i=0;i<node_xml.childNodes.length;i++){
+				if(node_xml.childNodes[i].nodeName=="richcontent" &&
+					node_xml.childNodes[i].attributes.TYPE=="NOTE"){
+					trace(node_xml.childNodes[i].firstChild.toString());
+					return node_xml.childNodes[i].firstChild.toString();
+				}
+			}
+		
 		return null;
 	}
 
@@ -232,7 +258,7 @@ class visorFreeMind.Node {
 		    	this.inst.browser.unfoldLinks(this.inst);
 		    	return;
 		    }
-			if(this.inst.hasSubnodes() && this.inst.style!=0){ // we don´t want main node to fold
+			if(this.inst.hasSubnodes() && this.inst.style>0){ // we don´t want main node to fold
 				if(this.inst.folded){
 					this.inst.node_xml.attributes.FOLDED="false";
 					this.inst.folded=false;
@@ -486,9 +512,14 @@ class visorFreeMind.Node {
 			// have to wait for the image load.
 			var cont_image=ref_mc.node_txt.createEmptyMovieClip("node_image",2);
 			//Have to use the Flash Loader
-			browser.loadImage(text.substr(start,length),cont_image);
+			var imgtext=text.substr(start,length);
+			trace("cargamos:"+imgtext);
+			browser.loadImage(imgtext,cont_image);
 			withImage=true;
-			text=text.substr(0,start-10)+text.substr(start+length+2);
+			var aux=text.substr(start);
+			var auxi=aux.indexOf(">");
+			text=text.substr(0,start-10)+text.substr(start+auxi+1);
+			trace("text:"+text);
 			if(text=="<html>") return;
 		}
 
@@ -548,14 +579,20 @@ class visorFreeMind.Node {
 					sombra._visible=true;
 				}
 			}
-		}// ELLIPSE
-		else if(style==0){
+		}
+		else if(style==0){// ELLIPSE
 			circle(n._width+4, n._height+4,colorNoSel,alpha,cf);
 			if(Browser.flashVersion>7 && browser.withShadow){
 				createDropShadowRectangleF8(ref_mc);
 			}
-		}// FORK
-		else{
+		}
+		else if(style==-1){// NONE
+			//circle(n._width+4, n._height+4,colorNoSel,alpha,cf);
+			if(Browser.flashVersion>7 && browser.withShadow){
+				createDropShadowRectangleF8(ref_mc);
+			}
+		}
+		else{// FORK
 			if(alpha==100)//selected
 				sel_subline(n._width, n._height,colorNoSel,alpha,colorSel);
 			else
