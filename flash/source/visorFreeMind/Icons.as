@@ -63,6 +63,24 @@ class visorFreeMind.Icons {
 		smile.curveTo(10,11,11,8);
 		return smile;
 	}
+	
+	static public  function get_smily_bad(mc_padre,depth){ //I am happy
+		var smile=mc_padre.createEmptyMovieClip("sad",6+depth);
+		var color=0xFEF232;
+		var colorBorde=0xFDA600;
+		var borderColor=0x777777;
+		circle(7,7,7,7,1,borderColor,color,smile);
+		smile.lineStyle(2,0x555555,100);
+		smile.moveTo(5,4);
+		smile.lineTo(5,6);
+		smile.moveTo(9,4);
+		smile.lineTo(9,6);
+		smile.lineStyle(1,0x555555,100);
+		smile.moveTo(3,11);
+		smile.curveTo(4,10,6,9);
+		smile.curveTo(10,9,11,11);
+		return smile;
+	}
 
 	static public  function get_gohome(mc_padre,depth){ //Home
 		var home=mc_padre.createEmptyMovieClip("home",6+depth);
