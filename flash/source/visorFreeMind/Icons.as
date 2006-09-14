@@ -947,9 +947,9 @@ return nice;
 		static public  function get_full(mc_padre,depth,numero,color){ //Mail
 		var Priority=mc_padre.createEmptyMovieClip("Mail",6+depth);
 		Priority.lineStyle();
-		Priority.beginFill(0xFFFFFF,100);
-		Priority.drawSquare(1,1,16)
-		Priority.endFill();
+		//Priority.beginFill(0xFFFFFF,100);
+		//Priority.drawSquare(1,1,16)
+		//Priority.endFill();
 		Priority.fillCircle(7,9,9,color);
 		Priority.createTextField("texto",2,4,-1,16,18);
 		Priority.texto.text=numero;
