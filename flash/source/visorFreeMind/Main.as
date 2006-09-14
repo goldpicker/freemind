@@ -56,9 +56,14 @@ class visorFreeMind.Main {
 				copy=new ContextMenuItem("gen shots for linked maps",visorFreeMind.Main.genShotsForLinkedMaps);
 				mycm.customItems.push(copy);
 			}
+			copy=new ContextMenuItem("FREEMIND BROWSER v.98",visorFreeMind.Main.nada);
+			mycm.customItems.push(copy);
 			_root.menu = mycm;
 		}
 
+		static function nada(){
+		}
+		
 		static function genShotsForLinkedMaps(){
 			browser.historyManager.genShotsForLinkedMaps();
 		}
@@ -122,12 +127,16 @@ class visorFreeMind.Main {
 		   		HistoryManager.genAllShots=Boolean(_root.genAllShots.toLowerCase()=="true");
 		   if(_root.unfoldAll!=null)
 		   		Browser.unfoldAll=Boolean(_root.unfoldAll.toLowerCase()=="true");
+		   if(_root.justMap!=null)
+		   		Browser.justMap=Boolean(_root.justMap.toLowerCase()=="true");
 		   if(!isNaN(_root.defaultWordWrap))
 		   		Node.defaultWordWrap=Number(_root.defaultWordWrap);
 		   if(!isNaN(_root.startCollapsedToLevel))
 		   		Browser.startCollapsedToLevel=Number(_root.startCollapsedToLevel);
 		   if(_root.mainNodeShape=="rectangle")
 		   		Node.mainNodeShape="rectangle";
+		   if(_root.mainNodeShape=="none")
+		   		Node.mainNodeShape="none";
 		   if(!isNaN(_root.ShotsWidth))
 		   		PictureTaker.ShotsWidth=Number(_root.ShotsWidth);
 		   if(_root.initLoadFile!=null){
