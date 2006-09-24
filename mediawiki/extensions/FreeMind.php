@@ -39,10 +39,11 @@ function renderMindmap($input)
     $paramNumber = count($paramVector);
     for ($i = 1; $i < $paramNumber; $i++) {
         $param = trim($paramVector[$i]);
-        if (preg_match('/(\w+)\s+(.*)/', $param, $pair)) {
-            if ("height" === $pair[1]) {
-                $mm_height = $pair[2];
-            } else if ("title" === $pair[1]) {
+        if (preg_match('/^\s*[0-9]+p[xt]$/', $param)) {
+        	$mm_height = $param;
+        }
+        else if (preg_match('/^(\w+)\s+(.*)$/', $param, $pair)) {
+            if ("title" === $pair[1]) {
                 $mm_title = $pair[2];
             } else if ("parameters" === $pair[0]) {
                 preg_match_all('/(\\w+?)\\s*=\\s*"(.+?)"/', $pair[1], $match, PREG_SET_ORDER);
@@ -70,6 +71,9 @@ function renderMindmap($input)
     }
 
     $img = new Image($url);
+    if($img->exists() != true){
+    	return MindmapNotFoundError($url);
+	}
     $url = $img->getViewURL(false);
 
     global $wgServer, $wgScriptPath, $wgTitle, $wgUrlProtocols, $wgUser;
@@ -121,20 +125,32 @@ function renderMindmap($input)
     return $output;
 }
 
-function MindmapHelp($link)
+function MindmapHelp($input)
 {
-    return "<div style='border: solid red 1px'>
-<p><b>Syntax error or wrong link</b>: <i>$link</i>.</p><br>
-<p><b>Syntax: </b>
-<blockquote><b><tt>&lt;mindmap&gt; &lt;param <i>width=\"x%\"</i> <i>height=\"x%\"</i> <i>type=\"[flash|java]\"</i> <i>target=\"[embedded|link]\"</i>/&gt;<i>Link_To_MM_File</i>&lt;/mindmap&gt;</tt></b></blockquote><br>
-<b>Example</b>
+    return '<div style=\'border: solid red 1px\'>
+<p align=center><b>Ebbedded Mind Map Syntax error in </b>: <code>&lt;mm&gt;'.$input.'&lt;/mm&gt;</code></p><br>
+<p><b>&nbsp;Syntax: </b>
+<blockquote><b><code>&lt;mm&gt;[[{name}|{options}|parameters {parameters}]]&lt;/mm&gt;</code></b><br>
+<b><code>&lt;mm&gt;[[:{name}|{options}|parameters {parameters}]]&lt;/mm&gt;</code></b></blockquote>
+<b>&nbsp;Examples:</b>
 <blockquote>
 <ul>
-<li>&lt;mindmap&gt; &lt;param width=\"100%\" height=\"500px\" type=\"flash\" target=\"embedded\" /&gt;[http://www.worldhello.net/doc/wiki.mm Johnson's Wiki tutorial]&lt;/mindmap&gt;
-<li>&lt;mindmap&gt; &lt;param type=\"java target=\"link\" /&gt;New upload mm file: [[Media:Wiki.mm]]&lt;/mindmap&gt;
-<li>&lt;mindmap&gt;{{SERVER}}/doc/Wiki.mm&lt;/mindmap&gt;
+<li><code>&lt;mm&gt;[[Hello.mm]]&lt;/mm&gt;</code>
+<li><code>&lt;mm&gt;[[Hello.mm|flash]]&lt;/mm&gt;</code>
+<li><code>&lt;mm&gt;[[Hello.mm|applet]]&lt;/mm&gt;</code>
+<li><code>&lt;mm&gt;[[Hello.mm|flash|80pt]]&lt;/mm&gt;</code>
+<li><code>&lt;mm&gt;[[Hello.mm|applet|150px|title example map]]&lt;/mm&gt;</code>
+<li><code>&lt;mm&gt;[[:Hello.mm]]&lt;/mm&gt;</code>
+<li><code>&lt;mm&gt;[[:Hello.mm|description]]&lt;/mm&gt;</code>
+<li><code>&lt;mm&gt;[[:Hello.mm|flash|title the map in flash|map in flash]]&lt;/mm&gt;</code>
 </ul></blockquote>
-</div>\n";
+</div>';
 }
 
+function MindmapNotFoundError($input)
+{
+    return '<div style=\'border: solid red 1px\'>
+<p align=center><b>Error: Mind Map file <code>&lt;mm&gt;'.$input.'</code> not found </b> </p><br>
+</div>';
+}
 ?>
