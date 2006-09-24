@@ -6,7 +6,7 @@
 </head>
 <body>
 <?php
- if (isset($_GET[browsemode_initial_map])) :
+ if (isset($_GET['browsemode_initial_map'])) :
  require_once("appletwindowFunction.php");
 ?>
 <style type="text/css">
@@ -20,7 +20,8 @@ unset($_GET['mm_title']);
 else{
 	$mm_title = "open";
 }
-print getMindMapAppletOutput($mm_title, $_GET, "100%", "http://localhost/mediawiki-1.4.9/extensions/freemind/");
+$path = dirname($_SERVER['PHP_SELF']).'/';
+print getMindMapAppletOutput($mm_title, $_GET, "100%", $path);
   else :
 ?>
 Do not call this page directly !
