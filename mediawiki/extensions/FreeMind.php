@@ -150,7 +150,7 @@ function MindmapHelp($input)
 function MindmapNotFoundError($input)
 {
     return '<div style=\'border: solid red 1px\'>
-<p align=center><b>Error: Mind Map file <code>&lt;mm&gt;'.$input.'</code> not found </b> </p><br>
+<p align=center><b>Error: Mind Map file <code>'.$input.'</code> not found </b> </p><br>
 </div>';
 }
 ?>
