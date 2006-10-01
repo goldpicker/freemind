@@ -45,8 +45,10 @@ function renderMindmap($input)
         else if (preg_match('/^(\w+)\s+(.*)$/', $param, $pair)) {
             if ("title" === $pair[1]) {
                 $mm_title = $pair[2];
-            } else if ("parameters" === $pair[0]) {
-                preg_match_all('/(\\w+?)\\s*=\\s*"(.+?)"/', $pair[1], $match, PREG_SET_ORDER);
+            } else if ("parameters" === $pair[1]) {
+                preg_match_all('/(\\w+?)\\s*=\\s*"(.+?)"/', $pair[2], $match, PREG_SET_ORDER);
+                foreach ($match as $i) $params[$i[1]] = $i[2];
+                preg_match_all('/(\\w+?)\s*=\s*([^"\s]+?)/', $pair[2], $match, PREG_SET_ORDER);
                 foreach ($match as $i) $params[$i[1]] = $i[2];
             } else {
                 if ($mm_description != "")
