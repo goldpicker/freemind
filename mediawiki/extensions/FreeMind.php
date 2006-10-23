@@ -71,8 +71,11 @@ function renderMindmap($input)
     if ($mm_title === "") {
         $mm_title = $url;
     }
-
-    $img = new Image($url);
+    $imageTitle = Title::makeTitleSafe("Image", $url);
+    if($imageTitle == NULL){
+    	return MindmapNotFoundError($url);
+	}
+    $img = Image::newFromTitle($imageTitle);
     if($img->exists() != true){
     	return MindmapNotFoundError($url);
 	}
