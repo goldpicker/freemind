@@ -10,6 +10,7 @@
 ;* Andrew J. Iggleden (AJI) 20/12/2003 - Version 0.7.0
 ;* Christian Foltin   (FC ) 10/01/2004 - Version 0.7.1
 ;* Christian Foltin   (FC ) 08/07/2005 - Version 0.8.0
+;* Christian Foltin   (FC ) 04/03/2007 - Version 0.9.0 Beta9
 ;****************************************************************************
 
 [Files]
@@ -46,7 +47,7 @@ external 'isxbb_KillTimer@files:isxbb.dll stdcall';
 
 [Setup]
 AppName=FreeMind
-AppVerName=FreeMind 0.8.0
+AppVerName=FreeMind 0.9.0 Beta9
 AppPublisherURL=http://freemind.sourceforge.net
 AppSupportURL=http://freemind.sourceforge.net
 AppUpdatesURL=http://freemind.sourceforge.net
@@ -57,9 +58,9 @@ LicenseFile=license.txt
 WindowVisible=true
 
 
-AppCopyright=Copyright © 2005 Christian Foltin and others
+AppCopyright=Copyright © 2007 Christian Foltin and others
 ;AppCopyright=Copyright © {code:InstallationDate}
-AppVersion=0.8.0
+AppVersion=0.9.0.Beta9
 InfoAfterFile=after.txt
 InfoBeforeFile=before.txt
 PrivilegesRequired=admin
@@ -70,7 +71,7 @@ AppID=B991B020-2968-11D8-AF23-444553540000
 UninstallRestartComputer=false
 ChangesAssociations=true
 FlatComponentsList=false
-OutputBaseFilename=FreeMind-Windows-Installer-0_8_0
+OutputBaseFilename=FreeMind-Windows-Installer-0_9_0-Beta9
 SolidCompression=false
 ; old: InternalCompressLevel=9
 Compression=zip/9
@@ -90,17 +91,20 @@ Name: fileassoc; Description: &Associate FreeMind Extensions with the .mm file e
 Source: ..\..\..\bin\dist\Freemind.exe; DestDir: {app}; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\Freemind.bat; DestDir: {app}; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\accessories\*.*; DestDir: {app}\accessories; Flags: promptifolder overwritereadonly
-Source: ..\..\..\bin\dist\doc\freemind.mm; DestDir: {app}\doc; Flags: promptifolder overwritereadonly
+Source: ..\..\..\bin\dist\browser\*.*; DestDir: {app}\accessories; Flags: promptifolder overwritereadonly
+Source: ..\..\..\bin\dist\doc\*.*; DestDir: {app}\doc; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\lib\*.*; DestDir: {app}\lib; Flags: promptifolder overwritereadonly  recursesubdirs
-; Source: ..\..\..\bin\dist\plugins\*.*; DestDir: {app}\plugins; Flags: promptifolder overwritereadonly  recursesubdirs
+Source: ..\..\..\bin\dist\plugins\*.*; DestDir: {app}\plugins; Flags: promptifolder overwritereadonly  recursesubdirs
 Source: license.txt; DestDir: {app}; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\patterns.xml; DestDir: {app}; Flags: promptifolder overwritereadonly
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
-Source: {app}\*.*; DestDir: {app}\backup; Flags: external skipifsourcedoesntexist uninsneveruninstall
-Source: {app}\accessories\*.*; DestDir: {app}\backup\accessories; Flags: external skipifsourcedoesntexist uninsneveruninstall
-Source: {app}\doc\*.*; DestDir: {app}\backup\doc; Flags: external skipifsourcedoesntexist uninsneveruninstall
-Source: {app}\lib\*.*; DestDir: {app}\backup\lib; Flags: recursesubdirs external skipifsourcedoesntexist uninsneveruninstall
+;Source: {app}\*.*; DestDir: {app}\backup; Flags: external skipifsourcedoesntexist uninsneveruninstall
+;Source: {app}\accessories\*.*; DestDir: {app}\backup\accessories; Flags: external skipifsourcedoesntexist uninsneveruninstall
+;Source: {app}\browser\*.*; DestDir: {app}\backup\browser; Flags: external skipifsourcedoesntexist uninsneveruninstall
+;Source: {app}\doc\*.*; DestDir: {app}\backup\doc; Flags: external skipifsourcedoesntexist uninsneveruninstall
+;Source: {app}\lib\*.*; DestDir: {app}\backup\lib; Flags: recursesubdirs external skipifsourcedoesntexist uninsneveruninstall
+;Source: {app}\plugins\*.*; DestDir: {app}\backup\plugins; Flags: external skipifsourcedoesntexist uninsneveruninstall
 
 Source: FreeMind.gif; DestDir: {tmp}; Flags: dontcopy
 Source: FreeMind1.gif; DestDir: {tmp}; Flags: dontcopy
@@ -132,12 +136,13 @@ begin
   Result := False;
   if RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\JavaSoft\Java Runtime Environment', 'CurrentVersion', AVersion) then
   begin
-    	if (AVersion = '1.4') or (AVersion = '1.5') then
+    	if (AVersion = '1.4') or (AVersion = '1.5') or (AVersion = '1.6') then
     		Result := True;
       end;
-    	if AVersion = '1.5' then
-    		Result := True;
+      if AVersion = '1.5' then
+     		Result := True;
       end;
+
   end.
 
   if Result = False then	// Java 1.4 not found/detected
