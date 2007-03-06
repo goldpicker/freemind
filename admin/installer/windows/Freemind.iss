@@ -58,7 +58,7 @@ LicenseFile=license.txt
 WindowVisible=true
 
 
-AppCopyright=Copyright © 2007 Christian Foltin and others
+AppCopyright=Copyright © 2007 Christian Foltin, Dimitry Polivaev and others
 ;AppCopyright=Copyright © {code:InstallationDate}
 AppVersion=0.9.0.Beta9
 InfoAfterFile=after.txt
@@ -139,10 +139,6 @@ begin
     	if (AVersion = '1.4') or (AVersion = '1.5') or (AVersion = '1.6') then
     		Result := True;
       end;
-      if AVersion = '1.5' then
-     		Result := True;
-      end;
-
   end.
 
   if Result = False then	// Java 1.4 not found/detected
