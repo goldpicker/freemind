@@ -272,6 +272,19 @@ class visorFreeMind.PrototypesCreator{
 			}
 			this.endFill();
 		}
+		
+		MovieClip.prototype.reposObjForViewing=	function(dx,dy){
+			var bbox=this.getBounds(_root);
+			if(bbox.xMax>Stage.width){
+				var newval=Stage.width-bbox.xMax-dx;
+				this._x+=newval;
+			}
+			if(bbox.yMax>Stage.height){
+				var newval=Stage.height-bbox.yMax-dy;
+				this._y+=newval;
+			}
+		}		
+		
 		String.prototype.replace = function() {
 			var arg_search, arg_replace, position; 
 			var endText, preText, newText; 
@@ -291,5 +304,6 @@ class visorFreeMind.PrototypesCreator{
 			newText += endText; 
 			return newText; 
 		} 
+		
 	}
 }

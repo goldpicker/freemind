@@ -62,6 +62,10 @@ class visorFreeMind.Browser {
 	private var bColor;
 	public  var withShadow=getStaticAtr("withShadow",false);
 	public static var startCollapsedToLevel=-1;
+	public static var defaultToolTipWordWrap=800;
+	
+	public static var offsetX=0;//right|left|Number
+	public static var offsetY=0;//top|bottom|Number
 	public static var unfoldAll:Boolean=false;
 	public static var justMap:Boolean=false;
 	public static var flashVersion:Number=0;
@@ -69,19 +73,21 @@ class visorFreeMind.Browser {
 	public var text_selectable=null;
 
 	var my_fmt:TextFormat = new TextFormat();
+	var myCSS;
 	var ant_floor_y=0;
 	var ant_pnode_y=0;
 	var ant_floor_x=0;
 	var ant_pnode_x=0;
 
 	var keyControler; //Atends key events
-	var buttonsCreator;
+	public var buttonsCreator;
 	var loading:Loading;
 
 	function Browser(file:String,_mc:MovieClip){
 		trace("new Browser, shadow="+withShadow,0);
 		browser=this;
 		flashVersion=getFlashVersion();
+		trace("flash version: "+flashVersion);
 		mcl.addListener(this); // For waiting for the load of all images
 		PrototypesCreator.init();
 		mc_container=_mc;
@@ -212,7 +218,7 @@ class visorFreeMind.Browser {
 			txt.multiline = true;
 			txt.wordWrap = true;
 			txt.html = true;
-			txt.htmlText="<font color='#996611'><b>This is a free</b><br>FREEMIND BROWSER v.98<br><b>shortcuts</b><br>"+
+			txt.htmlText="<font color='#996611'><b>This is a free</b><br>FREEMIND BROWSER v.99<br><b>shortcuts</b><br>"+
 			"LEFT : move left<br>"+
 			"RIGHT : move right<br>"+
 			"UP : move up<br>"+
@@ -235,6 +241,7 @@ class visorFreeMind.Browser {
 		mc_container.info.tex_container.dropShadow(8,4,4,0x777799,sombra);
 		mc_container.info._x=_root._xmouse+14;
 		mc_container.info._y=_root._ymouse+20;
+		reposObjForViewing(mc_container.info,14,20);
 		mc_container.info._visible=true;
 	}
 
@@ -257,6 +264,16 @@ class visorFreeMind.Browser {
 			my_fmt = new TextFormat();
 			my_fmt.color=0x002222;
 			my_fmt.font="Arial";
+			myCSS = new TextField.StyleSheet();
+			var cssURL = "flashfreemind.css";
+			//for using CSS 
+			myCSS.load(cssURL);
+			//using CSS file
+			myCSS.onLoad = function(exito) {
+			        if (exito) {
+			    Browser.browser.mc_container.tooltip.tex_container.textfield.styleSheet = Browser.browser.myCSS;
+			    }
+			}
 		}
 		my_fmt.size=12;
 		mc_container.tooltip.tex_container.textfield.text="";
@@ -264,18 +281,34 @@ class visorFreeMind.Browser {
 		mc_container.tooltip._visible=false;
 	}
 
-	function showTooltip(texto){
+	function showTooltip(texto,dx,dy){
+		//Reset of width
+		mc_container.tooltip.tex_container.textfield.wordWrap=false;
+		mc_container.tooltip.tex_container.textfield.autoSize=true;
 		// eliminate \r because of problems of double returns
-		mc_container.tooltip.tex_container.textfield.htmlText=texto.replace("\r","");
+		var newText=texto.replace("\r","");
+		if(newText.indexOf("<body>")>=0)
+			newText=newText.substr(newText.indexOf("<body>")+6);
+		mc_container.tooltip.tex_container.textfield.htmlText=newText;
 		trace(texto);
+		trace(newText);
 		trace(mc_container.tooltip.tex_container.textfield.htmlText);
 		var tt=mc_container.tooltip;
+		
+		//check of max tooltip width
+		if(tt.tex_container.textfield._width>defaultToolTipWordWrap || tt.tex_container.textfield._width>Stage.width){
+			var max=Stage.width<defaultToolTipWordWrap?Stage.width-10:defaultToolTipWordWrap;
+			tt.tex_container.textfield._width=max;
+			tt.tex_container.textfield.wordWrap=true;
+		}
+		
 		var sombra=tt.createEmptyMovieClip("sombra",9);
 		tt.tex_container.dropShadow(8,4,4,0x777799,sombra);
 		
-		tt._x=_root._xmouse+14;
-		tt._y=_root._ymouse+20;
-		reposObjForViewing(tt);
+		tt._x=_root._xmouse+dx;
+		tt._y=_root._ymouse+dy;
+		tt.reposObjForViewing(dx,dy);
+		//reposObjForViewing(tt,14,20);
 		tt._visible=true;
 	}
 
@@ -284,18 +317,15 @@ class visorFreeMind.Browser {
 	}
 	
 
-	function reposObjForViewing(tt){
+	function reposObjForViewing(tt,dx,dy){
 		var bbox=tt.getBounds(_root);
-		//trace(tt._x+" "+bbox.xMax+" "+Stage.width);
 		if(bbox.xMax>Stage.width){
-			var newval=Stage.width-bbox.xMax;
+			var newval=Stage.width-bbox.xMax-dx;
 			tt._x+=newval;
-			//trace("new x:"+tt._x+" newval:"+newval);
 		}
 		if(bbox.yMax>Stage.height){
-			var newval=Stage.height-bbox.yMax;
+			var newval=Stage.height-bbox.yMax-dy;
 			tt._y+=newval;
-			//trace("new x:"+tt._x+" newval:"+newval);
 		}
 	}
 	
@@ -379,8 +409,22 @@ class visorFreeMind.Browser {
 		if(initialization){
 			mc_floor._x=0;
 			mc_floor._y=0;
-			mc_floor._x=Stage.width/2-first_node.ref_mc._x;
-			mc_floor._y=Stage.height/2-first_node.ref_mc._y;
+			var bbox=mc_floor.getBounds(_root);
+			//X
+			if(offsetX=="left")			
+				mc_floor._x=-bbox.xMin;
+			else if(offsetX=="right")
+				mc_floor._x=Stage.width-bbox.xMax;
+			else
+				mc_floor._x=Stage.width/2+offsetX-first_node.ref_mc._x;
+			//Y
+			if(offsetY=="top")			
+				mc_floor._y=-bbox.yMin;
+			else if(offsetY=="bottom")
+				mc_floor._y=Stage.height-bbox.yMax;
+			else
+				mc_floor._y=Stage.height/2+offsetY-first_node.ref_mc._y;
+				
 			initialization=false;
 		}else{
 			mc_floor._y=ant_floor_y+ant_pnode_y-first_node.ref_mc._y;

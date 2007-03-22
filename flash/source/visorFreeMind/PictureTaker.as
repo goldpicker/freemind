@@ -50,19 +50,6 @@ class visorFreeMind.PictureTaker{
 		format.color = 0x666666;
 		format.size = 12;
 		format.underline = false;
-		addOverButton();	
-
-	}
-
-	function addOverButton(){
-		var over:MovieClip=cont.createEmptyMovieClip("over",2);
-		over.lineStyle(16,0x00ff00,0);
-		over.moveTo(10,10);
-		over.lineTo(11,10);
-		over.inst=this;
-		over.onPress=function(){
-			over.inst.changeFold();
-		}
 	}
 	
 	function changeFold(){
@@ -116,12 +103,14 @@ class visorFreeMind.PictureTaker{
 		}
 	}
 	
-	function show(){
+	function show(limX,limY){
 		trace("PT show");
 		checkZs()
 		cont._visible=true;
+		cont.limX=limX;
+		cont.limY=limY;
 		cont.onEnterFrame=function(){
-			if(this.hitTest(_root._xmouse,_root._ymouse,false)){
+			if(this.hitTest(_root._xmouse,_root._ymouse,false)||(_root._xmouse<=limX && _root._ymouse<=limY)){
 				if(this._height>Stage.height){
 					var h=Stage.height-30;
 					var m=_root._ymouse-30;

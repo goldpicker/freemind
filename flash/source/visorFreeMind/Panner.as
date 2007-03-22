@@ -33,8 +33,8 @@ class visorFreeMind.Panner{
 	var frame:MovieClip;
 	var pressed:Boolean=false;
 	var scale:Number;
-	private var despx=6;
-	private var despy=20;
+	private var despx=3;
+	private var despy=3;
 
 	
 	public static var  ShotsWidth:Number=180;
@@ -54,8 +54,10 @@ class visorFreeMind.Panner{
 	function show(mc:MovieClip){
 		cont._visible=true;
 		takeShot();
-		cont._x=despx;
-		cont._y=despy;
+		cont._x=mc._x+despx;
+		cont._y=mc._y+despy;
+		cont.reposObjForViewing(despx,despy);
+		
 		cont._visible=true;
 		cont.mc=mc;
 		pressed=false;
@@ -85,8 +87,8 @@ class visorFreeMind.Panner{
 		if(pressed){
 			frame.clear();
 			var bo=drawer.getBounds(drawer);
-			drawer._x=Stage.width/2-(_root._xmouse-despx)*(drawer._xscale/100)/scale-bo.xMin*(drawer._xscale/100);
-			drawer._y=Stage.height/2-(_root._ymouse-despy)*(drawer._yscale/100)/scale-bo.yMin*(drawer._yscale/100);
+			drawer._x=Stage.width/2-(_root._xmouse-cont._x)*(drawer._xscale/100)/scale-bo.xMin*(drawer._xscale/100);
+			drawer._y=Stage.height/2-(_root._ymouse-cont._y)*(drawer._yscale/100)/scale-bo.yMin*(drawer._yscale/100);
 			drawPannerRectangle();
 		}else{
 			frame.clear();
@@ -106,11 +108,11 @@ class visorFreeMind.Panner{
 		frame.lineStyle(1,0x666666,90);
 		var hsw=scale*(100.0/drawer._xscale)*Stage.width/2;
 		var hsh=scale*(100.0/drawer._xscale)*Stage.height/2;
-		frame.moveTo(_root._xmouse-hsw-despx,_root._ymouse-hsh-despy);
-		frame.lineTo(_root._xmouse+hsw-despx,_root._ymouse-hsh-despy);
-		frame.lineTo(_root._xmouse+hsw-despx,_root._ymouse+hsh-despy);
-		frame.lineTo(_root._xmouse-hsw-despx,_root._ymouse+hsh-despy);
-		frame.lineTo(_root._xmouse-hsw-despx,_root._ymouse-hsh-despy);
+		frame.moveTo(_root._xmouse-hsw-cont._x,_root._ymouse-hsh-cont._y);
+		frame.lineTo(_root._xmouse+hsw-cont._x,_root._ymouse-hsh-cont._y);
+		frame.lineTo(_root._xmouse+hsw-cont._x,_root._ymouse+hsh-cont._y);
+		frame.lineTo(_root._xmouse-hsw-cont._x,_root._ymouse+hsh-cont._y);
+		frame.lineTo(_root._xmouse-hsw-cont._x,_root._ymouse-hsh-cont._y);
 	}
 	
 	function genBitMap(){

@@ -21,6 +21,7 @@
  */
 import visorFreeMind.*;
 import flash.filters.DropShadowFilter;
+import flash.net;
 
 /**
 * Nodes, represent the mindmaps nodes
@@ -79,6 +80,7 @@ class visorFreeMind.Node {
 	private var eventControler;
 	private var note=null;
 	private var atributes=null;
+	private var richText=false;
 
 	function getAtributes():Array{
 		return atributes;
@@ -175,13 +177,16 @@ class visorFreeMind.Node {
 	}
 
 	function getText(node_xml:XMLNode){
-		if(node_xml.attributes.TEXT!=undefined)
+		if(node_xml.attributes.TEXT!=undefined){
+			if(node_xml.attributes.TEXT.indexof("<html>")>=0)
+				richText=true;
 			return node_xml.attributes.TEXT;
-		else{//richcontent
+		}else{//richcontent
+			richText=true;
 			for(var i=0;i<node_xml.childNodes.length;i++){
 				if(node_xml.childNodes[i].nodeName=="richcontent" &&
 					node_xml.childNodes[i].attributes.TYPE=="NODE"){
-					trace(node_xml.childNodes[i].firstChild.toString());
+					//trace(node_xml.childNodes[i].firstChild.toString());
 					return node_xml.childNodes[i].firstChild.toString();
 				}
 			}
@@ -246,7 +251,19 @@ class visorFreeMind.Node {
 					return;
 				}
 				if(url.indexOf("http://") > -1 || url.indexOf(".mm")==-1){
-					getURL(url,Node.openUrl);
+					trace("versionss: "+Browser.flashVersion);
+					if(Browser.flashVersion>=9){
+						//sendToURL(new URLRequest(url),Node.openUrl);
+						//getURL(url,Node.openUrl);
+						try {
+                			getURL(url,Node.openUrl);
+            			}
+            			catch (e:Error) {
+                				this.inst.browser.showTooltip("error:  "+e,14,20);
+            			}
+					}else{
+						getURL(url,Node.openUrl);
+					}
 				}else{
 					//have in mind directory change, it works diferent in Freemind
 					this.inst.browser.historyManager.loadXML(url);
@@ -292,11 +309,11 @@ class visorFreeMind.Node {
 				(this.inst.node_xml.attributes.LINK != undefined) ) {
 				this.onMouseMove=function(){
 					if(this.inst.noteIcon.hitTest(_root._xmouse,_root._ymouse,false)){
-						this.inst.browser.showTooltip(this.inst.note);
+						this.inst.browser.showTooltip(this.inst.note,14,20);
 						this.useHandCursor = true;
 					}
 					else if(this.inst.link.hitTest(_root._xmouse,_root._ymouse,false)){
-						this.inst.browser.showTooltip(this.inst.node_xml.attributes.LINK);
+						this.inst.browser.showTooltip(this.inst.node_xml.attributes.LINK,14,20);
 						this.useHandCursor = true;
 					}
 					else if(this.inst.atrsIcon.hitTest(_root._xmouse,_root._ymouse,false)){
@@ -498,7 +515,7 @@ class visorFreeMind.Node {
 
 	public function crearTextField(name_txt:String){
 		//trace (Flashout.DEBUG +"create TextField "+name_txt+" "+text);
-		if(text.indexOf("<html>")>=0 && text.indexOf("img src=")&&(text.indexOf(".jpg")>=0 || text.indexOf(".jpeg")>=0  || text.indexOf(".png")>=0 || text.indexOf(".gif")>=0 || text.indexOf(".JPG")>=0 || text.indexOf(".JPEG")>=0 || text.indexOf(".PNG")>=0 || text.indexOf(".GIF")>=0)){
+		if(richText && text.indexOf("img src=")&&(text.indexOf(".jpg")>=0 || text.indexOf(".jpeg")>=0  || text.indexOf(".png")>=0 || text.indexOf(".gif")>=0 || text.indexOf(".JPG")>=0 || text.indexOf(".JPEG")>=0 || text.indexOf(".PNG")>=0 || text.indexOf(".GIF")>=0)){
 			var start=text.indexOf("img src=")+9;
 			var length;
 			if (text.indexOf(".jpg")>=0) length=text.indexOf(".jpg")+4-start;
@@ -519,14 +536,14 @@ class visorFreeMind.Node {
 			var aux=text.substr(start);
 			var auxi=aux.indexOf(">");
 			text=text.substr(0,start-10)+text.substr(start+auxi+1);
-			trace("text:"+text);
+			//trace("text:"+text);
 			if(text=="<html>") return;
 		}
 
 
 		ref_mc.node_txt.createTextField(name_txt,3,0,0,0,0);
 		var my_fmt:TextFormat = new TextFormat();
-		if(text.indexOf("<html>")>=0){
+		if(richText){
 			ref_mc.node_txt.node_txt.html=true;
 			ref_mc.node_txt.node_txt.multiline=true;
 			ref_mc.node_txt.node_txt.htmlText=text;

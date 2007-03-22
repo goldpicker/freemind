@@ -144,9 +144,10 @@ class visorFreeMind.SearchManager {
 	}
 	
 	function show(mc:MovieClip,mainColor){
-		trace("search show");
 		container._x=mc._x-despx;
 		container._y=mc._y-despy;
+		//not very fine reposition
+		container.reposObjForViewing(despx,despy);
 		container._visible=true;
 		container.clear();
 		drawHidePixel();

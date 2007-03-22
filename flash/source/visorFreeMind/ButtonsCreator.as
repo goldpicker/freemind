@@ -37,11 +37,17 @@ class visorFreeMind.ButtonsCreator{
 	private var bHistory:MovieClip;
 	private var bSearch:MovieClip;
 	private var bPan:MovieClip;
+	private var hidden:MovieClip;
 	private var mc_Color;
 	private var mc_Color_rollout;
 	private var mainColor;
-	private var alfa=80;
+	public static var alfa=100;
+	public static var min_alpha_buttons=40;
+	public static var max_alpha_buttons=100;
 	private var browser:Browser;
+	public static var mc_now_over:MovieClip=null;
+	public static var listFade={};
+	public static var buttonsPos="top";//top|bottom
 	public  static var colors=[0xFFFFFF,0xEEEEEE,0xDDDDDD,
 							   0xEEFFFF,0xFFEEFF,0xFFFFEE,
 								0xFFEEEE,0xEEFFEE,0xEEEEFF];
@@ -49,9 +55,49 @@ class visorFreeMind.ButtonsCreator{
 	public function ButtonsCreator(browser:Browser){
 		this.browser=browser;
 		resetMainColor();
+		createFading(browser);
 		trace("ButtonsCreator created");
 	}
 
+	private function createFading(browser:Browser){
+		this.hidden=browser.mc_container.createEmptyMovieClip("hidden",7800);
+		this.hidden.onEnterFrame=function(){
+			//disminuimos los que esten en la tabla
+			for(var objeto in ButtonsCreator.listFade){
+				var mc_aux=ButtonsCreator.listFade[objeto];
+				if(ButtonsCreator.mc_now_over!=mc_aux){
+					if(mc_aux._alpha>ButtonsCreator.min_alpha_buttons){
+						mc_aux._alpha=mc_aux._alpha-2;
+					}else{
+						delete ButtonsCreator.listFade[objeto];
+					}
+				}
+			}
+			
+			if(ButtonsCreator.mc_now_over!=null ){
+				if( ButtonsCreator.mc_now_over._alpha<ButtonsCreator.max_alpha_buttons){
+				ButtonsCreator.mc_now_over._alpha=ButtonsCreator.mc_now_over._alpha+20;
+				}
+				ButtonsCreator.listFade[ButtonsCreator.mc_now_over._name]=ButtonsCreator.mc_now_over;
+			}
+		}
+	}
+	
+	function resetAlpha(){
+		resizer._alpha=min_alpha_buttons;
+		bBack._alpha=min_alpha_buttons;
+		bForward._alpha=min_alpha_buttons;
+		bGrow._alpha=min_alpha_buttons;
+		bShrink._alpha=min_alpha_buttons;
+		bReset._alpha=min_alpha_buttons;
+		bShadow._alpha=min_alpha_buttons;
+		bInfo._alpha=min_alpha_buttons;
+		bColor._alpha=min_alpha_buttons;
+		bHistory._alpha=min_alpha_buttons;
+		bPan._alpha=min_alpha_buttons;
+		bSearch._alpha=min_alpha_buttons;
+	}
+	
 	function resetMainColor(){
 		var color=browser.floor.getBackgroundColor();
 		var nRed = (color >> 16)-0x33;
@@ -70,23 +116,31 @@ class visorFreeMind.ButtonsCreator{
 			createPanButton(browser.mc_container);
 		relocateAllButtons();
 		addToolTipsButtons();
+		resetAlpha();
 	}
 	
 	function addToolTipsButtons(){
 		var over=function(){
-			this.browser.showTooltip(this.tooltip);
+			this.browser.showTooltip(this.tooltip,14,20);
+			ButtonsCreator.mc_now_over=this;
 		}
 
 		var out=function(){
 			this.browser.hideTooltip();
+			//this._alpha=ButtonsCreator.min_alpha_buttons;
+			ButtonsCreator.mc_now_over=null;			
 		}
 		var overInfo=function(){
 			this.browser.showInfo(this.info_text);
+			ButtonsCreator.mc_now_over=this;
 		}
 
 		var outInfo=function(){
 			this.browser.hideInfo();
+			this._alpha=ButtonsCreator.min_alpha_buttons;
+			ButtonsCreator.mc_now_over=null;			
 		}
+		
 		bBack.onRollOver=over;
 		bBack.onRollOut=out;
 		bForward.onRollOver=over;
@@ -101,32 +155,37 @@ class visorFreeMind.ButtonsCreator{
 		bShadow.onRollOut=out;
 		bInfo.onRollOver=overInfo;
 		bInfo.onRollOut=outInfo;
+		bColor.onRollOut=out;
+		bHistory.onRollOut=out;
+		bPan.onRollOut=out;
+		bSearch.onRollOut=out;
 	}
 
 	// For resize of Stage
 	function relocateAllButtons(){
+		var yPos=buttonsPos=="top"?10:Stage.height-10;
 		var newCenter=Stage.width/2;
 		bBack._x=newCenter-60;
-		bBack._y=10;
+		bBack._y=yPos;
 		bForward._x=newCenter-40;
-		bForward._y=10;
+		bForward._y=yPos;
 		bGrow._x=newCenter-20;
-		bGrow._y=10;
+		bGrow._y=yPos;
 		bShrink._x=newCenter;
-		bShrink._y=10;
+		bShrink._y=yPos;
 		bReset._x=newCenter+20;
-		bReset._y=10;
+		bReset._y=yPos;
 		bShadow._x=newCenter+40;
-		bShadow._y=10;
+		bShadow._y=yPos;
 		bInfo._x=newCenter+60;
-		bInfo._y=10;
+		bInfo._y=yPos;
 		bColor._x=newCenter+80;
-		bColor._y=10;
-		bHistory._y=10;
+		bColor._y=yPos;
+		bHistory._y=yPos;
 		bHistory._x=10;
-		bSearch._y=10;
+		bSearch._y=yPos;
 		bSearch._x=30;
-		bPan._y=10;
+		bPan._y=yPos;
 		bPan._x=50;
 		createColorSelector();
 	}
@@ -171,6 +230,8 @@ class visorFreeMind.ButtonsCreator{
 		}
 		mc_Color._x=bColor._x+0;
 		mc_Color._y=bColor._y+0;
+		if(buttonsPos=="bottom")
+			mc_Color._y=bColor._y-mc_Color._height;
 		mc_Color._visible=false;
 		mc_Color_rollout._x=bColor._x-15;
 		mc_Color_rollout._y=bColor._y-15;
@@ -185,6 +246,9 @@ class visorFreeMind.ButtonsCreator{
 		bColor.onRollOver=function(){
 			this.mc_Color._visible=true;
 			this.mc_Color_rollout._visible=true;
+			ButtonsCreator.mc_now_over=this;
+			this._alpha=ButtonsCreator.max_alpha_buttons;
+			ButtonsCreator.listFade[this._name]=this;
 		}
 		mc_Color_rollout.onRollOver=function(){
 			this.mc_Color._visible=false;
@@ -246,7 +310,12 @@ class visorFreeMind.ButtonsCreator{
 		bHistory.moveTo(3,-4);
 		bHistory.lineTo(0,4);
 		bHistory.onRollOver=function(){
-			this.browser.historyManager.pt.show();
+			var bbox=this.getBounds(_root);
+			this.browser.historyManager.pt.show(bbox.xMax,bbox.yMax);
+			ButtonsCreator.mc_now_over=this;
+		}
+		bHistory.onPress=function(){
+			this.browser.historyManager.pt.changeFold();;
 		}
 	}
 	
@@ -260,6 +329,7 @@ class visorFreeMind.ButtonsCreator{
 		bSearch.onRollOver=function(){
 			this.browser.searchDialog.show(this,this.bCreator.mainColor);
 			this.browser.historyManager.pt.hide();
+			ButtonsCreator.mc_now_over=this;
 		}
 	}
 	
@@ -274,14 +344,15 @@ class visorFreeMind.ButtonsCreator{
 			this.browser.panner.show(this);
 			this.browser.historyManager.pt.hide();
 			this.browser.searchDialog.hide();
+			ButtonsCreator.mc_now_over=this;
 		}
 	}
 	
 	function createSizeButtons(mc_container){
-		bGrow=mc_container.createEmptyMovieClip("navBack",7788);
+		bGrow=mc_container.createEmptyMovieClip("increase",7788);
 		bGrow.browser=browser;
 		bGrow.tooltip="INCREASE";
-		bShrink=mc_container.createEmptyMovieClip("navForward",7789);
+		bShrink=mc_container.createEmptyMovieClip("shrink",7789);
 		bShrink.browser=browser;
 		bShrink.tooltip="SHRINK";
 		bReset=mc_container.createEmptyMovieClip("reset",7790);
@@ -378,7 +449,7 @@ class visorFreeMind.ButtonsCreator{
 
 		bShadow.onPress=function(){
 			this.clear();
-			this.lineStyle(16,this.bc.mainColor,this.bc.alfa);
+			this.lineStyle(16,this.bc.mainColor,100);
 			this.moveTo(0,0);
 			this.lineTo(1,0);
 			this.lineStyle(14,0xFFFFFF,90);
@@ -388,7 +459,7 @@ class visorFreeMind.ButtonsCreator{
 			Browser.setStaticAtr("withShadow",this.browser.withShadow);
 			trace("withShadow:"+Browser.getStaticAtr("withShadow","hi"));
 			if(this.browser.withShadow==true){
-				this.lineStyle(10,this.bc.mainColor,this.bc.alfa);
+				this.lineStyle(10,this.bc.mainColor,100);
 				this.moveTo(0,0);
 				this.lineTo(1,0);
 				this.tooltip="SHADOW OFF";

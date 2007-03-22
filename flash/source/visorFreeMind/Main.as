@@ -131,12 +131,22 @@ class visorFreeMind.Main {
 		   		Browser.justMap=Boolean(_root.justMap.toLowerCase()=="true");
 		   if(!isNaN(_root.defaultWordWrap))
 		   		Node.defaultWordWrap=Number(_root.defaultWordWrap);
+		   if(!isNaN(_root.defaultToolTipWordWrap))
+		   		Browser.defaultToolTipWordWrap=Number(_root.defaultToolTipWordWrap);
+		   if(_root.offsetX!=null && (_root.offsetX=="left" ||_root.offsetX=="left" || isNaN(_root.offsetX)) )
+		   		Browser.offsetX=_root.offsetX;
+		   if(_root.offsetY!=null && (_root.offsetY=="top" ||_root.offsetY=="bottom" || isNaN(_root.offsetY)) )
+		   		Browser.offsetY=_root.offsetY;
+		   if(_root.buttonsPos!=null && (_root.buttonsPos=="top" ||_root.buttonsPos=="bottom" ) )
+		   		ButtonsCreator.buttonsPos=_root.buttonsPos;
+		   if(!isNaN(_root.max_alpha_buttons))
+		   		ButtonsCreator.max_alpha_buttons=Number(_root.max_alpha_buttons);
+		   if(!isNaN(_root.min_alpha_buttons))
+		   		ButtonsCreator.min_alpha_buttons=Number(_root.min_alpha_buttons);
 		   if(!isNaN(_root.startCollapsedToLevel))
 		   		Browser.startCollapsedToLevel=Number(_root.startCollapsedToLevel);
-		   if(_root.mainNodeShape=="rectangle")
-		   		Node.mainNodeShape="rectangle";
-		   if(_root.mainNodeShape=="none")
-		   		Node.mainNodeShape="none";
+		   if(_root.mainNodeShape=="rectangle" || _root.mainNodeShape=="none")
+		   		Node.mainNodeShape=_root.mainNodeShape;
 		   if(!isNaN(_root.ShotsWidth))
 		   		PictureTaker.ShotsWidth=Number(_root.ShotsWidth);
 		   if(_root.initLoadFile!=null){
@@ -152,6 +162,5 @@ class visorFreeMind.Main {
 
 			return true;
 		}
-
 
 }
