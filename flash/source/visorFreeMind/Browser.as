@@ -264,18 +264,18 @@ class visorFreeMind.Browser {
 			my_fmt = new TextFormat();
 			my_fmt.color=0x002222;
 			my_fmt.font="Arial";
+			my_fmt.size=12;
+			
+			//CSS for the tooltiip
 			myCSS = new TextField.StyleSheet();
 			var cssURL = "flashfreemind.css";
-			//for using CSS 
 			myCSS.load(cssURL);
-			//using CSS file
 			myCSS.onLoad = function(exito) {
 			        if (exito) {
 			    Browser.browser.mc_container.tooltip.tex_container.textfield.styleSheet = Browser.browser.myCSS;
 			    }
 			}
 		}
-		my_fmt.size=12;
 		mc_container.tooltip.tex_container.textfield.text="";
 		mc_container.tooltip.tex_container.textfield.setTextFormat(my_fmt);
 		mc_container.tooltip._visible=false;

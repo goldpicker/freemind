@@ -174,14 +174,39 @@ class visorFreeMind.PictureTaker{
 		return myBitmapData;
 	}
 
-
+	function createLink(mc:MovieClip,h){
+		var bLink:MovieClip=mc.createEmptyMovieClip("link",2);
+		bLink.lineStyle(1,0xFFDD88,100);
+		bLink.beginFill(0xFFDD88,100);
+		bLink.moveTo(0,0);
+		bLink.lineTo(h,0);
+		bLink.lineTo(h,h);
+		bLink.lineTo(0,h);
+		bLink.lineTo(0,0);
+		bLink.endFill();
+		//bLink.lineStyle(16,0xFFDD88,100);
+		//bLink.moveTo(center+0,center+0);
+		//bLink.lineTo(center+1,center+0);
+		var l=Icons.get_mm_link(bLink);
+		l._x=(bLink._width-l._width)/2;
+		l._y=(bLink._height-l._height)/2;
+		//bLink.lineStyle(8,0xFFFFFF,100);
+		//bLink.moveTo(center+0,center+0);
+		//bLink.lineTo(center+1,center+0);
+		return bLink;
+	}
+	
 	function takeShot(name:String){
 		browser.deleteHidden();
 		var movie:MovieClip=cont.createEmptyMovieClip("etiqueta"+pos,list.length+20);
 		movie.pt=this;
 		var textoCont:MovieClip=movie.createEmptyMovieClip("textoCont",0);
 		var t:TextField=addName(textoCont,name);
+		var link:MovieClip=createLink(textoCont,t._height);
+		link._x=t._width;
+		//link._y=(t._height-link._height)/2;
 		addShow(textoCont);
+		
 		if(Browser.flashVersion>7){
 			var cont:MovieClip=movie.createEmptyMovieClip("shot",2);
 			cont.attachBitmap(genBitMap(),cont.getNextHighestDepth(),"auto", true);
@@ -257,6 +282,9 @@ class visorFreeMind.PictureTaker{
 	function addShow(t:MovieClip){
 		t.time=getTimer();
 	    t.onPress=function(){
+	    	//look if over link
+	    	if(this.link.hitTest(_root._xmouse,_root._ymouse,true))
+	    		this._parent.pt.browser.historyManager.historyJump(this.texto.text);
 	    	this._parent.startDrag();
 	    	this._parent.oDepth=this._parent.getDepth();
 	    	this._parent.swapDepths(100);

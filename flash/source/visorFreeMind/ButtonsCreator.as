@@ -67,7 +67,7 @@ class visorFreeMind.ButtonsCreator{
 				var mc_aux=ButtonsCreator.listFade[objeto];
 				if(ButtonsCreator.mc_now_over!=mc_aux){
 					if(mc_aux._alpha>ButtonsCreator.min_alpha_buttons){
-						mc_aux._alpha=mc_aux._alpha-2;
+						mc_aux._alpha=mc_aux._alpha-4;
 					}else{
 						delete ButtonsCreator.listFade[objeto];
 					}
@@ -76,7 +76,7 @@ class visorFreeMind.ButtonsCreator{
 			
 			if(ButtonsCreator.mc_now_over!=null ){
 				if( ButtonsCreator.mc_now_over._alpha<ButtonsCreator.max_alpha_buttons){
-				ButtonsCreator.mc_now_over._alpha=ButtonsCreator.mc_now_over._alpha+20;
+				ButtonsCreator.mc_now_over._alpha=ButtonsCreator.mc_now_over._alpha+40;
 				}
 				ButtonsCreator.listFade[ButtonsCreator.mc_now_over._name]=ButtonsCreator.mc_now_over;
 			}
