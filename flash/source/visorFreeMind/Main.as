@@ -129,6 +129,8 @@ class visorFreeMind.Main {
 		   		Browser.unfoldAll=Boolean(_root.unfoldAll.toLowerCase()=="true");
 		   if(_root.justMap!=null)
 		   		Browser.justMap=Boolean(_root.justMap.toLowerCase()=="true");
+		   if(_root.scaleTooltips!=null)
+		   		Browser.scaleTooltips=Boolean(_root.justMap.toLowerCase()=="true");
 		   if(!isNaN(_root.defaultWordWrap))
 		   		Node.defaultWordWrap=Number(_root.defaultWordWrap);
 		   if(!isNaN(_root.defaultToolTipWordWrap))

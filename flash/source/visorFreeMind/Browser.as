@@ -68,6 +68,7 @@ class visorFreeMind.Browser {
 	public static var offsetY=0;//top|bottom|Number
 	public static var unfoldAll:Boolean=false;
 	public static var justMap:Boolean=false;
+	public static var scaleTooltips:Boolean=true;
 	public static var flashVersion:Number=0;
 
 	public var text_selectable=null;
@@ -802,16 +803,20 @@ class visorFreeMind.Browser {
 	public function upscale(){
 		mc_floor._xscale+=20;
 		mc_floor._yscale+=20;
-		mc_container.tooltip._xscale+=20;
-		mc_container.tooltip._yscale+=20;
+		if(scaleTooltips){
+			mc_container.tooltip._xscale+=20;
+			mc_container.tooltip._yscale+=20;
+		}
 		regenShadows();
 	}
 	
 	public function downscale(){
 		mc_floor._xscale-=20;
 		mc_floor._yscale-=20;
-		mc_container.tooltip._xscale-=20;
-		mc_container.tooltip._yscale-=20;
+		if(scaleTooltips){
+			mc_container.tooltip._xscale-=20;
+			mc_container.tooltip._yscale-=20;
+		}
 		//regenShadows();
 	}
 	
