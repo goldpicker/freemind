@@ -69,6 +69,8 @@ class visorFreeMind.Browser {
 	public static var unfoldAll:Boolean=false;
 	public static var justMap:Boolean=false;
 	public static var scaleTooltips:Boolean=true;
+	public static var toolTipsBgColor:Number=0xFFDD88;
+	public static var toolTipsFgColor:Number=0x664400;
 	public static var flashVersion:Number=0;
 
 	public var text_selectable=null;
@@ -97,7 +99,6 @@ class visorFreeMind.Browser {
 			buttonsCreator=new ButtonsCreator(this);
 		recalcIfResize();
 		createToolTip(); //node_txt en mc_container.
-		createInfoWindow();
 		loading=new Loading(this,mc_container);
 		buttonsCreator.addToolTipsButtons();
 		keyControler=new  KeyControler(this);
@@ -201,55 +202,6 @@ class visorFreeMind.Browser {
 		}
 	}
 
-
-	function createInfoWindow(){
-		trace("creating info creation");
-		if(mc_container.info==null){
-			trace("showing info creation");
-			mc_container.info=mc_container.createEmptyMovieClip("info",8);
-			mc_container.info.createEmptyMovieClip("tex_container",10);
-			mc_container.info.tex_container.createTextField("txt", 1, 0, 0,170,10);
-			var txt=mc_container.info.tex_container.txt;
-			txt.type = "dynamic";
-			txt.backgroundColor=0xFFDD88;// old one 0xFFCC77;
-			txt._alpha=100
-			txt.background=true;
-			txt.autoSize = "left";
-			txt.align = "left";
-			txt.multiline = true;
-			txt.wordWrap = true;
-			txt.html = true;
-			txt.htmlText="<font color='#996611'><b>This is a free</b><br>FREEMIND BROWSER v.99<br><b>shortcuts</b><br>"+
-			"LEFT : move left<br>"+
-			"RIGHT : move right<br>"+
-			"UP : move up<br>"+
-			"DOWN : move down<br>"+
-			"CTRL LEFT : back history<br>"+
-			"CTRL RIGHT : forward history<br>"+
-			"CTRL '+' : increase<br>"+
-			"CTRL '-' : shrink<br>"+
-			//"SHIFT : text selection<br>"+
-			"CTRL 'c' : node to clipboard<br>"+
-			"CTRL + Lmouse : unfold linked</font><br>";
-			mc_container.info._visible=false;
-		}
-	}
-
-
-	function showInfo(texto){
-		trace("showing info"+mc_container.info);
-		var sombra=mc_container.info.createEmptyMovieClip("sombra",9);
-		mc_container.info.tex_container.dropShadow(8,4,4,0x777799,sombra);
-		mc_container.info._x=_root._xmouse+14;
-		mc_container.info._y=_root._ymouse+20;
-		reposObjForViewing(mc_container.info,14,20);
-		mc_container.info._visible=true;
-	}
-
-	function hideInfo(){
-		mc_container.info._visible=false;
-	}
-
 	function createToolTip(){
 		if(mc_container.tooltip==null){
 			mc_container.tooltip=mc_container.createEmptyMovieClip("tooltip",110);
@@ -257,13 +209,13 @@ class visorFreeMind.Browser {
 			mc_container.tooltip.tex_container.createTextField("textfield",7777,0,0,10,10);
 			var txt=mc_container.tooltip.tex_container.textfield;
 			txt.background=true;
-			txt.backgroundColor=0xFFDD88;
+			txt.backgroundColor=Browser.toolTipsBgColor;
 			txt.autoSize=true;
 			txt.selectable=false;
 			txt.border=false;
 			txt.html = true;
 			my_fmt = new TextFormat();
-			my_fmt.color=0x002222;
+			my_fmt.color=Browser.toolTipsFgColor;
 			my_fmt.font="Arial";
 			my_fmt.size=12;
 			
@@ -291,9 +243,6 @@ class visorFreeMind.Browser {
 		if(newText.indexOf("<body>")>=0)
 			newText=newText.substr(newText.indexOf("<body>")+6);
 		mc_container.tooltip.tex_container.textfield.htmlText=newText;
-		trace(texto);
-		trace(newText);
-		trace(mc_container.tooltip.tex_container.textfield.htmlText);
 		var tt=mc_container.tooltip;
 		
 		//check of max tooltip width

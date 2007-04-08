@@ -131,6 +131,8 @@ class visorFreeMind.Main {
 		   		Browser.justMap=Boolean(_root.justMap.toLowerCase()=="true");
 		   if(_root.scaleTooltips!=null)
 		   		Browser.scaleTooltips=Boolean(_root.justMap.toLowerCase()=="true");
+		   if(_root.toolTipsBgColor!=null)
+		   		Browser.toolTipsBgColor=Number(_root.toolTipsBgColor);
 		   if(!isNaN(_root.defaultWordWrap))
 		   		Node.defaultWordWrap=Number(_root.defaultWordWrap);
 		   if(!isNaN(_root.defaultToolTipWordWrap))

@@ -121,7 +121,7 @@ class visorFreeMind.ButtonsCreator{
 	
 	function addToolTipsButtons(){
 		var over=function(){
-			this.browser.showTooltip(this.tooltip,14,20);
+			this.browser.showTooltip("<p>"+this.tooltip+"</p>",14,20);
 			ButtonsCreator.mc_now_over=this;
 		}
 
@@ -153,8 +153,8 @@ class visorFreeMind.ButtonsCreator{
 		bReset.onRollOut=out;
 		bShadow.onRollOver=over;
 		bShadow.onRollOut=out;
-		bInfo.onRollOver=overInfo;
-		bInfo.onRollOut=outInfo;
+		bInfo.onRollOver=over;
+		bInfo.onRollOut=out;
 		bColor.onRollOut=out;
 		bHistory.onRollOut=out;
 		bPan.onRollOut=out;
@@ -364,6 +364,17 @@ class visorFreeMind.ButtonsCreator{
 		bShadow.tooltip="SHADOW ON";
 		bInfo=mc_container.createEmptyMovieClip("bInfo",7792);
 		bInfo.browser=browser;
+		bInfo.tooltip="<p><b>This is a free</b> FREEMIND BROWSER v.99\n<b>shortcuts</b>\n"+
+			"LEFT : move left\n"+
+			"RIGHT : move right\n"+
+			"UP : move up\n"+
+			"DOWN : move down\n"+
+			"CTRL LEFT : back history\n"+
+			"CTRL RIGHT : forward history\n"+
+			"CTRL '+' : increase\n"+
+			"CTRL '-' : shrink\n"+
+			"CTRL 'c' : node to clipboard\n"+
+			"CTRL + Lmouse : unfold linked</p>";
 		bInfo.info_text="hola desde Flash FreeMind Browser";
 		bColor=mc_container.createEmptyMovieClip("bColor",7794);
 		bColor.browser=browser;
