@@ -7,6 +7,9 @@ Changes made in FreeMind 0.9.1 Alpha 1
 * New classes for NodeView Layout, MapView Layout and Viewport Layout introduced
 * NodeViewFactory for putting NodeView components and LayoutManager together
 * EdgeView is no more part of NodeView, it is managed by NodeViewFactory
+* setLeft is no more initiated by view
+* multiple map views for map are allowed by the new design, but only one NodeView for Node on each MapView
+
 
 ===============================
 Changes made in FreeMind 0.9.0 Beta 10
