@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: MapView.java,v 1.30.16.16.2.10.2.1 2007-04-09 11:36:13 dpolivaev Exp $ */
+/* $Id: MapView.java,v 1.30.16.16.2.10.2.2 2007-04-09 12:01:18 dpolivaev Exp $ */
 package freemind.view.mindmapview;
 
 import java.awt.Color;
@@ -221,7 +221,7 @@ public class MapView extends JPanel implements Printable, Autoscroll{
 
     public void initRoot() {
         rootContentLocation = new Point();
-        rootView = NodeView.newNodeView( getModel().getRootNode(), 0, this, this );
+        rootView = NodeViewFactory.getInstance().newNodeView( getModel().getRootNode(), 0, this, this );
         rootView.insert();
         revalidate();
     }

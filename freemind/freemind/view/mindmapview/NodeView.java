@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: NodeView.java,v 1.27.14.22.2.19.2.1 2007-04-09 11:36:13 dpolivaev Exp $ */
+/* $Id: NodeView.java,v 1.27.14.22.2.19.2.2 2007-04-09 12:01:18 dpolivaev Exp $ */
 
 package freemind.view.mindmapview;
 
@@ -211,48 +211,6 @@ public class NodeView extends JComponent implements TreeModelListener{
 	DropTarget dropTarget = new DropTarget(getMainView(),dtl);
 	dropTarget.setActive(true);
     }
-
-    /**
-     * Factory method which creates the right NodeView for the model.
-     */
-    protected static NodeView newNodeView(MindMapNode model, int position, MapView map, Container parent) {
-        NodeView newView = new NodeView( model, position, map, parent);
-        final MainView mainView;
-        if (model.isRoot()) {
-            mainView = new RootMainView(); 
-            newView.setMainView(mainView);
-            newView.setLayout(VerticalRootNodeViewLayout.getInstance());
-            
-        } else { 
-            if (model.getStyle().equals(MindMapNode.STYLE_FORK) ){
-                mainView = new ForkMainView(); 
-                newView.setMainView(mainView);
-            }
-            else if (model.getStyle().equals(MindMapNode.STYLE_BUBBLE)) {
-                mainView = new BubbleMainView(); 
-                newView.setMainView(mainView);
-            }
-            else {
-                System.err.println("Tried to create a NodeView of unknown Style.");
-                mainView = new ForkMainView(); 
-                newView.setMainView(mainView);
-            }
-            if(newView.isLeft()){
-                newView.setLayout(LeftNodeViewLayout.getInstance());
-            }
-            else{
-                newView.setLayout(RightNodeViewLayout.getInstance());
-            }
-        }
-        
-        model.addViewer(newView);
-        newView.update();
-        return newView;
-    }
-
-    //
-    // public methods
-    //
 
     public boolean isRoot() {
         return getModel().isRoot();
@@ -694,7 +652,7 @@ public class NodeView extends JComponent implements TreeModelListener{
      */
 
     NodeView insert(MindMapNode newNode, int position) {
-       NodeView newView = NodeView.newNodeView(newNode, position, getMap(), this);
+       NodeView newView = NodeViewFactory.getInstance().newNodeView(newNode, position, getMap(), this);
        newView.insert();
        return newView;
     }
@@ -1216,7 +1174,7 @@ public class NodeView extends JComponent implements TreeModelListener{
             }
             NodeView nodeView = (NodeView) component;
             if(nodeView.getModel().isVisible()){
-                EdgeView edge = EdgeViewFactory.getInstance().getEdge(nodeView);
+                EdgeView edge = NodeViewFactory.getInstance().getEdge(nodeView);
                 edge.update(nodeView);
                 edge.paint(g);
             }
