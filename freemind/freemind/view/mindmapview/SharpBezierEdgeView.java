@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: SharpBezierEdgeView.java,v 1.5 2003-11-03 11:00:29 sviles Exp $*/
+/*$Id: SharpBezierEdgeView.java,v 1.5.40.1 2007-04-09 11:36:13 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -38,16 +38,15 @@ public class SharpBezierEdgeView extends EdgeView {
 	
     private static final int XCTRL = 12;//the distance between endpoint and controlpoint
    
-    public SharpBezierEdgeView(NodeView source, NodeView target) {
-	super(source,target);
-	//	update();
+    public SharpBezierEdgeView() {
+	super();
     }
 
-    public void update() {
-	super.update();
+    public void update(NodeView target) {
+	super.update(target);
 
 	//YCTRL could be implemented but then we had to check whether target is above or below source.
-	if(target.isLeft()) {
+	if(getTarget().isLeft()) {
 	    one = new Point2D.Float(start.x-XCTRL, start.y);
 	    two = new Point2D.Float(end.x+XCTRL, end.y);
 	} else {
@@ -56,9 +55,8 @@ public class SharpBezierEdgeView extends EdgeView {
 	}
 	int w = getWidth()/2+1;
 	int w2 = w/2;
-	int dy1=getSourceShift();
-	line1.setCurve(start.x,start.y+dy1-w,one.x,one.y+dy1-w,two.x,two.y-w2,end.x,end.y);
-	line2.setCurve(end.x,end.y,two.x,two.y+w2,one.x,one.y+dy1+w,start.x,start.y+dy1+w);
+	line1.setCurve(start.x,start.y-w,one.x,one.y-w,two.x,two.y-w2,end.x,end.y);
+	line2.setCurve(end.x,end.y,two.x,two.y+w2,one.x,one.y+w,start.x,start.y+w);
 	graph.reset();
 	graph.append(line1,true);
 	graph.append(line2,true);
@@ -66,10 +64,9 @@ public class SharpBezierEdgeView extends EdgeView {
     }
 
     public void paint(Graphics2D g) {
-	update();
 	g.setColor(getColor());
 	g.setPaint(getColor());
-	g.setStroke(DEF_STROKE);
+	g.setStroke(getStroke());
         setRendering(g);
 	g.fill(graph);
 	g.draw(graph);

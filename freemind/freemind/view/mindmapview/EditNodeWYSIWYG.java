@@ -17,13 +17,14 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  */
-/*$Id: EditNodeWYSIWYG.java,v 1.1.4.23 2007-02-08 22:30:56 dpolivaev Exp $*/
+/*$Id: EditNodeWYSIWYG.java,v 1.1.4.23.2.1 2007-04-09 11:36:13 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -192,8 +193,9 @@ public class EditNodeWYSIWYG extends EditNodeBase {
             htmlEditorWindow.setBase(this);
             final SHTMLPanel htmlEditorPanel = ((HTMLDialog)htmlEditorWindow).getHtmlEditorPanel();
             String rule = "BODY {";
-            rule += "font-family: "+node.getFont().getFamily()+";";
-            rule += "font-size: "+node.getFont().getSize()+"pt;";
+            final Font font = node.getMainViewFont();
+            rule += "font-family: "+font.getFamily()+";";
+            rule += "font-size: "+font.getSize()+"pt;";
             if (node.getModel().isItalic()) {
                 rule+="font-style: italic; "; }
             if (node.getModel().isBold()) {

@@ -19,12 +19,13 @@
  *
  * Created on 02.05.2004
  */
-/*$Id: EditNodeDialog.java,v 1.1.4.1.16.9 2007-02-08 22:30:56 dpolivaev Exp $*/
+/*$Id: EditNodeDialog.java,v 1.1.4.1.16.9.2.1 2007-04-09 11:36:13 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -226,8 +227,9 @@ public class EditNodeDialog extends EditNodeBase {
                 }
             });
             
-            textArea.setFont(getNode().getFont());
-            textArea.setForeground(getNode().getForeground());
+            final Font nodeFont = getNode().getMainViewFont();
+            textArea.setFont(nodeFont);
+            textArea.setForeground(getNode().getMainViewForeground());
             final Color backgroundColor = getNode().getModel().getBackgroundColor();
             if(backgroundColor != null){
                 textArea.setBackground(backgroundColor);

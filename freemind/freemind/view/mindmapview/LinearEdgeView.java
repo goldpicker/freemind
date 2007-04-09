@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: LinearEdgeView.java,v 1.9.30.1 2006-04-05 21:26:31 dpolivaev Exp $*/
+/*$Id: LinearEdgeView.java,v 1.9.30.1.6.1 2007-04-09 11:36:13 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -28,17 +28,11 @@ import java.awt.Color;
  */
 public class LinearEdgeView extends EdgeView {
 
-    public LinearEdgeView(NodeView source, NodeView target) {
-	super(source,target);
-	update();
-    }
-
-    public void update() {
-	super.update();
+    public LinearEdgeView() {
+	super();
     }
 
     public void paint(Graphics2D g) {
-	update();
 	g.setColor(getColor());
 	g.setStroke(getStroke());
         setRendering(g);
@@ -52,11 +46,9 @@ public class LinearEdgeView extends EdgeView {
 	else {
 		// a little horizontal part because of line cap
 		int dx=w/3+1;
-		if(target.isLeft()) dx=-dx;
-		int dy1=getSourceShift();
-		int dy2=getTargetShift();
+		if(getTarget().isLeft()) dx=-dx;
 		int xs[] = { start.x, start.x+dx, end.x-dx, end.x };
-		int ys[] = { start.y+dy1, start.y+dy1, end.y+dy2, end.y+dy2 };
+		int ys[] = { start.y, start.y, end.y, end.y};
 		g.drawPolyline(xs,ys,4);
 		if(isTargetEclipsed(g)){
 			g.drawPolyline(xs,ys,4);
