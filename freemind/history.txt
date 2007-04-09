@@ -9,6 +9,11 @@ Changes made in FreeMind 0.9.1 Alpha 1
 * EdgeView is no more part of NodeView, it is managed by NodeViewFactory
 * setLeft is no more initiated by view
 * multiple map views for map are allowed by the new design, but only one NodeView for Node on each MapView
+* NodeView implements TreeModelListener
+* standard TreeModelEvents are used for communicating the map changes
+* All own components of NodeView (MainView and AttributeTable) are put inside of JComponent,
+which can be obtained using NodeView.getContent().
+* If only MainView exists, getContent() returns the MainView. 
 
 
 ===============================
