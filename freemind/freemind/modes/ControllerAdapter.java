@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: ControllerAdapter.java,v 1.41.14.37.2.23 2007-01-02 22:41:04 dpolivaev Exp $ */
+/* $Id: ControllerAdapter.java,v 1.41.14.37.2.23.2.1 2007-04-09 11:43:33 dpolivaev Exp $ */
 
 package freemind.modes;
 
@@ -90,9 +90,6 @@ import freemind.view.mindmapview.attributeview.AttributeView;
  */
 public abstract class ControllerAdapter implements ModeController {
 
-	// for cascading updates.
-	private HashSet nodesAlreadyUpdated;
-	private HashSet nodesToBeUpdated;
 	// Logging:
 	private static java.util.logging.Logger logger;
 
@@ -116,8 +113,6 @@ public abstract class ControllerAdapter implements ModeController {
         	logger = getFrame().getLogger(this.getClass().getName());
         }
         // for updates of nodes:
-		nodesAlreadyUpdated = new HashSet();
-		nodesToBeUpdated    = new HashSet();
         DropTarget dropTarget = new DropTarget(getFrame().getViewport(),
                                                new FileOpener());
     }
@@ -164,11 +159,6 @@ public abstract class ControllerAdapter implements ModeController {
     }
     private void nodeRefresh(MindMapNode node, boolean isUpdate) {
     	logger.finest("nodeChanged called for node "+node+" parent="+node.getParentNode());
-		if(nodesAlreadyUpdated.contains(node)) {
-			return;
-		}
-		nodesToBeUpdated.add(node);
-		nodesAlreadyUpdated.add(node);
 		if (isUpdate) {
 			// update modification times:
 			if(node.getHistoryInformation()!= null) {
@@ -178,15 +168,24 @@ public abstract class ControllerAdapter implements ModeController {
             updateNode(node);
         }
 		// fc, 10.10.06: Dirty hack in order to keep this method away from being used by everybody.
-		((MapAdapter) getMap()).nodeChangedMapInternal(node);
-		nodesToBeUpdated.remove(node);
-		if(nodesToBeUpdated.size()==0) {
-			// this is the end of all updates:
-			nodesAlreadyUpdated.clear();
-		}
+		((MapAdapter) getMap()).nodeChangedInternal(node);
     }
 
-	/**
+    public void refreshMap(){
+        final MindMapNode root = getMap().getRootNode();
+        refreshMapFrom(root);
+    }
+    public void refreshMapFrom(MindMapNode node) {
+        final Iterator iterator = node.getChildren().iterator();
+        while(iterator.hasNext()){
+            MindMapNode child = (MindMapNode) iterator.next();
+            refreshMapFrom(child);
+        }
+        ((MapAdapter) getMap()).nodeChangedInternal(node);
+        
+    }
+
+    /**
 	 */
 	public void nodeStructureChanged(MindMapNode node) {
 		getMap().nodeStructureChanged(node);
@@ -459,12 +458,6 @@ public abstract class ControllerAdapter implements ModeController {
         getView().scrollNodeToVisible(node);
         getView().selectAsTheOnlyOneSelected(node);
         getView().setSiblingMaxLevel(node.getModel().getNodeLevel()); // this level is default
-    }
-
-    public void select( MindMapNode selected) {
-        // are they visible visible?
-        displayNode(selected);
-        select(selected.getViewer());
     }
 
 	/**
@@ -867,9 +860,16 @@ public abstract class ControllerAdapter implements ModeController {
 
 
     public MindMapNode getSelected() {
-    	if(getView() != null && getView().getSelected()!=null)
-        	return (MindMapNode)getView().getSelected().getModel();
-		return null;
+        final NodeView selectedView = getSelectedView();
+        if(selectedView != null )
+            return selectedView.getModel();
+        return null;
+    }
+
+    public NodeView getSelectedView() {
+        if(getView() != null)
+            return getView().getSelected();
+        return null;
     }
 
 
@@ -1065,7 +1065,7 @@ public abstract class ControllerAdapter implements ModeController {
         }
         return adaptedText;
     }
-    public void displayNode(MindMapNode node){
+    public void displayNode(NodeView node){
         displayNode(node, null);
     }
 
@@ -1075,9 +1075,9 @@ public abstract class ControllerAdapter implements ModeController {
      * Display a node in the display (used by find and the goto action by arrow
      * link actions).
      */
-    public void displayNode(MindMapNode node, ArrayList nodesUnfoldedByDisplay) {
+    public void displayNode(NodeView node, ArrayList nodesUnfoldedByDisplay) {
         // Unfold the path to the node
-        Object[] path = getMap().getPathToRoot(node);
+        Object[] path = getMap().getPathToRoot(node.getModel());
         // Iterate the path with the exception of the last node
         for (int i = 0; i < path.length - 1; i++) {
             MindMapNode nodeOnPath = (MindMapNode) path[i];
@@ -1092,14 +1092,22 @@ public abstract class ControllerAdapter implements ModeController {
     }
 
 
+    public void centerNode(NodeView node){
+        if(node==null){
+            displayNode(node);
+        }
+        // Select the node and scroll to it.
+        getView().centerNode(node);
+        getView().selectAsTheOnlyOneSelected(node);
+        getController().obtainFocusForSelected();
+}
+
     public void centerNode(MindMapNode node){
-            if(node.getViewer()==null){
-                displayNode(node);
-            }
-            // Select the node and scroll to it.
-            getView().centerNode(node.getViewer());
-            getView().selectAsTheOnlyOneSelected(node.getViewer());
-            getController().obtainFocusForSelected();
+        NodeView view = null;
+        if(node!=null){
+            view = getController().getView().getNodeView(node);
+        }
+        centerNode(view);
     }
 
     public File getLastCurrentDir()
@@ -1116,5 +1124,29 @@ public abstract class ControllerAdapter implements ModeController {
     public AttributeController getAttributeController(){
         return null;
     }
+
+    public NodeView getNodeView(MindMapNode node) {
+        return getView().getNodeView(node);
+}
+
+    public void insertNodeInto(MindMapNode newNode, MindMapNode parent, int index) {
+        getModel().insertNodeInto(newNode, parent, index);
+    }
+    
+    public void insertNodeInto(MindMapNode node, MindMapNode parent, boolean asSibling) {
+        if(asSibling){
+            insertNodeInto(node, parent.getParentNode());
+        }
+        else{
+            insertNodeInto(node, parent);
+        }
+    }
+    /* (non-Javadoc)
+     * @see freemind.modes.MindMap#insertNodeInto(javax.swing.tree.MutableTreeNode, javax.swing.tree.MutableTreeNode)
+     */
+    public void insertNodeInto(MindMapNode newChild, MindMapNode parent) {
+        insertNodeInto(newChild, parent, parent.getChildCount());
+    }
+    
 
 }

@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: TestMindMapNode.java,v 1.1.2.10 2007-02-03 23:19:26 christianfoltin Exp $*/
+/*$Id: TestMindMapNode.java,v 1.1.2.10.2.1 2007-04-09 11:43:37 dpolivaev Exp $*/
 
 package tests.freemind.findreplace;
 
@@ -49,7 +49,7 @@ import freemind.modes.MindMapEdge;
 import freemind.modes.MindMapLinkRegistry;
 import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
-import freemind.modes.NodeViewEventListener;
+import freemind.modes.TreeModelListener;
 import freemind.modes.attributes.Attribute;
 import freemind.modes.attributes.NodeAttributeTableModel;
 import freemind.view.mindmapview.NodeView;
@@ -327,10 +327,10 @@ final class TestMindMapNode implements MindMapNode {
         return null;
     }
 
-    public void addNodeViewEventListener(NodeViewEventListener l) {
+    public void addTreeModelListener(TreeModelListener l) {
     }
 
-    public void removeNodeViewEventListener(NodeViewEventListener l) {
+    public void removeTreeModelListener(TreeModelListener l) {
     }
 
     public void insert(MutableTreeNode child, int index) {

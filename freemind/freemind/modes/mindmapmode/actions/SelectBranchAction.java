@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: SelectBranchAction.java,v 1.1.2.1.2.1 2006-04-05 21:26:28 dpolivaev Exp $ */
+/* $Id: SelectBranchAction.java,v 1.1.2.1.2.1.6.1 2007-04-09 11:43:36 dpolivaev Exp $ */
 
 package freemind.modes.mindmapmode.actions;
 
@@ -36,7 +36,7 @@ public class SelectBranchAction  extends FreemindAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        getMindMapController().selectBranch(getMindMapController().getSelected(), true /* = extend*/);
+        getMindMapController().selectBranch(getMindMapController().getSelectedView(), true /* = extend*/);
     }
 
 }

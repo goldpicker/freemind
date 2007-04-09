@@ -19,7 +19,7 @@
  *
  * Created on 11.11.2005
  */
-/* $Id: CommonMouseMotionManager.java,v 1.1.2.1.2.2 2006-07-25 20:28:21 christianfoltin Exp $ */
+/* $Id: CommonMouseMotionManager.java,v 1.1.2.1.2.2.4.1 2007-04-09 11:43:33 dpolivaev Exp $ */
 package freemind.modes.common.listeners;
 
 import java.awt.Rectangle;
@@ -62,7 +62,7 @@ public class CommonMouseMotionManager implements MapMouseMotionReceiver {
 		// Always try to get mouse to the original position in the Map.
 		if (originX >= 0 && isEventPointVisible) {
 			((MapView) e.getComponent()).scrollBy(originX - e.getX(), originY
-					- e.getY(), false);
+					- e.getY());
 		}
 	}
 

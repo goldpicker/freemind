@@ -19,7 +19,7 @@
  *
  * Created on 13.08.2004
  */
-/* $Id: ToggleChildrenFoldedAction.java,v 1.1.2.1.2.1 2006-04-05 21:26:28 dpolivaev Exp $ */
+/* $Id: ToggleChildrenFoldedAction.java,v 1.1.2.1.2.1.6.1 2007-04-09 11:43:36 dpolivaev Exp $ */
 
 package freemind.modes.mindmapmode.actions;
 
@@ -29,6 +29,7 @@ import javax.swing.AbstractAction;
 
 import freemind.modes.MindMapNode;
 import freemind.modes.mindmapmode.MindMapController;
+import freemind.view.mindmapview.MapView;
 
 
 public class ToggleChildrenFoldedAction extends AbstractAction {
@@ -40,7 +41,8 @@ public class ToggleChildrenFoldedAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         MindMapNode selected = modeController.getSelected();
         modeController.toggleFolded.toggleFolded(selected.childrenUnfolded());
-        modeController.getView().selectAsTheOnlyOneSelected(selected.getViewer());
+        final MapView mapView = modeController.getView();
+        mapView.selectAsTheOnlyOneSelected(mapView.getNodeView(selected));
         modeController.getController().obtainFocusForSelected();
     }
 }

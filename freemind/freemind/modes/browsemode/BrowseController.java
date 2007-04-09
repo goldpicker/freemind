@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: BrowseController.java,v 1.13.18.7.2.7 2006-10-10 18:51:52 christianfoltin Exp $ */
+/* $Id: BrowseController.java,v 1.13.18.7.2.7.2.1 2007-04-09 11:43:33 dpolivaev Exp $ */
 
 package freemind.modes.browsemode;
 
@@ -41,6 +41,7 @@ import freemind.modes.MindMap;
 import freemind.modes.MindMapNode;
 import freemind.modes.Mode;
 import freemind.modes.ModeController;
+import freemind.modes.NodeAdapter;
 import freemind.modes.common.GotoLinkNodeAction;
 import freemind.modes.viewmodes.ViewControllerAdapter;
 import freemind.view.mindmapview.NodeView;

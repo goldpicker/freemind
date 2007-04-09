@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMapEdge.java,v 1.9.18.1 2004-10-28 05:24:53 christianfoltin Exp $*/
+/*$Id: MindMapEdge.java,v 1.9.18.1.22.1 2007-04-09 11:43:33 dpolivaev Exp $*/
 
 package freemind.modes;
 
@@ -31,4 +31,5 @@ public interface MindMapEdge extends MindMapLine {
 //     public String toString();
 //     public void setTarget(MindMapNode node);
     public XMLElement save();
+
 }

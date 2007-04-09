@@ -19,7 +19,7 @@
  *
  * Created on 09.11.2005
  */
-/* $Id: MindMapMouseWheelEventHandler.java,v 1.1.2.1.2.3 2007-03-02 21:20:11 christianfoltin Exp $ */
+/* $Id: MindMapMouseWheelEventHandler.java,v 1.1.2.1.2.3.2.1 2007-04-09 11:43:37 dpolivaev Exp $ */
 package freemind.modes.mindmapmode.listeners;
 
 import java.awt.event.InputEvent;
@@ -104,12 +104,12 @@ public class MindMapMouseWheelEventHandler implements MouseWheelListener {
 		} else if ((e.getModifiers() & HORIZONTAL_SCROLL_MASK) != 0) {
 			for (int i = 0; i < SCROLL_SKIPS; i++) {
 				((MapView) e.getComponent()).scrollBy(SCROLL_SKIP
-						* e.getWheelRotation(), 0, false);
+						* e.getWheelRotation(), 0);
 			}
 		} else {
 			for (int i = 0; i < SCROLL_SKIPS; i++) {
 				((MapView) e.getComponent()).scrollBy(0, SCROLL_SKIP
-						* e.getWheelRotation(), false);
+						* e.getWheelRotation());
 			}
 		}
 	}
