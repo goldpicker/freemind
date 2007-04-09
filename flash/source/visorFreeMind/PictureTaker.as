@@ -197,7 +197,8 @@ class visorFreeMind.PictureTaker{
 	}
 	
 	function takeShot(name:String){
-		browser.deleteHidden();
+		//browser.deleteHidden();
+		browser.prepareBounds();
 		var movie:MovieClip=cont.createEmptyMovieClip("etiqueta"+pos,list.length+20);
 		movie.pt=this;
 		var textoCont:MovieClip=movie.createEmptyMovieClip("textoCont",0);

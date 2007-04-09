@@ -30,6 +30,7 @@ class visorFreeMind.ButtonsCreator{
 	private var bForward:MovieClip;
 	private var bGrow:MovieClip;
 	private var bShrink:MovieClip;
+	private var bFit:MovieClip;
 	private var bReset:MovieClip;
 	private var bShadow:MovieClip;
 	private var bInfo:MovieClip;
@@ -89,6 +90,7 @@ class visorFreeMind.ButtonsCreator{
 		bForward._alpha=min_alpha_buttons;
 		bGrow._alpha=min_alpha_buttons;
 		bShrink._alpha=min_alpha_buttons;
+		bFit._alpha=min_alpha_buttons;
 		bReset._alpha=min_alpha_buttons;
 		bShadow._alpha=min_alpha_buttons;
 		bInfo._alpha=min_alpha_buttons;
@@ -130,16 +132,7 @@ class visorFreeMind.ButtonsCreator{
 			//this._alpha=ButtonsCreator.min_alpha_buttons;
 			ButtonsCreator.mc_now_over=null;			
 		}
-		var overInfo=function(){
-			this.browser.showInfo(this.info_text);
-			ButtonsCreator.mc_now_over=this;
-		}
 
-		var outInfo=function(){
-			this.browser.hideInfo();
-			this._alpha=ButtonsCreator.min_alpha_buttons;
-			ButtonsCreator.mc_now_over=null;			
-		}
 		
 		bBack.onRollOver=over;
 		bBack.onRollOut=out;
@@ -149,8 +142,11 @@ class visorFreeMind.ButtonsCreator{
 		bGrow.onRollOut=out;
 		bShrink.onRollOver=over;
 		bShrink.onRollOut=out;
-		bReset.onRollOver=over;
+		bShrink.onRollOver=over;
+		bFit.onRollOut=out;		
+		bFit.onRollOver=over;
 		bReset.onRollOut=out;
+		bReset.onRollOver=over;
 		bShadow.onRollOver=over;
 		bShadow.onRollOut=out;
 		bInfo.onRollOver=over;
@@ -165,14 +161,16 @@ class visorFreeMind.ButtonsCreator{
 	function relocateAllButtons(){
 		var yPos=buttonsPos=="top"?10:Stage.height-10;
 		var newCenter=Stage.width/2;
-		bBack._x=newCenter-60;
+		bBack._x=newCenter-80;
 		bBack._y=yPos;
-		bForward._x=newCenter-40;
+		bForward._x=newCenter-60;
 		bForward._y=yPos;
-		bGrow._x=newCenter-20;
+		bGrow._x=newCenter-40;
 		bGrow._y=yPos;
-		bShrink._x=newCenter;
+		bShrink._x=newCenter-20;
 		bShrink._y=yPos;
+		bFit._x=newCenter;
+		bFit._y=yPos;
 		bReset._x=newCenter+20;
 		bReset._y=yPos;
 		bShadow._x=newCenter+40;
@@ -302,7 +300,7 @@ class visorFreeMind.ButtonsCreator{
 	function createHistoryButton(mc_container:MovieClip){
 		bHistory=mc_container.createEmptyMovieClip("bHistory",7796);
 		bHistory.browser=browser;
-		bHistory.info_text="show history";
+		bHistory.tooltip="show history";
 		drawRectangleB(bHistory,mainColor,alfa,0,8);
 		bHistory.lineStyle(3,0xFFFFFF,90);
 		bHistory.moveTo(-3,-4);
@@ -323,7 +321,7 @@ class visorFreeMind.ButtonsCreator{
 		bSearch=mc_container.createEmptyMovieClip("bSearch",7797);
 		bSearch.browser=browser;
 		bSearch.bCreator=this;
-		bSearch.info_text="show search dialog";
+		bSearch.tooltip="show search dialog";
 		drawRectangleB(bSearch,mainColor,alfa,0,8);
 		drawRectangleB(bSearch,0xFFFFFF,90,0,4);
 		bSearch.onRollOver=function(){
@@ -337,7 +335,7 @@ class visorFreeMind.ButtonsCreator{
 		bPan=mc_container.createEmptyMovieClip("bPan",7799);
 		bPan.browser=browser;
 		bPan.bCreator=this;
-		bPan.info_text="show search dialog";
+		bPan.tooltip="show search dialog";
 		drawRectangleB(bPan,mainColor,alfa,0,8);
 		drawRectangleB(bPan,0xFFFFFF,0,90,4);
 		bPan.onRollOver=function(){
@@ -355,6 +353,9 @@ class visorFreeMind.ButtonsCreator{
 		bShrink=mc_container.createEmptyMovieClip("shrink",7789);
 		bShrink.browser=browser;
 		bShrink.tooltip="SHRINK";
+		bFit=mc_container.createEmptyMovieClip("fit",7786);
+		bFit.browser=browser;
+		bFit.tooltip="FIT";
 		bReset=mc_container.createEmptyMovieClip("reset",7790);
 		bReset.browser=browser;
 		bReset.tooltip="RESET";
@@ -364,7 +365,7 @@ class visorFreeMind.ButtonsCreator{
 		bShadow.tooltip="SHADOW ON";
 		bInfo=mc_container.createEmptyMovieClip("bInfo",7792);
 		bInfo.browser=browser;
-		bInfo.tooltip="<p><b>This is a free</b> FREEMIND BROWSER v.99\n<b>shortcuts</b>\n"+
+		bInfo.tooltip="<p><b>This is a free</b> FREEMIND BROWSER v1.0a\n<b>shortcuts</b>\n"+
 			"LEFT : move left\n"+
 			"RIGHT : move right\n"+
 			"UP : move up\n"+
@@ -375,10 +376,9 @@ class visorFreeMind.ButtonsCreator{
 			"CTRL '-' : shrink\n"+
 			"CTRL 'c' : node to clipboard\n"+
 			"CTRL + Lmouse : unfold linked</p>";
-		bInfo.info_text="hola desde Flash FreeMind Browser";
 		bColor=mc_container.createEmptyMovieClip("bColor",7794);
 		bColor.browser=browser;
-		bColor.info_text="change background color";
+		bColor.tooltip="change background color";
 
 		bGrow.lineStyle(16,mainColor,alfa);
 		bGrow.moveTo(0,0);
@@ -394,6 +394,12 @@ class visorFreeMind.ButtonsCreator{
 		bShrink.lineStyle(3,0xFFFFFF,90);
 		bShrink.moveTo(-4,0);
 		bShrink.lineTo(4,0);
+
+		bFit.lineStyle(16,mainColor,alfa);
+		bFit.moveTo(0,0);
+		bFit.lineTo(1,0);
+		drawRectangleB(bFit,0xFFFFFF,90,0,4);
+
 
 		bReset.lineStyle(16,mainColor,alfa);
 		bReset.moveTo(0,0);
@@ -443,10 +449,15 @@ class visorFreeMind.ButtonsCreator{
 			}
 			*/
 		}
+
 		bShrink.onPress=function(){
 			this.browser.downscale();
-			//this.browser.genMindMap(3);
 		}
+
+		bFit.onPress=function(){
+			this.browser.fitMindMap();
+		}
+		
 		bReset.onPress=function(){
 			this.browser.mc_floor._xscale=100;
 			this.browser.mc_floor._yscale=100;

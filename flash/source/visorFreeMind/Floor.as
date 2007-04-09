@@ -19,6 +19,7 @@
  *
  * Created on 25.04.2005
  */
+ import visorFreeMind.*;
 /**
 * Floor: Is the container of the Browser
 */
@@ -99,10 +100,9 @@ class  visorFreeMind.Floor {
 		}
 
 		mc_floor.onMouseWheel=function(delta){
-			if(this.mouseDown)
-				this._x+=delta*3;
-			else
-				this._y+=delta*3;
+				this._xscale+=delta*3;
+				this._yscale+=delta*3;
+				Browser.browser.adjustToolTips();
 		}
 		Mouse.addListener(mc_floor);
 	}

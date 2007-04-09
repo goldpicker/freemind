@@ -68,7 +68,7 @@ class visorFreeMind.Browser {
 	public static var offsetY=0;//top|bottom|Number
 	public static var unfoldAll:Boolean=false;
 	public static var justMap:Boolean=false;
-	public static var scaleTooltips:Boolean=true;
+	public static var scaleTooltips:Boolean=false;
 	public static var toolTipsBgColor:Number=0xFFDD88;
 	public static var toolTipsFgColor:Number=0x664400;
 	public static var flashVersion:Number=0;
@@ -759,6 +759,13 @@ class visorFreeMind.Browser {
 		regenShadows();
 	}
 	
+	public function adjustToolTips(){
+		if(scaleTooltips){
+			mc_container.tooltip._xscale=mc_floor._xscale;
+			mc_container.tooltip._yscale=mc_floor._yscale;
+		}
+	}
+	
 	public function downscale(){
 		mc_floor._xscale-=20;
 		mc_floor._yscale-=20;
@@ -923,18 +930,22 @@ class visorFreeMind.Browser {
 		trace("b:"+b+" comp"+comparator);
 		var aux;
 		for(var i=0;i<listNodesL.length;i++){
-			aux=listNodesL[i].ref_mc.getBounds(comparator);
-			if(aux.xMin<b.xMin) b.xMin=aux.xMin;
-			if(aux.xMax>b.xMax) b.xMax=aux.xMax;
-			if(aux.yMin<b.yMin) b.yMin=aux.yMin;
-			if(aux.yMax>b.yMax) b.yMax=aux.yMax;
+			if(listNodesL[i].ref_mc._visible==true){
+				aux=listNodesL[i].ref_mc.getBounds(comparator);
+				if(aux.xMin<b.xMin) b.xMin=aux.xMin;
+				if(aux.xMax>b.xMax) b.xMax=aux.xMax;
+				if(aux.yMin<b.yMin) b.yMin=aux.yMin;
+				if(aux.yMax>b.yMax) b.yMax=aux.yMax;
+			}
 		}
 		for(var i=0;i<listNodesR.length;i++){
-			aux=listNodesR[i].ref_mc.getBounds(comparator);
-			if(aux.xMin<b.xMin) b.xMin=aux.xMin;
-			if(aux.xMax>b.xMax) b.xMax=aux.xMax;
-			if(aux.yMin<b.yMin) b.yMin=aux.yMin;
-			if(aux.yMax>b.yMax) b.yMax=aux.yMax;
+			if(listNodesR[i].ref_mc._visible==true){
+				aux=listNodesR[i].ref_mc.getBounds(comparator);
+				if(aux.xMin<b.xMin) b.xMin=aux.xMin;
+				if(aux.xMax>b.xMax) b.xMax=aux.xMax;
+				if(aux.yMin<b.yMin) b.yMin=aux.yMin;
+				if(aux.yMax>b.yMax) b.yMax=aux.yMax;
+			}
 		}
 		return b;
 	}
@@ -955,4 +966,22 @@ class visorFreeMind.Browser {
 		}
 	}
 	
+	function fitMindMap(){
+		var bo=getBounds(); 
+		var sx=Stage.width/(bo.xMax-bo.xMin);
+		var sy=Stage.height/(bo.yMax-bo.yMin);
+		//trace(bo.xMax+" "+bo.xMin+" y:"+bo.yMax+" "+bo.yMin);
+		var res=sx>sy?sy:sx;
+		mc_floor._xscale=res*100;
+		mc_floor._yscale=res*100;
+		
+		if(scaleTooltips){
+			mc_container.tooltip._xscale=res*100;
+			mc_container.tooltip._yscale=res*100;
+		}
+		//bo=getBounds(); 
+		mc_floor._x=-bo.xMin*res+(Stage.width-(bo.xMax-bo.xMin)*res)/2;
+		mc_floor._y=-bo.yMin*res+(Stage.height-(bo.yMax-bo.yMin)*res)/2;		
+		trace(res);
+	}
 }
