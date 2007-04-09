@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: NodeAdapter.java,v 1.20.16.20.2.24.2.1 2007-04-09 11:43:33 dpolivaev Exp $ */
+/* $Id: NodeAdapter.java,v 1.20.16.20.2.24.2.2 2007-04-09 18:31:58 dpolivaev Exp $ */
 
 package freemind.modes;
 
@@ -667,10 +667,9 @@ public abstract class NodeAdapter implements MindMapNode {
 
 	public void setLeft(boolean isLeft){
         position = isLeft ? LEFT_POSITION : RIGHT_POSITION;
-        // FIXME 
-        for(int i = 0; i < getChildCount(); i++){
-            final NodeAdapter child = (NodeAdapter) getChildAt(i);
-            if(child.position != UNKNOWN_POSITION){
+        if(! isRoot()){
+            for(int i = 0; i < getChildCount(); i++){
+                final NodeAdapter child = (NodeAdapter) getChildAt(i);
                 child.position = position;
             }
         }
