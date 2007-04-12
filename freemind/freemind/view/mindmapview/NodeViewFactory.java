@@ -16,10 +16,13 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: NodeViewFactory.java,v 1.1.2.1 2007-04-09 12:01:19 dpolivaev Exp $ */
+/* $Id: NodeViewFactory.java,v 1.1.2.2 2007-04-12 20:55:25 dpolivaev Exp $ */
 package freemind.view.mindmapview;
 
 import java.awt.Container;
+
+import javax.swing.Box;
+import javax.swing.JComponent;
 
 import freemind.modes.EdgeAdapter;
 import freemind.modes.MindMapNode;
@@ -125,5 +128,10 @@ class NodeViewFactory {
         model.addViewer(newView);
         newView.update();
         return newView;
+    }
+
+
+    JComponent newContentPane(NodeView view) {
+        return Box.createVerticalBox();
     }
 }

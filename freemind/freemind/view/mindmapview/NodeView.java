@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: NodeView.java,v 1.27.14.22.2.19.2.2 2007-04-09 12:01:18 dpolivaev Exp $ */
+/* $Id: NodeView.java,v 1.27.14.22.2.19.2.3 2007-04-12 20:55:24 dpolivaev Exp $ */
 
 package freemind.view.mindmapview;
 
@@ -42,7 +42,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.SwingConstants;
@@ -1139,7 +1138,7 @@ public class NodeView extends JComponent implements TreeModelListener{
 
     public Container getContentPane() {
         if(contentPane == null){
-            contentPane = Box.createVerticalBox();
+            contentPane = NodeViewFactory.getInstance().newContentPane(this);
             int index = getComponentCount()-1; 
             remove(index);
             contentPane.add(mainView);
@@ -1178,6 +1177,9 @@ public class NodeView extends JComponent implements TreeModelListener{
                 edge.update(nodeView);
                 edge.paint(g);
             }
+            else{
+                nodeView.paintEdges(g);
+            }
         }
     }
 
@@ -1187,8 +1189,10 @@ public class NodeView extends JComponent implements TreeModelListener{
     public void paint(Graphics g) {
         paintCloud(g);
         super.paint(g);
-        paintFoldingMark((Graphics2D)g);
-        paintEdges((Graphics2D) g);
+        if(getModel().isVisible()){
+            paintFoldingMark((Graphics2D)g);
+            paintEdges((Graphics2D) g);
+        }
 //        g.drawRect(0, 0, getWidth()-1, getHeight()-1);
     }
 

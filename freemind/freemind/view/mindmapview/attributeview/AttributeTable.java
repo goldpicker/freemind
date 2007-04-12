@@ -350,6 +350,15 @@ public class AttributeTable extends JTable implements ColumnWidthChangeListener{
     }
     
     
+    /* (non-Javadoc)
+     * @see javax.swing.JTable#removeNotify()
+     */
+    public void removeNotify() {
+        // TODO Auto-generated method stub
+        super.removeNotify();
+    }
+
+
     private float getFontSize() {
         float zoom = getZoom();
         return (attributeView.getNodeView().getModel().getMap().getRegistry().getAttributes().getFontSize() * zoom);

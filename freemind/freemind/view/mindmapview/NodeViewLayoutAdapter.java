@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: NodeViewLayoutAdapter.java,v 1.1.2.2 2007-04-09 12:01:18 dpolivaev Exp $ */
+/* $Id: NodeViewLayoutAdapter.java,v 1.1.2.3 2007-04-12 20:55:25 dpolivaev Exp $ */
 package freemind.view.mindmapview;
 
 import java.awt.Component;
@@ -119,10 +119,14 @@ abstract public class NodeViewLayoutAdapter implements NodeViewLayout{
     }
     
     protected int getChildContentHeight(boolean isLeft) {
+        final int childCount = getChildCount();
+        if(childCount == 0){
+            return 0;
+        }
         int height = 0;
         int additionalCloudHeigth = 0;
         int count = 0;
-        for(int i = 0; i < getChildCount(); i++){
+        for(int i = 0; i < childCount; i++){
             final NodeView child = (NodeView)getView().getComponent(i);
             if(child.isLeft() == isLeft){
                 additionalCloudHeigth = child.getAdditionalCloudHeigth();
@@ -179,7 +183,7 @@ abstract public class NodeViewLayoutAdapter implements NodeViewLayout{
     protected void placeRightChildren(int childVerticalShift) {
         final int baseX = getContent().getX() + getContent().getWidth();
         int y = getContent().getY() + childVerticalShift;
-        int right = baseX;
+        int right = baseX + getSpaceAround();;
         NodeView child = null;
         for(int i = 0; i < getChildCount(); i++){
             final NodeView component = (NodeView)getView().getComponent(i);
@@ -205,11 +209,11 @@ abstract public class NodeViewLayoutAdapter implements NodeViewLayout{
             y += child.getHeight() - 2 * getSpaceAround() + getVGap() + additionalCloudHeigth;  
             right = Math.max(right, x + child.getWidth());
         }
-        right += getSpaceAround();
         final int bottom = getContent().getY() + getContent().getHeight() + getSpaceAround();
         
         if(child != null){
-            getView().setSize(right, Math.max(bottom, child.getY() + child.getHeight()));
+            getView().setSize(right, 
+                    Math.max(bottom, child.getY() + child.getHeight()));
         }
         else{
             getView().setSize(right, bottom);
@@ -219,7 +223,7 @@ abstract public class NodeViewLayoutAdapter implements NodeViewLayout{
     protected void placeLeftChildren(int childVerticalShift) {
         final int baseX = getContent().getX();
         int y = getContent().getY() + childVerticalShift;
-        int right = baseX + getContent().getWidth();
+        int right = baseX + getContent().getWidth() + getSpaceAround();
         NodeView child = null;
         for(int i = 0; i < getChildCount(); i++){
             final NodeView component = (NodeView)getView().getComponent(i);
@@ -245,10 +249,11 @@ abstract public class NodeViewLayoutAdapter implements NodeViewLayout{
             y += child.getHeight() - 2 * getSpaceAround()+ getVGap() + additionalCloudHeigth;  
             right = Math.max(right, x + child.getWidth());
         }
-        right += getSpaceAround();
         final int bottom = getContent().getY() + getContent().getHeight() + getSpaceAround();
+        
         if(child != null){
-            getView().setSize(right , Math.max(bottom, child.getY() + child.getHeight()));
+            getView().setSize(right, 
+                    Math.max(bottom, child.getY() + child.getHeight()));
         }
         else{
             getView().setSize(right, bottom);
