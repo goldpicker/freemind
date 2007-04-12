@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: CommonNodeMouseMotionListener.java,v 1.1.2.1.2.3.2.1 2007-04-09 11:43:33 dpolivaev Exp $ */
+/* $Id: CommonNodeMouseMotionListener.java,v 1.1.2.1.2.3.2.2 2007-04-12 21:02:12 dpolivaev Exp $ */
 
 package freemind.modes.common.listeners;
 
@@ -170,11 +170,12 @@ public class CommonNodeMouseMotionListener implements NodeMouseMotionObserver {
         }
 
         if (e.getModifiers() == MouseEvent.BUTTON1_MASK) {
-            if (e.getClickCount() % 2 == 0) {
-                c.doubleClick(e);
-            } else {
+// FIXME Dimitry: Double Click comes after Plain Click combining (un)folding with editing            
+//            if (e.getClickCount() % 2 == 0) {
+//                c.doubleClick(e);
+//            } else {
                 c.plainClick(e);
-            }
+//            }
             e.consume();
         }
     }
