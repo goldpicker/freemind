@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: Controller.java,v 1.40.14.21.2.26.2.1 2007-04-09 11:43:32 dpolivaev Exp $*/
+/*$Id: Controller.java,v 1.40.14.21.2.26.2.2 2007-04-18 06:48:39 dpolivaev Exp $*/
 
 package freemind.controller;
 
@@ -1287,6 +1287,10 @@ public class Controller  implements MapModuleChangeObserver {
 
     public static void addPropertyChangeListener(FreemindPropertyListener listener) {
         Controller.propertyChangeListeners.add(listener);
+    }
+
+    public static void removePropertyChangeListener(FreemindPropertyListener listener) {
+        Controller.propertyChangeListeners.remove(listener);
     }
 	/**
 	 * @author foltin

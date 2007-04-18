@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: NodeView.java,v 1.27.14.22.2.19.2.3 2007-04-12 20:55:24 dpolivaev Exp $ */
+/* $Id: NodeView.java,v 1.27.14.22.2.19.2.4 2007-04-18 06:48:39 dpolivaev Exp $ */
 
 package freemind.view.mindmapview;
 
@@ -116,6 +116,8 @@ public class NodeView extends JComponent implements TreeModelListener{
     private NodeView preferredChild;
     private JComponent contentPane;
     protected NodeMotionListenerView motionListenerView;
+
+    private FreemindPropertyListener propertyChangeListener;
     protected NodeView(MindMapNode model, int position, MapView map, Container parent) {
         if(logger == null) {
             logger = map.getController().getFrame().getLogger(this.getClass().getName());
@@ -130,23 +132,26 @@ public class NodeView extends JComponent implements TreeModelListener{
             standardNodeColor =
                 Tools.xmlToColor(
                         map.getController().getProperty(FreeMind.RESOURCES_NODE_COLOR));
-            // add listener:
+            propertyChangeListener = new FreemindPropertyListener() {
+                            
+                            public void propertyChanged(String propertyName,
+                                    String newValue, String oldValue) {
+                                if (propertyName
+                                        .equals(FreeMind.RESOURCES_NODE_COLOR)) {
+                                    standardNodeColor = Tools.xmlToColor(newValue);
+                                }
+                                if (propertyName
+                                        .equals(FreeMind.RESOURCES_SELECTED_NODE_COLOR)) {
+                                    standardSelectColor = Tools.xmlToColor(newValue);
+                                }
+                            }
+                        };
             Controller
-            .addPropertyChangeListener(new FreemindPropertyListener() {
-                
-                public void propertyChanged(String propertyName,
-                        String newValue, String oldValue) {
-                    if (propertyName
-                            .equals(FreeMind.RESOURCES_NODE_COLOR)) {
-                        standardNodeColor = Tools.xmlToColor(newValue);
-                    }
-                    if (propertyName
-                            .equals(FreeMind.RESOURCES_SELECTED_NODE_COLOR)) {
-                        standardSelectColor = Tools.xmlToColor(newValue);
-                    }
-                }
-            });
+            .addPropertyChangeListener(propertyChangeListener);
             
+        }
+        else{
+            propertyChangeListener = null;
         }
         // initialize the selectedColor:
         if(standardSelectColor== null) {
@@ -669,6 +674,17 @@ public class NodeView extends JComponent implements TreeModelListener{
             ((NodeView)e.next()).remove(); }
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#removeNotify()
+     */
+    public void removeNotify() {
+        if(propertyChangeListener != null){
+            Controller.removePropertyChangeListener(propertyChangeListener);
+            }
+        super.removeNotify();
+    }
+
+ 
     void update() {
               if(! model.isVisible()){
                   mainView.setVisible(false);
@@ -1174,8 +1190,7 @@ public class NodeView extends JComponent implements TreeModelListener{
             NodeView nodeView = (NodeView) component;
             if(nodeView.getModel().isVisible()){
                 EdgeView edge = NodeViewFactory.getInstance().getEdge(nodeView);
-                edge.update(nodeView);
-                edge.paint(g);
+                edge.paint(nodeView, g);
             }
             else{
                 nodeView.paintEdges(g);

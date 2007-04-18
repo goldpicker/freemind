@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: LinearEdgeView.java,v 1.9.30.1.6.1 2007-04-09 11:36:13 dpolivaev Exp $*/
+/*$Id: LinearEdgeView.java,v 1.9.30.1.6.2 2007-04-18 06:48:39 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -32,30 +32,28 @@ public class LinearEdgeView extends EdgeView {
 	super();
     }
 
-    public void paint(Graphics2D g) {
-	g.setColor(getColor());
-	g.setStroke(getStroke());
+    protected void paint(Graphics2D g) {
+        g.setColor(getColor());
+        g.setStroke(getStroke());
         setRendering(g);
-	int w=getWidth();
-	if (w<=1) {
-		g.drawLine(start.x,start.y,end.x,end.y);
-		if(isTargetEclipsed(g)){
-			g.drawLine(start.x,start.y,end.x,end.y);
-		}
-	}
-	else {
-		// a little horizontal part because of line cap
-		int dx=w/3+1;
-		if(getTarget().isLeft()) dx=-dx;
-		int xs[] = { start.x, start.x+dx, end.x-dx, end.x };
-		int ys[] = { start.y, start.y, end.y, end.y};
-		g.drawPolyline(xs,ys,4);
-		if(isTargetEclipsed(g)){
-			g.drawPolyline(xs,ys,4);
-		}
-	}
-	
-	super.paint(g);
+        int w=getWidth();
+        if (w<=1) {
+            g.drawLine(start.x,start.y,end.x,end.y);
+            if(isTargetEclipsed(g)){
+                g.drawLine(start.x,start.y,end.x,end.y);
+            }
+        }
+        else {
+            // a little horizontal part because of line cap
+            int dx=w/3+1;
+            if(getTarget().isLeft()) dx=-dx;
+            int xs[] = { start.x, start.x+dx, end.x-dx, end.x };
+            int ys[] = { start.y, start.y, end.y, end.y};
+            g.drawPolyline(xs,ys,4);
+            if(isTargetEclipsed(g)){
+                g.drawPolyline(xs,ys,4);
+            }
+        }
     }
     
     public Color getColor() {

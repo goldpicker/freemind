@@ -39,9 +39,7 @@ import freemind.main.Tools;
 public class RightNodeViewLayout extends NodeViewLayoutAdapter {
     static private RightNodeViewLayout instance = null;
     
-    public void layoutContainer(Container c) {
-        super.layoutContainer(c);
-        
+    protected void layout() {
         final int contentHeight = getChildContentHeight(false);
         int childVerticalShift =  getChildVerticalShift(false);
         final int childHorizontalShift = getChildHorizontalShift();

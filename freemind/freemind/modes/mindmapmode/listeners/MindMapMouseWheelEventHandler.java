@@ -19,7 +19,7 @@
  *
  * Created on 09.11.2005
  */
-/* $Id: MindMapMouseWheelEventHandler.java,v 1.1.2.1.2.3.2.1 2007-04-09 11:43:37 dpolivaev Exp $ */
+/* $Id: MindMapMouseWheelEventHandler.java,v 1.1.2.1.2.3.2.2 2007-04-18 06:48:39 dpolivaev Exp $ */
 package freemind.modes.mindmapmode.listeners;
 
 import java.awt.event.InputEvent;
@@ -51,14 +51,12 @@ public class MindMapMouseWheelEventHandler implements MouseWheelListener {
        = InputEvent.CTRL_MASK;
       // |=   oldX >=0 iff we are in the drag
 
-	private final MindMapController mController;
 
 	/**
 	 *
 	 */
 	public MindMapMouseWheelEventHandler(MindMapController controller) {
 		super();
-		this.mController = controller;
 		Controller.addPropertyChangeListener(new FreemindPropertyListener(){
 
             public void propertyChanged(String propertyName, String newValue, String oldValue) {
@@ -75,7 +73,8 @@ public class MindMapMouseWheelEventHandler implements MouseWheelListener {
 	 * @see freemind.modes.ModeController.MouseWheelEventHandler#handleMouseWheelEvent(java.awt.event.MouseWheelEvent)
 	 */
 	public void mouseWheelMoved(MouseWheelEvent e) {
-
+        MapView mapView = (MapView) e.getSource();
+        MindMapController mController = (MindMapController)mapView.getModel().getModeController();
 		if (mController.isBlocked()) {
 			return; // block the scroll during edit (PN)
 		}

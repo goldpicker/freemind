@@ -110,15 +110,13 @@ import freemind.view.mindmapview.NodeView;
     }
 
     public void afterMapModuleChange(MapModule oldMapModule, Mode oldMode, MapModule newMapModule, Mode newMode) {
-        if(newMapModule != null) {
-            MindMap newMap = newMapModule.getModel();
+            MindMap newMap = newMapModule != null ? newMapModule.getModel() : null;
             FilterComposerDialog fd = getFilterToolbar().getFilterDialog();
             if (fd != null){
                 fd.mapChanged(newMap);
             }
             map = newMap;
             getFilterToolbar().mapChanged(newMap);
-        }
     }
 
     public void numberOfOpenMapInformation(int number) {

@@ -40,9 +40,7 @@ import freemind.main.Tools;
 public class VerticalRootNodeViewLayout extends NodeViewLayoutAdapter {
     static private VerticalRootNodeViewLayout instance = null;
     
-    public void layoutContainer(Container c) {
-        super.layoutContainer(c);
-        
+    protected void layout() {
         final int rightContentHeight = getChildContentHeight(false);
         int rightChildVerticalShift =  getChildVerticalShift(false);
         final int leftContentHeight = getChildContentHeight(true);

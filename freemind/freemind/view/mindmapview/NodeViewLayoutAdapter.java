@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: NodeViewLayoutAdapter.java,v 1.1.2.3 2007-04-12 20:55:25 dpolivaev Exp $ */
+/* $Id: NodeViewLayoutAdapter.java,v 1.1.2.4 2007-04-18 06:48:39 dpolivaev Exp $ */
 package freemind.view.mindmapview;
 
 import java.awt.Component;
@@ -67,6 +67,14 @@ abstract public class NodeViewLayoutAdapter implements NodeViewLayout{
     }
 
     public void layoutContainer(Container c) {
+        setUp(c);
+        layout();
+        shutDown();        
+    }
+
+    abstract protected void layout();
+
+    private void setUp(Container c) {
         final NodeView localView = (NodeView) c;
         localView.syncronizeAttributeView();
         final int localChildCount = localView.getComponentCount() - 1;
@@ -87,8 +95,16 @@ abstract public class NodeViewLayoutAdapter implements NodeViewLayout{
             this.vGap = getView().getVisibleParentView().getVGap();
         }
         spaceAround = view.getMap().getZoomed(100);
-        
     }
+
+    private void shutDown() {
+        this.view = null;
+        this.model = null;
+        this.content = null;
+        this.childCount = 0;
+        this.vGap = 0;
+        this.spaceAround = 0;
+     }
 
     /**
      * @return Returns the view.

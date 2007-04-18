@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: ControllerAdapter.java,v 1.41.14.37.2.23.2.1 2007-04-09 11:43:33 dpolivaev Exp $ */
+/* $Id: ControllerAdapter.java,v 1.41.14.37.2.23.2.2 2007-04-18 06:48:39 dpolivaev Exp $ */
 
 package freemind.modes;
 
@@ -113,8 +113,11 @@ public abstract class ControllerAdapter implements ModeController {
         	logger = getFrame().getLogger(this.getClass().getName());
         }
         // for updates of nodes:
-        DropTarget dropTarget = new DropTarget(getFrame().getViewport(),
-                                               new FileOpener());
+        // FIXME 
+        // do not associate each new ControllerAdapter 
+        // with the only one application viewport
+//        DropTarget dropTarget = new DropTarget(getFrame().getViewport(),
+//                                               new FileOpener());
     }
 
     public void setModel(MapAdapter model) {
@@ -708,6 +711,7 @@ public abstract class ControllerAdapter implements ModeController {
 			if (node != null) {
                 onLooseFocusHook(node);
             }
+            getView().getRootPane().requestFocus();
 		}
 	}
 
@@ -1031,8 +1035,9 @@ public abstract class ControllerAdapter implements ModeController {
     public void startupController() {
         setAllActions(true);
         if (getFrame().getView() != null) {
+            FileOpener fileOpener = new FileOpener();
             DropTarget dropTarget = new DropTarget(getFrame().getView(),
-                    new FileOpener());
+                                fileOpener);
         }
     }
 

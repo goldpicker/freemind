@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: MindMapController.java,v 1.35.14.21.2.32.2.1 2007-04-09 11:43:33 dpolivaev Exp $ */
+/* $Id: MindMapController.java,v 1.35.14.21.2.32.2.2 2007-04-18 06:48:39 dpolivaev Exp $ */
 
 package freemind.modes.mindmapmode;
 
@@ -650,10 +650,11 @@ freemind.main.Resources.getInstance().logException(					e);
         mRegistrations.clear();
         // deregister motion handler
         getController().getMapMouseMotionListener().deregister();
+        getController().getMapMouseWheelListener().deregister();
         getController().getNodeDropListener().deregister();
         getController().getNodeKeyListener().deregister();
         getController().getNodeMotionListener().deregister();
-        getController().getMapMouseWheelListener().deregister();
+        getController().getNodeMouseMotionListener().deregister();
     }
 
 	public MapAdapter newModel(ModeController modeController) {

@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: MapAdapter.java,v 1.24.14.10.2.15.2.1 2007-04-09 11:43:33 dpolivaev Exp $ */
+/* $Id: MapAdapter.java,v 1.24.14.10.2.15.2.2 2007-04-18 06:48:39 dpolivaev Exp $ */
 
 package freemind.modes;
 
@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;

@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: BezierEdgeView.java,v 1.13.18.1.2.1.6.1 2007-04-09 11:32:58 dpolivaev Exp $*/
+/*$Id: BezierEdgeView.java,v 1.13.18.1.2.1.6.2 2007-04-18 06:48:39 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -38,8 +38,7 @@ public class BezierEdgeView extends EdgeView {
 	super();
     }
 
-    public void update(NodeView target) {
-        super.update(target);
+    private void update() {
 
 	//YCTRL could be implemented but then we had to check whether target is above or below source.
         int sign = (getTarget().isLeft())? -1 : 1;
@@ -57,7 +56,8 @@ public class BezierEdgeView extends EdgeView {
     }
 
 
-    public void paint(Graphics2D g) {
+    protected void paint(Graphics2D g) {
+    update();
 	g.setColor(getColor());
 	g.setStroke(getStroke());
         setRendering(g);
@@ -66,8 +66,6 @@ public class BezierEdgeView extends EdgeView {
 	if(isTargetEclipsed(g)){
 		g.draw(graph);
 	}
-	
-	super.paint(g);
     }
 
     public Color getColor() {

@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: EdgeView.java,v 1.13.14.2.4.1.6.1 2007-04-09 11:36:13 dpolivaev Exp $*/
+/*$Id: EdgeView.java,v 1.13.14.2.4.1.6.2 2007-04-18 06:48:39 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -41,17 +41,21 @@ public abstract class EdgeView {
      * start,end must be initialized...
      * @param target TODO
      */
-    public void update(NodeView target) {
+    public void paint(NodeView target, Graphics2D g) {
         this.source = target.getVisibleParentView();
         this.target = target;
         end = getTarget().getInPoint(source);
         start = getSource().getOutPoint(end, source);
+        paint(g);
+        this.source = null;
+        this.target = null;
     }
 
-    public void paint(Graphics2D g) {
-    }
+    abstract protected void paint(Graphics2D g);
 
-    void remove() {
+    protected void reset() {
+        this.source = null;
+        this.target = null;
     }
 
     public abstract Color getColor();
