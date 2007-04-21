@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: MapView.java,v 1.30.16.16.2.10.2.2 2007-04-09 12:01:18 dpolivaev Exp $ */
+/* $Id: MapView.java,v 1.30.16.16.2.10.2.3 2007-04-21 13:54:35 dpolivaev Exp $ */
 package freemind.view.mindmapview;
 
 import java.awt.Color;
@@ -183,6 +183,8 @@ public class MapView extends JPanel implements Printable, Autoscroll{
     private Vector/* of ArrowLinkViews*/ ArrowLinkViews;
 
     private Point rootContentLocation;
+
+    private boolean mustScrollSelectedNodeToVisible = false;
     //
     // Constructors
     //
@@ -741,12 +743,7 @@ public class MapView extends JPanel implements Printable, Autoscroll{
         this.zoom = zoom;
         getRoot().updateAll();
         revalidate();
-        Runnable callScroll = new Runnable() {
-            public void run() {
-                scrollNodeToVisible(getSelected());
-            }
-        };
-        SwingUtilities.invokeLater(callScroll);
+        mustScrollSelectedNodeToVisible  = true;
     }
 
         /*****************************************************************
@@ -762,6 +759,13 @@ public class MapView extends JPanel implements Printable, Autoscroll{
             getRoot().getContent().getLocation(rootContentLocation);
             SwingUtilities.convertPointToScreen(rootContentLocation, getRoot());
             super.paint(g);
+        }
+
+        void scrollSelectedNodeToVisible() {
+            if(mustScrollSelectedNodeToVisible){
+                scrollNodeToVisible(getSelected());
+                mustScrollSelectedNodeToVisible = false;
+            }
         }
 
     public void paintChildren(Graphics graphics) {

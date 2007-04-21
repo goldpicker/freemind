@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: MapViewportLayout.java,v 1.1.2.2 2007-04-09 12:01:18 dpolivaev Exp $ */
+/* $Id: MapViewportLayout.java,v 1.1.2.3 2007-04-21 13:54:37 dpolivaev Exp $ */
 package freemind.view.mindmapview;
 
 
@@ -78,6 +78,10 @@ public class MapViewportLayout extends ViewportLayout
         {
             vp.repaint();
         }
+        if(! mapView.isValid()){
+            mapView.validate();
+        }
+        mapView.scrollSelectedNodeToVisible();
     }
 }
 
