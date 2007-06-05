@@ -139,7 +139,7 @@ begin
     	if (AVersion = '1.4') or (AVersion = '1.5') or (AVersion = '1.6') then
     		Result := True;
       end;
-  end.
+
 
   if Result = False then	// Java 1.4 not found/detected
   begin
