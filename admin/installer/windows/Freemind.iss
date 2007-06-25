@@ -61,7 +61,7 @@ WindowVisible=true
 
 AppCopyright=Copyright � 2007 Christian Foltin, Dimitry Polivaev and others
 ;AppCopyright=Copyright � {code:InstallationDate}
-AppVersion=0.9.0.Beta9
+AppVersion=0.9.0.Beta10
 InfoAfterFile=after.txt
 InfoBeforeFile=before.txt
 PrivilegesRequired=admin
