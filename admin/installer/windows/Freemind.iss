@@ -11,6 +11,7 @@
 ;* Christian Foltin   (FC ) 10/01/2004 - Version 0.7.1
 ;* Christian Foltin   (FC ) 08/07/2005 - Version 0.8.0
 ;* Christian Foltin   (FC ) 04/03/2007 - Version 0.9.0 Beta9
+;* Christian Foltin   (FC ) 25/06/2007 - Version 0.9.0 Beta10
 ;****************************************************************************
 
 [Files]
@@ -47,7 +48,7 @@ external 'isxbb_KillTimer@files:isxbb.dll stdcall';
 
 [Setup]
 AppName=FreeMind
-AppVerName=FreeMind 0.9.0 Beta9
+AppVerName=FreeMind 0.9.0 Beta10
 AppPublisherURL=http://freemind.sourceforge.net
 AppSupportURL=http://freemind.sourceforge.net
 AppUpdatesURL=http://freemind.sourceforge.net
@@ -58,8 +59,8 @@ LicenseFile=license.txt
 WindowVisible=true
 
 
-AppCopyright=Copyright © 2007 Christian Foltin, Dimitry Polivaev and others
-;AppCopyright=Copyright © {code:InstallationDate}
+AppCopyright=Copyright ï¿½ 2007 Christian Foltin, Dimitry Polivaev and others
+;AppCopyright=Copyright ï¿½ {code:InstallationDate}
 AppVersion=0.9.0.Beta9
 InfoAfterFile=after.txt
 InfoBeforeFile=before.txt
@@ -71,7 +72,7 @@ AppID=B991B020-2968-11D8-AF23-444553540000
 UninstallRestartComputer=false
 ChangesAssociations=true
 FlatComponentsList=false
-OutputBaseFilename=FreeMind-Windows-Installer-0_9_0-Beta9
+OutputBaseFilename=FreeMind-Windows-Installer-0_9_0-Beta10
 SolidCompression=false
 ; old: InternalCompressLevel=9
 Compression=zip/9
