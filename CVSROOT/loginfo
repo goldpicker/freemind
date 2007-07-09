@@ -36,4 +36,4 @@ CVSROOT /cvsroot/sitedocs/CVSROOT/cvstools/syncmail %{sVv} dpolivaev@users.sourc
 # value. Any changes to any modules in the project will thus generate an
 # email message to the mailing list specified.
 # DEFAULT /cvsroot/sitedocs/CVSROOT/cvstools/syncmail %{sVv} PROJECTNAME-LISTNAME@lists.sourceforge.net
-DEFAULT /cvsroot/sitedocs/CVSROOT/cvstools/syncmail %{sVv} dpolivaev@users.sourceforge.net
+DEFAULT /cvsroot/sitedocs/CVSROOT/cvstools/syncmail %{sVv} freemind-cvslog@lists.sourceforge.net
