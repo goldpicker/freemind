@@ -17,6 +17,27 @@
 [Files]
 Source: isxbb.dll; DestDir: {tmp}; Flags: dontcopy
 
+Source: ..\..\..\bin\dist\Freemind.exe; DestDir: {app}; Flags: promptifolder overwritereadonly
+Source: ..\..\..\bin\dist\Freemind.bat; DestDir: {app}; Flags: promptifolder overwritereadonly
+Source: ..\..\..\bin\dist\accessories\*.*; DestDir: {app}\accessories; Flags: promptifolder overwritereadonly
+Source: ..\..\..\bin\dist\browser\*.*; DestDir: {app}\accessories; Flags: promptifolder overwritereadonly
+Source: ..\..\..\bin\dist\doc\*.*; DestDir: {app}\doc; Flags: promptifolder overwritereadonly
+Source: ..\..\..\bin\dist\lib\*.*; DestDir: {app}\lib; Flags: promptifolder overwritereadonly  recursesubdirs
+Source: ..\..\..\bin\dist\plugins\*.*; DestDir: {app}\plugins; Flags: promptifolder overwritereadonly  recursesubdirs
+Source: license.txt; DestDir: {app}; Flags: promptifolder overwritereadonly
+Source: ..\..\..\bin\dist\patterns.xml; DestDir: {app}; Flags: promptifolder overwritereadonly
+; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+
+;Source: {app}\*.*; DestDir: {app}\backup; Flags: external skipifsourcedoesntexist uninsneveruninstall
+;Source: {app}\accessories\*.*; DestDir: {app}\backup\accessories; Flags: external skipifsourcedoesntexist uninsneveruninstall
+;Source: {app}\browser\*.*; DestDir: {app}\backup\browser; Flags: external skipifsourcedoesntexist uninsneveruninstall
+;Source: {app}\doc\*.*; DestDir: {app}\backup\doc; Flags: external skipifsourcedoesntexist uninsneveruninstall
+;Source: {app}\lib\*.*; DestDir: {app}\backup\lib; Flags: recursesubdirs external skipifsourcedoesntexist uninsneveruninstall
+;Source: {app}\plugins\*.*; DestDir: {app}\backup\plugins; Flags: external skipifsourcedoesntexist uninsneveruninstall
+
+Source: FreeMind.gif; DestDir: {tmp}; Flags: dontcopy
+Source: FreeMind1.gif; DestDir: {tmp}; Flags: dontcopy
+
 [Code]
 const
   TOPLEFT			= 1;
@@ -46,90 +67,6 @@ function isxbb_KillTimer(Flags: Cardinal): Integer;
 external 'isxbb_KillTimer@files:isxbb.dll stdcall';
 
 
-[Setup]
-AppName=FreeMind
-AppVerName=FreeMind 0.9.0 Beta10
-AppPublisherURL=http://freemind.sourceforge.net
-AppSupportURL=http://freemind.sourceforge.net
-AppUpdatesURL=http://freemind.sourceforge.net
-DefaultDirName={pf}\FreeMind
-DefaultGroupName=FreeMind
-AllowNoIcons=true
-LicenseFile=license.txt
-WindowVisible=true
-
-
-AppCopyright=Copyright ï¿½ 2007 Christian Foltin, Dimitry Polivaev and others
-;AppCopyright=Copyright ï¿½ {code:InstallationDate}
-AppVersion=0.9.0.Beta10
-InfoAfterFile=after.txt
-InfoBeforeFile=before.txt
-PrivilegesRequired=admin
-UninstallDisplayIcon={app}\Freemind.exe
-UninstallDisplayName=FreeMind
-
-AppID=B991B020-2968-11D8-AF23-444553540000
-UninstallRestartComputer=false
-ChangesAssociations=true
-FlatComponentsList=false
-OutputBaseFilename=FreeMind-Windows-Installer-0_9_0-Beta10
-SolidCompression=false
-; old: InternalCompressLevel=9
-Compression=zip/9
-ShowTasksTreeLines=true
-[Messages]
-DiskSpaceMBLabel=The program requires at least [kb] KB of disk space.
-ComponentsDiskSpaceMBLabel=Current selection requires at least [kb] KB of disk space.
-
-[Tasks]
-; NOTE: The following entry contains English phrases ("Create a desktop icon" and "Additional icons"). You are free to translate them into another language if required.
-Name: desktopicon; Description: Create a &desktop icon; GroupDescription: Additional icons:
-; NOTE: The following entry contains English phrases ("Create a Quick Launch icon" and "Additional icons"). You are free to translate them into another language if required.
-Name: quicklaunchicon; Description: Create a &Quick Launch icon; GroupDescription: Additional icons:; Flags: unchecked
-Name: fileassoc; Description: &Associate FreeMind Extensions with the .mm file extension; GroupDescription: File Association:
-
-[Files]
-Source: ..\..\..\bin\dist\Freemind.exe; DestDir: {app}; Flags: promptifolder overwritereadonly
-Source: ..\..\..\bin\dist\Freemind.bat; DestDir: {app}; Flags: promptifolder overwritereadonly
-Source: ..\..\..\bin\dist\accessories\*.*; DestDir: {app}\accessories; Flags: promptifolder overwritereadonly
-Source: ..\..\..\bin\dist\browser\*.*; DestDir: {app}\accessories; Flags: promptifolder overwritereadonly
-Source: ..\..\..\bin\dist\doc\*.*; DestDir: {app}\doc; Flags: promptifolder overwritereadonly
-Source: ..\..\..\bin\dist\lib\*.*; DestDir: {app}\lib; Flags: promptifolder overwritereadonly  recursesubdirs
-Source: ..\..\..\bin\dist\plugins\*.*; DestDir: {app}\plugins; Flags: promptifolder overwritereadonly  recursesubdirs
-Source: license.txt; DestDir: {app}; Flags: promptifolder overwritereadonly
-Source: ..\..\..\bin\dist\patterns.xml; DestDir: {app}; Flags: promptifolder overwritereadonly
-; NOTE: Don't use "Flags: ignoreversion" on any shared system files
-
-;Source: {app}\*.*; DestDir: {app}\backup; Flags: external skipifsourcedoesntexist uninsneveruninstall
-;Source: {app}\accessories\*.*; DestDir: {app}\backup\accessories; Flags: external skipifsourcedoesntexist uninsneveruninstall
-;Source: {app}\browser\*.*; DestDir: {app}\backup\browser; Flags: external skipifsourcedoesntexist uninsneveruninstall
-;Source: {app}\doc\*.*; DestDir: {app}\backup\doc; Flags: external skipifsourcedoesntexist uninsneveruninstall
-;Source: {app}\lib\*.*; DestDir: {app}\backup\lib; Flags: recursesubdirs external skipifsourcedoesntexist uninsneveruninstall
-;Source: {app}\plugins\*.*; DestDir: {app}\backup\plugins; Flags: external skipifsourcedoesntexist uninsneveruninstall
-
-Source: FreeMind.gif; DestDir: {tmp}; Flags: dontcopy
-Source: FreeMind1.gif; DestDir: {tmp}; Flags: dontcopy
-
-[Icons]
-Name: {group}\FreeMind; Filename: {app}\Freemind.exe; WorkingDir: {app}; IconIndex: 0; IconFilename: {app}\Freemind.exe
-Name: {group}\Uninstall FreeMind; Filename: {uninstallexe}
-Name: {userdesktop}\FreeMind; Filename: {app}\Freemind.exe; Tasks: desktopicon; WorkingDir: {app}; IconIndex: 0; IconFilename: {app}\Freemind.exe
-Name: {userstartmenu}\FreeMind; Filename: {app}\Freemind.exe; Tasks: quicklaunchicon; WorkingDir: {app}; IconIndex: 0; IconFilename: {app}\Freemind.exe
-
-[Run]
-; NOTE: The following entry contains an English phrase ("Launch"). You are free to translate it into another language if required.
-Filename: {app}\Freemind.exe; Description: Launch FreeMind; Flags: skipifsilent postinstall unchecked
-[_ISTool]
-Use7zip=false
-EnableISX=true
-
-[Registry]
-Root: HKCR; SubKey: .mm; ValueType: string; ValueData: FreeMind Map; Flags: uninsdeletekey; Tasks: fileassoc
-Root: HKCR; SubKey: FreeMind Map; ValueType: string; ValueData: FreeMind Map; Flags: uninsdeletekey; Tasks: fileassoc
-Root: HKCR; SubKey: FreeMind Map\Shell\Open\Command; ValueType: string; ValueData: """{app}\Freemind.exe"" ""%1"""; Flags: uninsdeletekey; Tasks: fileassoc
-Root: HKCR; Subkey: FreeMind Map\DefaultIcon; ValueType: string; ValueData: {app}\Freemind.exe,0; Flags: uninsdeletekey; Tasks: fileassoc
-
-[Code]
 function CheckJavaVersion: Boolean;
 var
   AVersion: String;
@@ -164,3 +101,63 @@ begin
     isxbb_Init(StrToInt(ExpandConstant('{hwnd}')));
   Result := CheckJavaVersion;
 end;
+[Setup]
+AppName=FreeMind
+AppVerName=FreeMind 0.9.0 Beta11
+AppPublisherURL=http://freemind.sourceforge.net
+AppSupportURL=http://freemind.sourceforge.net
+AppUpdatesURL=http://freemind.sourceforge.net
+DefaultDirName={pf}\FreeMind
+DefaultGroupName=FreeMind
+AllowNoIcons=true
+LicenseFile=license.txt
+WindowVisible=true
+
+
+AppCopyright=Copyright © 2007 Christian Foltin, Dimitry Polivaev and others
+;AppCopyright=Copyright © {code:InstallationDate}
+AppVersion=0.9.0.Beta11
+InfoAfterFile=after.txt
+InfoBeforeFile=before.txt
+PrivilegesRequired=admin
+UninstallDisplayIcon={app}\Freemind.exe
+UninstallDisplayName=FreeMind
+
+AppID=B991B020-2968-11D8-AF23-444553540000
+UninstallRestartComputer=false
+ChangesAssociations=true
+FlatComponentsList=false
+OutputBaseFilename=FreeMind-Windows-Installer-0_9_0-Beta10
+SolidCompression=false
+; old: InternalCompressLevel=9
+Compression=zip/9
+ShowTasksTreeLines=true
+[Messages]
+DiskSpaceMBLabel=The program requires at least [kb] KB of disk space.
+ComponentsDiskSpaceMBLabel=Current selection requires at least [kb] KB of disk space.
+
+[Tasks]
+; NOTE: The following entry contains English phrases ("Create a desktop icon" and "Additional icons"). You are free to translate them into another language if required.
+Name: desktopicon; Description: Create a &desktop icon; GroupDescription: Additional icons:
+; NOTE: The following entry contains English phrases ("Create a Quick Launch icon" and "Additional icons"). You are free to translate them into another language if required.
+Name: quicklaunchicon; Description: Create a &Quick Launch icon; GroupDescription: Additional icons:; Flags: unchecked
+Name: fileassoc; Description: &Associate FreeMind Extensions with the .mm file extension; GroupDescription: File Association:
+
+[Icons]
+Name: {group}\FreeMind; Filename: {app}\Freemind.exe; WorkingDir: {app}; IconIndex: 0; IconFilename: {app}\Freemind.exe
+Name: {group}\Uninstall FreeMind; Filename: {uninstallexe}
+Name: {userdesktop}\FreeMind; Filename: {app}\Freemind.exe; Tasks: desktopicon; WorkingDir: {app}; IconIndex: 0; IconFilename: {app}\Freemind.exe
+Name: {userstartmenu}\FreeMind; Filename: {app}\Freemind.exe; Tasks: quicklaunchicon; WorkingDir: {app}; IconIndex: 0; IconFilename: {app}\Freemind.exe
+
+[Run]
+; NOTE: The following entry contains an English phrase ("Launch"). You are free to translate it into another language if required.
+Filename: {app}\Freemind.exe; Description: Launch FreeMind; Flags: skipifsilent postinstall unchecked
+[_ISTool]
+Use7zip=false
+EnableISX=true
+
+[Registry]
+Root: HKCR; SubKey: .mm; ValueType: string; ValueData: FreeMind Map; Flags: uninsdeletekey; Tasks: fileassoc
+Root: HKCR; SubKey: FreeMind Map; ValueType: string; ValueData: FreeMind Map; Flags: uninsdeletekey; Tasks: fileassoc
+Root: HKCR; SubKey: FreeMind Map\Shell\Open\Command; ValueType: string; ValueData: """{app}\Freemind.exe"" ""%1"""; Flags: uninsdeletekey; Tasks: fileassoc
+Root: HKCR; Subkey: FreeMind Map\DefaultIcon; ValueType: string; ValueData: {app}\Freemind.exe,0; Flags: uninsdeletekey; Tasks: fileassoc
