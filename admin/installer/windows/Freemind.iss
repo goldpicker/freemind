@@ -12,6 +12,7 @@
 ;* Christian Foltin   (FC ) 08/07/2005 - Version 0.8.0
 ;* Christian Foltin   (FC ) 04/03/2007 - Version 0.9.0 Beta9
 ;* Christian Foltin   (FC ) 25/06/2007 - Version 0.9.0 Beta10
+;* Dimitry Polivaev   (DP ) 15/07/2007 - Version 0.9.0 Beta11
 ;****************************************************************************
 
 [Files]
@@ -127,7 +128,7 @@ AppID=B991B020-2968-11D8-AF23-444553540000
 UninstallRestartComputer=false
 ChangesAssociations=true
 FlatComponentsList=false
-OutputBaseFilename=FreeMind-Windows-Installer-0_9_0-Beta10
+OutputBaseFilename=FreeMind-Windows-Installer-0_9_0-Beta11
 SolidCompression=false
 ; old: InternalCompressLevel=9
 Compression=zip/9
