@@ -13,6 +13,7 @@
 ;* Christian Foltin   (FC ) 04/03/2007 - Version 0.9.0 Beta9
 ;* Christian Foltin   (FC ) 25/06/2007 - Version 0.9.0 Beta10
 ;* Dimitry Polivaev   (DP ) 15/07/2007 - Version 0.9.0 Beta11
+;* Christian Foltin   (DP ) 21/07/2007 - Version 0.9.0 Beta12
 ;****************************************************************************
 
 [Files]
@@ -104,7 +105,7 @@ begin
 end;
 [Setup]
 AppName=FreeMind
-AppVerName=FreeMind 0.9.0 Beta11
+AppVerName=FreeMind 0.9.0 Beta12
 AppPublisherURL=http://freemind.sourceforge.net
 AppSupportURL=http://freemind.sourceforge.net
 AppUpdatesURL=http://freemind.sourceforge.net
@@ -115,9 +116,9 @@ LicenseFile=license.txt
 WindowVisible=true
 
 
-AppCopyright=Copyright © 2007 Christian Foltin, Dimitry Polivaev and others
-;AppCopyright=Copyright © {code:InstallationDate}
-AppVersion=0.9.0.Beta11
+AppCopyright=Copyright ï¿½ 2007 Christian Foltin, Dimitry Polivaev and others
+;AppCopyright=Copyright ï¿½ {code:InstallationDate}
+AppVersion=0.9.0.Beta12
 InfoAfterFile=after.txt
 InfoBeforeFile=before.txt
 PrivilegesRequired=admin
@@ -128,7 +129,7 @@ AppID=B991B020-2968-11D8-AF23-444553540000
 UninstallRestartComputer=false
 ChangesAssociations=true
 FlatComponentsList=false
-OutputBaseFilename=FreeMind-Windows-Installer-0_9_0-Beta11
+OutputBaseFilename=FreeMind-Windows-Installer-0_9_0-Beta12
 SolidCompression=false
 ; old: InternalCompressLevel=9
 Compression=zip/9
