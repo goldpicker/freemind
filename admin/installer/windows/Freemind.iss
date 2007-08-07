@@ -14,6 +14,7 @@
 ;* Christian Foltin   (FC ) 25/06/2007 - Version 0.9.0 Beta10
 ;* Dimitry Polivaev   (DP ) 15/07/2007 - Version 0.9.0 Beta11
 ;* Christian Foltin   (DP ) 21/07/2007 - Version 0.9.0 Beta12
+;* Christian Foltin   (DP ) 07/08/2007 - Version 0.9.0 Beta13
 ;****************************************************************************
 
 [Files]
@@ -22,7 +23,7 @@ Source: isxbb.dll; DestDir: {tmp}; Flags: dontcopy
 Source: ..\..\..\bin\dist\Freemind.exe; DestDir: {app}; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\Freemind.bat; DestDir: {app}; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\accessories\*.*; DestDir: {app}\accessories; Flags: promptifolder overwritereadonly
-Source: ..\..\..\bin\dist\browser\*.*; DestDir: {app}\accessories; Flags: promptifolder overwritereadonly
+Source: ..\..\..\bin\dist\browser\*.*; DestDir: {app}\browser; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\doc\*.*; DestDir: {app}\doc; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\lib\*.*; DestDir: {app}\lib; Flags: promptifolder overwritereadonly  recursesubdirs
 Source: ..\..\..\bin\dist\plugins\*.*; DestDir: {app}\plugins; Flags: promptifolder overwritereadonly  recursesubdirs
@@ -105,7 +106,7 @@ begin
 end;
 [Setup]
 AppName=FreeMind
-AppVerName=FreeMind 0.9.0 Beta12
+AppVerName=FreeMind 0.9.0 Beta13
 AppPublisherURL=http://freemind.sourceforge.net
 AppSupportURL=http://freemind.sourceforge.net
 AppUpdatesURL=http://freemind.sourceforge.net
@@ -118,7 +119,7 @@ WindowVisible=true
 
 AppCopyright=Copyright � 2007 Christian Foltin, Dimitry Polivaev and others
 ;AppCopyright=Copyright � {code:InstallationDate}
-AppVersion=0.9.0.Beta12
+AppVersion=0.9.0.Beta13
 InfoAfterFile=after.txt
 InfoBeforeFile=before.txt
 PrivilegesRequired=admin
@@ -129,7 +130,7 @@ AppID=B991B020-2968-11D8-AF23-444553540000
 UninstallRestartComputer=false
 ChangesAssociations=true
 FlatComponentsList=false
-OutputBaseFilename=FreeMind-Windows-Installer-0_9_0-Beta12
+OutputBaseFilename=FreeMind-Windows-Installer-0_9_0-Beta13
 SolidCompression=false
 ; old: InternalCompressLevel=9
 Compression=zip/9
