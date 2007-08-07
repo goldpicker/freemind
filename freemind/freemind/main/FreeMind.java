@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: FreeMind.java,v 1.32 2004-02-02 21:25:24 christianfoltin Exp $*/
+/*$Id: FreeMind.java,v 1.33 2007-08-07 17:37:21 dpolivaev Exp $*/
 
 package freemind.main;
 
@@ -24,43 +24,68 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
-import java.text.MessageFormat;
+import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import freemind.controller.Controller;
 import freemind.controller.MenuBar;
+import freemind.extensions.HookFactory;
 import freemind.modes.ModeController;
+import freemind.preferences.FreemindPropertyListener;
 import freemind.view.mindmapview.MapView;
 
 public class FreeMind extends JFrame implements FreeMindMain {
 
-    public static final String version = "0.7.1";
+    public static final String RESOURCE_LOOKANDFEEL = "lookandfeel";
+    public static final String RESOURCE_ANTIALIAS = "antialias";
+    public static final String RESOURCE_LANGUAGE = "language";
+    public static final String RESOURCES_SELECTION_METHOD = "selection_method";
+    public static final String RESOURCES_NODE_STYLE = "standardnodestyle";
+    public static final String RESOURCES_ROOT_NODE_STYLE = "standardrootnodestyle";
+    public static final String RESOURCES_NODE_COLOR = "standardnodecolor";
+    public static final String RESOURCES_SELECTED_NODE_COLOR = "standardselectednodecolor";
+    public static final String RESOURCES_EDGE_COLOR = "standardedgecolor";
+    public static final String RESOURCES_EDGE_STYLE = "standardedgestyle";
+    public static final String RESOURCES_CLOUD_COLOR = "standardcloudcolor";
+    public static final String RESOURCES_LINK_COLOR = "standardlinkcolor";
+    public static final String RESOURCES_BACKGROUND_COLOR = "standardbackgroundcolor";
+    
+    
+    private static Logger logger =null;
+    
+    private static final String DEFAULT_LANGUAGE = "en";
+    private HookFactory nodeHookFactory;
+	public static final String version = "0.8.0";
     //    public static final String defaultPropsURL = "freemind.properties";
     public URL defaultPropsURL;
     //    public static Properties defaultProps;
@@ -74,9 +99,19 @@ public class FreeMind extends JFrame implements FreeMindMain {
 
     Controller c;//the one and only controller
     
-    public FreeMind() {
+    private JPanel southPanel;
+    private static PropertyResourceBundle languageResources;
+
+    private PropertyResourceBundle defaultResources;
+	public FreeMind() {
         super("FreeMind");
-	
+        if(logger == null) {
+            logger = getLogger(FreeMind.class.getName());
+        }
+        FreeMindSplash splash = new FreeMindSplash(this);
+        splash.setVisible(true);
+        /* This is only for apple but does not harm for the others. */
+        System.setProperty("apple.laf.useScreenMenuBar", "true");			
 	String propsLoc = "freemind.properties";
 	defaultPropsURL = ClassLoader.getSystemResource(propsLoc);
 
@@ -103,8 +138,21 @@ public class FreeMind extends JFrame implements FreeMindMain {
             autoPropertiesFile = new File (userPropertiesFolder,def.getProperty("autoproperties"));
             patternsFile = new File (userPropertiesFolder,def.getProperty("patternsfile"));
 	    try {
+            		// move freemind to .freemind:
+				if (getProperty("properties_folder").startsWith(".")) {
+					String oldFolderName = System.getProperty("user.home")
+							+ System.getProperty("file.separator")
+							+ getProperty("properties_folder").substring(1);
+					File oldFolder = new File(oldFolderName);
+					if (oldFolder.exists() && !userPropertiesFolder.exists()) {
+						System.out
+								.println("Try to move the properties folder to .properties folder.");
+						oldFolder.renameTo(userPropertiesFolder);
+					}
+				}
                 if (!userPropertiesFolder.exists()) {
-                   userPropertiesFolder.mkdir(); }
+					userPropertiesFolder.mkdir();
+				}
 
                 System.out.println();
                 System.out.println("Looking for user properties:");
@@ -168,27 +216,7 @@ public class FreeMind extends JFrame implements FreeMindMain {
 	    //even close() fails. what now?
 	}
 
-	//set Look&Feel
-	try {
-	    String lookAndFeel = props.getProperty("lookandfeel");
-	    if (lookAndFeel.equals("windows")) {
-		UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-	    } else if (lookAndFeel.equals("motif")) {
-		UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
-	    } else if (lookAndFeel.equals("mac")) {
-		//Only available on macOS
-		UIManager.setLookAndFeel("javax.swing.plaf.mac.MacLookAndFeel");
-	    } else if (lookAndFeel.equals("metal")) {
-		UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-	    } else if (lookAndFeel.equals("nothing")) {
-	    } else {
-            // default.
-            System.out.println("Default (System) Look & Feel: "+UIManager.getSystemLookAndFeelClassName());
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        }
-	} catch (Exception ex) {
-	    System.err.println("Unable to set Look & Feel.");
-	}
+	updateLookAndFeel();
 
 	ImageIcon icon = new ImageIcon(getResource("images/FreeMindWindowIcon.png"));
 	setIconImage(icon.getImage());
@@ -197,11 +225,33 @@ public class FreeMind extends JFrame implements FreeMindMain {
 	getContentPane().setLayout( new BorderLayout() );
 
 	c = new Controller(this);
+    // add a listener for the controller, resource bundle:
+    Controller.addPropertyChangeListener(new FreemindPropertyListener() {
 
-	if (Tools.safeEquals(getProperty("antialiasEdges"),"true")) {
-           c.setAntialiasEdges(true); }
-        if (Tools.safeEquals(getProperty("antialiasAll"),"true")) {
-           c.setAntialiasAll(true); }
+        public void propertyChanged(String propertyName, String newValue,
+                String oldValue) {
+            if (propertyName.equals(RESOURCE_LANGUAGE)) {
+                // re-read resources:
+                languageResources = null;
+                getResources();
+            }
+        }
+    });
+    //fc, disabled with purpose (see java look and feel styleguides).
+    //http://java.sun.com/products/jlf/ed2/book/index.html
+//    // add a listener for the controller, look and feel:
+//    Controller.addPropertyChangeListener(new FreemindPropertyListener() {
+//
+//        public void propertyChanged(String propertyName, String newValue,
+//                String oldValue) {
+//            if (propertyName.equals(RESOURCE_LOOKANDFEEL)) {
+//            	updateLookAndFeel();
+//            }
+//        }
+//    });
+
+
+    c.optionAntialiasAction.changeAntialias(getProperty(RESOURCE_ANTIALIAS));
 
 	//Create the MenuBar
 	menuBar = new MenuBar(c);
@@ -218,9 +268,18 @@ public class FreeMind extends JFrame implements FreeMindMain {
 
 	getContentPane().add( scrollPane, BorderLayout.CENTER );
 
+//	status = new JLabel();
+//	getContentPane().add( status, BorderLayout.SOUTH );
+	// taken from Lukasz Pekacki, NodeText version:
+	southPanel = new JPanel(new BorderLayout());
+	
+	
 	status = new JLabel();
-	getContentPane().add( status, BorderLayout.SOUTH );
-
+	southPanel.add( status, BorderLayout.SOUTH );
+	
+	getContentPane().add( southPanel, BorderLayout.SOUTH );
+	// end taken.
+	
 	//Disable the default close button, instead use windowListener
 	setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
@@ -239,8 +298,44 @@ public class FreeMind extends JFrame implements FreeMindMain {
         SwingUtilities.updateComponentTreeUI(this); // Propagate LookAndFeel to JComponents
 
 	c.changeToMode(getProperty("initial_mode"));
+    splash.setVisible(false);
 
     }//Constructor
+
+    /**
+     * 
+     */
+    private void updateLookAndFeel() {
+        //set Look&Feel
+        try {
+            String lookAndFeel = props.getProperty(RESOURCE_LOOKANDFEEL);
+            if (lookAndFeel.equals("windows")) {
+        	UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            } else if (lookAndFeel.equals("motif")) {
+        	UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+            } else if (lookAndFeel.equals("mac")) {
+        	//Only available on macOS
+        	UIManager.setLookAndFeel("javax.swing.plaf.mac.MacLookAndFeel");
+            } else if (lookAndFeel.equals("metal")) {
+        	UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+            } else if (lookAndFeel.equals("gtk")) {
+                UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+            } else if (lookAndFeel.equals("nothing")) {
+            } else if (lookAndFeel.indexOf('.') != -1) { // string contains a
+                                                             // dot
+                UIManager.setLookAndFeel(lookAndFeel);
+                //	         we assume class name
+            } else {
+                // default.
+                System.out.println("Default (System) Look & Feel: "
+                        + UIManager.getSystemLookAndFeelClassName());
+                UIManager.setLookAndFeel(UIManager
+                        .getSystemLookAndFeelClassName());
+            }
+            } catch (Exception ex) {
+                System.err.println("Unable to set Look & Feel.");
+            }
+    }
 
     public boolean isApplet() {
        return false; }
@@ -275,6 +370,20 @@ public class FreeMind extends JFrame implements FreeMindMain {
     public String getProperty(String key) {
 	return props.getProperty(key);
     }
+
+	public int getIntProperty(String key, int defaultValue){
+		try{
+			return Integer.parseInt(getProperty(key));
+		}
+		catch(NumberFormatException nfe){
+			return defaultValue;
+		}
+	}
+
+	public Properties getProperties() {
+		return props;
+	}
+
 
     public void setProperty(String key, String value) {
 	props.setProperty(key,value);
@@ -326,6 +435,14 @@ public class FreeMind extends JFrame implements FreeMindMain {
      * Open url in WWW browser. This method hides some differences between operating systems.
      */
     public void openDocument(URL url) throws Exception {
+        // build string for default browser:
+        String correctedUrl = new String(url.toExternalForm());
+         if (url.getProtocol().equals("file")) {
+             correctedUrl = correctedUrl.replace('\\','/').replaceAll(" ","%20"); 
+             // ^ This is more of a heuristic than a "logical" code
+             // and due to a java bug: 
+             // http://forum.java.sun.com/thread.jsp?forum=31&thread=363990
+         }
         // Originally, this method determined external application, with which the document
         // should be opened. Which application should open which document type was
         // configured in FreeMind properties file. As a result, FreeMind tried to solve the
@@ -389,16 +506,10 @@ public class FreeMind extends JFrame implements FreeMindMain {
                 System.err.println("Caught: " + x); 
             }
         } else if (osName.startsWith("Mac OS")) {
-//             String urlString = url.toString();
-//             if (url.getProtocol().equals("file")) {
-//                 urlString = urlString.replace('\\','/').replaceAll(" ","%20"); }
-//             // ^ This is more of a heuristic than a "logical" code
 
             // System.out.println("Opening URL "+urlString);
             String browser_command=new String();
             try {
-                // build string for default browser:
-                String correctedUrl = new String(url.toExternalForm());
                 // ask for property about browser: fc, 26.11.2003.
                 Object[] messageArguments = { correctedUrl, url.toString() };
                 MessageFormat formatter = new MessageFormat(getProperty("default_browser_command_mac"));
@@ -413,16 +524,8 @@ public class FreeMind extends JFrame implements FreeMindMain {
             // above). Putting '"' around does not work on Linux - instead, the '"'
             // becomes part of URL, which is malformed, as a result.	 
 
-//             String urlString = url.toString();
-//             if (url.getProtocol().equals("file")) {
-//                 urlString = urlString.replace('\\','/').replaceAll(" ","%20"); }
-//             // ^ This is more of a heuristic than a "logical" code
-
-            // System.out.println("Opening URL "+urlString);
             String browser_command=new String();
             try {
-                // build string for default browser:
-                String correctedUrl = new String(url.toExternalForm());
                 // ask for property about browser: fc, 26.11.2003.
                 Object[] messageArguments = { correctedUrl, url.toString() };
                 MessageFormat formatter = new MessageFormat(getProperty("default_browser_command_other_os"));
@@ -473,19 +576,67 @@ public class FreeMind extends JFrame implements FreeMindMain {
 	return (String)filetypes.get(type.trim().toLowerCase());
     }
 
-    /**Returns the ResourceBundle with the current language*/
+    /** Returns the ResourceBundle with the current language */
     public ResourceBundle getResources() {
-	String lang = getProperty("language");
-	try {
-	    InputStream in = ClassLoader.getSystemResource("Resources_"+lang+".properties").openStream();
-	    PropertyResourceBundle resources = new PropertyResourceBundle(in);
-	    in.close();
-	    return resources;
-	} catch (Exception ex) {
-	    System.err.println("Error loading Resources");
-	    return null;
-	}
-	//	return ResourceBundle.getBundle("Resources",locale);
+        if (languageResources == null) {
+            try {
+                String lang = getProperty(RESOURCE_LANGUAGE);
+                if(lang == null || lang.equals("automatic")) {
+                    lang = Locale.getDefault().getLanguage() + "_" +  Locale.getDefault().getCountry();
+                    if(getLanguageResources(lang)== null) {
+	                    lang = Locale.getDefault().getLanguage();
+	                    if(getLanguageResources(lang)== null) {
+	                        // default is english.
+	                        lang=DEFAULT_LANGUAGE;
+	                    }
+                    }
+                } 
+                languageResources = getLanguageResources(lang);
+                defaultResources = getLanguageResources(DEFAULT_LANGUAGE);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                System.err.println("Error loading Resources");
+                return null;
+            }
+        }
+        return languageResources;
+    }
+
+    public String getResourceString(String resource) {
+        try {
+            return getResources().getString(resource);
+        } catch (Exception ex) {
+            System.err.println("Warning - resource string not found:"
+                    + resource);
+            try{
+                return defaultResources.getString(resource)+"[translate me]";
+            } catch(Exception e) {
+	            System.err.println("Warning - resource string not found (even in english):"
+	                    + resource);
+                return resource;
+            }
+        }
+    }
+
+    
+    /**
+     * @param lang
+     * @return
+     * @throws IOException
+     */
+    private PropertyResourceBundle getLanguageResources(String lang) throws IOException {
+        URL systemResource = ClassLoader.getSystemResource(
+                "Resources_" + lang + ".properties");
+        if(systemResource == null) {
+            return null;
+        }
+        InputStream in = systemResource.openStream();
+        if(in == null) {
+            return null;
+        }
+        PropertyResourceBundle bundle = new PropertyResourceBundle(in);
+        in.close();
+        return bundle;
     }
 
     public java.util.logging.Logger getLogger(String forClass) {
@@ -507,10 +658,8 @@ public class FreeMind extends JFrame implements FreeMindMain {
            if (args[i].toLowerCase().endsWith(".mm")) {
 
               if (!Tools.isAbsolutePath(args[i])) {
-                 // <problem description="This will not work on Mac. Please fix it">
                  args[i] = System.getProperty("user.dir") + 
                     System.getProperty("file.separator") + args[i];
-                 // </problem>
               }
               //fin = ;
               try {
@@ -523,13 +672,17 @@ public class FreeMind extends JFrame implements FreeMindMain {
               }
            }
         }
-        if (!fileLoaded && frame.getProperty("onStartIfNotSpecified") != null) {
-           frame.c.getLastOpenedList().open(frame.getProperty("onStartIfNotSpecified")); }
+			if (!fileLoaded && frame.getProperty("onStartIfNotSpecified") != null) {
+			   frame.c.getLastOpenedList().open(frame.getProperty("onStartIfNotSpecified")); }
 
         frame.pack();
 
 	try {
            if (frame.getView() != null) {
+           	// wait until AWT thread starts
+           	if (! EventQueue.isDispatchThread()){
+				EventQueue.invokeAndWait(new Runnable() {public void run(){};});
+           	}
               frame.getView().moveToRoot(); }}
         catch (Exception e) { 
            e.printStackTrace(); }
@@ -554,5 +707,29 @@ public class FreeMind extends JFrame implements FreeMindMain {
         win_state = ((win_state & ICONIFIED) != 0) ? NORMAL : win_state;
         frame.setExtendedState(win_state);
 
-    }//main()
+    }
+
+	/* (non-Javadoc)
+	 * @see freemind.main.FreeMindMain#getHookFactory()
+	 */
+	public HookFactory getHookFactory() {
+		if(nodeHookFactory == null) {
+			nodeHookFactory = new HookFactory(this);
+		}
+		return nodeHookFactory;
+	}
+	/**
+	 * @return
+	 */
+	public JPanel getSouthPanel() {
+		return southPanel;
+	}
+
+	/* (non-Javadoc)
+	 * @see freemind.main.FreeMindMain#getJFrame()
+	 */
+	public JFrame getJFrame() {
+		return this;
+	}
+
 }

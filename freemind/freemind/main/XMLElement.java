@@ -1,7 +1,7 @@
 /* XMLElement.java
  *
- * $Revision: 1.7 $
- * $Date: 2003-11-03 11:00:10 $
+ * $Revision: 1.8 $
+ * $Date: 2007-08-07 17:37:22 $
  * $Name:  $
  *
  * This file is part of NanoXML 2 Lite.
@@ -28,6 +28,7 @@
  
 /*
  * This version of XMLElement has been *altered* for the purposes of FreeMind
+ * toUpperCase(Locale.ENGLISH) for turkish added.
  */
 
 package freemind.main;
@@ -41,6 +42,9 @@ import java.io.StringReader;
 import java.io.Writer;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.TreeMap;
 import java.util.Vector;
 
 
@@ -65,9 +69,9 @@ import java.util.Vector;
  * The following example shows how to list the attributes of an element:
  * <UL><CODE>
  * XMLElement element = ...;<BR>
- * Enumeration enum = element.getAttributeNames();<BR>
- * while (enum.hasMoreElements()) {<BR>
- * &nbsp;&nbsp;&nbsp;&nbsp;String key = (String) enum.nextElement();<BR>
+ * Enumeration enumerator = element.getAttributeNames();<BR>
+ * while (enumerator.hasMoreElements()) {<BR>
+ * &nbsp;&nbsp;&nbsp;&nbsp;String key = (String) enumerator.nextElement();<BR>
  * &nbsp;&nbsp;&nbsp;&nbsp;String value = element.getStringAttribute(key);<BR>
  * &nbsp;&nbsp;&nbsp;&nbsp;System.out.println(key + " = " + value);<BR>
  * }
@@ -100,7 +104,7 @@ import java.util.Vector;
  *
  * @author Marc De Scheemaecker
  *         &lt;<A href="mailto:cyberelf@mac.com">cyberelf@mac.com</A>&gt;
- * @version $Name:  $, $Revision: 1.7 $
+ * @version $Name:  $, $Revision: 1.8 $
  */
 public class XMLElement
 {
@@ -142,7 +146,7 @@ public class XMLElement
      *     <li>The keys and the values are strings.
      * </ul></dd></dl>
      */
-    private Hashtable attributes;
+    private TreeMap attributes;
 
 
     /**
@@ -476,13 +480,13 @@ public class XMLElement
         this.ignoreCase = ignoreCase;
         this.name = null;
         this.contents = "";
-        this.attributes = new Hashtable();
+        this.attributes = new TreeMap();
         this.children = new Vector();
         this.entities = entities;
         this.lineNr = 0;
-        Enumeration enum = this.entities.keys();
-        while (enum.hasMoreElements()) {
-            Object key = enum.nextElement();
+        Enumeration enumerator = this.entities.keys();
+        while (enumerator.hasMoreElements()) {
+            Object key = enumerator.nextElement();
             Object value = this.entities.get(key);
             if (value instanceof String) {
                 value = ((String) value).toCharArray();
@@ -579,7 +583,7 @@ public class XMLElement
                              Object value)
     {
         if (this.ignoreCase) {
-            name = name.toUpperCase();
+            name = name.toUpperCase(Locale.ENGLISH);
         }
         this.attributes.put(name, value.toString());
     }
@@ -642,7 +646,7 @@ public class XMLElement
                                 int    value)
     {
         if (this.ignoreCase) {
-            name = name.toUpperCase();
+            name = name.toUpperCase(Locale.ENGLISH);
         }
         this.attributes.put(name, Integer.toString(value));
     }
@@ -705,7 +709,7 @@ public class XMLElement
                                    double value)
     {
         if (this.ignoreCase) {
-            name = name.toUpperCase();
+            name = name.toUpperCase(Locale.ENGLISH);
         }
         this.attributes.put(name, Double.toString(value));
     }
@@ -802,9 +806,9 @@ public class XMLElement
      *                                             java.lang.String, boolean)
      *         getBooleanAttribute(String, String, String, boolean)
      */
-    public Enumeration enumerateAttributeNames()
+    public Iterator enumerateAttributeNames()
     {
-        return this.attributes.keys();
+        return this.attributes.keySet().iterator();
     }
 
 
@@ -814,7 +818,7 @@ public class XMLElement
      * @deprecated Use {@link #enumerateAttributeNames()
      *             enumerateAttributeNames} instead.
      */
-    public Enumeration enumeratePropertyNames()
+    public Iterator enumeratePropertyNames()
     {
         return this.enumerateAttributeNames();
     }
@@ -963,7 +967,7 @@ public class XMLElement
                                Object defaultValue)
     {
         if (this.ignoreCase) {
-            name = name.toUpperCase();
+            name = name.toUpperCase(Locale.ENGLISH);
         }
         Object value = this.attributes.get(name);
         if (value == null) {
@@ -1016,7 +1020,7 @@ public class XMLElement
                                boolean   allowLiterals)
     {
         if (this.ignoreCase) {
-            name = name.toUpperCase();
+            name = name.toUpperCase(Locale.ENGLISH);
         }
         Object key = this.attributes.get(name);
         Object result;
@@ -1198,7 +1202,7 @@ public class XMLElement
                                int    defaultValue)
     {
         if (this.ignoreCase) {
-            name = name.toUpperCase();
+            name = name.toUpperCase(Locale.ENGLISH);
         }
         String value = (String) this.attributes.get(name);
         if (value == null) {
@@ -1256,7 +1260,7 @@ public class XMLElement
                                boolean   allowLiteralNumbers)
     {
         if (this.ignoreCase) {
-            name = name.toUpperCase();
+            name = name.toUpperCase(Locale.ENGLISH);
         }
         Object key = this.attributes.get(name);
         Integer result;
@@ -1335,7 +1339,7 @@ public class XMLElement
                                      double defaultValue)
     {
         if (this.ignoreCase) {
-            name = name.toUpperCase();
+            name = name.toUpperCase(Locale.ENGLISH);
         }
         String value = (String) this.attributes.get(name);
         if (value == null) {
@@ -1394,7 +1398,7 @@ public class XMLElement
                                      boolean   allowLiteralNumbers)
     {
         if (this.ignoreCase) {
-            name = name.toUpperCase();
+            name = name.toUpperCase(Locale.ENGLISH);
         }
         Object key = this.attributes.get(name);
         Double result;
@@ -1454,7 +1458,7 @@ public class XMLElement
                                        boolean defaultValue)
     {
         if (this.ignoreCase) {
-            name = name.toUpperCase();
+            name = name.toUpperCase(Locale.ENGLISH);
         }
         Object value = this.attributes.get(name);
         if (value == null) {
@@ -2028,7 +2032,7 @@ public class XMLElement
     public void removeAttribute(String name)
     {
         if (this.ignoreCase) {
-            name = name.toUpperCase();
+            name = name.toUpperCase(Locale.ENGLISH);
         }
         this.attributes.remove(name);
     }
@@ -2194,10 +2198,10 @@ public class XMLElement
         writer.write('<');
         writer.write(this.name);
         if (! this.attributes.isEmpty()) {
-            Enumeration enum = this.attributes.keys();
-            while (enum.hasMoreElements()) {
+            Iterator enumerator = this.attributes.keySet().iterator();
+            while (enumerator.hasNext()) {
                 writer.write(' ');
-                String key = (String) enum.nextElement();
+                String key = (String) enumerator.next();
                 String value = (String) this.attributes.get(key);
                 writer.write(key);
                 writer.write('='); writer.write('"');
@@ -2207,7 +2211,7 @@ public class XMLElement
         }
         if ((this.contents != null) && (this.contents.length() > 0)) {
             writer.write('>');
-            writer.write('\n');
+            //writer.write('\n');
             this.writeEncoded(writer, this.contents);
             if (withClosingTag) {
                writer.write('<'); writer.write('/');
@@ -2224,9 +2228,9 @@ public class XMLElement
         } else {
             writer.write('>');
             writer.write('\n');
-            Enumeration enum = this.enumerateChildren();
-            while (enum.hasMoreElements()) {
-                XMLElement child = (XMLElement) enum.nextElement();
+            Enumeration enumerator = this.enumerateChildren();
+            while (enumerator.hasMoreElements()) {
+                XMLElement child = (XMLElement) enumerator.nextElement();
                 child.write(writer);
             }
             if (withClosingTag) {

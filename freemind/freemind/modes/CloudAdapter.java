@@ -16,33 +16,112 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: CloudAdapter.java,v 1.1 2003-11-09 22:09:26 christianfoltin Exp $*/
+/*$Id: CloudAdapter.java,v 1.2 2007-08-07 17:37:22 dpolivaev Exp $*/
 
 package freemind.modes;
 
+import java.awt.Color;
+
+import freemind.controller.Controller;
+import freemind.main.FreeMind;
 import freemind.main.FreeMindMain;
 import freemind.main.Tools;
-import java.awt.Color;
-import java.awt.Stroke;
-import java.awt.BasicStroke;
+import freemind.main.XMLElement;
 
 public abstract class CloudAdapter extends LineAdapter implements MindMapCloud {
 
+    private static Color standardColor = null;
+    private static String standardStyle = null;
+    private static LineAdapterListener listener = null;
     //
     // Constructors
     //
     public CloudAdapter(MindMapNode target,FreeMindMain frame) {
-        this(target, frame, "standardcloudcolor", "standardcloudstyle");
+        this(target, frame, FreeMind.RESOURCES_CLOUD_COLOR, "standardcloudstyle");
     }
 
     /** For derived classes.*/
     protected  CloudAdapter(MindMapNode target,FreeMindMain frame, String standardColorPropertyString, String standardStylePropertyString)  {
         super(target, frame, standardColorPropertyString, standardStylePropertyString);
         NORMAL_WIDTH = 3;
+        iterativeLevel = -1;
+        if(listener == null) {
+            listener = new LineAdapterListener(); 
+            Controller.addPropertyChangeListener(listener);
+        }
+        
+    }
+    /**
+    *  calculates the cloud iterative level which 
+    *  is importent for the cloud size
+    */
+    
+    private void calcIterativeLevel(MindMapNode target) {
+        iterativeLevel = 0;	
+        if (target != null) {	
+        	for(MindMapNode parentNode = target.getParentNode(); 
+        	    parentNode != null; 
+        	    parentNode = parentNode.getParentNode()) {
+        	    	MindMapCloud cloud = parentNode.getCloud();
+        	    	if (cloud != null) {
+        				iterativeLevel = cloud.getIterativeLevel() + 1;
+        	    		break;
+        	    	} 
+        	}
+        }
+    }
+
+	public void setTarget(MindMapNode target) {
+		super.setTarget(target); 
     }
 
     public Color getExteriorColor() {
         return getColor().darker();
     }
 
+    /**  gets iterative level which is required for painting and layout. */
+	public int getIterativeLevel() {
+		if (iterativeLevel == -1) {
+			calcIterativeLevel(target);
+		}
+		return iterativeLevel;
+	}
+
+	/**  changes the iterative level.*/
+	public void changeIterativeLevel(int deltaLevel) {
+		if (iterativeLevel != -1) {
+			iterativeLevel = iterativeLevel + deltaLevel;
+		}	
+	}
+	
+	private int iterativeLevel;
+	
+    public XMLElement save() {
+        XMLElement cloud = new XMLElement();
+        cloud.setName("cloud");
+    
+        if (style != null) {
+            cloud.setAttribute("STYLE",style);
+        }
+        if (color != null) {
+            cloud.setAttribute("COLOR",Tools.colorToXml(color));
+        }
+        if(width != DEFAULT_WIDTH) {
+            cloud.setAttribute("WIDTH",Integer.toString(width));
+        }
+        return cloud;
+    }
+
+    protected Color getStandardColor() {
+        return standardColor;
+    }
+    protected void setStandardColor(Color standardColor) {
+        CloudAdapter.standardColor = standardColor;
+    }
+    protected String getStandardStyle() {
+        return standardStyle;
+    }
+    protected void setStandardStyle(String standardStyle) {
+        CloudAdapter.standardStyle = standardStyle;
+    }
 }

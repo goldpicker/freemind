@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: EdgeView.java,v 1.13 2004-01-10 18:22:25 christianfoltin Exp $*/
+/*$Id: EdgeView.java,v 1.14 2007-08-07 17:37:48 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -57,6 +57,7 @@ public abstract class EdgeView {
 
     public void paint(Graphics2D g) {
 	//	label.repaint();
+		target.paintFoldingMark(g);
         // if node is folded, then add a plus sign:
         // feature not approved by Daniel. Disabled, fc, 10.1.2004.
 //         if(target.getModel().isFolded()) {
@@ -126,11 +127,5 @@ public abstract class EdgeView {
    protected void setRendering(Graphics2D g) {
       if (getMap().getController().getAntialiasEdges() || getMap().getController().getAntialiasAll()) {
          g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); }}
-
-   public boolean isAntialiasAll() {
-      return true; }
-
-   public boolean isAntialiasEdges() {
-      return true; }
 
 }

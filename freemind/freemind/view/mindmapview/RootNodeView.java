@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: RootNodeView.java,v 1.14 2004-01-24 22:36:48 christianfoltin Exp $*/
+/*$Id: RootNodeView.java,v 1.15 2007-08-07 17:37:52 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 
@@ -30,7 +30,9 @@ import java.awt.*;
  * and different painting than a normal NodeView
  */
 public class RootNodeView extends NodeView {
-
+    // sum width of the left child tree
+	protected int leftTreeWidth = 0;
+	protected int rightTreeWidth = 0;
     //
     // Constructors
     //
@@ -52,6 +54,35 @@ public class RootNodeView extends NodeView {
 	Dimension size = getSize();
 	return new Point(getLocation().x + size.width, getLocation().y + size.height / 2);
     }
+
+    /* fc, 26.06.2005 */
+    /** Returns the point the edge should start given the index of the child node 
+     * that should be connected.
+     * @return
+     */
+    Point getOutPoint(Point destinationPoint, boolean isLeft) {
+		if (false) {
+			Dimension size = getSize();
+			double nWidth = size.width;
+			double nHeight = size.height;
+			Point centerPoint = new Point(
+					getLocation().x + (int) (nWidth / 2f), getLocation().y
+							+ (int) (nHeight / 2f));
+			// assume, that destinationPoint is on the right:
+			double angle = Math.atan((destinationPoint.y - centerPoint.y + 0f)
+					/ (destinationPoint.x - centerPoint.x + 0f));
+			if (isLeft) {
+				angle += Math.PI;
+			}
+			// now determine point on ellipsis corresponding to that angle:
+			return new Point(centerPoint.x
+					+ (int) (Math.cos(angle) * nWidth / 2f), centerPoint.y
+					+ (int) (Math.sin(angle) * (nHeight) / 2f));
+		}
+        // old behaviour of 0.7.1:
+		return (isLeft) ? getInPoint() : getOutPoint();
+    }
+    /* end fc, 26.06.2005 */
 
     /**
      * Returns the Point where the InEdge
@@ -136,20 +167,6 @@ public class RootNodeView extends NodeView {
     // Layout
     //
 
-    public Dimension getPreferredSize() {
-	int width = (int)(super.getPreferredSize().width*1.1);
-	int height = (int)(super.getPreferredSize().height*2);
-	return new Dimension(width,height);
-    }	
-
-    public void paintSelected(Graphics2D graphics, Dimension size) {
-       if( this.isSelected() ) {
-          graphics.setColor(selectedColor);
-          graphics.fillOval(1,1,size.width-1,size.height-1);
-       }
-    }
-
-
     /**
      * Paints the node
      */
@@ -162,8 +179,6 @@ public class RootNodeView extends NodeView {
         paintDragOver(g, size);
 
 	//Draw a root node
-	setHorizontalAlignment(CENTER);
-
 	g.setColor(Color.gray);
 	g.setStroke(new BasicStroke(1.0f));
         setRendering(g);
@@ -189,6 +204,56 @@ public class RootNodeView extends NodeView {
       if (getMap().getController().getAntialiasEdges() || getMap().getController().getAntialiasAll()) {
          g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); }}
 
+
+    protected void paintBackground(
+        Graphics2D graphics,
+        Dimension size,
+        Color color) {
+		graphics.setColor(color);
+		graphics.fillOval(1,1,size.width-1,size.height-1);
+    }
+
+	public int getRightTreeWidth() {
+		return rightTreeWidth;
+	}
+    public int getLeftTreeWidth() {
+        return leftTreeWidth;
+    }
+
+    public void setTreeWidth(int w) {
+    	throw new Error();
+    }
+    
+   public void setRootTreeWidths(int left, int right) {
+        leftTreeWidth = left - getPreferredSize().width;
+        rightTreeWidth = right ;
+        super.setTreeWidth(leftTreeWidth + rightTreeWidth );
+    }
+	public void setRootTreeHeights(int left, int right) {
+		if(left > right){
+			super.setTreeHeight(left);
+		}
+		else{
+			super.setTreeHeight(right);
+		}		
+	}
+	public void setRootUpperChildShift(int left, int right) {
+		super.setUpperChildShift(Math.max(left,right));
+	}
+
+	/* (non-Javadoc)
+	 * @see freemind.view.mindmapview.NodeView#getStyle()
+	 */
+	String getStyle() {
+		return model.getStyle();
+	}
+
+	public Dimension getPreferredSize() {
+		Dimension prefSize = super.getPreferredSize();
+		prefSize.width += Math.max(10, prefSize.width / 10);
+		prefSize.height *= 2;
+	    return prefSize;
+	}
 
 }
 

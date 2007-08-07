@@ -16,16 +16,14 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: ControllerAdapter.java,v 1.41 2004-02-06 06:04:25 christianfoltin Exp $*/
+/*$Id: ControllerAdapter.java,v 1.42 2007-08-07 17:37:22 dpolivaev Exp $*/
 
 package freemind.modes;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
@@ -34,58 +32,113 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
-
-
-
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.text.JTextComponent;
 
-import freemind.main.FreeMind;
 import freemind.controller.Controller;
+import freemind.controller.StructuredMenuHolder;
+import freemind.controller.actions.ActionFactory;
+import freemind.controller.actions.ModeControllerActionHandler;
+import freemind.controller.actions.UndoActionHandler;
+import freemind.controller.actions.generated.instance.ObjectFactory;
+import freemind.controller.actions.generated.instance.XmlAction;
+import freemind.extensions.HookFactory;
+import freemind.extensions.ModeControllerHook;
+import freemind.extensions.NodeHook;
+import freemind.extensions.PermanentNodeHook;
+import freemind.extensions.UndoEventReceiver;
+import freemind.main.ExampleFileFilter;
+import freemind.main.FreeMind;
 import freemind.main.FreeMindMain;
 import freemind.main.Tools;
-import freemind.main.ExampleFileFilter;
 import freemind.main.XMLParseException;
+import freemind.modes.actions.AddArrowLinkAction;
+import freemind.modes.actions.AddLocalLinkAction;
+import freemind.modes.actions.ApplyPatternAction;
+import freemind.modes.actions.BoldAction;
+import freemind.modes.actions.ChangeArrowLinkEndPoints;
+import freemind.modes.actions.ChangeArrowsInArrowLinkAction;
+import freemind.modes.actions.CloudAction;
+import freemind.modes.actions.ColorArrowLinkAction;
+import freemind.modes.actions.CompoundActionHandler;
+import freemind.modes.actions.CopyAction;
+import freemind.modes.actions.CopySingleAction;
+import freemind.modes.actions.CutAction;
+import freemind.modes.actions.DeleteChildAction;
+import freemind.modes.actions.EdgeColorAction;
+import freemind.modes.actions.EdgeStyleAction;
+import freemind.modes.actions.EdgeWidthAction;
+import freemind.modes.actions.EditAction;
+import freemind.modes.actions.FindAction;
+import freemind.modes.actions.FontFamilyAction;
+import freemind.modes.actions.FontSizeAction;
+import freemind.modes.actions.GotoLinkNodeAction;
+import freemind.modes.actions.IconAction;
+import freemind.modes.actions.ImportExplorerFavoritesAction;
+import freemind.modes.actions.ImportFolderStructureAction;
+import freemind.modes.actions.ItalicAction;
+import freemind.modes.actions.JoinNodesAction;
+import freemind.modes.actions.MoveNodeAction;
+import freemind.modes.actions.NewChildAction;
+import freemind.modes.actions.NodeBackgroundColorAction;
+import freemind.modes.actions.NodeColorAction;
+import freemind.modes.actions.NodeColorBlendAction;
+import freemind.modes.actions.NodeHookAction;
+import freemind.modes.actions.NodeStyleAction;
+import freemind.modes.actions.NodeUpAction;
+import freemind.modes.actions.PasteAction;
+import freemind.modes.actions.RedoAction;
+import freemind.modes.actions.RemoveAllIconsAction;
+import freemind.modes.actions.RemoveArrowLinkAction;
+import freemind.modes.actions.RemoveLastIconAction;
+import freemind.modes.actions.RevertAction;
+import freemind.modes.actions.SelectAllAction;
+import freemind.modes.actions.SelectBranchAction;
+import freemind.modes.actions.SetLinkByTextFieldAction;
+import freemind.modes.actions.ToggleChildrenFoldedAction;
+import freemind.modes.actions.ToggleFoldedAction;
+import freemind.modes.actions.UnderlinedAction;
+import freemind.modes.actions.UndoAction;
+import freemind.modes.actions.FindAction.FindNextAction;
+import freemind.modes.actions.NodeBackgroundColorAction.RemoveNodeBackgroundColorAction;
+import freemind.modes.mindmapmode.MindMapArrowLinkModel;
 import freemind.view.MapModule;
 import freemind.view.mindmapview.MapView;
+import freemind.view.mindmapview.MindMapLayout;
 import freemind.view.mindmapview.NodeView;
 
 
@@ -96,29 +149,195 @@ import freemind.view.mindmapview.NodeView;
  */
 public abstract class ControllerAdapter implements ModeController {
 
-    Mode mode;
-    private int noOfMaps = 0; //The number of currently open maps
+	private final static int MINIMAL_LEAF_WIDTH = MindMapLayout.MINIMAL_LEAF_WIDTH;
+	private final static int MINIMAL_WIDTH = MindMapLayout.MINIMAL_WIDTH;
+
+    private ActionFactory actionFactory;
+	// for cascading updates.
+	private HashSet nodesAlreadyUpdated;
+	private HashSet nodesToBeUpdated;
+	// for MouseEventHandlers 
+	private HashSet mRegisteredMouseWheelEventHandler = new HashSet();
+	// Logging: 
+	private static java.util.logging.Logger logger;
+    public ApplyPatternAction patterns[] = new ApplyPatternAction[0]; // Make sure it is initialized
+
+	private Mode mode;
     private Clipboard clipboard;
     private int status;
-
-    public Action copy = null;
+	public UndoAction undo=null;
+	public RedoAction redo=null;
+    public CopyAction copy = null;
     public Action copySingle = null;
-    public Action cut = null;
-    public Action paste = null;
+    public CutAction cut = null;
+    public PasteAction paste = null;
+	public BoldAction bold = null;
+	public ItalicAction italic = null;
+	public UnderlinedAction underlined = null;
+	public FontSizeAction fontSize = null;
+	public FontFamilyAction fontFamily = null;
+	public EditAction edit = null;
+	public NewChildAction newChild = null;
+	public DeleteChildAction deleteChild = null;
+	public ToggleFoldedAction toggleFolded = null;
+    public ToggleChildrenFoldedAction toggleChildrenFolded = null;
+    public NodeUpAction nodeUp = null;
+    public NodeDownAction nodeDown = null;
+    public EdgeColorAction edgeColor = null;
+    public EdgeWidthAction EdgeWidth_WIDTH_PARENT = null;
+	public EdgeWidthAction EdgeWidth_WIDTH_THIN = null;
+	public EdgeWidthAction EdgeWidth_1 = null;
+	public EdgeWidthAction EdgeWidth_2 = null;
+	public EdgeWidthAction EdgeWidth_4 = null;
+	public EdgeWidthAction EdgeWidth_8 = null;
+    public EdgeWidthAction edgeWidths[] = null;
+	public EdgeStyleAction EdgeStyle_linear = null;
+	public EdgeStyleAction EdgeStyle_bezier = null;
+	public EdgeStyleAction EdgeStyle_sharp_linear = null;
+	public EdgeStyleAction EdgeStyle_sharp_bezier = null;
+    public EdgeStyleAction edgeStyles[] = null;
+    public NodeColorBlendAction nodeColorBlend = null;
+    public NodeStyleAction fork = null;
+    public NodeStyleAction bubble = null;
+    public CloudAction cloud = null;
+    public freemind.modes.actions.CloudColorAction cloudColor = null;
+    public AddArrowLinkAction addArrowLinkAction = null; 
+    public RemoveArrowLinkAction removeArrowLinkAction = null;
+    public ColorArrowLinkAction colorArrowLinkAction = null;
+    public ChangeArrowsInArrowLinkAction changeArrowsInArrowLinkAction = null;
+	public NodeBackgroundColorAction nodeBackgroundColor = null;
+	public RemoveNodeBackgroundColorAction removeNodeBackgroundColor = null;
 
-    static final Color selectionColor = new Color(200,220,200);
+    public IconAction unknwonIconAction = null;
+    public RemoveLastIconAction removeLastIconAction = null;
+    public RemoveAllIconsAction removeAllIconsAction = null;
+    public SetLinkByTextFieldAction setLinkByTextField = null;
+    public AddLocalLinkAction addLocalLinkAction = null;
+    public GotoLinkNodeAction gotoLinkNodeAction = null;
+    public JoinNodesAction joinNodes = null;
+    public MoveNodeAction moveNodeAction = null;
+    public ImportExplorerFavoritesAction importExplorerFavorites = null;
+    public ImportFolderStructureAction importFolderStructure = null;
+    public ChangeArrowLinkEndPoints changeArrowLinkEndPoints = null;
 
-    public ControllerAdapter() {
-    }
+    public FindAction find=null;
+    public FindNextAction findNext=null;
+    public NodeHookAction nodeHookAction = null;
+    public RevertAction revertAction = null;
+    public SelectBranchAction selectBranchAction = null;
+    public SelectAllAction selectAllAction = null;
+
+
+	/** Executes series of actions. */
+	private CompoundActionHandler compound = null;
+
+    private Color selectionColor = new Color(200,220,200);
+    public NodeColorAction nodeColor = null;
+    private Set globalPatternList;
 
     public ControllerAdapter(Mode mode) {
-        this.mode = mode;
+        this.setMode(mode);
+        if(logger==null) {
+        	logger = getFrame().getLogger(this.getClass().getName());
+        }
+        // for updates of nodes:
+		nodesAlreadyUpdated = new HashSet();
+		nodesToBeUpdated    = new HashSet();
+        // create action factory:
+		actionFactory = new ActionFactory(getController());
+		// prepare undo:
+		undo = new UndoAction(this);
+		redo = new RedoAction(this);
+		// register default action handler:
+		// the executor must be the first here, because it is executed last then.
+		getActionFactory().registerHandler(new ModeControllerActionHandler(getActionFactory()));
+		getActionFactory().registerHandler(new UndoActionHandler(this, undo, redo));
+		//debug:						getActionFactory().registerHandler(new freemind.controller.actions.PrintActionHandler(this));
 
         cut = new CutAction(this);
         paste = new PasteAction(this);
         copy = new CopyAction(this);
         copySingle = new CopySingleAction(this);
-
+		bold = new BoldAction (this);
+		italic = new ItalicAction(this);
+		underlined = new UnderlinedAction(this);
+		fontSize = new FontSizeAction(this);
+		fontFamily = new FontFamilyAction(this);
+		edit = new EditAction(this);
+		newChild = new NewChildAction(this);
+		deleteChild = new DeleteChildAction(this);
+		toggleFolded = new ToggleFoldedAction(this);
+		toggleChildrenFolded = new ToggleChildrenFoldedAction(this);
+		nodeUp = new NodeUpAction(this);
+		nodeDown = new NodeDownAction(this);
+	    edgeColor = new EdgeColorAction(this);
+	    nodeColor = new NodeColorAction(this);
+	    nodeColorBlend = new NodeColorBlendAction(this);
+	    fork = new NodeStyleAction(this, MindMapNode.STYLE_FORK);
+	    bubble = new NodeStyleAction(this, MindMapNode.STYLE_BUBBLE);
+	    // this is an unknown icon and thus corrected by mindicon:
+	    removeLastIconAction = new RemoveLastIconAction(this);
+	    // this action handles the xml stuff: (undo etc.)
+	    unknwonIconAction = new IconAction(this, MindIcon.factory((String) MindIcon
+                .getAllIconNames().get(0)), removeLastIconAction);
+	    removeLastIconAction.setIconAction(unknwonIconAction);
+	    removeAllIconsAction = new RemoveAllIconsAction(this, unknwonIconAction);
+	    // load pattern actions:
+		try {
+	           File patternsFile = getFrame().getPatternsFile();
+	           if (patternsFile != null && patternsFile.exists()) {
+	              loadPatterns(patternsFile); }
+	           else {
+	              System.out.println("User patterns file "+patternsFile+" not found.");
+	              loadPatterns(new InputStreamReader(getResource("patterns.xml").openStream())); }}
+	        catch (XMLParseException e) {
+	           System.err.println("In patterns:"+e); }
+		catch (Exception ex) {
+	           System.err.println("Patterns not loaded:"+ex); }
+	    EdgeWidth_WIDTH_PARENT = new EdgeWidthAction(this, EdgeAdapter.WIDTH_PARENT);
+		EdgeWidth_WIDTH_THIN = new EdgeWidthAction(this, EdgeAdapter.WIDTH_THIN);
+		EdgeWidth_1 = new EdgeWidthAction(this, 1);
+		EdgeWidth_2 = new EdgeWidthAction(this, 2);
+		EdgeWidth_4 = new EdgeWidthAction(this, 4);
+		EdgeWidth_8 = new EdgeWidthAction(this, 8);
+	    edgeWidths =  new EdgeWidthAction[]{
+			EdgeWidth_WIDTH_PARENT, EdgeWidth_WIDTH_THIN, EdgeWidth_1, EdgeWidth_2, EdgeWidth_4, EdgeWidth_8
+	    };
+		EdgeStyle_linear = new EdgeStyleAction(this, "linear");
+		EdgeStyle_bezier = new EdgeStyleAction(this, "bezier");
+		EdgeStyle_sharp_linear = new EdgeStyleAction(this, "sharp_linear");
+		EdgeStyle_sharp_bezier = new EdgeStyleAction(this, "sharp_bezier");
+	    edgeStyles =  new EdgeStyleAction[]{
+			EdgeStyle_linear,
+			EdgeStyle_bezier,
+			EdgeStyle_sharp_linear,
+			EdgeStyle_sharp_bezier
+	    };
+	    cloud = new CloudAction(this);
+	    cloudColor = new freemind.modes.actions.CloudColorAction(this);
+	    addArrowLinkAction = new AddArrowLinkAction(this);
+	    removeArrowLinkAction = new RemoveArrowLinkAction(this, null);
+	    addArrowLinkAction.setRemoveAction(removeArrowLinkAction);
+	    colorArrowLinkAction = new ColorArrowLinkAction(this, null);
+	    changeArrowsInArrowLinkAction = new ChangeArrowsInArrowLinkAction(this, "none", null, null, true, true);
+	    nodeBackgroundColor = new NodeBackgroundColorAction(this);
+	    removeNodeBackgroundColor = new RemoveNodeBackgroundColorAction(this);
+	    setLinkByTextField = new SetLinkByTextFieldAction(this);
+	    addLocalLinkAction = new AddLocalLinkAction(this);
+	    gotoLinkNodeAction = new GotoLinkNodeAction(this, null);
+	    moveNodeAction = new MoveNodeAction(this);
+	    joinNodes = new JoinNodesAction(this);
+	    importExplorerFavorites = new ImportExplorerFavoritesAction(this);
+	    importFolderStructure = new ImportFolderStructureAction(this);
+	    changeArrowLinkEndPoints = new ChangeArrowLinkEndPoints(this);
+	    find = new FindAction(this);
+	    findNext = new FindNextAction(this,find);
+	    nodeHookAction = new NodeHookAction("no_title", this); 
+	    revertAction = new RevertAction(this);
+	    selectBranchAction = new SelectBranchAction(this);
+	    selectAllAction = new SelectAllAction(this);
+	    
+	    compound = new CompoundActionHandler(this);
         DropTarget dropTarget = new DropTarget(getFrame().getViewport(),
                                                new FileOpener());
 
@@ -133,11 +352,45 @@ public abstract class ControllerAdapter implements ModeController {
 
     }
 
+    private void loadPatterns(File file) throws Exception {
+        createPatterns(StylePattern.loadPatterns(file));
+    }
+
+    private void loadPatterns(Reader reader) throws Exception {
+        createPatterns(StylePattern.loadPatterns(reader));
+    }
+
+    private void createPatterns(List patternsList) throws Exception {
+        globalPatternList = new HashSet();
+        globalPatternList.addAll(patternsList);
+        patterns = new ApplyPatternAction[patternsList.size()];
+        for (int i = 0; i < patterns.length; i++) {
+            patterns[i] = new ApplyPatternAction(this,
+                    (StylePattern) patternsList.get(i));
+
+            // search icons for patterns:
+            MindIcon patternIcon = ((StylePattern) patternsList.get(i))
+                    .getNodeIcon();
+            if (patternIcon != null) {
+                patterns[i].putValue(Action.SMALL_ICON, patternIcon
+                        .getIcon(getFrame()));
+            }
+        }
+    }
+
+    public ActionFactory getActionFactory() {
+        return actionFactory;
+    }
+
+
     //
     // Methods that should be overloaded
     //
 
-    protected abstract MindMapNode newNode();
+    public abstract MindMapNode newNode(Object userObject);
+    protected MindMapNode newNode() {
+        return newNode(null);
+    }
 
     /**
      * You _must_ implement this if you use one of the following actions:
@@ -156,8 +409,69 @@ public abstract class ControllerAdapter implements ModeController {
         return null;
     }
 
-    public void nodeChanged(MindMapNode n) {
+	
+	/** Currently, this method is called by the mapAdapter. This is buggy, and is to be changed.*/
+    public void nodeChanged(MindMapNode node) {
+        getMap().setSaved(false);
+        nodeRefresh(node,true);
     }
+
+    public void nodeRefresh(MindMapNode node) {
+        nodeRefresh(node,false);
+    }
+    private void nodeRefresh(MindMapNode node, boolean isUpdate) {
+    	logger.finest("nodeChanged called for node "+node+" parent="+node.getParentNode());
+		if(nodesAlreadyUpdated.contains(node)) {			
+			return;
+		}
+		nodesToBeUpdated.add(node);
+		nodesAlreadyUpdated.add(node);
+		if (isUpdate) {
+			// update modification times:
+			if(node.getHistoryInformation()!= null) {
+				node.getHistoryInformation().setLastModifiedAt(new Date());
+			}
+            // Tell any node hooks that the node is changed:
+            recursiveCallUpdateHooks((MindMapNode) node, (MindMapNode) node /* self update */);
+        }
+		getMap().nodeChangedMapInternal(node);
+		nodesToBeUpdated.remove(node);
+		if(nodesToBeUpdated.size()==0) {
+			// this is the end of all updates:
+			nodesAlreadyUpdated.clear();
+		}
+    }
+
+	/**
+	 * @param parent
+	 */
+	public void nodeStructureChanged(MindMapNode node) {
+		getMap().nodeStructureChanged(node);
+	}
+
+	public boolean isUndoAction() {
+	    return undo.isUndoAction() || redo.isUndoAction();
+	}
+
+	/**
+	 * @param node
+	 */
+	private void recursiveCallUpdateHooks(MindMapNode node, MindMapNode changedNode) {
+	    // Tell any node hooks that the node is changed:
+		if(node instanceof MindMapNode) {
+			for(Iterator i=  ((MindMapNode)node).getActivatedHooks().iterator(); i.hasNext();) {
+				PermanentNodeHook hook = (PermanentNodeHook) i.next();
+				if ( (! isUndoAction())  || hook instanceof UndoEventReceiver) {
+                    if (node == changedNode)
+                        hook.onUpdateNodeHook();
+                    else
+                        hook.onUpdateChildrenHook(changedNode);
+                }
+			}
+		}
+		if(!node.isRoot() && node.getParentNode()!= null)
+			recursiveCallUpdateHooks(node.getParentNode(), changedNode);
+	}
 
     public void anotherNodeSelected(MindMapNode n) {
     }
@@ -188,7 +502,7 @@ public abstract class ControllerAdapter implements ModeController {
         if(getSelecteds().size() != 1)
             return;
         MindMapNode node = ((NodeView)(e.getComponent())).getModel();
-        if (getView().getSelected().followLink(e.getX())) {
+        if (getView().getSelected().isInFollowLinkRegion(e.getX())) {
             loadURL(); }
         else {
             if (!node.hasChildren()) {
@@ -204,24 +518,20 @@ public abstract class ControllerAdapter implements ModeController {
     // Map Management
     //
 
-    /**
-     * Get text identification of the map
-     */
-
-    protected String getText(String textId) {
+    public String getText(String textId) {
        return getController().getResourceString(textId); }
 
     protected boolean binOptionIsTrue(String option) {
        return getFrame().getProperty(option).equals("true");}
 
-    public void newMap() {
-        getController().getMapModuleManager().newMapModule(newModel());
-        mapOpened(true);
+    public MindMap newMap() {
+        MapAdapter newModel = newModel();
+        newMap(newModel);
+        return newModel;
     }
 
-    protected void newMap(MindMap map) {
-        getController().getMapModuleManager().newMapModule(map);
-        mapOpened(true);
+    public void newMap(MindMap mapModel) {
+        getController().getMapModuleManager().newMapModule(mapModel);
     }
 
     /**
@@ -230,9 +540,12 @@ public abstract class ControllerAdapter implements ModeController {
      */
     public void load (File file) throws FileNotFoundException, IOException, XMLParseException {
         MapAdapter model = newModel();
-        model.load(file);
-        getController().getMapModuleManager().newMapModule(model);
-        mapOpened(true);
+		model.load(file);
+		getController().getMapModuleManager().newMapModule(model);
+		//FIXME: This must be done in the mapModuleManager. Ojo: The
+		// ModeController has changed.
+		getController().getModeController().invokeHooksRecursively(
+				(NodeAdapter) getModel().getRoot(), getModel());
     }
 
     public boolean save() {
@@ -241,9 +554,16 @@ public abstract class ControllerAdapter implements ModeController {
            return saveAs(); }
         else {
            return save(getModel().getFile()); }}
+    
+    
+    public void load(String xmlMapContents) {
+        revertAction.openXmlInsteadOfMap(xmlMapContents);
+    }
 
-    /** fc, 24.1.2004: having two methods getSelecteds with different return values (linkedlists of models resp. views) is asking for trouble. @see MapView */
-    protected LinkedList getSelecteds() {
+    /** fc, 24.1.2004: having two methods getSelecteds with different return values 
+     * (linkedlists of models resp. views) is asking for trouble. @see MapView
+     * @return returns a list of MindMapNode s. */
+    public List getSelecteds() {
 	LinkedList selecteds = new LinkedList();
 	ListIterator it = getView().getSelecteds().listIterator();
 	if (it != null) {
@@ -256,8 +576,47 @@ public abstract class ControllerAdapter implements ModeController {
     }
 
     
+	/**
+	 * This class sortes nodes by ascending depth of their paths to root. This
+	 * is useful to assure that children are cutted <b>before </b> their
+	 * fathers!!!.
+	 * 
+	 * Moreover, it sorts nodes with the same depth according to their
+	 * position relative to each other.
+	 */
+	protected class nodesDepthComparator implements Comparator{
+		public nodesDepthComparator() {}
+		/* the < relation.*/
+		public int compare(Object p1, Object p2) {
+			MindMapNode n1 = ((MindMapNode) p1);
+			MindMapNode n2 = ((MindMapNode) p2);
+			Object[] path1 = getModel().getPathToRoot(n1);
+			Object[] path2 = getModel().getPathToRoot(n2);
+			int depth = path1.length - path2.length;
+			if(depth > 0)
+				return -1;
+			if(depth < 0)
+				return 1;
+			if(n1.isRoot()) // if n1 is root, n2 is root, too ;)
+				return 0;
+			return n1.getParentNode().getChildPosition(n1) - n2.getParentNode().getChildPosition(n2);
+		}
+	}
 
-    /**
+	public List getSelectedsByDepth() {
+		// return an ArrayList of MindMapNodes.
+		List result = getSelecteds();
+		sortNodesByDepth(result);
+		return result;
+	}
+
+
+	public void sortNodesByDepth(List inPlaceList) {
+		Collections.sort(inPlaceList, new nodesDepthComparator());
+		logger.finest("Sort result: "+inPlaceList);
+	}
+
+	/**
      * Return false is the action was cancelled, e.g. when
      * it has to lead to saving as.
      */
@@ -271,7 +630,27 @@ public abstract class ControllerAdapter implements ModeController {
        return item;
     }
 
-    protected void add(JMenu menu, Action action) {
+	/** @return returns the new JMenuItem.
+	 * @param keystroke can be null, if no keystroke should be assigned. */
+	protected JMenuItem add(StructuredMenuHolder holder, String category, Action action, String keystroke) { 
+	   JMenuItem item = holder.addMenuItem(new JMenuItem(action), category);
+	   if(keystroke != null) {
+		item.setAccelerator(KeyStroke.getKeyStroke(getFrame().getProperty(keystroke)));
+	   }
+	   return item;
+	}
+
+	/** @return returns the new JCheckBoxMenuItem.
+	 * @param keystroke can be null, if no keystroke should be assigned. */
+	protected JMenuItem addCheckBox(StructuredMenuHolder holder, String category, Action action, String keystroke) { 
+		JCheckBoxMenuItem item = (JCheckBoxMenuItem) holder.addMenuItem(new JCheckBoxMenuItem(action), category);
+	   if(keystroke != null) {
+		item.setAccelerator(KeyStroke.getKeyStroke(getFrame().getProperty(keystroke)));
+	   }
+	   return item;
+	}
+
+	protected void add(JMenu menu, Action action) {
        menu.add(action); }
 
     //
@@ -310,6 +689,7 @@ public abstract class ControllerAdapter implements ModeController {
        else if (exceptionType.equals("java.io.FileNotFoundException")) {
           getController().errorMessage(ex.getMessage()); }
        else {
+       	  ex.printStackTrace();
           getController().errorMessage(ex); }
     }
 
@@ -322,7 +702,7 @@ public abstract class ControllerAdapter implements ModeController {
             chooser = new JFileChooser(getMap().getFile().getParentFile()); }
         else {
            chooser = new JFileChooser();
-           chooser.setSelectedFile(new File(((MindMapNode)getMap().getRoot()).toString()+".mm"));
+           chooser.setSelectedFile(new File(getFileNameProposal()+".mm"));
         }
         //chooser.setLocale(currentLocale);
         if (getFileFilter() != null) {
@@ -363,13 +743,32 @@ public abstract class ControllerAdapter implements ModeController {
         return true;
     }
     /**
+     * Creates a proposal for a file name to save the map. Removes all illegal
+     * characters.
+     * 
+     * Fixed: When creating file names based on the text of the root node, now all the
+     * extra unicode characters are replaced with _. This is not very good. For
+     * chinese content, you would only get a list of ______ as a file name. Only
+     * characters special for building file paths shall be removed (rather than
+     * replaced with _), like : or /. The exact list of dangeous characters
+     * needs to be investigated. 0.8.0RC3.
+     * 
+     * @return
+     */
+    private String getFileNameProposal() {
+        String rootText = ((MindMapNode)getMap().getRoot()).toString();
+        rootText = rootText.replaceAll("[&:/\\\\\0%$#~\\?\\*]+", "");
+        return rootText;
+    }
+
+    /**
      * Return false if user has canceled. 
      */
-    public boolean close() {
+    public boolean close(boolean force) {
         String[] options = {getText("yes"),
                             getText("no"),
                             getText("cancel")};
-        if (!getModel().isSaved()) {
+        if (!force && !getModel().isSaved()) {
             String text = getText("save_unsaved")+"\n"+getMapModule().toString();
             String title = getText("save");
             int returnVal = JOptionPane.showOptionDialog(getFrame().getContentPane(),text,title,JOptionPane.YES_NO_CANCEL_OPTION,
@@ -378,54 +777,97 @@ public abstract class ControllerAdapter implements ModeController {
                boolean savingNotCancelled = save();
                if (!savingNotCancelled) {
                	  return false; }}
-			else if (returnVal==JOptionPane.CANCEL_OPTION) {
+			else if ((returnVal==JOptionPane.CANCEL_OPTION) || (returnVal == JOptionPane.CLOSED_OPTION)) {
 				return false; }}
                 
         getModel().destroy();
-        mapOpened(false);
         return true; }
     
 
-    /**
-     * Call this method if you have opened a map for this mode with true,
-     * and if you have closed a map of this mode with false. It updates the Actions
-     * that are dependent on whether there is a map or not.
-     * --> What to do if either newMap or load or close are overwritten by a concrete
-     * implementation? uups.
-     */
-     public void mapOpened(boolean open) {
-        if (open) {
-           if (noOfMaps == 0) {
-              //opened the first map
-              setAllActions(true);
-              if (cut!=null) cut.setEnabled(true);
-              if (copy!=null) copy.setEnabled(true);
-              if (copySingle!=null) copySingle.setEnabled(true);
-              if (paste!=null) paste.setEnabled(true);
-           }
-           if (getFrame().getView()!=null) {
-              DropTarget dropTarget = new DropTarget
-                 (getFrame().getView(), new FileOpener() );
-           }
-           noOfMaps++;
-        } else {
-           noOfMaps--;
-           if (noOfMaps == 0) {
-              //closed the last map
-              setAllActions(false);
-              if (cut!=null) cut.setEnabled(false);
-              if (copy!=null) copy.setEnabled(false);
-              if (copySingle!=null) copySingle.setEnabled(true);
-              if (paste!=null) paste.setEnabled(false);
-           }
-        }
-    }
+
+	/* (non-Javadoc)
+	 * @see freemind.modes.ModeController#setVisible(boolean)
+	 */
+	public void setVisible(boolean visible) {
+		if (visible) {
+			MindMapNode node = getSelected();
+			for (Iterator j = node.getActivatedHooks().iterator();
+				j.hasNext();
+				) {
+				PermanentNodeHook hook = (PermanentNodeHook) j.next();
+				hook.onReceiveFocusHook();
+			}
+		} else {
+			MindMapNode node = getSelected();
+			// bug fix, fc 18.5.2004. This should not be here.
+			if (node != null) {
+                for (Iterator j = node.getActivatedHooks().iterator();
+                    j.hasNext();
+                    ) {
+                    PermanentNodeHook hook = (PermanentNodeHook) j.next();
+                    hook.onLooseFocusHook();
+                }
+            }
+		}
+	}
+
 
     /**
      * Overwrite this to set all of your actions which are
      * dependent on whether there is a map or not.
      */
     protected void setAllActions(boolean enabled) {
+        // controller actions:
+        getController().zoomIn.setEnabled(enabled);
+        getController().zoomOut.setEnabled(enabled);
+        cut.setEnabled(enabled);
+        copy.setEnabled(enabled);
+        copySingle.setEnabled(enabled);
+        paste.setEnabled(enabled);
+    	undo.setEnabled(enabled);
+		redo.setEnabled(enabled);
+        edit.setEnabled(enabled);
+        newChild.setEnabled(enabled);
+        toggleFolded.setEnabled(enabled);
+        toggleChildrenFolded.setEnabled(enabled);
+        setLinkByTextField.setEnabled(enabled);
+        italic.setEnabled(enabled);
+        bold.setEnabled(enabled);
+        find.setEnabled(enabled);
+        findNext.setEnabled(enabled);
+        addArrowLinkAction.setEnabled(enabled);
+        addLocalLinkAction.setEnabled(enabled);
+        nodeColorBlend.setEnabled(enabled);
+        nodeUp.setEnabled(enabled);
+        nodeBackgroundColor.setEnabled(enabled);
+        nodeDown.setEnabled(enabled);
+        importExplorerFavorites.setEnabled(enabled);
+        importFolderStructure.setEnabled(enabled);
+        joinNodes.setEnabled(enabled);
+        deleteChild.setEnabled(enabled);
+        cloud.setEnabled(enabled);
+        cloudColor.setEnabled(enabled);
+//        normalFont.setEnabled(enabled);
+        nodeColor.setEnabled(enabled);
+        edgeColor.setEnabled(enabled);
+        removeLastIconAction.setEnabled(enabled);
+        removeAllIconsAction.setEnabled(enabled);
+        selectAllAction.setEnabled(enabled);
+        selectBranchAction.setEnabled(enabled);
+        removeNodeBackgroundColor.setEnabled(enabled);
+        moveNodeAction.setEnabled(enabled);
+        revertAction.setEnabled(enabled);
+        for (int i=0; i<edgeWidths.length; ++i) { 
+            edgeWidths[i].setEnabled(enabled);
+        }
+        fork.setEnabled(enabled);
+        bubble.setEnabled(enabled);
+        for (int i=0; i<edgeStyles.length; ++i) { 
+            edgeStyles[i].setEnabled(enabled);
+        }
+        for (int i=0; i<patterns.length; ++i) { 
+            patterns[i].setEnabled(enabled);
+        }
     }
 
     //
@@ -481,9 +923,17 @@ public abstract class ControllerAdapter implements ModeController {
       // |=   oldX >=0 iff we are in the drag
 
     public void mouseWheelMoved(MouseWheelEvent e) {
-       if (isBlocked()) {
-         return; // block the scroll during edit (PN)
-       }
+        if (isBlocked()) {
+            return; // block the scroll during edit (PN)
+       }	
+       for (Iterator i = mRegisteredMouseWheelEventHandler.iterator(); i.hasNext();) {
+        MouseWheelEventHandler handler = (MouseWheelEventHandler) i.next();
+        boolean result = handler.handleMouseWheelEvent(e);
+        if(result) {
+            // event was consumed:
+            return;
+        }
+    }
         
        if ((e.getModifiers() & ZOOM_MASK) != 0) {
            // fc, 18.11.2003: when control pressed, then the zoom is changed.
@@ -498,265 +948,24 @@ public abstract class ControllerAdapter implements ModeController {
        } else if ((e.getModifiers() & HORIZONTAL_SCROLL_MASK) != 0) {
           for (int i=0; i < SCROLL_SKIPS; i++) {
              ((MapView)e.getComponent()).scrollBy(
-                 SCROLL_SKIP * e.getWheelRotation(), 0); }}
+                 SCROLL_SKIP * e.getWheelRotation(), 0, false); }}
        else {
           for (int i=0; i < SCROLL_SKIPS; i++) {
              ((MapView)e.getComponent()).scrollBy(0, 
-                 SCROLL_SKIP * e.getWheelRotation()); }}
+                 SCROLL_SKIP * e.getWheelRotation(), false); }}
     }
 
-    // edit begins with home/end or typing (PN 6.2)
-    public void edit(KeyEvent e, boolean addNew, boolean editLong) {
-      if (getView().getSelected() != null) {
-        if (e == null || !addNew) {
-          edit(getView().getSelected(),getView().getSelected(), e, false, false, editLong);
-        }
-        else if (!isBlocked()) {
-          addNew(getView().getSelected(), NEW_SIBLING_BEHIND, e);
-        }
-        if (e != null) {
-          e.consume();
-        }
-      }
+    public void registerMouseWheelEventHandler(MouseWheelEventHandler handler) {
+        logger.info("Registered   MouseWheelEventHandler "+handler);
+        mRegisteredMouseWheelEventHandler.add(handler);
     }
-
-   private void changeComponentHeight(JComponent component, int difference, int minimum) {
-      Dimension preferredSize = component.getPreferredSize();
-      System.out.println("pf:"+preferredSize);
-      if (preferredSize.getHeight() + difference >= minimum) {
-         System.out.println("pf:"+preferredSize);
-         component.setPreferredSize(new Dimension((int)preferredSize.getWidth(),
-                                                  (int)preferredSize.getHeight() + difference)); }}
-
-    /** Private variable to hold the last value of the "Enter confirms" state.*/
-    private static Tools.BooleanHolder booleanHolderForConfirmState;
-
-    private void editLong(final NodeView node,
-                            final String text,
-                            final KeyEvent firstEvent) {
-
-        final int BUTTON_OK     = 0;
-        final int BUTTON_CANCEL = 1;
-        final int BUTTON_SPLIT  = 2;
-
-        final JDialog dialog = new JDialog((JFrame)getFrame(), getText("edit_long_node"), /*modal=*/true);
-
-        final JTextArea textArea = new JTextArea(text);
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true); // wrap around words rather than characters
-        if (firstEvent != null) {
-          switch (firstEvent.getKeyCode()) {
-            case KeyEvent.VK_HOME:
-              textArea.setCaretPosition(0);
-              break;
-
-            default:
-              textArea.setCaretPosition(text.length());
-              break;
-          }
-        }
-        else {
-          textArea.setCaretPosition(text.length());
-        }
-
-
-        final JScrollPane editorScrollPane = new JScrollPane(textArea);
-        editorScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
-        //int preferredHeight = new Integer(getFrame().getProperty("el__default_window_height")).intValue();
-        int preferredHeight = node.getHeight();
-        preferredHeight =
-           Math.max (preferredHeight, Integer.parseInt(getFrame().getProperty("el__min_default_window_height")));
-        preferredHeight =
-           Math.min (preferredHeight, Integer.parseInt(getFrame().getProperty("el__max_default_window_height")));
-
-        int preferredWidth = node.getWidth();
-        preferredWidth =
-           Math.max (preferredWidth, Integer.parseInt(getFrame().getProperty("el__min_default_window_width")));
-        preferredWidth =
-           Math.min (preferredWidth, Integer.parseInt(getFrame().getProperty("el__max_default_window_width")));
-                           
-        editorScrollPane.setPreferredSize(new Dimension(preferredWidth, preferredHeight));
-        //textArea.setPreferredSize(new Dimension(500, 160));
-
-        final JPanel panel = new JPanel();
-
-        //String performedAction;
-        final Tools.IntHolder eventSource = new Tools.IntHolder();
-        final JButton okButton = new JButton("OK");
-        final JButton cancelButton = new JButton(getText("cancel"));
-        final JButton splitButton = new JButton(getText("split"));
-        final JCheckBox enterConfirms =
-           new JCheckBox(getText("enter_confirms"), binOptionIsTrue("el__enter_confirms_by_default"));
-
-        if(booleanHolderForConfirmState == null) {
-            booleanHolderForConfirmState = new Tools.BooleanHolder();
-            booleanHolderForConfirmState.setValue(enterConfirms.isSelected());
-        } else {
-            enterConfirms.setSelected(booleanHolderForConfirmState.getValue());
-        }            
-
-        okButton.setMnemonic(KeyEvent.VK_O);
-        enterConfirms.setMnemonic(KeyEvent.VK_E);
-        splitButton.setMnemonic(KeyEvent.VK_S);
-        cancelButton.setMnemonic(KeyEvent.VK_C);
-
-        okButton.addActionListener (new ActionListener() {
-              public void actionPerformed(ActionEvent e) {
-                 eventSource.setValue(BUTTON_OK);
-                 dialog.dispose(); }});
-
-        cancelButton.addActionListener (new ActionListener() {
-              public void actionPerformed(ActionEvent e) {
-                 eventSource.setValue(BUTTON_CANCEL);
-                 dialog.dispose(); }});
-
-        splitButton.addActionListener (new ActionListener() {
-              public void actionPerformed(ActionEvent e) {
-                 eventSource.setValue(BUTTON_SPLIT);
-                 dialog.dispose(); }});
-
-        enterConfirms.addActionListener (new ActionListener() {
-              public void actionPerformed(ActionEvent e) {
-                 textArea.requestFocus(); 
-                 booleanHolderForConfirmState.setValue(enterConfirms.isSelected());
-              }});
-
-        // On Enter act as if OK button was pressed
-
-        textArea.addKeyListener(new KeyListener() {
-              public void keyPressed(KeyEvent e) {
-                 // escape key in long text editor (PN)
-                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                   e.consume();
-                   eventSource.setValue(BUTTON_CANCEL);
-                   dialog.dispose(); 
-                 }
-                 else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    if (enterConfirms.isSelected() == ((e.getModifiers() & KeyEvent.CTRL_MASK) == 0)) {
-                       e.consume();
-                       eventSource.setValue(BUTTON_OK);
-                       dialog.dispose(); }
-                    else if (enterConfirms.isSelected() && (e.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
-                       e.consume();
-                       textArea.insert("\n",textArea.getCaretPosition()); }}}
-
-                 /*
-                 // Daniel: I tried to make editor resizable. It worked somehow, but not
-                 // quite. When I increased the size and then decreased again to the original
-                 // size, it stopped working. The main idea here is to change the preferred
-                 // size. I also tried to change the size but it did not do anything sensible.
-                 //
-                 // One possibility would be to disable decreasing the size.
-                 //
-                 // Another thing which was far from nice was that it flickered.
-                 //
-                 // If someone wants to find a solution, let it be.
-
-                 else if (e.getKeyCode() == KeyEvent.VK_DOWN &&
-                          (e.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
-
-                    changeComponentHeight(editorScrollPane, 60, 180);
-                    dialog.doLayout();
-                    dialog.pack();
-                    e.consume();
-                 }
-                 else if (e.getKeyCode() == KeyEvent.VK_UP &&
-                          (e.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
-                    changeComponentHeight(editorScrollPane, -60, 180);
-                    dialog.doLayout();
-                    dialog.pack();
-                    e.consume(); }} */
-              public void keyTyped(KeyEvent e) {}
-              public void keyReleased(KeyEvent e) {}
-           });
-
-        textArea.addMouseListener(new MouseListener() {
-              public void mouseClicked(MouseEvent e) {}
-              public void mouseEntered( MouseEvent e ) {}
-              public void mouseExited( MouseEvent e ) {}
-
-              public void mousePressed( MouseEvent e ) {
-                 conditionallyShowPopup(e); }
-              
-              public void mouseReleased( MouseEvent e ) {
-                 conditionallyShowPopup(e); }
-
-              private void conditionallyShowPopup(MouseEvent e) {
-                 if (e.isPopupTrigger()) {
-                    JPopupMenu popupMenu = new EditPopupMenu(textArea);
-                    popupMenu.show(e.getComponent(),e.getX(),e.getY());
-                    e.consume(); }}
-           });
-
-
-        textArea.setFont(node.getFont());
-        textArea.setForeground(node.getForeground());
-
-        //panel.setPreferredSize(new Dimension(500, 160));
-        //editorScrollPane.setPreferredSize(new Dimension(500, 160));
-
-        JPanel buttonPane = new JPanel();
-        buttonPane.add(enterConfirms);
-        buttonPane.add(okButton);
-        buttonPane.add(cancelButton);
-        buttonPane.add(splitButton);
-        buttonPane.setMaximumSize(new Dimension(1000, 20));
-
-        if (getFrame().getProperty("el__buttons_position").equals("above")) {
-           panel.add(buttonPane);
-           panel.add(editorScrollPane); }
-        else {
-           panel.add(editorScrollPane);
-           panel.add(buttonPane); }
-
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-      
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dialog.setContentPane(panel);
-        dialog.pack();  // calculate the size
-        
-        // set position
-        getView().scrollNodeToVisible(node, 0);
-        Point frameScreenLocation = getFrame().getLayeredPane().getLocationOnScreen();
-        double posX = node.getLocationOnScreen().getX() - frameScreenLocation.getX();
-        double posY = node.getLocationOnScreen().getY() - frameScreenLocation.getY()
-           + (binOptionIsTrue("el__position_window_below_node") ? node.getHeight() : 0);
-        if (posX + dialog.getWidth() > getFrame().getLayeredPane().getWidth()) {
-          posX = getFrame().getLayeredPane().getWidth() - dialog.getWidth();
-        }
-        if (posY + dialog.getHeight() > getFrame().getLayeredPane().getHeight()) {
-          posY = getFrame().getLayeredPane().getHeight() - dialog.getHeight();
-        }
-        posX = ((posX < 0) ? 0 : posX) + frameScreenLocation.getX();
-        posY = ((posY < 0) ? 0 : posY) + frameScreenLocation.getY();
-        dialog.setLocation(new Double(posX).intValue(), new Double(posY).intValue());
-
-
-        textArea.requestFocusInWindow();  // make the text area focused when the dialog comes
-        dialog.show();
-        //dialog.setVisible(true);
-
-        if (eventSource.getValue() == BUTTON_OK) {
-           getModel().changeNode(node.getModel(), textArea.getText()); }
-        if (eventSource.getValue() == BUTTON_SPLIT) {
-           //getModel().changeNode(node.getModel(), textArea.getText());
-           getModel().splitNode(node.getModel(),
-                                textArea.getCaretPosition(),
-                                textArea.getText()); 
-           getController().obtainFocusForSelected(); // focus fix
-        }
-
+    public void deRegisterMouseWheelEventHandler(MouseWheelEventHandler handler) {
+        logger.info("Deregistered MouseWheelEventHandler "+handler);
+        mRegisteredMouseWheelEventHandler.remove(handler);
     }
-
     // this enables from outside close the edit mode
     private FocusListener textFieldListener = null;
     
-    private void closeEdit() {
-      if (this.textFieldListener != null) {
-        textFieldListener.focusLost(null); // hack to close the edit
-      }
-    }
     
     // status, currently: default, blocked  (PN)
     // (blocked to protect against particular events e.g. in edit mode)
@@ -765,413 +974,256 @@ public abstract class ControllerAdapter implements ModeController {
     public boolean isBlocked() {
       return this.isBlocked;
     }
-    private void setBlocked(boolean isBlocked) {
+    public void setBlocked(boolean isBlocked) {
       this.isBlocked = isBlocked;
     }
     
-    private void edit(final NodeView node, 
-                        final NodeView prevSelected,   // when new->esc: node be selected
-                        final KeyEvent firstEvent,
-                        final boolean isNewNode,      // when new->esc: cut the node
-                        final boolean parentFolded,   // when new->esc: fold prevSelected
-                        final boolean editLong) {
-		if (node == null){
-			return;	}
-
-        closeEdit();
-        setBlocked(true); // locally "modal" stated
-
-        String text = node.getModel().toString();
-        if (node.getIsLong() || editLong) {
-           editLong(node, text, firstEvent);
-           setBlocked(false);
-           return; 
-        }
-
-        //if (isNewNode) {
-        //  if (firstEvent instanceof KeyEvent
-        //      && ((KeyEvent)firstEvent).getKeyChar() != KeyEvent.CHAR_UNDEFINED) {
-        //  }
-        //  //else if (text.length() == 0) {
-        //    // new node text if the user did not press a key and the text would be empty
-        //    // text = getText("new_node");
-        //  //}
-        //}
-        
-        final JTextField textField = (text.length() < 8)
-           ? new JTextField(text,8)     //Make fields for short texts editable
-           : new JTextField(text);
-
-        // Set textFields's properties
-
-        /* fc, 12.10.2003: the following method is not correct. Even more with the zoom factors!*/
-        int linkIconWidth = 16;
-        int textFieldBorderWidth = 2;
-        int cursorWidth = 1;
-        int xOffset = -1 * textFieldBorderWidth + node.getLeftWidthOverhead() - 1;
-        int yOffset = -1; // Optimized for Windows style; basically ad hoc
-        int widthAddition = 2 * textFieldBorderWidth + cursorWidth - 2 * node.getLeftWidthOverhead() + 2;
-        int heightAddition = 2;
-        if (node.getModel().getLink() != null) {
-           xOffset += linkIconWidth;
-           widthAddition -= linkIconWidth; }
-        if (node.getModel().getIcons().size() != 0) { // fc, 24.9.2003 full ok for the moment, that an icon has the same size as the link icon.
-           xOffset += linkIconWidth * node.getModel().getIcons().size();
-           widthAddition -= linkIconWidth; }
-        /* fc, 12.10.2003: end buggy method*/
-
-        // minimal width for input field of leaf or folded node (PN)
-        final int MINIMAL_LEAF_WIDTH = 150;
-        final int MINIMAL_WIDTH = 50;
-
-        int xSize = node.getWidth() + widthAddition;
-        int xExtraWidth = 0;
-        if (MINIMAL_LEAF_WIDTH > xSize 
-            && (node.getModel().isFolded() || !node.getModel().hasChildren())) {
-          // leaf or folded node with small size
-          xExtraWidth = MINIMAL_LEAF_WIDTH - xSize;
-          xSize = MINIMAL_LEAF_WIDTH; // increase minimum size
-          if (node.isLeft()) { // left leaf
-            xExtraWidth = - xExtraWidth;
-            textField.setHorizontalAlignment(JTextField.RIGHT);
-          }
-        }
-        else if (MINIMAL_WIDTH > xSize) {
-          // opened node with small size
-          xExtraWidth = MINIMAL_WIDTH - xSize;
-          xSize = MINIMAL_WIDTH; // increase minimum size
-          if (node.isLeft()) { // left node
-            xExtraWidth = - xExtraWidth;
-            textField.setHorizontalAlignment(JTextField.RIGHT);
-          }
-        }
-
-        textField.setSize(xSize, node.getHeight() + heightAddition);
-        textField.setFont(node.getFont());
-        textField.setForeground(node.getForeground());
-        textField.setSelectedTextColor(node.getForeground());
-        textField.setSelectionColor(selectionColor);
-        // textField.selectAll(); // no selection on edit (PN)
-        
-        final int INIT   = 0;
-        final int EDIT   = 1;
-        final int CANCEL = 2;
-        final Tools.IntHolder eventSource = new Tools.IntHolder();
-        eventSource.setValue(INIT);
-
-        // listener class
-        class TextFieldListener implements KeyListener, 
-                                             FocusListener, MouseListener {
-
-          public void focusGained(FocusEvent e) {
-            // the first time the edit field gains a focus
-            // process the predefined first key (if any)
-
-            if (eventSource.getValue() == INIT) {
-              eventSource.setValue(EDIT);
-              if (firstEvent instanceof KeyEvent) {
-                KeyEvent firstKeyEvent = (KeyEvent)firstEvent;
-                if (firstKeyEvent.getKeyChar() == KeyEvent.CHAR_UNDEFINED) {
-                  // for the char_undefined the scenario with dispatching 
-                  // doesn't work => hard code dispatching :-(
-                  // // dispatch action key events as it came
-                  // textField.dispatchEvent(firstKeyEvent);
-                  
-                  // dispatch 2 known events (+ special for insert:) (hardcoded)
-                  switch (firstKeyEvent.getKeyCode()) {
-                    case KeyEvent.VK_HOME:
-                      textField.setCaretPosition(0);
-                      break;
-                    case KeyEvent.VK_END:
-                      textField.setCaretPosition(textField.getText().length());
-                      break;
-                  }
-                }
-                else {
-                  // or create new "key type" event for printable key
-                  KeyEvent keyEv;
-                  keyEv = new KeyEvent(
-                      firstKeyEvent.getComponent(),
-                      KeyEvent.KEY_TYPED, 
-                      firstKeyEvent.getWhen(), 
-                      firstKeyEvent.getModifiers(), 
-                      KeyEvent.VK_UNDEFINED,
-                      firstKeyEvent.getKeyChar(), 
-                      KeyEvent.KEY_LOCATION_UNKNOWN );
-                  textField.selectAll(); // to enable overwrite
-                  textField.dispatchEvent(keyEv);
-                }
-              } // 1st key event defined
-            } // first focus
-          } // focus gained
 
 
-          public void focusLost(FocusEvent e) {
-            
-            // %%% open problems:
-            // - adding of a child to the rightmost node
-            // - scrolling while in editing mode (it can behave just like other viewers)
-            // - block selected events while in editing mode
-        
-            if (e == null) { // can be when called explicitly
-              getModel().changeNode(node.getModel(), textField.getText());
-              getFrame().getLayeredPane().remove(textField);
-              getFrame().repaint(); //  getLayeredPane().repaint();
-              textFieldListener = null;
-              eventSource.setValue(CANCEL); // disallow real focus lost
-            }
-            else if (eventSource.getValue() != CANCEL) {
-              // always confirm the text if not yet
-              getModel().changeNode(node.getModel(), textField.getText());
-              getFrame().getLayeredPane().remove(textField);
-              getFrame().repaint(); //  getLayeredPane().repaint();
-              setBlocked(false);
-              textFieldListener = null;
-            }
-          }
+	public void setBold(MindMapNode node, boolean bolded) {
+		bold.setBold(node, bolded);
+	}
 
-          public void keyPressed(KeyEvent e) {
+	public void setItalic(MindMapNode node, boolean isItalic) {
+		italic.setItalic(node, isItalic);
+	}
 
-            if (e.isAltDown() || e.isControlDown()) {
-                return;
-            }
-
-            boolean commit = true;
-
-            switch (e.getKeyCode()) {
-              case KeyEvent.VK_ESCAPE:
-                commit = false;
-              case KeyEvent.VK_ENTER:
-                e.consume();
-
-                eventSource.setValue(CANCEL); // do not process loose of focus
-                if (commit) {
-                  getModel().changeNode(node.getModel(), textField.getText());
-                }
-                else if (isNewNode) { // delete also the node and set focus to the parent
-                  getView().selectAsTheOnlyOneSelected(node);
-                  getModel().cut();
-                  select(prevSelected); // include max level for navigation
-                  if (parentFolded) {
-                    getModel().setFolded(prevSelected.getModel(), true);
-                  }
-                }
-                getFrame().getLayeredPane().remove(textField);
-                getFrame().repaint(); //  getLayeredPane().repaint();
-                setBlocked(false);
-                textFieldListener = null;
-                getController().obtainFocusForSelected(); // hack: to keep the focus
-                break;
-
-             case KeyEvent.VK_SPACE: 
-               e.consume();
-             }
-          }
-          public void keyTyped(KeyEvent e) { }
-          public void keyReleased(KeyEvent e) { }
-
-           public void mouseClicked(MouseEvent e) {}
-           public void mouseEntered( MouseEvent e ) {}
-           public void mouseExited( MouseEvent e ) {}
-
-           public void mousePressed( MouseEvent e ) {
-              conditionallyShowPopup(e); }
-              
-           public void mouseReleased( MouseEvent e ) {
-              conditionallyShowPopup(e); }
-
-           private void conditionallyShowPopup(MouseEvent e) {
-              if (e.isPopupTrigger()) {
-                 JPopupMenu popupMenu = new EditPopupMenu(textField);
-                 popupMenu.show(e.getComponent(),e.getX(),e.getY());
-                 e.consume(); }}
-
-        }
-
-        // create the listener
-        final TextFieldListener textFieldListener = new TextFieldListener();
-        
-        // Add listeners
-        this.textFieldListener = textFieldListener;
-        textField.addFocusListener( textFieldListener );
-        textField.addKeyListener( textFieldListener );
-        textField.addMouseListener( textFieldListener );
-
-        // screen positionining ---------------------------------------------
-
-        // SCROLL if necessary
-        getView().scrollNodeToVisible(node, xExtraWidth);
-
-        // NOTE: this must be calculated after scroll because the pane location changes
-        Point frameScreenLocation = getFrame().getLayeredPane().getLocationOnScreen();
-        Point nodeScreenLocation = node.getLocationOnScreen();
-
-        int xLeft = (int)(nodeScreenLocation.getX() -  frameScreenLocation.getX() + xOffset);
-        if (xExtraWidth < 0) {
-          xLeft += xExtraWidth;
-        }
-
-        textField.setLocation(xLeft, (int)(nodeScreenLocation.getY()
-                                          - frameScreenLocation.getY() + yOffset));
-        
-        getFrame().getLayeredPane().add(textField); // 2000);
-        getFrame().repaint();
- 
-        SwingUtilities.invokeLater( new Runnable() { // PN 0.6.2
-             public void run () { textField.requestFocus(); }});
+    public void setCloud(MindMapNode node, boolean enable) {
+        cloud.setCloud(node, enable);
     }
-
-    public final int NEW_CHILD_WITHOUT_FOCUS = 1;  // old model of insertion
-    public final int NEW_CHILD = 2;
-    public final int NEW_SIBLING_BEHIND = 3;
-    public final int NEW_SIBLING_BEFORE = 4;
-
-    public void addNew(final NodeView target, final int newNodeMode, final KeyEvent e) {
-       closeEdit();
-       
-       MindMapNode newNode = newNode();
-       final MindMapNode targetNode = target.getModel();
-
-       switch (newNodeMode) {
-         case NEW_SIBLING_BEFORE:
-         case NEW_SIBLING_BEHIND:
-           if (targetNode.isRoot()) {
-             getController().errorMessage(
-                 getText("new_node_as_sibling_not_possible_for_the_root"));
-             setBlocked(false);
-             return; 
-           }
-           MindMapNode parent = targetNode.getParentNode();
-           int childPosition = parent.getChildPosition(targetNode);
-           if (newNodeMode == NEW_SIBLING_BEHIND) {
-              childPosition++;
-           }
-           if(targetNode.isLeft()!= null) {
-               newNode.setLeft(targetNode.isLeft().getValue());
-           }
-           getModel().insertNodeInto(newNode, parent, childPosition);
-           select(newNode.getViewer());
-                getFrame().repaint(); //  getLayeredPane().repaint();
-           edit(newNode.getViewer(), target, e, true, false, false);
-           break;
-  
-         case NEW_CHILD:
-         case NEW_CHILD_WITHOUT_FOCUS:
-           final boolean parentFolded = targetNode.isFolded();
-           if (parentFolded) {
-             getModel().setFolded(targetNode,false);
-           }
-           int position = getFrame().getProperty("placenewbranches").equals("last") ?
-              targetNode.getChildCount() : 0;
-           // Here the NodeView is created for the node. }
-           getModel().insertNodeInto(newNode, targetNode, position);
-                getFrame().repaint(); //  getLayeredPane().repaint();
-           if (newNodeMode == NEW_CHILD) {
-             select(newNode.getViewer());
-           }
-           final NodeView editView = newNode.getViewer();
-           edit(editView, targetNode.getViewer(), e, true, parentFolded, false);
-           break;
-       }
+    public void setCloudColor(MindMapNode node, Color color) {
+        cloudColor.setCloudColor(node, color);
     }
-
-//     public void toggleFolded() {
-//         MindMapNode node = getSelected();
-//         // fold the node only if the node is not a leaf (PN 0.6.2)
-//         if (node.hasChildren()
-//             || node.isFolded()
-//             || Tools.safeEquals(getFrame()
-//                 .getProperty("enable_leaves_folding"),"true")) {
-//           getModel().setFolded(node, !node.isFolded());
-//         }
-//         getView().selectAsTheOnlyOneSelected(node.getViewer());
-//     }
-
-    public void toggleFolded() {
-        /* Retrieve the information whether or not all nodes have the same folding state. */
-        Tools.BooleanHolder state = null; 
-        boolean allNodeHaveSameFoldedStatus = true;
-        for (ListIterator it = getSelecteds().listIterator();it.hasNext();) {
-            MindMapNode node = (MindMapNode)it.next();
-            if(state == null) {
-                state = new Tools.BooleanHolder();
-                state.setValue(node.isFolded());
-            } else {
-                if(node.isFolded() != state.getValue()) {
-                    allNodeHaveSameFoldedStatus = false;
-                    break;
-                }
-            }
-        }
-        /* if the folding state is ambiguous, the nodes are folded. */
-        boolean fold = true;
-        if(allNodeHaveSameFoldedStatus && state != null) {
-            fold = !state.getValue();
-        }
-        MindMapNode lastNode = null;
-        for (ListIterator it = getView().getSelectedsByDepth().listIterator();it.hasNext();) {
-            MindMapNode node = ((NodeView)it.next()).getModel();
-            // fold the node only if the node is not a leaf (PN 0.6.2)
-            if (node.hasChildren() || node.isFolded() || Tools.safeEquals(getFrame().getProperty("enable_leaves_folding"),"true"))   {
-                getModel().setFolded(node, fold);
-            }
-            lastNode = node;
-        }
-        if(lastNode != null)
-            getView().selectAsTheOnlyOneSelected(lastNode.getViewer());
-    }
-
+    //Node editing
+    public void setFontSize(MindMapNode node, String fontSizeValue) {
+        fontSize.setFontSize(node, fontSizeValue);
+	}
 
     /**
-     * If any children are folded, unfold all folded children.
-     * Otherwise, fold all children.
+     *
      */
-    protected void toggleChildrenFolded() {
-        // have NodeAdapter; need NodeView
-        MindMapNode parent = getSelected();
-        ListIterator children_it = parent.getViewer().getChildrenViews().listIterator();
-        boolean areAnyFolded = false;
-        while(children_it.hasNext() && !areAnyFolded) {
-            NodeView child = (NodeView)children_it.next();
-            if(child.getModel().isFolded()) {
-                areAnyFolded = true;
-            }
-        }
 
-        // fold the node only if the node is not a leaf (PN 0.6.2)
-        boolean enableLeavesFolding = 
-            Tools.safeEquals(getFrame().
-               getProperty("enable_leaves_folding"),"true");
-
-        children_it = parent.getViewer().getChildrenViews().listIterator();
-        while(children_it.hasNext()) {
-            MindMapNode child = ((NodeView)children_it.next()).getModel();
-            if (child.hasChildren() 
-                || enableLeavesFolding
-                || child.isFolded()) {
-              getModel().setFolded(child, !areAnyFolded); // (PN 0.6.2)
-            }
-        }
-        getView().selectAsTheOnlyOneSelected(parent.getViewer());
-
-        getController().obtainFocusForSelected(); // focus fix
-    }
-
-    protected void setLinkByTextField() {
-        // Requires J2SDK1.4.0!
-        String inputValue = JOptionPane.showInputDialog
-           (getText("edit_link_manually"), getModel().getLink(getSelected()));
-        if (inputValue != null) {
-           if (inputValue.equals("")) {
-              inputValue = null;        // In case of no entry unset link
-           }
-           getModel().setLink(getSelected(),inputValue);
+    public void increaseFontSize(MindMapNode node, int increment) {
+        int newSize = Integer.valueOf(node.getFontSize()).intValue()+increment;
+        
+        if (newSize > 0) {
+            setFontSize(node, Integer.toString(newSize));
         }
     }
+    
+    public void setFontFamily(MindMapNode node, String fontFamilyValue) {
+        fontFamily.setFontFamily(node, fontFamilyValue);
+    }
+
+    public void setNodeColor(MindMapNode node, Color color) {
+        nodeColor.setNodeColor(node, color);
+    }
+    
+	public void setNodeBackgroundColor(MindMapNode node, Color color) {
+		nodeBackgroundColor.setNodeBackgroundColor(node, color);
+	}
+    public void blendNodeColor(MindMapNode node) {
+        Color mapColor = getMap().getBackgroundColor();
+        Color nodeColor = node.getColor();
+        if (nodeColor == null) {
+            nodeColor = Tools.xmlToColor(getFrame().getProperty(
+                    FreeMind.RESOURCES_NODE_COLOR));
+        }
+        setNodeColor(node, new Color(
+                (3 * mapColor.getRed() + nodeColor.getRed()) / 4, (3 * mapColor
+                        .getGreen() + nodeColor.getGreen()) / 4, (3 * mapColor
+                        .getBlue() + nodeColor.getBlue()) / 4));
+    }
+
+
+    public void setEdgeColor(MindMapNode node, Color color) {
+		edgeColor.setEdgeColor(node, color);
+    }
+
+	public void applyPattern(MindMapNode node, String patternName){
+        for (int i = 0; i < patterns.length; i++) {
+            ApplyPatternAction patternAction = patterns[i];
+            if(patternAction.getPattern().getName().equals(patternName)){
+                patternAction.applyPattern(node, patternAction.getPattern());
+                break;
+            }
+        }
+	}
+
+    
+
+    public void applyPattern(MindMapNode node, StylePattern pattern) {
+	    if(patterns.length > 0) {
+	        patterns[0].applyPattern(node, pattern);
+	    } else {
+	        throw new IllegalArgumentException("No pattern defined.");
+	    }
+    }
+    
+    public void addIcon(MindMapNode node, MindIcon icon) {
+        unknwonIconAction.addIcon(node, icon);
+    }
+
+
+    public void removeAllIcons(MindMapNode node) {
+        removeAllIconsAction.removeAllIcons(node);
+    }
+
+    public int removeLastIcon(MindMapNode node) {
+        return removeLastIconAction.removeLastIcon(node);
+    }
+    /**
+     *
+     */
+
+    public void addLink(MindMapNode source, MindMapNode target) {
+        addArrowLinkAction.addLink(source, target);
+    }
+
+	public void removeReference(MindMapLink arrowLink){
+	    removeArrowLinkAction.removeReference(arrowLink);
+	}
+
+    public void setArrowLinkColor(MindMapLink arrowLink, Color color) {
+        colorArrowLinkAction.setArrowLinkColor(arrowLink, color);
+    }
+    
+    /**
+     *
+     */
+
+    public void changeArrowsOfArrowLink(MindMapArrowLinkModel arrowLink,
+            boolean hasStartArrow, boolean hasEndArrow) {
+        changeArrowsInArrowLinkAction.changeArrowsOfArrowLink(arrowLink, hasStartArrow, hasEndArrow);
+    }
+    
+	public void setArrowLinkEndPoints(MindMapArrowLink link, Point startPoint,
+			Point endPoint) {
+		changeArrowLinkEndPoints.setArrowLinkEndPoints(link, startPoint, endPoint);
+	}
+    public void setLink(MindMapNode node, String link) {
+        setLinkByTextField.setLink(node, link);
+    }
+    /**
+     *
+     */
+
+    public void setToolTip(MindMapNode node, String key, String value) {
+        node.setToolTip(key, value);
+        nodeRefresh(node);
+    }
+    // edit begins with home/end or typing (PN 6.2)
+	public void edit(KeyEvent e, boolean addNew, boolean editLong) {
+		edit.edit(e, addNew, editLong);
+	}
+
+	
+    public void setNodeText(MindMapNode selected, String newText) {
+        edit.setNodeText(selected, newText);
+    }
+
+    /**
+     *
+     */
+
+    public void setEdgeWidth(MindMapNode node, int width) {
+        EdgeWidth_1.setEdgeWidth(node, width);
+    }
+    /**
+     *
+     */
+
+    public void setEdgeStyle(MindMapNode node, String style) {
+        EdgeStyle_bezier.setEdgeStyle(node, style);
+    }
+    /**
+     *
+     */
+
+    public void setNodeStyle(MindMapNode node, String style) {
+        fork.setStyle(node, style);
+    }
+     public Transferable cut() {
+		return cut(getSelecteds());
+	}
+
+     
+     	
+	public Transferable cut(List nodeList) {
+		return cut.cut(nodeList);
+	}
+	public void paste(Transferable t, MindMapNode parent) {
+		boolean isLeft = false;
+		if(parent.isLeft()!= null)
+			isLeft = parent.isLeft().getValue();
+		paste(t, /*target=*/parent, /*asSibling=*/ false, isLeft); }
+
+	/** @param isLeft determines, whether or not the node is placed on the left or right. **/
+	public void paste(Transferable t, MindMapNode target, boolean asSibling, boolean isLeft) {
+		paste.paste(t, target, asSibling, isLeft);
+	}
+
+	public void paste(MindMapNode node, MindMapNode parent) {
+		paste.paste(node, parent);
+	}
+
+
+    public static final int NEW_CHILD_WITHOUT_FOCUS = 1;  // old model of insertion
+    public static final int NEW_CHILD = 2;
+    public static final int NEW_SIBLING_BEHIND = 3;
+    public static final int NEW_SIBLING_BEFORE = 4;
+
+    public MindMapNode addNew(final MindMapNode target, final int newNodeMode, final KeyEvent e) {
+    	return newChild.addNew(target, newNodeMode, e);
+    }
+    
+    public 	MindMapNode addNewNode(MindMapNode parent, int index, freemind.main.Tools.BooleanHolder newNodeIsLeft) {
+        return newChild.addNewNode(parent, index, newNodeIsLeft);
+    }
+
+
+	public void deleteNode(MindMapNode selectedNode) {
+		deleteChild.deleteNode(selectedNode);
+	}
+
+	public void toggleFolded() {
+	    toggleFolded.toggleFolded();
+	}
+	
+	public void setFolded(MindMapNode node, boolean folded) {
+	    toggleFolded.setFolded(node, folded);
+	}
+	
+	public void displayNode(MindMapNode node){
+	    find.displayNode(node, null);
+	}
+	
+	public void centerNode(MindMapNode node){
+	    	if(node.getViewer()==null){
+	    	    displayNode(node);
+	    	}
+	        // Select the node and scroll to it.
+	        getView().centerNode(node.getViewer());
+	        getView().selectAsTheOnlyOneSelected(node.getViewer());
+	        getController().obtainFocusForSelected();
+	}
+	
+	public String getLinkShortText(MindMapNode node) {
+	    return gotoLinkNodeAction.getShortTextForLink(node);
+	}
+	
+	public void moveNodes(MindMapNode selected, List selecteds, int direction){
+	    nodeUp.moveNodes(selected, selecteds, direction);
+	}
+
+	public void joinNodes(MindMapNode selectedNode, List selectedNodes) {
+	    joinNodes.joinNodes(selectedNode, selectedNodes);
+	}
 
     protected void setLinkByFileChooser() {
 		String relative = getLinkByFileChooser(getFileFilter());
-		if (relative != null) getModel().setLink(getSelected(),relative);
+		if (relative != null) 
+		    setLink((NodeAdapter) getSelected(),relative);
 	}
 	
 	protected void setImageByFileChooser() {
@@ -1195,6 +1247,7 @@ public abstract class ControllerAdapter implements ModeController {
                 }
 
                 try {
+                	// FIXME: Is this used?????
                    if (picturesAmongSelecteds) {
                       for (ListIterator e = getSelecteds().listIterator();e.hasNext();) {
                          MindMapNode node = (MindMapNode)e.next();
@@ -1203,9 +1256,9 @@ public abstract class ControllerAdapter implements ModeController {
                             String relative = Tools.isAbsolutePath(possiblyRelative) ?
                                new File(possiblyRelative).toURL().toString() : possiblyRelative;
                             if (relative != null) {
-                               String strText = "<html><img src=\"" + relative + "\">"; 
-                               node.setLink(null);
-                               getModel().changeNode(node,strText);
+                               String strText = "<html><img src=\"" + relative + "\">";
+                               setLink(node, null);
+                               setNodeText(node, strText);
                             }
                          }
                       }
@@ -1214,7 +1267,7 @@ public abstract class ControllerAdapter implements ModeController {
                       String relative = getLinkByFileChooser(filter);
                       if (relative != null) {
                          String strText = "<html><img src=\"" + relative + "\">"; 
-                         getModel().changeNode((MindMapNode)getSelected(),strText);
+                         setNodeText((MindMapNode)getSelected(),strText);
                       } 
                    }
                 }
@@ -1294,7 +1347,20 @@ public abstract class ControllerAdapter implements ModeController {
 
               //absolute = new URL("file://"+relative); }
               absolute = new File(relative).toURL(); }
-            else {
+            else if(relative.startsWith("#")){
+                // inner map link, fc, 12.10.2004
+                logger.finest("found relative link to "+relative);
+                String target = relative.substring(1);
+                try {
+                    MindMapNode node = getNodeFromID(target);
+                    centerNode(node);
+                    return;
+                } catch (Exception e) {
+                    // give "not found" message
+                    throw new FileNotFoundException(null);
+                }
+                
+            } else{
               absolute = new URL(getMap().getFile().toURL(), relative);
               // Remark: getMap().getFile().toURL() returns URLs like file:/C:/...
               // It seems, that it does not cause any problems.
@@ -1309,7 +1375,7 @@ public abstract class ControllerAdapter implements ModeController {
                  getFrame().setWaitingCursor(true);
                  load(file); }}
            else {                                                 // ---- Open URL in browser
-               // fc, 14.12.2003: The following code seems not very good. Imagine file names with spaces. Then they occur as %20, now the OS does not find the file, 
+               // fc, 14.12.2003: The following code seems not to be very good. Imagine file names with spaces. Then they occur as %20, now the OS does not find the file, 
                // etc. If this is necessary, this should be done in the openDocument command.
 //               if (absolute.getProtocol().equals("file")) {                 
 //                  File file = new File (Tools.urlGetFile(absolute));
@@ -1332,8 +1398,11 @@ public abstract class ControllerAdapter implements ModeController {
                 getText("repair_link"),
                 JOptionPane.YES_NO_OPTION);
             if (returnVal==JOptionPane.YES_OPTION) {
-               setLinkByTextField(); }}
-        catch (Exception e) { e.printStackTrace(); }
+                setLinkByTextField.actionPerformed(null);
+            }
+        } catch (Exception e) { 
+            e.printStackTrace(); 
+        }
         getFrame().setWaitingCursor(false);
     }
 
@@ -1356,10 +1425,12 @@ public abstract class ControllerAdapter implements ModeController {
         this.mode = mode;
     }
 
+    //FIXME: Wrong as the actual controller is eventually not used (think of more than one map opened).
     protected MapModule getMapModule() {
         return getController().getMapModuleManager().getMapModule();
     }
 
+    //FIXME: Wrong as the actual controller is eventually not used (think of more than one map opened).
     public MapAdapter getMap() {
         if (getMapModule() != null) {
             return (MapAdapter)getMapModule().getModel();
@@ -1368,6 +1439,10 @@ public abstract class ControllerAdapter implements ModeController {
         }
     }
 
+    public MindMapNode getRootNode(){
+        return (MindMapNode) getMap().getRoot();
+    }
+    
     public URL getResource (String name) {
         return getFrame().getResource(name);
     }
@@ -1380,7 +1455,14 @@ public abstract class ControllerAdapter implements ModeController {
         return getController().getFrame();
     }
 
-    private MapAdapter getModel() {
+	/** This was inserted by fc, 10.03.04 to enable all actions to refer to its controller easily.*/
+	public ControllerAdapter getModeController() {
+		return this;	
+	}
+
+	// fc, 29.2.2004: there is no sense in having this private and the controller public,
+	// because the getController().getModel() method is available anyway.
+    public MapAdapter getModel() {
         return (MapAdapter)getController().getModel();
     }
 
@@ -1392,8 +1474,27 @@ public abstract class ControllerAdapter implements ModeController {
         getController().getMapModuleManager().updateMapModuleName();
     }
 
-    private NodeAdapter getSelected() {
-        return (NodeAdapter)getView().getSelected().getModel();
+	/* ***********************************************************
+	*  Helper methods
+	* ***********************************************************/
+	public NodeAdapter getNodeFromID(String nodeID) {
+		NodeAdapter node =
+			(NodeAdapter) getMap().getLinkRegistry().getTargetForID(nodeID);
+		if(node == null) {
+		    throw new IllegalArgumentException("Node belonging to the node id "+ nodeID + " not found.");
+		}
+		return node;
+	}
+	public String getNodeID(MindMapNode selected) {
+		getMap().getLinkRegistry().registerLinkTarget(selected);
+		return getMap().getLinkRegistry().getLabel(selected);
+	}
+
+
+    public MindMapNode getSelected() {
+    	if(getView() != null && getView().getSelected()!=null)
+        	return (MindMapNode)getView().getSelected().getModel();
+		return null;        	
     }
 
     public boolean extendSelection(MouseEvent e) {
@@ -1443,33 +1544,94 @@ public abstract class ControllerAdapter implements ModeController {
         return retValue;
     }
 
-    private void select( NodeView node) {
+    public void select( NodeView node) {
+        getView().scrollNodeToVisible(node);
         getView().selectAsTheOnlyOneSelected(node);
         getView().setSiblingMaxLevel(node.getModel().getNodeLevel()); // this level is default
     }
 
-    ////////////
-    //  Actions
-    ///////////
-
-    protected class NewMapAction extends AbstractAction {
-        ControllerAdapter c;
-        public NewMapAction(ControllerAdapter controller) {
-            super(getText("new"), new ImageIcon(getResource("images/New24.gif")));
-            c = controller;
-            //Workaround to get the images loaded in jar file.
-            //they have to be added to jar manually with full path from root
-            //I really don't like this, but it's a bug of java
-        }
-        public void actionPerformed(ActionEvent e) {
-            c.newMap();
-        }
+    public void select( MindMapNode selected) {
+        // are they visible visible?
+        displayNode(selected);
+        select(selected.getViewer());
     }
 
+    public void selectMultipleNodes(MindMapNode focussed, Collection selecteds) {
+        // are they visible visible?
+        for (Iterator i = selecteds.iterator(); i.hasNext();) {
+            MindMapNode node = (MindMapNode) i.next();
+	        displayNode(node);
+        }
+        // this one must be visible.
+        select(focussed);
+        for (Iterator i = selecteds.iterator(); i.hasNext();) {
+            MindMapNode node = (MindMapNode) i.next();
+            getView().makeTheSelected(node.getViewer());
+        }
+        getController().obtainFocusForSelected(); // focus fix
+    }
+    
+    public void selectBranch(MindMapNode selected, boolean extend) {
+        displayNode(selected);
+        getView().selectBranch(selected.getViewer(), extend);
+    }
+    
+	public void invokeHook(ModeControllerHook hook) {
+		hook.setController(this);
+		// initialize:
+		// the main invocation:
+		hook.startupMapHook();
+		// and good bye.
+		hook.shutdownMapHook();
+	}
+	
+	/**
+	  *  
+	  */
+	public void invokeHooksRecursively(NodeAdapter node, MindMap map) {
+		 for(Iterator i = node.childrenUnfolded(); i.hasNext();) {
+			 NodeAdapter child = (NodeAdapter) i.next();
+			 invokeHooksRecursively(child, map);
+		 }
+		 for(Iterator i = node.getHooks().iterator(); i.hasNext();) {
+			 PermanentNodeHook hook = (PermanentNodeHook) i.next();
+			 hook.setController(this);
+			 hook.setMap(map);
+			 node.invokeHook(hook); 
+		 }
+	}
+
+
+
+	public NodeHook createNodeHook(String hookName, MindMapNode node,
+			MindMap map) {
+		HookFactory hookFactory = getFrame().getHookFactory();
+		NodeHook hook = (NodeHook) hookFactory.createNodeHook(hookName);
+		hook.setController(this);
+		hook.setMap(map);
+		if (hook instanceof PermanentNodeHook) {
+			PermanentNodeHook permHook = (PermanentNodeHook) hook;
+			if(hookFactory.getInstanciationMethod(hookName).isSingleton()) {
+				// search for already instanciated hooks of this type:
+				PermanentNodeHook otherHook = hookFactory.getHookInNode(node, hookName);
+				if(otherHook != null) {
+					return otherHook;
+				}
+			}
+			node.addHook(permHook);
+		}
+		return hook;
+	}
+	
+	public void addHook(MindMapNode focussed, List selecteds, String hookName) {
+	    nodeHookAction.addHook(focussed, selecteds, hookName);
+	}
+	
+	
     protected class OpenAction extends AbstractAction {
         ControllerAdapter mc;
         public OpenAction(ControllerAdapter modeController) {
-            super(getText("open"), new ImageIcon(getResource("images/Open24.gif")));
+            super(getText("open"), new ImageIcon(getResource("images/fileopen.png")));
             mc = modeController;
         }
         public void actionPerformed(ActionEvent e) {
@@ -1481,7 +1643,7 @@ public abstract class ControllerAdapter implements ModeController {
     protected class SaveAction extends AbstractAction {
         ControllerAdapter mc;
         public SaveAction(ControllerAdapter modeController) {
-            super(getText("save"), new ImageIcon(getResource("images/Save24.gif")));
+            super(getText("save"), new ImageIcon(getResource("images/filesave.png")));
             mc = modeController;
         }
         public void actionPerformed(ActionEvent e) {
@@ -1494,7 +1656,7 @@ public abstract class ControllerAdapter implements ModeController {
     protected class SaveAsAction extends AbstractAction {
         ControllerAdapter mc;
         public SaveAsAction(ControllerAdapter modeController) {
-            super(getText("save_as"), new ImageIcon(getResource("images/SaveAs24.gif")));
+            super(getText("save_as"), new ImageIcon(getResource("images/filesaveas.png")));
             mc = modeController;
         }
         public void actionPerformed(ActionEvent e) {
@@ -1503,196 +1665,40 @@ public abstract class ControllerAdapter implements ModeController {
         }
     }
 
-    protected class FindAction extends AbstractAction {
-        public FindAction() {
-           super(getText("find")); }
-        public void actionPerformed(ActionEvent e) {
-           String what = JOptionPane.showInputDialog(getView().getSelected(),
-                                                     getText("find_what"));
-           if (what == null || what.equals("")) {
-              return; }
-           boolean found = getView().getModel().find
-              (getView().getSelected().getModel(), what, /*caseSensitive=*/ false);
-           getView().repaint();
-           if (!found) {
-              getController().informationMessage
-                 (getText("no_found_from").replaceAll("\\$1",what).
-                  replaceAll("\\$2", getView().getModel().getFindFromText()),
-                  getView().getSelected()); }}}
+	protected class ModeControllerHookAction extends AbstractAction {
+		String hookName;
+		ModeController controller;
+		public ModeControllerHookAction(String hookName, ModeController controller) {
+			super(hookName);
+			this.hookName = hookName;
+			this.controller = controller;
+		}
 
-    protected class FindNextAction extends AbstractAction {
-        public FindNextAction() {
-           super(getText("find_next")); }
-        public void actionPerformed(ActionEvent e) {
-           String what = getView().getModel().getFindWhat();
-           if (what == null) {
-              getController().informationMessage(getText("no_previous_find"), getView().getSelected());
-              return; }
-           boolean found = getView().getModel().findNext();
-           getView().repaint();
-           if (!found) {
-              getController().informationMessage
-                 (getText("no_more_found_from").replaceAll("\\$1",what).
-                  replaceAll("\\$2", getView().getModel().getFindFromText()),
-                  getView().getSelected()); }}}
-
-    protected class GotoLinkNodeAction extends AbstractAction {
-        MindMapNode source;
-        public GotoLinkNodeAction(String text, MindMapNode source) {
-            super("", new ImageIcon(getResource("images/Link.png")));
-            // only display a reasonable part of the string. the rest is available via the short description (tooltip).
-            String adaptedText = new String(text);
-            adaptedText = adaptedText.replaceAll("<html>", "");
-            if(adaptedText.length() > 40)
-                adaptedText = adaptedText.substring(0,40) + " ...";
-            putValue(Action.NAME, getText("follow_link") + adaptedText );
-            putValue(Action.SHORT_DESCRIPTION, text);
-            this.source = source;
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            getMap().displayNode(source, null);
-        }
-    }
+		public void actionPerformed(ActionEvent arg0) {
+			HookFactory hookFactory = getFrame().getHookFactory();
+			// two different invocation methods:single or selecteds
+			ModeControllerHook hook = hookFactory.createModeControllerHook(hookName);
+			hook.setController(controller);
+			invokeHook(hook);							
+		} 
+  			
+	}
 
 
-    //
-    // Node editing
-    //
+    public String marshall(XmlAction action) {
+        return getController().marshall(action);
+	}
 
-    protected class EditAction extends AbstractAction {
-        public EditAction() {
-            super(getText("edit"));
-        }
-        public void actionPerformed(ActionEvent e) {
-            edit(null, false, false);
-        }
-    }
+	public XmlAction unMarshall(String inputString) {
+        return getController().unMarshall(inputString);
+	}
 
-    protected class EditLongAction extends AbstractAction {
+	protected class EditLongAction extends AbstractAction {
         public EditLongAction() {
             super(getText("edit_long_node"));
         }
         public void actionPerformed(ActionEvent e) {
             edit(null, false, true);
-        }
-    }
-
-    // old model of inserting node
-    protected class NewChildWithoutFocusAction extends AbstractAction {
-        public NewChildWithoutFocusAction() {
-            super(getText("new_node"));
-        }
-        public void actionPerformed(ActionEvent e) {
-            addNew(getView().getSelected(), NEW_CHILD_WITHOUT_FOCUS, null);
-        }
-    }
-
-    // new model of inserting node
-    protected class NewSiblingAction extends AbstractAction {
-        public NewSiblingAction() {
-            super(getText("new_sibling_behind"));
-        }
-        public void actionPerformed(ActionEvent e) {
-            addNew(getView().getSelected(), NEW_SIBLING_BEHIND, null);
-        }
-    }
-
-    protected class NewChildAction extends AbstractAction {
-        public NewChildAction() {
-            super(getText("new_child"));
-        }
-        public void actionPerformed(ActionEvent e) {
-           addNew(getView().getSelected(), NEW_CHILD, null);
-        }
-    }
-
-    protected class NewPreviousSiblingAction extends AbstractAction {
-        public NewPreviousSiblingAction() {
-            super(getText("new_sibling_before"));
-        }
-        public void actionPerformed(ActionEvent e) {
-            addNew(getView().getSelected(), NEW_SIBLING_BEFORE, null);
-        }
-    }
-
-
-    protected class RemoveAction extends AbstractAction {
-        public RemoveAction() {
-            super(getText("remove_node"));
-        }
-        public void actionPerformed(ActionEvent e) {
-           if (getMapModule() != null) {
-              getView().getModel().cut();
-              getController().obtainFocusForSelected(); }}}
-
-    protected class NodeUpAction extends AbstractAction {
-        public NodeUpAction() {
-            super(getText("node_up"));
-        }
-        public void actionPerformed(ActionEvent e) {
-            MindMapNode selected = getView().getSelected().getModel();
-            if(!selected.isRoot()) {
-                MindMapNode parent = selected.getParentNode();
-                int index = getModel().getIndexOfChild(parent, selected);
-                int newIndex = getModel().moveNodeTo(selected,parent,index, -1);
-                getModel().removeNodeFromParent(selected);
-                getModel().insertNodeInto(selected,parent,newIndex);
-//                 int maxindex = parent.getChildCount(); // (PN)
-//                 if(index - 1 <0) {
-//                     getModel().insertNodeInto(selected,parent,maxindex, -1);
-//                 } else {
-//                     getModel().insertNodeInto(selected,parent,index - 1, -1);
-//                 }
-                getModel().nodeStructureChanged(parent);
-                getView().selectAsTheOnlyOneSelected(selected.getViewer());
-
-                getController().obtainFocusForSelected(); // focus fix
-            }
-        }
-    }
-
-    protected class NodeDownAction extends AbstractAction {
-        public NodeDownAction() {
-            super(getText("node_down"));
-        }
-        public void actionPerformed(ActionEvent e) {
-            MindMapNode selected = getView().getSelected().getModel();
-            if(!selected.isRoot()) {
-                MindMapNode parent = selected.getParentNode();
-                int index = getModel().getIndexOfChild(parent, selected);
-                int newIndex = getModel().moveNodeTo(selected,parent,index, 1);
-                getModel().removeNodeFromParent(selected);
-                getModel().insertNodeInto(selected,parent,newIndex);
-//                 int maxindex = parent.getChildCount(); // (PN)
-//                 if(index + 1 > maxindex) {
-//                     getModel().insertNodeInto(selected,parent,0, 1);
-//                 } else {
-//                     getModel().insertNodeInto(selected,parent,index + 1, 1);
-//                 }
-                getModel().nodeStructureChanged(parent);
-                getView().selectAsTheOnlyOneSelected(selected.getViewer());
-                
-                getController().obtainFocusForSelected(); // focus fix
-            }
-        }
-    }
-
-    protected class ToggleFoldedAction extends AbstractAction {
-        public ToggleFoldedAction() {
-            super(getText("toggle_folded"));
-        }
-        public void actionPerformed(ActionEvent e) {
-            toggleFolded();
-        }
-    }
-
-    protected class ToggleChildrenFoldedAction extends AbstractAction {
-        public ToggleChildrenFoldedAction() {
-            super(getText("toggle_children_folded"));
-        }
-        public void actionPerformed(ActionEvent e) {
-            toggleChildrenFolded();
         }
     }
 
@@ -1715,16 +1721,6 @@ public abstract class ControllerAdapter implements ModeController {
 		}
 	}
 
-    protected class SetLinkByTextFieldAction extends AbstractAction {
-        public SetLinkByTextFieldAction() {
-            super(getText("set_link_by_textfield"));
-        }
-        public void actionPerformed(ActionEvent e) {
-            setLinkByTextField();
-        }
-    }
-
-
     protected class FollowLinkAction extends AbstractAction {
         public FollowLinkAction() {
             super(getText("follow_link"));
@@ -1734,47 +1730,6 @@ public abstract class ControllerAdapter implements ModeController {
         }
     }
 
-    protected class CopyAction extends AbstractAction {
-        public CopyAction(Object controller) {
-            super(getText("copy"), new ImageIcon(getResource("images/Copy24.gif")));
-            setEnabled(false);
-        }
-        public void actionPerformed(ActionEvent e) {
-           if(getMapModule() != null) {
-              Transferable copy = getView().getModel().copy();
-              if (copy != null) {
-                 clipboard.setContents(copy,null); }}}}
-
-    protected class CopySingleAction extends AbstractAction {
-        public CopySingleAction(Object controller) {
-           super(getText("copy_single"));
-           setEnabled(false);
-        }
-        public void actionPerformed(ActionEvent e) {
-           if(getMapModule() != null) {
-              Transferable copy = getView().getModel().copySingle();
-              if (copy != null) {
-                 clipboard.setContents(copy,null); }}}}
-
-    protected class CutAction extends AbstractAction {
-        public CutAction(Object controller) {
-            super(getText("cut"), new ImageIcon(getResource("images/Cut24.gif")));
-            setEnabled(false);
-        }
-        public void actionPerformed(ActionEvent e) {
-           if (getMapModule() != null) {
-              Transferable copy = getView().getModel().cut();
-              if (copy != null) {
-                 clipboard.setContents(copy,null); 
-                 getController().obtainFocusForSelected(); }}}}
-
-    protected class PasteAction extends AbstractAction {
-        public PasteAction(Object controller) {
-            super(getText("paste"),new ImageIcon(getResource("images/Paste24.gif")));
-            setEnabled(false); }
-        public void actionPerformed(ActionEvent e) {
-            if(clipboard != null) {
-               getModel().paste(clipboard.getContents(this), getView().getSelected().getModel()); }}}
 
     protected class FileOpener implements DropTargetListener {
         private boolean isDragAcceptable(DropTargetDragEvent event) {
@@ -1846,26 +1801,85 @@ public abstract class ControllerAdapter implements ModeController {
         public void dropActionChanged (DropTargetDragEvent e) {}
     }
 
-   protected class EditCopyAction extends AbstractAction {
-       private JTextComponent textComponent;
-       public EditCopyAction(JTextComponent textComponent) {
-          super(getText("copy")); 
-          this.textComponent = textComponent; }
-        public void actionPerformed(ActionEvent e) {
-           String selection = textComponent.getSelectedText();
-           if (selection != null) {
-              clipboard.setContents(new StringSelection(selection),null); }}}
 
-   private class EditPopupMenu extends JPopupMenu {
-      //private JTextComponent textComponent;
+	/**
+	 * @return
+	 */
+	public ObjectFactory getActionXmlFactory() {
+		return getController().getActionXmlFactory();
+	}
 
-    public EditPopupMenu(JTextComponent textComponent) {
-       //this.textComponent = textComponent;        
-       	this.add(new EditCopyAction(textComponent));
+    /**
+     * @return
+     */
+    public Color getSelectionColor() {
+        return selectionColor;
     }
-   }
+
+    /**
+     * @return
+     */
+    public Clipboard getClipboard() {
+        return clipboard;
+    }
 
 
+    /* (non-Javadoc)
+     * @see freemind.modes.ModeController#updatePopupMenu(freemind.controller.StructuredMenuHolder)
+     */
+    public void updatePopupMenu(StructuredMenuHolder holder) {
+
+    }
+
+    /**
+     *
+     */
+
+    public void shutdownController() {
+        setAllActions(false);
+    }
+    /**
+     *
+     */
+
+    public void startupController() {
+        setAllActions(true);
+        if (getFrame().getView() != null) {
+            DropTarget dropTarget = new DropTarget(getFrame().getView(),
+                    new FileOpener());
+        }
+    }
+    /**
+     *
+     */
+
+    /**
+     * @param node
+     * @param position
+     * @param newText
+     */
+    public void splitNode(MindMapNode node, int caretPosition, String newText) {
+            //If there are children, they go to the node below
+            String futureText = newText != null ? newText : node.toString();
+
+            String newLowerContent = futureText.substring(caretPosition, futureText.length());
+            String newUpperContent = futureText.substring(0,caretPosition);
+
+            setNodeText(node, newLowerContent);
+
+            MindMapNode parent = node.getParentNode();
+            MindMapNode upperNode = addNewNode(parent, parent.getChildPosition(node), parent.isLeft());
+            upperNode.setColor(node.getColor());
+            upperNode.setFont(node.getFont());
+            setNodeText(upperNode, newUpperContent);
+        
+    }
+	public void moveNodePosition(MindMapNode node, int vGap, int hGap,
+            int shiftY) {
+	    moveNodeAction.moveNodeTo(node, vGap, hGap, shiftY);
+	}
 
 
+    
+    
 }

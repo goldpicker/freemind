@@ -16,28 +16,41 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: FreeMindApplet.java,v 1.18 2004-02-02 21:25:24 christianfoltin Exp $*/
+/*$Id: FreeMindApplet.java,v 1.19 2007-08-07 17:37:21 dpolivaev Exp $*/
 
 package freemind.main;
 
-import freemind.view.mindmapview.MapView;
-import freemind.controller.MenuBar;
-import freemind.controller.Controller;
-import java.io.InputStream;
-import java.io.File;
-import java.net.URL;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.PropertyResourceBundle;
-import java.util.Enumeration;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Cursor;
-import javax.swing.*;
+import java.awt.EventQueue;
+import java.io.File;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
+
+import javax.swing.JApplet;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRootPane;
+import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
+import freemind.controller.Controller;
+import freemind.controller.MenuBar;
+import freemind.extensions.HookFactory;
+import freemind.view.mindmapview.MapView;
 
 public class FreeMindApplet extends JApplet implements FreeMindMain {
 
-    public static final String version = "0.7.1";
+    private HookFactory nodeHookFactory;
+	public static final String version = "0.8.0";
     //    public static final String defaultPropsURL;
     public URL defaultPropsURL;
     public static Properties defaultProps;
@@ -112,10 +125,34 @@ public class FreeMindApplet extends JApplet implements FreeMindMain {
 	return resources;
     }
 
+    public String getResourceString(String resource) {
+        try {
+            return getResources().getString(resource);
+        } catch (Exception ex) {
+            System.err.println("Warning - resource string not found:"
+                    + resource);
+            return resource;
+        }
+    }
+
     public String getProperty(String key) {
 	return userProps.getProperty(key);
     }
     
+	public int getIntProperty(String key, int defaultValue){
+		try{
+			return Integer.parseInt(getProperty(key));
+		}
+		catch(NumberFormatException nfe){
+			return defaultValue;
+		}
+	}
+
+ 
+	public Properties getProperties() {
+		return userProps;
+	}
+   
     public void setProperty(String key, String value) {
     }
 
@@ -227,8 +264,15 @@ public class FreeMindApplet extends JApplet implements FreeMindMain {
               UIManager.setLookAndFeel("javax.swing.plaf.mac.MacLookAndFeel");
            } else if (lookAndFeel.equals("metal")) {
               UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-           } else if (lookAndFeel.equals("nothing")) {
-           } else {
+           } else if (lookAndFeel.equals("gtk")) {
+	   	        UIManager
+	                    .setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+	        } else if (lookAndFeel.equals("nothing")) {
+	        } else if (lookAndFeel.indexOf('.') != -1) { // string contains a
+	            // dot
+	            UIManager.setLookAndFeel(lookAndFeel);
+	            //	         we assume class name
+	        } else {
                // default.
                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
            }
@@ -259,6 +303,40 @@ public class FreeMindApplet extends JApplet implements FreeMindMain {
 
         SwingUtilities.updateComponentTreeUI(this); // Propagate LookAndFeel to JComponents
 
+       	// wait until AWT thread starts
+		if (! EventQueue.isDispatchThread()){
+			try {
+                EventQueue.invokeAndWait(new Runnable() {public void run(){};});
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+		}
 	c.changeToMode(getProperty("initial_mode"));
     }
+	/* (non-Javadoc)
+	 * @see freemind.main.FreeMindMain#getHookFactory()
+	 */
+	public HookFactory getHookFactory() {
+		if(nodeHookFactory == null) {
+			nodeHookFactory = new HookFactory(this);
+		}
+		return nodeHookFactory;
+	}
+
+	/* (non-Javadoc)
+	 * @see freemind.main.FreeMindMain#getSouthPanel()
+	 */
+	public JPanel getSouthPanel() {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see freemind.main.FreeMindMain#getJFrame()
+	 */
+	public JFrame getJFrame() {
+		throw new IllegalArgumentException("The applet has no frames");
+	}
+
 }

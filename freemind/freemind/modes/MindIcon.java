@@ -16,16 +16,16 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindIcon.java,v 1.1 2003-11-03 11:02:44 sviles Exp $*/
+/*$Id: MindIcon.java,v 1.2 2007-08-07 17:37:23 dpolivaev Exp $*/
 
 package freemind.modes;
 
-import java.util.*;
-import java.io.*;
 import java.net.URL;
-import javax.swing.Icon;
+import java.util.HashMap;
+import java.util.Vector;
+
 import javax.swing.ImageIcon;
-/* for resources:*/
+
 import freemind.main.FreeMindMain;
 
 /**
@@ -35,11 +35,19 @@ import freemind.main.FreeMindMain;
 public class MindIcon {
     private String name;
     private String description;
-    private Icon   associatedIcon;
+    /**
+     * Stores the once created ImageIcon.
+     */
+    private ImageIcon   associatedIcon;
     private static Vector mAllIconNames;
-    private static Icon iconNotFound;
+    private static ImageIcon iconNotFound;
+    /**
+     * Set of all created icons. Name -> MindIcon
+     */
+    private static HashMap createdIcons = new HashMap();
+    
 
-    public MindIcon(String name) {
+    private MindIcon(String name) {
        setName(name); 
        associatedIcon=null;
     }
@@ -91,21 +99,23 @@ public class MindIcon {
        * @return Value of description.
        */
     public String getDescription(FreeMindMain frame) {
-        /* GRRR: doubled code from controller: */
         String resource = new String("icon_"+getName());
-        try {
-            return frame.getResources().getString(resource); }
-        catch (Exception ex) {
-            System.err.println("Warning - resource string not found:"+resource);
-            return getName(); 
-        }
+        return frame.getResourceString(resource); 
     }
     
     public String getIconFileName() {
-        return "images/icons/"+getName()+".png";
+        return getIconsPath()+getIconBaseFileName();
     }
 
-    public Icon getIcon(FreeMindMain frame) {
+    public String getIconBaseFileName() {
+        return getName()+".png";
+    }
+
+    public static String getIconsPath() {
+        return "images/icons/";
+    }
+
+    public ImageIcon getIcon(FreeMindMain frame) {
         // We need the frame to be able to obtain the resource URL of the icon.
         if (iconNotFound == null) {
            iconNotFound = new ImageIcon(frame.getResource("images/IconNotFound.png")); }
@@ -114,7 +124,7 @@ public class MindIcon {
             return associatedIcon;
         if ( name != null ) {
            URL imageURL = frame.getResource(getIconFileName());
-           Icon icon = imageURL == null ? iconNotFound : new ImageIcon(imageURL);
+           ImageIcon icon = imageURL == null ? iconNotFound : new ImageIcon(imageURL);
            setIcon(icon);
            return icon; }
         else {
@@ -125,7 +135,7 @@ public class MindIcon {
        * Set the value of icon.
        * @param v  Value to assign to icon.
        */
-    protected void setIcon(Icon  _associatedIcon) {
+    protected void setIcon(ImageIcon  _associatedIcon) {
        this.associatedIcon = _associatedIcon; }
 
     public static Vector getAllIconNames () {
@@ -137,6 +147,13 @@ public class MindIcon {
         mAllIconNames.add("idea");
         mAllIconNames.add("button_ok");
         mAllIconNames.add("button_cancel");
+        mAllIconNames.add("full-1");
+        mAllIconNames.add("full-2");
+        mAllIconNames.add("full-3");
+        mAllIconNames.add("full-4");
+        mAllIconNames.add("full-5");
+        mAllIconNames.add("full-6");
+        mAllIconNames.add("full-7");
         mAllIconNames.add("back");
         mAllIconNames.add("forward");
         mAllIconNames.add("attach");
@@ -161,4 +178,12 @@ public class MindIcon {
         return mAllIconNames;
     }
 
+    public static MindIcon factory(String iconName){
+    		if(createdIcons.containsKey(iconName)){
+    			return (MindIcon) createdIcons.get(iconName);
+    		}
+    		MindIcon icon = new MindIcon(iconName);
+    		createdIcons.put(iconName, icon);
+    		return icon;
+    }
 }

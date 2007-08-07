@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: BrowseMapModel.java,v 1.9 2003-12-02 22:50:22 christianfoltin Exp $*/
+/*$Id: BrowseMapModel.java,v 1.10 2007-08-07 17:37:42 dpolivaev Exp $*/
 
 package freemind.modes.browsemode;
 
@@ -32,6 +32,7 @@ import java.security.AccessControlException;
 // link registry.
 import freemind.modes.LinkRegistryAdapter;
 import freemind.modes.MindMapLinkRegistry;
+import freemind.modes.MindMapNode;
 
 
 public class BrowseMapModel extends MapAdapter {
@@ -51,7 +52,7 @@ public class BrowseMapModel extends MapAdapter {
         if(root != null)
             setRoot(root);
         else
-           setRoot(new BrowseNodeModel(getFrame().getResources().getString("new_mindmap"), getFrame())); 
+           setRoot(new BrowseNodeModel(getFrame().getResourceString("new_mindmap"), getFrame())); 
         // register new LinkRegistryAdapter
         linkRegistry = new LinkRegistryAdapter();
     }
@@ -150,4 +151,19 @@ public class BrowseMapModel extends MapAdapter {
     root = (BrowseNodeModel) mapElement.getMapChild();
 	return root;
     }
+
+    /* (non-Javadoc)
+     * @see freemind.modes.MindMap#setLinkInclinationChanged()
+     */
+    public void setLinkInclinationChanged() {
+    }
+
+	/* (non-Javadoc)
+	 * @see freemind.modes.MindMap#getXml(java.io.Writer)
+	 */
+	public void getXml(Writer fileout) throws IOException {
+		// nothing. 
+		//FIXME: Implement me if you need me.
+		throw new RuntimeException("Unimplemented method called.");
+	}
 }

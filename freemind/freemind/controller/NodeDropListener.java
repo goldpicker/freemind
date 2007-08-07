@@ -19,11 +19,6 @@
 
 package freemind.controller;
 
-import freemind.view.mindmapview.NodeView;
-import freemind.modes.MindMapNode;
-import freemind.modes.mindmapmode.MindMapNodeModel;
-import freemind.modes.mindmapmode.MindMapMapModel;
-// For Drag&Drop
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
@@ -31,8 +26,16 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.util.List;
 import java.util.ListIterator;
+
 import javax.swing.JOptionPane;
+import javax.swing.tree.TreePath;
+
+import freemind.modes.MindMapNode;
+import freemind.modes.mindmapmode.MindMapMapModel;
+import freemind.modes.mindmapmode.MindMapNodeModel;
+import freemind.view.mindmapview.NodeView;
 
 //import ublic class MindMapNodesSelection implements Transferable, ClipboardOwner {
    //   public static DataFlavor fileListFlavor = null;
@@ -98,7 +101,7 @@ public class NodeDropListener implements DropTargetListener {
            if (!dtde.isLocalTransfer()) {
               //if (dtde.isDataFlavorSupported(MindMapNodesSelection.fileListFlavor)) {
               //System.err.println("filelist");
-              c.getModel().paste (t, targetNode, 
+              c.getModeController().paste (t, targetNode, 
                                   targetNodeView.dropAsSibling(dtde.getLocation().getX()),
                                   targetNodeView.dropPosition (dtde.getLocation().getX()));
               dtde.dropComplete(true);
@@ -140,17 +143,42 @@ public class NodeDropListener implements DropTargetListener {
                       MindMapNodeModel selectedNodeModel = (MindMapNodeModel)((NodeView)it.next()).getModel();
                       //                  mindMapMapModel.setNodeColor(selectedNodeModel,targetNode.getColor());
                       //                  mindMapMapModel.setNodeFont(selectedNodeModel,targetNode.getFont()); 
-                      mindMapMapModel.addLink(selectedNodeModel, targetNodeModel);
+                      c.getModeController().addLink(selectedNodeModel, targetNodeModel);
                   }
               }
            }
            else {
-              c.getModel().paste (dropAction == DnDConstants.ACTION_MOVE 
-                                  ? c.getModel().cut() : c.getModel().copy(),
-                                  targetNode, 
-                                  targetNodeView.dropAsSibling(dtde.getLocation().getX()),
-                                  targetNodeView.dropPosition (dtde.getLocation().getX())); }
-           c.getView().selectAsTheOnlyOneSelected(targetNodeModel.getViewer()); }
+           	Transferable trans = null;
+				// if move, verify, that the target is not a son of the sources.
+				if (DnDConstants.ACTION_MOVE == dropAction) {
+					List selecteds = c.getModeController().getSelecteds();
+					MindMapNode actualNode = targetNode;
+					do {
+						if (selecteds.contains(actualNode)) {
+							String message = c.getResourceString("cannot_move_to_child");
+		                      JOptionPane.showMessageDialog(c.getFrame().getContentPane(),
+                                    message,"Freemind", JOptionPane.WARNING_MESSAGE);
+							dtde.dropComplete(true);
+							return;
+						}
+						actualNode = (actualNode.isRoot())?null:actualNode.getParentNode();
+					} while(actualNode != null);
+					trans = c.getModeController().cut();
+				} else {
+					trans = c.getModel().copy();
+				}
+
+				c.getView().selectAsTheOnlyOneSelected(
+						targetNodeModel.getViewer());
+				c.getModeController().paste(
+						trans,
+						targetNode,
+						targetNode.getViewer().dropAsSibling(
+								dtde.getLocation().getX()),
+						targetNode.getViewer().dropPosition(
+								dtde.getLocation().getX()));
+              }
+           }
 	catch (Exception e) {
 	    System.err.println("Drop exception:"+e);
         e.printStackTrace();

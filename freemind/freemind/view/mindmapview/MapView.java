@@ -16,42 +16,36 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MapView.java,v 1.30 2004-01-25 16:41:26 christianfoltin Exp $*/
-
+/*$Id: MapView.java,v 1.31 2007-08-07 17:37:50 dpolivaev Exp $*/
+ 
 package freemind.view.mindmapview;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Rectangle;
-// Clouds:
-import freemind.view.mindmapview.CloudView;
-// End Clouds
-// links:
-import freemind.modes.MindMapArrowLink;
-import java.awt.Polygon;
-import java.util.HashMap;
-import java.awt.geom.CubicCurve2D;
-// end links.
 import java.awt.dnd.DragGestureListener;
 import java.awt.dnd.DropTargetListener;
-import java.awt.event.InputEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
-import java.util.HashSet;
-import java.util.Comparator;
-import java.util.Collections;
 
 import javax.swing.JPanel;
 import javax.swing.JViewport;
@@ -60,11 +54,14 @@ import javax.swing.event.TreeModelListener;
 
 import freemind.controller.Controller;
 import freemind.controller.NodeKeyListener;
+import freemind.controller.NodeMotionListener;
 import freemind.controller.NodeMouseMotionListener;
+import freemind.extensions.PermanentNodeHook;
 import freemind.main.Tools;
 import freemind.modes.MindMap;
-import freemind.modes.MindMapNode;
+import freemind.modes.MindMapArrowLink;
 import freemind.modes.MindMapLink;
+import freemind.modes.MindMapNode;
 
 
 /**
@@ -73,9 +70,114 @@ import freemind.modes.MindMapLink;
  */
 public class MapView extends JPanel implements Printable {
 
+	private class Selected {
+		private Vector mySelected = new Vector();
+		public Selected() {};
+		public void clear() {
+			if(size() >0 ) {
+				removeSelectionForHooks(get(0)); 
+			}
+			mySelected.clear();
+			logger.finest("Cleared selected.");
+		}
+		public int size() { return mySelected.size();
+		}
+		public void remove(NodeView node) { 
+			if(mySelected.indexOf(node)==0) {
+				removeSelectionForHooks(node);
+			}
+			mySelected.remove(node); 
+			logger.finest("Removed selected "+node);
+		}
+		public void add(NodeView node) {
+			if(size() >0 ) {
+				removeSelectionForHooks(get(0)); 
+			}
+			mySelected.add(0, node);
+			addSelectionForHooks(node); 
+			logger.finest("Added selected "+node + "\nAll="+mySelected);
+		}
+		private void removeSelectionForHooks(NodeView node) {
+		    if(node.getModel() == null) 
+		        return;
+			// deselect the old node:
+			for(Iterator i= node.getModel().getActivatedHooks().iterator(); i.hasNext();){
+				PermanentNodeHook hook = (PermanentNodeHook) i.next();
+				hook.onLooseFocusHook();
+			}
+		}
+		private void addSelectionForHooks(NodeView node) {
+			// select the new node:
+			for(Iterator i= node.getModel().getActivatedHooks().iterator(); i.hasNext();){
+				PermanentNodeHook hook = (PermanentNodeHook) i.next();
+				hook.onReceiveFocusHook();
+			}
+		}
+		public NodeView get(int i) { return (NodeView) mySelected.get(i); 
+		}
+		public boolean contains(NodeView node) { return mySelected.contains(node);
+		}
+		/**
+		 * @param newSelected
+		 */
+		public void moveToFirst(NodeView newSelected) {
+			if(contains(newSelected)) {
+				int pos = mySelected.indexOf(newSelected);
+				if( pos > 0 ){ // move
+					if(size() >0 ) {
+						removeSelectionForHooks(get(0)); 
+					}
+					mySelected.remove(newSelected);
+					mySelected.add(0, newSelected);
+				}
+			} else {
+				add(newSelected);
+			}
+			addSelectionForHooks(newSelected);
+			logger.finest("MovedToFront selected "+newSelected + "\nAll="+mySelected);
+		}
+	}
+
+	//	Logging: 
+	private static java.util.logging.Logger logger;
+
+	private class DelayedScroller extends ComponentAdapter{
+		/**
+		 * the only one interface method.
+		 * @param map
+		 * @param node
+		 * @param extraWidth
+		 */
+		public void componentMoved(ComponentEvent e){
+			if (m_map != null) { // fc, 22.2.2005: bug fix.
+                m_map.scrollNodeToVisible(m_node, m_extraWidth);
+            }
+			m_map = null;
+			m_node = null;		
+		}		
+	
+		public void scrollNodeToVisible(MapView map, NodeView node, int extraWidth){
+			deactivate();
+			m_map = map;
+			m_node = node;
+			m_extraWidth = extraWidth;
+			node.addComponentListener(this);
+		}
+		
+		public void deactivate(){
+			if (m_node != null) 
+				m_node.removeComponentListener(this);
+		}
+		MapView m_map = null;
+		NodeView m_node = null;
+		int m_extraWidth = 0;
+	}
+
+	private DelayedScroller m_delayedScroller = new DelayedScroller();
+
     private MindMap model;
     private NodeView rootView;
-    private Vector selected = new Vector();
+    private Selected selected = new Selected();
     private Controller controller;
     private float zoom=1F;
     private boolean disableMoveCursor = true;
@@ -83,6 +185,11 @@ public class MapView extends JPanel implements Printable {
     private boolean isPrinting = false; // use for remove selection from print
     private NodeView shiftSelectionOrigin = null;
     private int maxNodeWidth = 0;
+    private Color background = null;
+	private Rectangle boundingRectangle = null;
+	private boolean fitToPage = true;
+	private boolean isPreparedForPrinting = false;
+        
     /** Used to identify a right click onto a link curve.*/
     private Vector/* of ArrowLinkViews*/ ArrowLinkViews;
     //
@@ -94,6 +201,8 @@ public class MapView extends JPanel implements Printable {
 		
         this.model = model;
         this.controller = controller;
+		if(logger == null)
+			logger = controller.getFrame().getLogger(this.getClass().getName());
 
         this.setAutoscrolls(true); //For some reason this doesn't work.
 
@@ -109,6 +218,12 @@ public class MapView extends JPanel implements Printable {
         addMouseMotionListener( controller.getMapMouseMotionListener() );
         addMouseWheelListener( controller.getMapMouseWheelListener() );
 
+		// fc, 20.6.2004: to enable tab for insert.
+		setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
+		setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
+		setFocusTraversalKeys(KeyboardFocusManager.UP_CYCLE_TRAVERSAL_KEYS, Collections.EMPTY_SET);
+		// end change.
+
         // like in excel - write a letter means edit (PN)
         // on the other hand it doesn't allow key navigation (sdfe)
         disableMoveCursor = Tools.safeEquals(
@@ -121,8 +236,8 @@ public class MapView extends JPanel implements Printable {
         getMindMapLayout().updateTreeHeightsAndRelativeYOfWholeMap();
         revalidate();
     }
-
-    public int getMaxNodeWidth() {
+    
+        public int getMaxNodeWidth() {
         if (maxNodeWidth == 0) {
             try {
                 maxNodeWidth = Integer.parseInt(controller.getProperty("max_node_width")); }
@@ -142,19 +257,24 @@ public class MapView extends JPanel implements Printable {
      */
     public void centerNode( NodeView node ) {
         JViewport viewPort = (JViewport)getParent();
-
         Dimension d = viewPort.getExtentSize();
-        scrollRectToVisible(new Rectangle(node.getLocation().x + (node.getPreferredSize().width/2) - (d.width/2),
+		if (! isValid()){
+			final Rectangle r0 = new Rectangle(0,0,d.width, d.height);
+			scrollRectToVisible(r0);
+		}
+		Rectangle rect = new Rectangle(node.getLocation().x + (node.getPreferredSize().width/2) - (d.width/2),
                                           node.getLocation().y + (node.getPreferredSize().height/2) - (d.height/2),
-                                          d.width, d.height));
-        scrollRectToVisible(new Rectangle(node.getLocation().x + (node.getPreferredSize().width/2) - (d.width/2),
-                                          node.getLocation().y + (node.getPreferredSize().height/2) - (d.height/2),
-                                          d.width, d.height));
+			d.width, d.height);
+			
+		// One call of scrollRectToVisible suffices 
+		// after patching the FreeMind.java
+		// and the FreeMindApplet
+		scrollRectToVisible(rect);		
     }
 
     // scroll with extension (PN 6.2)
     public void scrollNodeToVisible( NodeView node ) {
-        scrollNodeToVisible( node, 0);
+			scrollNodeToVisible( node, 0);
     }
 
     // scroll with extension (PN)
@@ -162,46 +282,58 @@ public class MapView extends JPanel implements Printable {
     //      fit the input field into the screen
     public void scrollNodeToVisible( NodeView node, int extraWidth) {
         //see centerNode()
-
+		if (! node.isValid()){
+			m_delayedScroller.scrollNodeToVisible(this, node, extraWidth);
+			return;
+		}
+		m_delayedScroller.deactivate();
         final int HORIZ_SPACE  = 10;
         final int HORIZ_SPACE2 = 20;
         final int VERT_SPACE   = 5; 
         final int VERT_SPACE2  = 10;
 
         // get left/right dimension
-        int xLeft  = node.getLocation().x - HORIZ_SPACE;
-        int xRight = node.getSize().width + HORIZ_SPACE2;
+        int x  =  node.getX() ;
+        int width = node.getWidth();
         if (extraWidth < 0) { // extra left width
-            xLeft += extraWidth;
+            x += extraWidth;
+			width -= extraWidth; 
         }
         else {                // extra right width
-            xRight += extraWidth; 
+            width += extraWidth; 
         }
-      
-        // adjust container size
-        if (xLeft < 0) {
-            getMindMapLayout().resizeMap(xLeft);
-        }
-        else if (xRight > getSize().width) {
-            getMindMapLayout().resizeMap(xRight);
-        }
-
+		// get top/bottom dimension
+		int y  =  node.getY();
+		int height = node.getHeight();
+        // adjusting container size is needed no more
         //this is buggy! 
         // %%% and therefore is the scrollRectToVisible called twice ? (PN)
         //     I don't think so and therefore I'll comment one call out... (PN)
         if (node != null) {
-            scrollRectToVisible( new Rectangle(xLeft, node.getLocation().y - VERT_SPACE,
-                                               xRight, node.getSize().height + VERT_SPACE2) );
+    		JViewport mapViewport = (JViewport)getParent();
+          int viewPortScrollMode = mapViewport.getScrollMode();
+           mapViewport.setScrollMode(JViewport.SIMPLE_SCROLL_MODE );
+            scrollRectToVisible( new Rectangle(x - HORIZ_SPACE, node.getLocation().y - VERT_SPACE,
+                                               width + HORIZ_SPACE2, node.getSize().height + VERT_SPACE2) );
+            mapViewport.setScrollMode(viewPortScrollMode);
             // (PN)   scrollRectToVisible( new Rectangle(xLeft, node.getLocation().y - VERT_SPACE,
             //                                           xRight, node.getSize().height + VERT_SPACE2) );
         }
     }
+	/**
+	 * Returns the size of the visible part of the view in view coordinates. 
+	 */
+	public Dimension getViewportSize(){
+		JViewport mapViewport = (JViewport)getParent();
+		return mapViewport == null ? null : mapViewport.getExtentSize();
+	}
 
     /**
      * Scroll the viewport of the map to the south-west, i.e. scroll the map itself to the north-east.
      */
-    public void scrollBy(int x, int y) {
+    public void scrollBy(int x, int y, boolean repaint) {
         JViewport mapViewport = (JViewport)getParent();
+		if(mapViewport != null){
         Point currentPoint = mapViewport.getViewPosition();                 // Get View Position
         currentPoint.translate(x, y);                                       // Add the difference to it
         // Watch for the boundaries
@@ -217,7 +349,15 @@ public class MapView extends JPanel implements Printable {
             currentPoint.setLocation(maxX, currentPoint.getY()); }
         if (currentPoint.getY()>maxY) {
             currentPoint.setLocation(currentPoint.getX(), maxY); }
-        mapViewport.setViewPosition(currentPoint);                          // Set It Back
+		int oldScrollMode = mapViewport.getScrollMode();
+		if (repaint) {
+			mapViewport.setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+		}
+		mapViewport.setViewPosition(currentPoint);
+		if (repaint) {
+			mapViewport.setScrollMode(oldScrollMode);
+		}
+    }
     }
 
     //
@@ -242,7 +382,7 @@ public class MapView extends JPanel implements Printable {
                 newSelected = oldSelected.getParentView();
             } else {
                 if (oldSelected.getModel().isFolded()) { // If folded in the direction, unfold
-                    getModel().setFolded(oldSelected.getModel(), false); 
+                    getController().getModeController().setFolded(oldSelected.getModel(), false);
                     return null;
                 }
 
@@ -265,7 +405,9 @@ public class MapView extends JPanel implements Printable {
                 newSelected = oldSelected.getParentView();
             } else {
                 if (oldSelected.getModel().isFolded()) { // If folded in the direction, unfold
-                    getModel().setFolded(oldSelected.getModel(), false); 
+//                  URGENT: Change to controller setFolded.
+//                    getModel().setFolded(oldSelected.getModel(), false); 
+                    getController().getModeController().setFolded(oldSelected.getModel(), false);
                     return null;
                 }
 
@@ -369,21 +511,22 @@ public class MapView extends JPanel implements Printable {
         LinkedList oldSelecteds = getSelecteds();
         //select new node
         this.selected.clear();
-        this.selected.add(0,newSelected);
+        this.selected.add(newSelected);
         newSelected.requestFocus();
 
         // set last focused as preferred (PN) 
         if (newSelected.getModel().getParentNode() != null) {
-            newSelected.getModel().getParentNode().setPreferredChild(
-                                                                     newSelected.getModel());
+            newSelected.getModel().getParentNode().setPreferredChild(newSelected.getModel());
         }
 
-        // scrollNodeToVisible(newSelected);
+        scrollNodeToVisible(newSelected);
         newSelected.repaint();
 
         for(ListIterator e = oldSelecteds.listIterator();e.hasNext();) {
             NodeView oldSelected = (NodeView)e.next();
-            oldSelected.repaint();
+            if (oldSelected != null) {
+                oldSelected.repaint();
+            }
         }
     }
 
@@ -399,7 +542,7 @@ public class MapView extends JPanel implements Printable {
             }
         }
         else {
-            selected.add(0,newSelected);
+            selected.add(newSelected);
         }
         getSelected().requestFocus();
         getSelected().repaint();
@@ -413,8 +556,10 @@ public class MapView extends JPanel implements Printable {
 
     public void makeTheSelected(NodeView newSelected) {
         if (isSelected(newSelected)) {
-            selected.remove(newSelected); }
-        selected.add(0,newSelected);
+            selected.moveToFirst(newSelected); 
+        } else {
+			selected.add(newSelected);
+        }           
         getSelected().requestFocus();
         getSelected().repaint(); }
 
@@ -550,6 +695,10 @@ public class MapView extends JPanel implements Printable {
         return getController().getNodeMouseMotionListener();
     }
 
+    NodeMotionListener getNodeMotionListener() {
+        return getController().getNodeMotionListener();
+    }
+
     NodeKeyListener getNodeKeyListener() {
         return getController().getNodeKeyListener();
     }
@@ -582,31 +731,6 @@ public class MapView extends JPanel implements Printable {
         return result;
     }
 
-    /** This class sortes nodes by ascending depth of their paths to root. This is useful to assure that children are cutted <b>before</b> their fathers!!!.*/
-    protected class nodesDepthComparator implements Comparator{
-        public nodesDepthComparator() {}
-        /* the < relation.*/
-        public int compare(Object p1, Object p2) {
-            MindMapNode n1 = ((NodeView) p1).getModel();
-            MindMapNode n2 = ((NodeView) p2).getModel();
-            Object[] path1 = getModel().getPathToRoot(n1);
-            Object[] path2 = getModel().getPathToRoot(n2);
-            int depth = path1.length - path2.length;
-            if(depth > 0)
-                return -1;
-            if(depth < 0)
-                return 1;
-            return 0;
-        }
-    }
-
-    /** @return a LinkedList of NodeViews ordered by depth. nodes with greater depth occur first. */
-    public LinkedList getSelectedsByDepth() {
-        // return an ArrayList of NodeViews.
-        LinkedList result = getSelecteds();
-        Collections.sort(result, new nodesDepthComparator());
-        return result;
-    }
 
     public ArrayList /*of NodeViews*/ getSelectedsSortedByY() {
         TreeMap sortedNodes = new TreeMap();
@@ -620,6 +744,10 @@ public class MapView extends JPanel implements Printable {
         return selectedNodes;
     }
 
+    
+    /**
+     * @return an ArrayList of MindMapNode objects.
+     */
     public ArrayList /*of MindMapNodes*/ getSelectedNodesSortedByY() {
         TreeMap sortedNodes = new TreeMap();
         for (int i=0; i<selected.size();i++) {
@@ -648,7 +776,7 @@ public class MapView extends JPanel implements Printable {
         this.zoom = zoom;
         getRoot().updateAll();
         getMindMapLayout().updateTreeHeightsAndRelativeYOfWholeMap();
-        getMindMapLayout().layout();
+        getMindMapLayout().layout(true);
         repaint();
     }
 
@@ -658,28 +786,25 @@ public class MapView extends JPanel implements Printable {
 
 
     public void paintChildren(Graphics graphics) {
-        paintClouds(rootView, graphics, 0 /*iterativeLevel=0 means start level*/);
+        paintClouds(rootView, graphics);
         HashMap labels = new HashMap();
         ArrowLinkViews = new Vector();
         collectLabels(rootView, labels);
         paintLinks(rootView, (Graphics2D)graphics, labels, null);
         super.paintChildren(graphics);
         paintEdges(rootView, (Graphics2D)graphics);
+        
     }
 
     /** @param iterativeLevel describes the n-th nested cloud that is to be painted.*/
-    protected void paintClouds(NodeView source, Graphics graphics, int iterativeLevel){
+    protected void paintClouds(NodeView source, Graphics graphics){
         for(ListIterator e = source.getChildrenViews().listIterator(); e.hasNext(); ) {
             NodeView target = (NodeView)e.next();
             if(target.getModel().getCloud() != null) {
-                CloudView cloud = new CloudView(target.getModel().getCloud(), target, iterativeLevel);
+                CloudView cloud = new CloudView(target.getModel().getCloud(), target);
                 cloud.paint(graphics);
-                /* increase level, because the parent of the coming children has a cloud.*/
-                paintClouds(target,graphics, iterativeLevel+1);
-            } else {
-                /* identical level, because the parent of the coming children has NO cloud.*/
-                paintClouds(target,graphics, iterativeLevel);
             }                
+			paintClouds(target,graphics);
         }
     }
 
@@ -735,6 +860,8 @@ public class MapView extends JPanel implements Printable {
     }
 
     public MindMapArrowLink detectCollision(Point p) {
+        if(ArrowLinkViews == null)
+            return null;
         for(int i = 0; i < ArrowLinkViews.size(); ++i) {
             ArrowLinkView arrowView = (ArrowLinkView) ArrowLinkViews.get(i);
             if(arrowView.detectCollision(p))
@@ -742,6 +869,46 @@ public class MapView extends JPanel implements Printable {
         }
         return null;
     }
+    
+	/**
+	  * Call preparePrinting() before printing 
+	  * and  endPrinting() after printing
+	  * to minimize calculation efforts
+	  */
+	public void preparePrinting() {
+		_preparePrinting();
+		isPreparedForPrinting = true;
+	}
+	 
+	private void _preparePrinting() {
+		if (isPreparedForPrinting == false){
+			isPrinting = true;
+			/* repaint for printing:*/
+			setZoom(getZoom());        
+			background = getBackground();
+			boundingRectangle = getInnerBounds(rootView);
+		}
+	}
+
+	 /**
+	  * Call preparePrinting() before printing 
+	  * and  endPrinting() after printing
+	  * to minimize calculation efforts
+	  */
+	public void endPrinting() {
+		isPreparedForPrinting = false;
+		_endPrinting();
+	}
+	
+	 private void _endPrinting() {
+		if (isPreparedForPrinting == false){
+			setBackground(background);
+			isPrinting = false;
+			/* repaint for end printing:*/
+			setZoom(getZoom());
+			fitToPage = Tools.safeEquals(controller.getProperty("fit_to_page"),"true");
+		}
+	 }
 
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) {
         // TODO:
@@ -754,7 +921,6 @@ public class MapView extends JPanel implements Printable {
 
         // User parameters
 
-        boolean fitToPage = Tools.safeEquals(controller.getProperty("fit_to_page"),"true");
         double userZoomFactor = 1;
         try {
             userZoomFactor = Double.parseDouble(controller.getProperty("user_zoom")); }
@@ -767,15 +933,10 @@ public class MapView extends JPanel implements Printable {
 
         if (fitToPage && pageIndex > 0) {
             return Printable.NO_SUCH_PAGE; }
-        isPrinting = true;
-        /* repaint for printing:*/
-        setZoom(getZoom());
 
         Graphics2D graphics2D = (Graphics2D)graphics;
-        Color background = getBackground();
-        setBackground(Color.white);
 
-        Rectangle boundingRectangle = getInnerBounds(rootView);
+		_preparePrinting();
         double zoomFactor = 1;
         if (fitToPage) {
             double zoomFactorX = pageFormat.getImageableWidth()/boundingRectangle.getWidth();
@@ -802,15 +963,12 @@ public class MapView extends JPanel implements Printable {
         
 
         print(graphics2D);
-        setBackground(background);
-        isPrinting = false;
-        /* repaint for end printing:*/
-        setZoom(getZoom());
+		_endPrinting();
         return Printable.PAGE_EXISTS;
     }
 
     /** For nodes, they can ask, whether or not the width must be bigger to prevent the "..." at the output. (Bug of java).*/
-    public boolean isPrinting() { return isPrinting;};
+    public boolean isCurrentlyPrinting() { return isPrinting;};
 
     public Dimension getPreferredSize() {
         return getLayout().preferredLayoutSize(this);
@@ -825,21 +983,37 @@ public class MapView extends JPanel implements Printable {
      * Return the bounding box of all the descendants of the source view, that without BORDER.
      * Should that be implemented in LayoutManager as minimum size?
      */
-    private Rectangle getInnerBounds(NodeView source) {
-        Rectangle r = source.getBounds();
+    public Rectangle getInnerBounds(NodeView source) {
+        Rectangle innerBounds = source.getBounds();
         for(ListIterator e = source.getChildrenViews().listIterator(); e.hasNext(); ) {
             NodeView target = (NodeView)e.next();
-            r.add(getInnerBounds(target));//recursive
+            innerBounds.add(getInnerBounds(target));//recursive
         }
-        return r;
+        
+        // add heigth of the cloud
+        int additionalCloudHeigth =  (source.getAdditionalCloudHeigth() + 1) / 2;
+        if (additionalCloudHeigth != 0){
+        	innerBounds.grow(additionalCloudHeigth, additionalCloudHeigth);
+        }
+        
+ 		if (source.getModel().isRoot())
+ 		{
+ 			for(int i = 0; i < ArrowLinkViews.size(); ++i) {
+ 				ArrowLinkView arrowView = (ArrowLinkView) ArrowLinkViews.get(i);
+ 				Rectangle arrowViewBigBounds = arrowView.arrowLinkCurve.getBounds();
+ 				if (! innerBounds.contains(arrowViewBigBounds)){
+					Rectangle arrowViewBounds =PathBBox.getBBox(arrowView.arrowLinkCurve).getBounds(); 
+					innerBounds.add(arrowViewBounds);
+ 				}
+ 			}        	
+ 		}
+      return innerBounds;
     }
 
     private void paintEdges(NodeView source, Graphics2D g) {
         for(ListIterator e = source.getChildrenViews().listIterator(); e.hasNext(); ) {
             NodeView target = (NodeView)e.next();
-	    
             target.getEdge().paint(g);
-		
             paintEdges( target, g );//recursive
         }
     }
@@ -869,23 +1043,31 @@ public class MapView extends JPanel implements Printable {
      * This inner class updates the Tree when the model is changed.
      */
     private class MapModelHandler implements TreeModelListener {
-	
         public void treeNodesChanged( TreeModelEvent e ) {
             // must be in structureChanged instead ?
             // or in is own Listerner
             setBackground(getModel().getBackgroundColor());
             // Daniel: Why would I want to change background because some
             // nodes have changed? That's really strange.
-            NodeView node;
+            NodeView nodeView;
             try {
-                node = ( (MindMapNode)e.getChildren()[0] ).getViewer(); }
+                nodeView = ( (MindMapNode)e.getChildren()[0] ).getViewer(); }
             catch (Exception ex) {    //thrown if changed is root
-                node = ( (MindMapNode)e.getTreePath().getLastPathComponent() ).getViewer(); }
+                nodeView = ( (MindMapNode)e.getTreePath().getLastPathComponent() ).getViewer(); }
             // ^ This is not a good solution, but it works
-            node.update();
-            getMindMapLayout().updateTreeHeightsAndRelativeYOfDescendantsAndAncestors(node);
-            getMindMapLayout().layout();
-            repaint();
+            // here, the nodeView is checked for existence.
+            if (nodeView != null) {
+                logger.finest("The update node is " + nodeView
+                        + " with treemodelevent=" + e);
+                nodeView.update();
+                getMindMapLayout()
+                        .updateTreeHeightsAndRelativeYOfDescendantsAndAncestors(
+                                nodeView);
+                /* Layout only, if node is visible. fc, 03.07.2005 */
+                getMindMapLayout().layout(true);
+                repaint();
+                /* end fc, 03.07.2005 */
+            }
         }
 	
         public void treeNodesInserted( TreeModelEvent e ) {
@@ -901,12 +1083,21 @@ public class MapView extends JPanel implements Printable {
 
             if (child != null) {  // if a node is folded, child is null.
                 // Here, the view will be created if it does no exist already
+//              for (int i = 0; i < e.getPath().length; i++) {
+//              MindMapNode node = (MindMapNode) e.getPath()[i];
+//              if(node.isFolded()) {
+//                  logger.info("Found folded node in path of a new children to be inserted.");
+//                  return;
+//              }
+//          }
+          // Here, the view will be created if it does no exist already
                 parentView.insert(child);
-                getMindMapLayout().updateTreeHeightFromChildren(child.getViewer()); }
+                getMindMapLayout().updateTreeGeometry(child.getViewer()); }
             getMindMapLayout().updateTreeHeightsAndRelativeYOfAncestors(parentView);
             // Here, the view of child gets its size and position
-            getMindMapLayout().layout();
-            parentView.requestFocus();
+            getMindMapLayout().layout(false);
+            //fc, 29.3.2004: here, I change parentView.requestFocus() to:
+            child.getViewer().requestFocus();
             repaint();
         }
 
@@ -928,49 +1119,95 @@ public class MapView extends JPanel implements Printable {
                 selectAsTheOnlyOneSelected(parent);
             }
             getMindMapLayout().updateTreeHeightsAndRelativeYOfAncestors(parent);
-            getMindMapLayout().layout();
-            parent.requestFocus();
+            getMindMapLayout().layout(false);
+            getSelected().requestFocus();
+			// scrollNodeToVisible(getSelected());
+            //fc, 5.4.2004. is already done by selectAsTheOnlyOneSelected:
+            //parent.requestFocus();
             repaint();
         }
 
         /**
-         *
+         * Assures that every and at least one selected node is visible. If this is not the case,
+         * the node is deselected. 
+         * If every selected node is hidden, the first visible part in the path of the selected
+         * node to the root is selected.
          */
-
         public void treeStructureChanged (TreeModelEvent e) {
 
             // Keep selected nodes
 
             ArrayList selectedNodes = new ArrayList();
             for (ListIterator it = getSelecteds().listIterator();it.hasNext();) {
-                selectedNodes.add(((NodeView)it.next()).getModel()); }
-            MindMapNode selectedNode = getSelected().getModel();
+                NodeView nodeView = (NodeView)it.next();
+                if (nodeView != null) {
+                    selectedNodes.add((nodeView).getModel()); 
+                } 
+            }
+//          if the focussed is deleted:
+            MindMapNode focussedNode = null;
+            if (getSelected()!=null) {
+                focussedNode = getSelected().getModel();
+            }
 
             // Update everything
 
             MindMapNode subtreeRoot = (MindMapNode)e.getTreePath().getLastPathComponent();
 
-            if (subtreeRoot.isRoot()) {
-                subtreeRoot.getViewer().remove();               
-                rootView = NodeView.newNodeView(getRoot().getModel(), getMap());
-                rootView.insert(); }
-            else {
-                boolean nodeIsLeft = subtreeRoot.getViewer().isLeft();
-                subtreeRoot.getViewer().remove();
-                NodeView nodeView = NodeView.newNodeView(subtreeRoot, getMap());
-                nodeView.setLeft(nodeIsLeft);
-                nodeView.insert(); }
-
-            getMindMapLayout().updateTreeHeightsAndRelativeYOfDescendantsAndAncestors(subtreeRoot.getViewer());
-            getMindMapLayout().layout();
-
+            if(subtreeRoot == null || subtreeRoot.getViewer() == null) {
+	            // fc,14.1.2005: no viewer -> no update.
+            } else {
+	            
+	            
+				boolean nodeIsLeft = subtreeRoot.getViewer().isLeft();
+				NodeView oldNodeView = subtreeRoot.getViewer();
+				int x = oldNodeView.getX();
+				int y = oldNodeView.getY();
+				subtreeRoot.getViewer().remove();
+				NodeView nodeView = null;
+	            if (subtreeRoot.isRoot()) {
+					nodeView = NodeView.newNodeView(getRoot().getModel(), getMap());
+	                rootView = nodeView; 
+	            }
+	            else {
+	                nodeView = NodeView.newNodeView(subtreeRoot, getMap());
+	            }
+				nodeView.setLocation(x, y);
+	            nodeView.setLeft(nodeIsLeft);
+	            nodeView.insert(); 
+	            getMindMapLayout().updateTreeHeightsAndRelativeYOfDescendantsAndAncestors(subtreeRoot.getViewer());
+	            // the layout function will be called later by AWT framework itself
+	            // comment it out
+	            // getMindMapLayout().layout();
+            }
             // Restore selected nodes
 
             // Warning, the old views still exist, because JVM has not deleted them. But don't use them!
             selected.clear();
             for (ListIterator it = selectedNodes.listIterator();it.hasNext();) {
-                selected.add(0,((MindMapNode)it.next()).getViewer()); }
-            selectedNode.getViewer().requestFocus();
+                MindMapNode mindMapNode = ((MindMapNode)it.next());
+//              test, whether or not the node is still visible:
+                if (mindMapNode.getViewer() != null) {
+                    selected.add(mindMapNode.getViewer()); 
+                } 
+            }
+            // determine focussed node:
+            if(focussedNode == null) {
+//              if the focussed is deleted:
+                focussedNode = getRoot().getModel();
+            } 
+//          test for visibility of the focussed:
+            while(focussedNode.getParentNode()!= null && focussedNode.getViewer()==null) {
+                focussedNode = focussedNode.getParentNode();
+            }
+            if(focussedNode.getParentNode()==null) {
+//              test, whether or not the node still belongs to the map:
+                if(!focussedNode.equals(getRoot().getModel())) {
+	                focussedNode = getRoot().getModel();
+                }
+            }
+//          now select focussed:
+            focussedNode.getViewer().requestFocus();
             repaint();
         }
     }
@@ -984,4 +1221,15 @@ public class MapView extends JPanel implements Printable {
     public void setSiblingMaxLevel(int level) {
         this.siblingMaxLevel = level;
     }
-}
+    
+	private int FOLDING_SYMBOL_WIDTH = -1;
+	public int getZoomedFoldingSymbolHalfWidth() {
+		if (FOLDING_SYMBOL_WIDTH == -1)
+		{
+			FOLDING_SYMBOL_WIDTH = getController().getIntProperty("foldingsymbolwidth", 8);
+		}
+		return (int) ((FOLDING_SYMBOL_WIDTH * getZoom()) / 2);
+	}
+
+
+ }

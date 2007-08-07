@@ -16,22 +16,28 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: FreeMindMain.java,v 1.12 2004-02-02 21:25:24 christianfoltin Exp $*/
+/*$Id: FreeMindMain.java,v 1.13 2007-08-07 17:37:22 dpolivaev Exp $*/
 
 package freemind.main;
 
 import java.awt.Container;
 import java.io.File;
 import java.net.URL;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
+import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
 
 import freemind.controller.Controller;
 import freemind.controller.MenuBar;
+import freemind.extensions.HookFactory;
 import freemind.view.mindmapview.MapView;
 
 public interface FreeMindMain {
+	public JFrame getJFrame();
+	
     public boolean isApplet();
 
     public MapView getView();
@@ -49,6 +55,9 @@ public interface FreeMindMain {
     /**Returns the ResourceBundle with the current language*/
     public ResourceBundle getResources();
 
+    public String getResourceString(String key) ;
+
+    
     public Container getContentPane();
     
     public void out (String msg);
@@ -64,6 +73,10 @@ public interface FreeMindMain {
     public void repaint();
 
     public URL getResource(String name);
+
+	public int getIntProperty(String key, int defaultValue);
+	/** @return returns the list of all properties. */
+	public Properties getProperties();
 
     public String getProperty(String key);
 
@@ -90,4 +103,11 @@ public interface FreeMindMain {
 
     /* To obtain a logging element, ask here. */
     public java.util.logging.Logger getLogger(String forClass);
+
+	/**
+	 * @return
+	 */
+	public HookFactory getHookFactory();
+	
+	public JPanel getSouthPanel();
 }

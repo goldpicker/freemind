@@ -16,28 +16,32 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: XMLElementAdapter.java,v 1.4 2004-01-24 22:36:48 christianfoltin Exp $*/
+/*$Id: XMLElementAdapter.java,v 1.5 2007-08-07 17:37:26 dpolivaev Exp $*/
 
 package freemind.modes;
 
-import freemind.main.XMLElement;
+import java.awt.Font;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
+
+import freemind.extensions.PermanentNodeHook;
+import freemind.extensions.PermanentNodeHookSubstituteUnknown;
 import freemind.main.FreeMindMain;
 import freemind.main.Tools;
-import freemind.modes.MindIcon;
-import freemind.modes.MindMapLinkRegistry;
-import freemind.modes.NodeAdapter;
-
-import java.awt.Font;
-import java.util.Vector;
-import java.util.HashMap;
-import java.util.Collection;
-import java.util.Iterator;
+import freemind.main.XMLElement;
+import freemind.modes.mindmapmode.EncryptedMindMapNode;
 
 public abstract class XMLElementAdapter extends XMLElement {
+
+    
+	// Logging: 
+	protected static java.util.logging.Logger logger;
 
    private Object           userObject = null;
    private FreeMindMain     frame;
    private NodeAdapter      mapChild   = null;
+   private HashMap 		  nodeAttributes = new HashMap();
 
    //   Font attributes
 
@@ -52,6 +56,11 @@ public abstract class XMLElementAdapter extends XMLElement {
     // arrow link attributes:
     protected Vector ArrowLinkAdapters;
     protected HashMap /* id -> target */  IDToTarget;
+    public static final String XML_NODE_TEXT = "TEXT";
+    public static final String XML_NODE = "node";
+    public static final String XML_NODE_ENCRYPTED_CONTENT = "ENCRYPTED_CONTENT";
+    public static final String XML_NODE_HISTORY_CREATED_AT = "CREATED";
+    public static final String XML_NODE_HISTORY_LAST_MODIFIED_AT = "MODIFIED";
 
    //   Overhead methods
 
@@ -59,6 +68,9 @@ public abstract class XMLElementAdapter extends XMLElement {
       this.frame = frame; 
       this.ArrowLinkAdapters = new Vector();
       this.IDToTarget = new HashMap();
+      if(logger==null) {
+          logger = frame.getLogger(this.getClass().getName());
+      }
    }
 
     protected XMLElementAdapter(FreeMindMain frame, Vector ArrowLinkAdapters, HashMap IDToTarget) {
@@ -69,7 +81,7 @@ public abstract class XMLElementAdapter extends XMLElement {
 
     /** abstract method to create elements of my type (factory).*/
     abstract protected XMLElement  createAnotherElement();
-    abstract protected NodeAdapter createNodeAdapter(FreeMindMain     frame);
+    abstract protected NodeAdapter createNodeAdapter(FreeMindMain     frame, String nodeClass);
     abstract protected EdgeAdapter createEdgeAdapter(NodeAdapter node, FreeMindMain frame);
     abstract protected CloudAdapter createCloudAdapter(NodeAdapter node, FreeMindMain frame);
     abstract protected ArrowLinkAdapter createArrowLinkAdapter(NodeAdapter source, NodeAdapter target, FreeMindMain frame);
@@ -87,21 +99,40 @@ public abstract class XMLElementAdapter extends XMLElement {
    //   Real parsing methods
 
    public void setName(String name)  {
-      super.setName(name);
-      // Create user object based on name
-      if (name.equals("node")) {
-         userObject = createNodeAdapter(frame); }
-      if (name.equals("edge")) {
-         userObject = createEdgeAdapter(null, frame); }
-      if (name.equals("cloud")) {
-          userObject = createCloudAdapter(null, frame); }
-      if (name.equals("arrowlink")) {
-          userObject = createArrowLinkAdapter(null, null, frame); }}
+		super.setName(name);
+		// Create user object based on name
+		if (name.equals(XML_NODE)) {
+			userObject = createNodeAdapter(frame, null);
+			nodeAttributes.clear();
+		} else if (name.equals("edge")) {
+			userObject = createEdgeAdapter(null, frame);
+		} else if (name.equals("cloud")) {
+			userObject = createCloudAdapter(null, frame);
+		} else if (name.equals("arrowlink")) {
+			userObject = createArrowLinkAdapter(null, null, frame);
+		} else if (name.equals("font")) {
+			userObject = null;
+		} else if (name.equals("map")) {
+			userObject = null;
+		} else if (name.equals("icon")) {
+			userObject = null;
+		} else if (name.equals("hook")) {
+			// we gather the xml element and send it to the hook after completion.
+			userObject = new XMLElement();
+		} else {
+			userObject = new XMLElement(); // for childs of hooks
+		}
+   }
 
    public void addChild(XMLElement child) {
       if (getName().equals("map")) {
          mapChild = (NodeAdapter)child.getUserObject();
          return; }
+      if( userObject instanceof XMLElement ) {
+      	 //((XMLElement) userObject).addChild(child);
+      	 super.addChild(child);
+      	 return;
+      }
       if (userObject instanceof NodeAdapter) {
          NodeAdapter node = (NodeAdapter)userObject;
          if (child.getUserObject() instanceof NodeAdapter) {
@@ -126,38 +157,47 @@ public abstract class XMLElementAdapter extends XMLElement {
          else if (child.getName().equals("font")) {
             node.setFont((Font)child.getUserObject()); }
          else if (child.getName().equals("icon")) {
-             node.addIcon((MindIcon)child.getUserObject()); }}}
+             node.addIcon((MindIcon)child.getUserObject()); }
+         else if (child.getName().equals("hook")) {
+         	 XMLElement xml = (XMLElement) child/*.getUserObject()*/;
+             String loadName = (String)xml.getAttribute("NAME");
+ 			 PermanentNodeHook hook = null;
+             try {
+				 //loadName=loadName.replace('/', File.separatorChar);
+				 /* The next code snippet is an exception. Normally, hooks 
+				  * have to be created via the ModeController. 
+				  * DO NOT COPY. */
+                hook = (PermanentNodeHook) frame.getHookFactory().createNodeHook(loadName);
+                // this is a bad hack. Don't make use of this data unless
+                // you know exactly what you are doing.
+                hook.setNode(node);
+             } catch(Exception e) {
+                 e.printStackTrace();
+                 hook = new PermanentNodeHookSubstituteUnknown(loadName);
+             }
+ 			 hook.loadFrom(xml);
+ 			 node.addHook(hook);
+ 		 }
+      }
+   }
 
-   public void setAttribute(String name, Object value) {
+public void setAttribute(String name, Object value) {
       // We take advantage of precondition that value != null.
       String sValue = value.toString();
       if (ignoreCase) {
          name = name.toUpperCase(); }
+	  if(userObject instanceof XMLElement) {
+		//((XMLElement) userObject).setAttribute(name, value);
+		super.setAttribute(name, value); // and to myself, as I am also an xml element.
+		return;
+	  }
 
       if (userObject instanceof NodeAdapter) {
-         // 
+         //
          NodeAdapter node = (NodeAdapter)userObject;
-         if (name.equals("TEXT")) {
-            node.setUserObject(sValue); }
-         else if (name.equals("FOLDED")) {
-            if (sValue.equals("true")) {
-               node.setFolded(true); }}
-         else if (name.equals("POSITION")) {
-             // fc, 17.12.2003: Remove the left/right bug.
-             node.setLeft(sValue.equals("left")); }
-         else if (name.equals("COLOR")) {
-            if (sValue.length() == 7) {
-               node.setColor(Tools.xmlToColor(sValue)); }}
-         else if (name.equals("LINK")) {
-            node.setLink(sValue); }
-         else if (name.equals("STYLE")) {
-            node.setStyle(sValue); }
-         else if (name.equals("ID")) {
-             // do not set label but annotate in list:
-             //System.out.println("(sValue, node) = " + sValue + ", "+  node);
-             IDToTarget.put(sValue, node);
-         }
-         return; }
+         setNodeAttribute(name, sValue, node);
+     	nodeAttributes.put(name, sValue);
+        return; }
 
       if (userObject instanceof EdgeAdapter) {
          EdgeAdapter edge = (EdgeAdapter)userObject;
@@ -187,6 +227,8 @@ public abstract class XMLElementAdapter extends XMLElement {
          ArrowLinkAdapter arrowLink = (ArrowLinkAdapter)userObject;
          if (name.equals("STYLE")) {
              arrowLink.setStyle(sValue); }
+         else if (name.equals("ID")) {
+             arrowLink.setUniqueID(sValue); }
          else if (name.equals("COLOR")) {
              arrowLink.setColor(Tools.xmlToColor(sValue)); }
          else if (name.equals("DESTINATION")) {
@@ -225,13 +267,79 @@ public abstract class XMLElementAdapter extends XMLElement {
       }
   }
 
-   protected void completeElement() {
+   private void setNodeAttribute(String name, String sValue, NodeAdapter node) {
+     if (name.equals(XML_NODE_TEXT)) {
+	    node.setUserObject(sValue); }
+	 else if (name.equals(XML_NODE_ENCRYPTED_CONTENT)) {
+	     // we change the node implementation to EncryptedMindMapNode.
+	     node = createNodeGivenClassName(EncryptedMindMapNode.class.getName());
+	     node.setAdditionalInfo(sValue); 
+	 } else if (name.equals(XML_NODE_HISTORY_CREATED_AT)) {
+	     if(node.getHistoryInformation()==null) {
+	     	node.setHistoryInformation(new HistoryInformation());
+	     }
+	     node.getHistoryInformation().setCreatedAt(Tools.xmlToDate(sValue));
+	 }
+	 else if (name.equals(XML_NODE_HISTORY_LAST_MODIFIED_AT)) {
+	     if(node.getHistoryInformation()==null) {
+	     	node.setHistoryInformation(new HistoryInformation());
+	     }
+	     node.getHistoryInformation().setLastModifiedAt(Tools.xmlToDate(sValue));
+	 }
+	 else if (name.equals("FOLDED")) {
+	    if (sValue.equals("true")) {
+	       node.setFolded(true); }}
+	 else if (name.equals("POSITION")) {
+	     // fc, 17.12.2003: Remove the left/right bug.
+	     node.setLeft(sValue.equals("left")); }
+	 else if (name.equals("COLOR")) {
+	    if (sValue.length() == 7) {
+	       node.setColor(Tools.xmlToColor(sValue)); }}
+	 else if (name.equals("BACKGROUND_COLOR")) {
+	    if (sValue.length() == 7) {
+	       node.setBackgroundColor(Tools.xmlToColor(sValue)); }}
+	 else if (name.equals("LINK")) {
+	    node.setLink(sValue); }
+	 else if (name.equals("STYLE")) {
+	    node.setStyle(sValue); }
+	 else if (name.equals("ID")) {
+	     // do not set label but annotate in list:
+	     //System.out.println("(sValue, node) = " + sValue + ", "+  node);
+	     IDToTarget.put(sValue, node);
+	 }
+	 else if (name.equals("VSHIFT")) {
+	 	node.setShiftY(Integer.parseInt(sValue));
+	 }
+	 else if (name.equals("VGAP")) {
+	   	node.setVGap(Integer.parseInt(sValue));
+	 }
+	 else if (name.equals("HGAP")) {
+	   	node.setHGap(Integer.parseInt(sValue));
+	 }
+}
+
+    /**
+     * @param className
+     */
+    private NodeAdapter createNodeGivenClassName(String className) {
+        userObject = createNodeAdapter(frame, className);
+        // reactivate all settings from nodeAttributes:
+        for (Iterator i = nodeAttributes.keySet().iterator(); i.hasNext();) {
+            String key = (String) i.next();
+            //to avoid self reference:
+            setNodeAttribute(key, (String) nodeAttributes.get(key),
+                    (NodeAdapter) userObject);
+        }
+        return (NodeAdapter) userObject;
+    }
+
+    protected void completeElement() {
       if (getName().equals("font")) {
          userObject =  frame.getController().getFontThroughMap
             (new Font(fontName, fontStyle, fontSize)); }
       /* icons */
             if (getName().equals("icon")) {
-         userObject =  new MindIcon(iconName); }
+         userObject =  MindIcon.factory(iconName); }
    }
 
     /** Completes the links within the map. They are registered in the registry.*/

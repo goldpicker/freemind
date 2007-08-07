@@ -16,38 +16,84 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: Controller.java,v 1.40 2004-01-28 20:36:09 christianfoltin Exp $*/
+/*$Id: Controller.java,v 1.41 2007-08-07 17:37:11 dpolivaev Exp $*/
 
 package freemind.controller;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.HeadlessException;
+import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterJob;
+import java.io.Serializable;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
-import javax.swing.*;
-import java.net.MalformedURLException;
+import java.util.Properties;
+import java.util.Set;
+import java.util.Vector;
+import java.util.logging.Logger;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+
+import freemind.common.JaxbTools;
+import freemind.controller.actions.generated.instance.ObjectFactory;
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage;
+import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.main.FreeMind;
 import freemind.main.FreeMindMain;
 import freemind.main.Tools;
 import freemind.modes.MindMap;
 import freemind.modes.Mode;
-
+import freemind.modes.ModeController;
 import freemind.modes.ModesCreator;
-import freemind.modes.browsemode.BrowseController;
+import freemind.preferences.FreemindPropertyListener;
+import freemind.preferences.layout.OptionPanel;
+import freemind.preferences.layout.OptionPanel.OptionPanelFeedback;
 import freemind.view.MapModule;
 import freemind.view.mindmapview.MapView;
 
@@ -57,14 +103,17 @@ import freemind.view.mindmapview.MapView;
  */
 public class Controller {
 
-    private LastOpenedList lastOpened;//A list of the pathnames of all the maps that were opened in the last time
+    private static Logger logger;
+	private ObjectFactory actionXmlFactory;
+    private static JColorChooser colorChooser = new JColorChooser();
+	private LastOpenedList lastOpened;//A list of the pathnames of all the maps that were opened in the last time
     private MapModuleManager mapModuleManager;// new MapModuleManager();
     private HistoryManager history = new HistoryManager();
-    private Map modes; //hash of all possible modes
     private Mode mode; //The current mode
     private FreeMindMain frame;
     private JToolBar toolbar;
     private NodeMouseMotionListener nodeMouseMotionListener;
+    private NodeMotionListener nodeMotionListener;
     private NodeKeyListener nodeKeyListener;
     private NodeDragListener nodeDragListener;
     private NodeDropListener nodeDropListener;
@@ -83,35 +132,38 @@ public class Controller {
     boolean toolbarVisible=true;
     boolean leftToolbarVisible=true;
 
-    Action close; 
-    Action print; 
-    Action printDirect; 
-    Action page; 
+    public CloseAction close; 
+    public Action print; 
+    public Action printDirect; 
+    public Action page; 
     public Action quit;
-    Action background; 
+    public Action background; 
 
-    Action optionAntialiasAction;
-    Action optionHTMLExportFoldingAction;
-    Action optionSelectionMechanismAction;
+    public OptionAntialiasAction optionAntialiasAction;
+    public Action optionHTMLExportFoldingAction;
+    public Action optionSelectionMechanismAction;
 
-    Action about;
-    Action faq;
-    Action documentation;
-    Action license;
-    Action historyPreviousMap;
-    Action historyNextMap;
-    Action navigationPreviousMap;
-    Action navigationNextMap;
+    public Action about;
+    public Action faq;
+    public Action documentation;
+    public Action license;
+    public Action historyPreviousMap;
+    public Action historyNextMap;
+    public Action navigationPreviousMap;
+    public Action navigationNextMap;
 
-    Action moveToRoot;
-    Action toggleMenubar;
-    Action toggleToolbar;
-    Action toggleLeftToolbar;
+    public Action moveToRoot;
+    public Action toggleMenubar;
+    public Action toggleToolbar;
+    public Action toggleLeftToolbar;
 
-    Action zoomIn;
-    Action zoomOut;
+    public Action zoomIn;
+    public Action zoomOut;
+    public PropertyAction propertyAction;
 
-    private static final String[] zooms = {"25%","40%","60%","75%","100%","125%","150%","200%"};
+	// this values better suit at least the test purposes
+    private static final String[] zooms = {"25%","50%","75%","100%","150%","200%","300%","400%"};
+//    private static final String[] zooms = {"25%","40%","60%","75%","100%","125%","150%","200%"};
 
     //
     // Constructors
@@ -121,11 +173,17 @@ public class Controller {
         checkJavaVersion();
 
         this.frame = frame;
-        modes = modescreator.getAllModes();
-        mapModuleManager = new MapModuleManager(this);
+        if(logger == null) {
+            logger = frame.getLogger(this.getClass().getName());
+        }
+		// new object factory for xml actions:
+		actionXmlFactory = JaxbTools.getInstance().getObjectFactory();
+
         lastOpened = new LastOpenedList(this, getProperty("lastOpened"));
+        mapModuleManager = new MapModuleManager(this, history, lastOpened);
 
         nodeMouseMotionListener = new NodeMouseMotionListener(this);
+        nodeMotionListener = new NodeMotionListener(this);
         nodeKeyListener = new NodeKeyListener(this);
         nodeDragListener = new NodeDragListener(this);
         nodeDropListener = new NodeDropListener(this);
@@ -157,7 +215,7 @@ public class Controller {
 
         zoomIn = new ZoomInAction(this);
         zoomOut = new ZoomOutAction(this);
-
+        propertyAction = new PropertyAction(this);
 
         moveToRoot = new MoveToRootAction(this);
 
@@ -176,16 +234,19 @@ public class Controller {
     //
     // get/set methods
     //
-
+    public static final String JAVA_VERSION = System.getProperty("java.version");
     public void checkJavaVersion() {
-       if (System.getProperty("java.version").compareTo("1.4.0") < 0) {
+       if (JAVA_VERSION.compareTo("1.4.0") < 0) {
           String message = "Warning: FreeMind requires version Java 1.4.0 or higher (your version: "+
-             System.getProperty("java.version")+").";
+             System.getProperty("java.version")+", installed in "+ System.getProperty("java.home")+").";
           System.err.println(message);
           JOptionPane.showMessageDialog(null, message, "FreeMind", JOptionPane.WARNING_MESSAGE); }}
 
-    public String getProperty(String property) {
-       return frame.getProperty(property); }
+	public String getProperty(String property) {
+	   return frame.getProperty(property); }
+
+	public int getIntProperty(String property, int defaultValue) {
+	   return frame.getIntProperty(property, defaultValue); }
 
     public void setProperty(String property, String value) {
        frame.setProperty(property, value); }
@@ -199,11 +260,15 @@ public class Controller {
     }
                                             
     public String getResourceString(String resource) {
-       try {
-          return frame.getResources().getString(resource); }
-       catch (Exception ex) {
-          System.err.println("Warning - resource string not found:"+resource);
-          return resource; }}
+          return frame.getResourceString(resource);
+    }
+
+	/** @return the current modeController. */
+	public ModeController getModeController() {
+		return getMode().getModeController();
+	}
+
+
 
     /**Returns the current model*/
     public MindMap getModel() {
@@ -222,8 +287,8 @@ public class Controller {
         return null;
     }
 
-    Map getModes() {
-        return modes;
+    Set getModes() {
+        return modescreator.getAllModes();
     }
 
     public Mode getMode() {
@@ -276,20 +341,104 @@ public class Controller {
        // Maybe implement handling for cases when the font is not
        // available on this system.
 
-       int fontSize = Integer.parseInt(getFrame().getProperty("defaultfontsize"));
-       int fontStyle = Integer.parseInt(getFrame().getProperty("defaultfontstyle"));
-       String fontFamily = getProperty("defaultfont");
+       int fontSize = getDefaultFontSize();
+       int fontStyle = getDefaultFontStyle();
+       String fontFamily = getDefaultFontFamilyName();
 
        return getFontThroughMap (new Font(fontFamily, fontStyle, fontSize)); }
 
+	/**
+     * @return
+     */
+    public String getDefaultFontFamilyName() {
+        String fontFamily = getProperty("defaultfont");
+        return fontFamily;
+    }
 
+    /**
+     * @return
+     */
+    public int getDefaultFontStyle() {
+        int fontStyle = Integer.parseInt(getFrame().getProperty("defaultfontstyle"));
+        return fontStyle;
+    }
+
+    /**
+     * @return
+     */
+    public int getDefaultFontSize() {
+        int fontSize = Integer.parseInt(getFrame().getProperty("defaultfontsize"));
+        return fontSize;
+    }
+
+    /** Static JColorChooser to have  the recent colors feature. */
+	static public JColorChooser getCommonJColorChooser() {
+		return colorChooser;
+	}
+	
+	public static Color showCommonJColorChooserDialog(Component component,
+		String title, Color initialColor) throws HeadlessException {
+
+		final JColorChooser pane = getCommonJColorChooser();
+		pane.setColor(initialColor);
+
+		ColorTracker ok = new ColorTracker(pane);
+		JDialog dialog = JColorChooser.createDialog(component, title, true, pane, ok, null);
+		dialog.addWindowListener(new Closer());
+		dialog.addComponentListener(new DisposeOnClose());
+
+		dialog.show(); // blocks until user brings dialog down...
+
+		return ok.getColor();
+	}
+
+
+	private static class ColorTracker implements ActionListener, Serializable {
+		JColorChooser chooser;
+		Color color;
+
+		public ColorTracker(JColorChooser c) {
+			chooser = c;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			color = chooser.getColor();
+		}
+
+		public Color getColor() {
+			return color;
+		}
+	}
+
+	static class Closer extends WindowAdapter implements Serializable{
+		 public void windowClosing(WindowEvent e) {
+			 Window w = e.getWindow();
+			 w.hide();
+		 }
+	 }
+
+	 static class DisposeOnClose extends ComponentAdapter implements Serializable{
+		 public void componentHidden(ComponentEvent e) {
+			 Window w = (Window)e.getComponent();
+			 w.dispose();
+		 }
+	 }
+
+
+
+    /** Creates a new mode (controller), activates the toolbars, title and deactivates all 
+     * actions.
+     * 
+     * @param mode
+     * @return false if the change was not successful.
+     */
     public boolean changeToMode(String mode) {
         if (getMode() != null && mode.equals(getMode().toString())) {
             return true;
         }
 
-        //Check if the mode is available
-        Mode newmode = (Mode)modes.get(mode);
+        //Check if the mode is available and create ModeController.
+        Mode newmode = modescreator.getMode(mode);
         if (newmode == null) {
             errorMessage(getResourceString("mode_na")+": "+mode);
             return false;
@@ -305,7 +454,6 @@ public class Controller {
 
         if (getMapModule() != null) {
             getMapModuleManager().setMapModule(null);
-            getMapModuleManager().mapModuleChanged();
         }
         this.mode = newmode;
                 
@@ -324,8 +472,7 @@ public class Controller {
         setTitle();
         getMode().activate();
 
-        getFrame().getFreeMindMenuBar().updateFileMenu();
-        getFrame().getFreeMindMenuBar().updateEditMenu();
+        getFrame().getFreeMindMenuBar().updateMenus();
 
         if (getMapModule() == null) {
             setAllActions(false);
@@ -351,6 +498,12 @@ public class Controller {
         toolbar.setVisible(toolbarVisible);
     }
 
+    /**
+     * @return Returns the main toolbar.
+     */
+    public JToolBar getToolbar() {
+        return toolbar;
+    }
     public void setLeftToolbarVisible(boolean visible) {
         if (getMode() != null && getMode().getLeftToolBar() != null) {
            leftToolbarVisible = visible;
@@ -364,6 +517,10 @@ public class Controller {
 
     public NodeMouseMotionListener getNodeMouseMotionListener() {
         return nodeMouseMotionListener;
+    }
+
+    public NodeMotionListener getNodeMotionListener() {
+        return nodeMotionListener;
     }
 
     public MapMouseMotionListener getMapMouseMotionListener() {
@@ -397,6 +554,15 @@ public class Controller {
         }
     }
 
+    /** Closes the actual map.
+     * @param force true= without save.
+     */
+    public void close(boolean force) {
+		getMapModuleManager().close(force);
+	}
+
+
+    
 // (PN) %%%
 //    public void select( NodeView node) {
 //        getView().select(node,false);
@@ -426,7 +592,19 @@ public class Controller {
        JOptionPane.showMessageDialog(component, message.toString(), "FreeMind", JOptionPane.INFORMATION_MESSAGE); }
 
     public void errorMessage(Object message) {
-       JOptionPane.showMessageDialog(getFrame().getContentPane(), message.toString(), "FreeMind", JOptionPane.ERROR_MESSAGE); }
+		String myMessage = "";
+
+		if (message != null) {
+			myMessage = message.toString();
+		} else {
+			myMessage = getResourceString("undefined_error");
+			if (myMessage == null) {
+				myMessage = "Undefined error";
+			}
+		}
+		JOptionPane.showMessageDialog(getFrame().getContentPane(), myMessage, "FreeMind", JOptionPane.ERROR_MESSAGE);
+
+	}
 
     public void errorMessage(Object message, JComponent component) {
        JOptionPane.showMessageDialog(component, message.toString(), "FreeMind", JOptionPane.ERROR_MESSAGE); }
@@ -495,7 +673,7 @@ public class Controller {
 		   (getResourceString("mode_title"));
 		String title = formatter.format(messageArguments);        
 		if (getMapModule() != null) {
-			title += " - " + getMapModule().toString() +               
+			title = getMapModule().toString() + " - " + title +               
 			  ( getMapModule().getModel().isReadOnly() ?
 				" ("+getResourceString("read_only")+")" : ""); 
 		}
@@ -509,7 +687,7 @@ public class Controller {
      * Manage the availabilty of all Actions dependend 
      * of whether there is a map or not
      */
-    private void setAllActions(boolean enabled) {
+    public void setAllActions(boolean enabled) {
         background.setEnabled(enabled);
 
         if(isPrintingAllowed) {
@@ -534,7 +712,7 @@ public class Controller {
     private void quit() {
         String currentMapRestorable = (getModel()!=null) ? getModel().getRestoreable() : null;
         while (getView() != null) {
-        	boolean closingNotCancelled = getMapModuleManager().close();
+        	boolean closingNotCancelled = getMapModuleManager().close(false);
         	if  (!closingNotCancelled) {
         	   return; }}
 
@@ -563,177 +741,21 @@ public class Controller {
           catch (SecurityException ex) {
              isPrintingAllowed = false;
              return false; }}
-       pageFormat = (pageFormat == null) ? printerJob.defaultPage() : pageFormat;
+       if (pageFormat == null) {
+           pageFormat = printerJob.defaultPage();
+           if (Tools.safeEquals(getProperty("page_orientation"), "landscape")) {
+               pageFormat.setOrientation(PageFormat.LANDSCAPE);
+           } else if (Tools.safeEquals(getProperty("page_orientation"), "portrait")) {
+               pageFormat.setOrientation(PageFormat.PORTRAIT);
+           } else if (Tools.safeEquals(getProperty("page_orientation"), "reverse_landscape")) {
+               pageFormat.setOrientation(PageFormat.REVERSE_LANDSCAPE);
+           }
+       }
        return true; }
 
     //////////////
     // Inner Classes
     ////////////
-
-    /**
-     * Manages the list of MapModules.
-     * As this task is very complex, I exported it
-     * from Controller to this class to keep Controller
-     * simple.
-     */
-    public class MapModuleManager {
-        // Variable below: The instances of mode, ie. the Model/View pairs. Normally, the
-        // order should be the order of insertion, but such a Map is not
-        // available.
-        private Map mapModules = new HashMap();
-
-        private MapModule mapModule; //reference to the current mapmodule, could be done
-                                     //with an index to mapModules, too.
-        // private String current;
-        
-        private Controller c;
-
-        MapModuleManager(Controller c) {
-           this.c=c; }
-
-        Map getMapModules() {
-           return mapModules; }
-        
-        public MapModule getMapModule() {
-           return mapModule; }
-
-        public void newMapModule(MindMap map) {
-            MapModule mapModule = new MapModule(map, new MapView(map, c), getMode());
-            setMapModule(mapModule);
-            addToMapModules(mapModule.toString(), mapModule);
-            history.mapChanged(mapModule);
-            updateNavigationActions(); }
-
-        public void updateMapModuleName() {
-            getMapModules().remove(getMapModule().toString());
-            //removeFromViews() doesn't work because MapModuleChanged()
-            //must not be called at this state
-            getMapModule().rename();
-            addToMapModules(getMapModule().toString(),getMapModule());
-        }
-
-        void nextMapModule() {
-            List keys = new LinkedList(getMapModules().keySet());
-            int index = keys.indexOf(getMapModule().toString());
-            ListIterator i = keys.listIterator(index+1);
-            if (i.hasNext()) {
-               changeToMapModule((String)i.next()); }
-            else if (keys.iterator().hasNext()) {
-               // Change to the first in the list
-               changeToMapModule((String)keys.iterator().next()); }}
-
-        void previousMapModule() {
-            List keys = new LinkedList(getMapModules().keySet());
-            int index = keys.indexOf(getMapModule().toString());
-            ListIterator i = keys.listIterator(index);
-            if (i.hasPrevious()) {
-               changeToMapModule((String)i.previous()); }
-            else {
-               Iterator last = keys.listIterator(keys.size()-1);
-               if (last.hasNext()) {
-                  changeToMapModule((String)last.next()); }}}
-
-        //Change MapModules
-
-        public boolean tryToChangeToMapModule(String mapModule) {
-            if (mapModule != null && getMapModules().containsKey(mapModule)) {
-                changeToMapModule(mapModule);
-                return true; }
-            else {
-               return false; }}
-    
-        void changeToMapModule(String mapModule) {
-            MapModule map = (MapModule)(getMapModules().get(mapModule));
-            history.mapChanged(map);
-            changeToMapModuleWithoutHistory(map); }
-
-        void changeToMapModuleWithoutHistory(MapModule map) {
-            if (map.getMode() != getMode()) {
-               changeToMode(map.getMode().toString()); }
-            setMapModule(map);
-            mapModuleChanged(); }
-
-        public void changeToMapOfMode(Mode mode) {
-            for (Iterator i = getMapModules().keySet().iterator(); i.hasNext(); ) {
-                String next = (String)i.next();
-                if ( ((MapModule)getMapModules().get(next)).getMode() == mode ) {
-                    changeToMapModule(next);
-                    return; }}}
-
-        //private
-
-        private void mapModuleChanged() {
-            frame.getFreeMindMenuBar().updateMapsMenu();//to show the new map in the mindmaps menu
-            lastOpened.mapOpened(getMapModule());
-            frame.getFreeMindMenuBar().updateLastOpenedList();//to show the new map in the file menu
-            //  history.add(getMapModule());
-            //updateNavigationActions();
-            setTitle();
-            updateZoomBar();
-            c.obtainFocusForSelected(); }
-       
-        private void setMapModule(MapModule mapModule) {
-            this.mapModule = mapModule;
-            frame.setView(mapModule != null ? mapModule.getView() : null); }
-
-        private void addToMapModules(String key, MapModule value) {
-            // begin bug fix, 20.12.2003, fc.
-            // check, if already present:
-            String extension = "";
-            int count = 1;
-            while (mapModules.containsKey(key+extension)) {
-                extension = "<"+(++count)+">";
-            }
-            // rename map:
-            value.setName(key+extension);
-            mapModules.put(key+extension,value);
-            // end bug fix, 20.12.2003, fc.
-            setAllActions(true);
-            moveToRoot();                // Only for the new modules move to root
-            mapModuleChanged(); }
-
-       private void changeToAnotherMap(String toBeClosed) {
-          List keys = new LinkedList(getMapModules().keySet());
-          for (ListIterator i = keys.listIterator(); i.hasNext();) {
-             String key = (String)i.next();
-             if (!key.equals(toBeClosed)) {
-                changeToMapModule(key);
-                return; }}}
-
-        private void updateNavigationActions() {
-           List keys = new LinkedList(getMapModules().keySet());
-           navigationPreviousMap.setEnabled(keys.size() > 1);
-           navigationNextMap.setEnabled(keys.size() > 1); }
-
-        private void updateZoomBar() {
-           if (getMapModule()!=null) {
-              ((MainToolBar)c.toolbar).setZoomComboBox(getMapModule().getView().getZoom()); }}
-
-        
-       /**
-        *  Close the currently active map, return false if closing cancelled.
-        */
-       private boolean close() {
-       	    // (DP) The mode controller does not close the map
-            boolean closingNotCancelled = getMode().getModeController().close();
-            if (!closingNotCancelled) {
-               return false; }	
-            
-            String toBeClosed = getMapModule().toString();
-            mapModules.remove(toBeClosed);
-            if (mapModules.isEmpty()) {
-               setAllActions(false);
-               setMapModule(null);
-               frame.setView(null); }
-            else {
-               changeToMapModule((String)mapModules.keySet().iterator().next());
-               updateNavigationActions(); }
-            mapModuleChanged();
-            return true; }
-
-       // }}
-
-    }
 
     /**
      * Manages the history of visited maps.
@@ -753,7 +775,7 @@ public class Controller {
     // history instead of map modules. Another option is to remove maps from
     // history upon closing the maps.
 
-    private class HistoryManager {
+    protected class HistoryManager {
         private LinkedList /* of map modules */ historyList = new LinkedList();
         private int current;
 
@@ -763,7 +785,7 @@ public class Controller {
         void nextMap() {
            if (false) {
            if (current+1 < historyList.size()) {
-              getMapModuleManager().changeToMapModuleWithoutHistory((MapModule)historyList.get(++current));
+              getMapModuleManager().setMapModule((MapModule)historyList.get(++current));
               //the map is immediately added again via changeToMapModule
               historyPreviousMap.setEnabled(true);
               if ( current >= historyList.size()-1)
@@ -775,7 +797,7 @@ public class Controller {
         void previousMap() {
            if (false) {
            if (current > 0) {
-              getMapModuleManager().changeToMapModuleWithoutHistory((MapModule)historyList.get(--current));
+              getMapModuleManager().setMapModule((MapModule)historyList.get(--current));
               historyNextMap.setEnabled(true);
               if ( current <= 0)
                  historyPreviousMap.setEnabled(false);
@@ -818,12 +840,14 @@ public class Controller {
     }
 
     /**This closes only the current map*/
-    private class CloseAction extends AbstractAction {
-        CloseAction(Controller controller) {
+    public static class CloseAction extends AbstractAction {
+        private final Controller controller;
+		CloseAction(Controller controller) {
             super(controller.getResourceString("close"));
+			this.controller = controller;
         }
         public void actionPerformed(ActionEvent e) {
-            getMapModuleManager().close();
+            controller.close(false);
         }
     }
 
@@ -832,7 +856,7 @@ public class Controller {
         boolean isDlg;
         PrintAction(Controller controller, boolean isDlg) {
             super(controller.getResourceString("print"),
-                  new ImageIcon(getResource("images/Print24.gif")));
+                  new ImageIcon(getResource("images/fileprint.png")));
             this.controller = controller;
             setEnabled(false);
             this.isDlg = isDlg;
@@ -844,11 +868,13 @@ public class Controller {
             printerJob.setPrintable(getView(),pageFormat);
 
             if (!isDlg || printerJob.printDialog()) {
+				getView().preparePrinting();
                 try {
                     printerJob.print();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+				getView().endPrinting();
             }
         }
     }
@@ -925,6 +951,13 @@ public class Controller {
 
             // Ask user for page format (e.g., portrait/landscape)          
             pageFormat = printerJob.pageDialog(pageFormat);
+            if (pageFormat.getOrientation() == PageFormat.LANDSCAPE) {
+                setProperty("page_orientation", "landscape");
+            } else if (pageFormat.getOrientation() == PageFormat.PORTRAIT) {
+                setProperty("page_orientation", "portrait");
+            } else if (pageFormat.getOrientation() == PageFormat.REVERSE_LANDSCAPE) {
+                setProperty("page_orientation", "reverse_landscape");
+            }
         }
     }
 
@@ -1005,7 +1038,7 @@ public class Controller {
     private class NavigationPreviousMapAction extends AbstractAction {
         NavigationPreviousMapAction(Controller controller) {     
             super(controller.getResourceString("previous_map"),
-                  new ImageIcon(getResource("images/Back24.gif")));
+                  new ImageIcon(getResource("images/1leftarrow.png")));
             setEnabled(false);
         }
         public void actionPerformed(ActionEvent event) {
@@ -1016,7 +1049,7 @@ public class Controller {
     private class NavigationNextMapAction extends AbstractAction {
         NavigationNextMapAction(Controller controller) {
             super(controller.getResourceString("next_map"),
-                  new ImageIcon(getResource("images/Forward24.gif")));
+                  new ImageIcon(getResource("images/1rightarrow.png")));
             setEnabled(false);
         }
         public void actionPerformed(ActionEvent event) {
@@ -1075,48 +1108,175 @@ public class Controller {
         public ZoomInAction(Controller controller) {
            super(controller.getResourceString("zoom_in")); }
         public void actionPerformed(ActionEvent e) {
+            logger.info("ZoomInAction actionPerformed");
            ((MainToolBar)toolbar).zoomIn(); }}
 
     protected class ZoomOutAction extends AbstractAction {
         public ZoomOutAction(Controller controller) {
            super(controller.getResourceString("zoom_out")); }
         public void actionPerformed(ActionEvent e) {
+            logger.info("ZoomOutAction actionPerformed");
            ((MainToolBar)toolbar).zoomOut(); }}
 
     //
     // Preferences
     //
-    private class BackgroundSwatch extends ColorSwatch {
+    
+    private static Vector propertyChangeListeners = new Vector();
+    
+    public static Collection getPropertyChangeListeners() {
+        return Collections.unmodifiableCollection(propertyChangeListeners);
+    }
+    public static void addPropertyChangeListener(FreemindPropertyListener listener) {
+        Controller.propertyChangeListeners.add(listener);
+    }
+	/**
+	 * @author foltin
+	 *
+	 */
+	public class PropertyAction extends AbstractAction {
+
+		private final Controller controller;
+
+		/**
+		 * 
+		 */
+		public PropertyAction(Controller controller) {
+			super(controller.getResourceString("property_dialog"));
+			// TODO Auto-generated constructor stub
+			this.controller = controller;
+		}
+
+		public void actionPerformed(ActionEvent arg0) {
+			JDialog dialog = new JDialog(getFrame().getJFrame(), true /* modal */);
+			dialog.setResizable(true);
+			dialog.setUndecorated(false);
+			final OptionPanel options = new OptionPanel(getFrame(), dialog, new OptionPanelFeedback() {
+
+				public void writeProperties(Properties props) {
+					Vector sortedKeys = new Vector();
+					sortedKeys.addAll(props.keySet());
+					Collections.sort(sortedKeys);
+					HashMap oldProperties = new HashMap();
+					for (Iterator i = sortedKeys.iterator(); i.hasNext();) {
+						String key = (String) i.next();
+						// save only changed keys:
+						String oldProperty = controller.getProperty(key);
+                        String newProperty = props.getProperty(key);
+                        if (!oldProperty.equals(newProperty)) {
+						    oldProperties.put(key, oldProperty);
+							controller.setProperty(key, newProperty);
+						}
+					}
+					
+					for (Iterator i = Controller.getPropertyChangeListeners().iterator(); i.hasNext();) {
+						FreemindPropertyListener listener = (FreemindPropertyListener) i
+								.next();
+						for (Iterator j = oldProperties.keySet().iterator(); j
+                                .hasNext();) {
+                            String key = (String) j.next();
+    						listener.propertyChanged(key, controller.getProperty(key), (String) oldProperties.get(key));
+                        }
+					}
+					
+					if (oldProperties.size() > 0) {
+                        JOptionPane
+                                .showMessageDialog(
+                                        getFrame().getContentPane(),
+                                        getResourceString("option_changes_may_require_restart"));
+                        controller.getFrame().saveProperties();
+                    }
+				}
+			});
+			options.buildPanel();
+			options.setProperties(getFrame().getProperties());
+			dialog.setTitle("Freemind Properties");
+			dialog.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+			dialog.addWindowListener(new WindowAdapter(){
+			    public void windowClosing(WindowEvent event) {
+			        options.closeWindow();
+			    }
+			});
+			Action action = new AbstractAction() {
+
+				public void actionPerformed(ActionEvent arg0) {
+			        options.closeWindow();
+				}
+			};
+			action.putValue(Action.NAME, "end_dialog");
+			//		 Register keystroke
+			dialog.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+					.put(KeyStroke.getKeyStroke("ESCAPE"),
+							action.getValue(Action.NAME));
+
+			// Register action
+			dialog.getRootPane().getActionMap().put(action.getValue(Action.NAME),
+					action);
+
+
+			dialog.pack();
+			dialog.setVisible(true);
+			
+		}
+
+	}
+
+	private class BackgroundSwatch extends ColorSwatch {
         Color getColor() {
             return getModel().getBackgroundColor();
         }
     }
 
+    /** Seems to be obsolete, but we add the property listener here. fc, 14.6.2005*/
     private class BackgroundAction extends AbstractAction {
         BackgroundAction(Controller controller, Icon icon) {
             super(controller.getResourceString("background"),icon);
+            Controller.addPropertyChangeListener(new FreemindPropertyListener(){
+
+                public void propertyChanged(String propertyName, String newValue, String oldValue) {
+                    if(propertyName.equals(FreeMind.RESOURCES_BACKGROUND_COLOR)) {
+                        getModel().setBackgroundColor(Tools.xmlToColor(newValue));
+                    }
+                }});
         }
         public void actionPerformed(ActionEvent e) {
-            Color color = JColorChooser.showDialog(getView(),"Choose Background Color:",getView().getBackground() );
+            Color color = showCommonJColorChooserDialog(getView(),getResourceString("choose_background_color"),getView().getBackground() );
             getModel().setBackgroundColor(color);
         }
     }
 
-    private class OptionAntialiasAction extends AbstractAction {
-       OptionAntialiasAction(Controller controller) {}
-       public void actionPerformed(ActionEvent e) {
-          if (e.getActionCommand().equals("antialias_none")) {
-             setAntialiasEdges(false);
-             setAntialiasAll(false); }
-          if (e.getActionCommand().equals("antialias_edges")) {
-             setAntialiasEdges(true);
-             setAntialiasAll(false); }
-          if (e.getActionCommand().equals("antialias_all")) {
-             setAntialiasEdges(false);
-             setAntialiasAll(true); }
-          if(getView() != null)
-              getView().repaint(); 
+    public class OptionAntialiasAction extends AbstractAction implements FreemindPropertyListener {
+       OptionAntialiasAction(Controller controller) {
+           Controller.addPropertyChangeListener(this);
        }
+       public void actionPerformed(ActionEvent e) {
+          String command = e.getActionCommand();
+        changeAntialias(command); 
+       }
+	    /**
+	     * @param command
+	     */
+	    public void changeAntialias(String command) {
+	        if(command == null) {
+	            return;
+	        }
+	        if (command.equals("antialias_none")) {
+	             setAntialiasEdges(false);
+	             setAntialiasAll(false); }
+	          if (command.equals("antialias_edges")) {
+	             setAntialiasEdges(true);
+	             setAntialiasAll(false); }
+	          if (command.equals("antialias_all")) {
+	             setAntialiasEdges(false);
+	             setAntialiasAll(true); }
+	          if(getView() != null)
+	              getView().repaint();
+	    }
+	    public void propertyChanged(String propertyName, String newValue, String oldValue) {
+            if (propertyName.equals(FreeMind.RESOURCE_ANTIALIAS)) {
+                changeAntialias(newValue);
+            }
+	    }
     }
 
     private class OptionHTMLExportFoldingAction extends AbstractAction {
@@ -1125,19 +1285,37 @@ public class Controller {
           setProperty("html_export_folding", e.getActionCommand()); }}
 
     // switch auto properties for selection mechanism fc, 7.12.2003.
-    private class OptionSelectionMechanismAction extends AbstractAction {
+    private class OptionSelectionMechanismAction extends AbstractAction implements FreemindPropertyListener {
         Controller c;
-       OptionSelectionMechanismAction(Controller controller) {
-           c = controller;
-       }
-       public void actionPerformed(ActionEvent e) {
-          setProperty("selection_method", e.getActionCommand());
-          // and update the selection method in the NodeMouseMotionListener
-          freemind.controller.NodeMouseMotionListener.updateSelectionMethod(c);
-          String statusBarString = c.getResourceString(e.getActionCommand());
-          if(statusBarString != null) // should not happen
-              c.getFrame().out(statusBarString);
-       }
+
+        OptionSelectionMechanismAction(Controller controller) {
+            c = controller;
+            Controller.addPropertyChangeListener(this);
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            String command = e.getActionCommand();
+            changeSelection(command);
+        }
+
+        /**
+         * @param command
+         */
+        private void changeSelection(String command) {
+            setProperty("selection_method", command);
+            // and update the selection method in the NodeMouseMotionListener
+            freemind.controller.NodeMouseMotionListener
+                    .updateSelectionMethod(c);
+            String statusBarString = c.getResourceString(command);
+            if (statusBarString != null) // should not happen
+                c.getFrame().out(statusBarString);
+        }
+
+        public void propertyChanged(String propertyName, String newValue, String oldValue) {
+            if(propertyName.equals(FreeMind.RESOURCES_SELECTION_METHOD)) {
+                changeSelection(newValue);
+            }
+        }
     }
 
     // open faq url from freeminds page:
@@ -1158,9 +1336,70 @@ public class Controller {
         }
     }
 
+    public WindowConfigurationStorage decorateDialog(JDialog dialog, String propertyName) {
+		String unmarshalled = getProperty(
+		        propertyName);
+		if (unmarshalled != null) {
+			WindowConfigurationStorage storage = (WindowConfigurationStorage) unMarshall(unmarshalled);
+			if (storage != null) {
+				dialog.setLocation(storage.getX(), storage.getY());
+				dialog.getRootPane().setPreferredSize(new Dimension(storage.getWidth(), storage.getHeight()));
+			}
+			return storage;
+		}
+		return null;
+    }
 
 
+	/**
+     * @param storage
+	 * @param propertyName
+     */
+    public void storeDialogPositions(JDialog dialog, WindowConfigurationStorage storage, String propertyName) {
+        storage.setX((dialog.getX()));
+        storage.setY((dialog.getY()));
+        storage.setWidth((dialog.getWidth()));
+        storage.setHeight((dialog.getHeight()));
+        String marshalled = marshall(storage);
+        setProperty(propertyName, marshalled);
+    }
 
 
+    public String marshall(XmlAction action) {
+        try {
+            // marshall:
+            //marshal to StringBuffer:
+            StringWriter writer = new StringWriter();
+            Marshaller m = JaxbTools.getInstance().createMarshaller();
+            m.marshal(action, writer);
+            String result = writer.toString();
+            return result;
+        } catch (JAXBException e) {
+			logger.severe(e.toString());
+            e.printStackTrace();
+            return "";
+        }
+
+	}
+
+	public XmlAction unMarshall(String inputString) {
+		try {
+			// unmarshall:
+			Unmarshaller u = JaxbTools.getInstance().createUnmarshaller();
+			StringBuffer xmlStr = new StringBuffer( inputString);
+			XmlAction doAction = (XmlAction) u.unmarshal( new StreamSource( new StringReader( xmlStr.toString() ) ) );
+			return doAction;
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
+    
+    public ObjectFactory getActionXmlFactory() {
+        return actionXmlFactory;
+    }
 }//Class Controller
 

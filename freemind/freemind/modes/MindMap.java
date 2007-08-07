@@ -16,53 +16,57 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MindMap.java,v 1.14 2004-01-17 23:20:58 christianfoltin Exp $*/
+/*$Id: MindMap.java,v 1.15 2007-08-07 17:37:24 dpolivaev Exp $*/
 
 package freemind.modes;
 
-import java.io.File;
-import java.net.URL;
-import java.net.MalformedURLException;
 import java.awt.Color;
+import java.awt.datatransfer.Transferable;
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
-import java.util.ArrayList;
+
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
-import freemind.modes.MindMapLinkRegistry;
-// Clipboard
-import java.awt.datatransfer.Transferable;
 
 public interface MindMap extends TreeModel {
         
-    void changeNode(MindMapNode node, String newText);
+//    void changeNode(MindMapNode node, String newText);
+    //nodeChanged has moved to the modeController. (fc, 2.5.2004)
+	void nodeChanged(TreeNode node);
 
     Transferable cut(MindMapNode node);
 
     Transferable copy(MindMapNode node);
 
     // ^ Is copy with node really needed? It seems to me, that no.
-    Transferable cut();
     Transferable copy(); 
-    Transferable copySingle(); 
+    Transferable copySingle();
+    /**
+     * @param selectedNodes
+     * @param inPlainText typically this is null. AN alternative is node.toString(); if there is only one node.
+     * @return
+     */
+    public Transferable copy(List selectedNodes, String inPlainText);
     String getAsPlainText(List mindMapNodes);
     String getAsRTF(List mindMapNodes);
 
-    void splitNode(MindMapNode node, int caretPosition, String newText);
+	void insertNodeInto(
+			MindMapNode newChild,
+			MindMapNode parent,
+			int index);
 
-    void paste(Transferable t, MindMapNode parent);
-    /** @param isLeft determines, whether or not the node is placed on the left or right. **/
-    void paste(Transferable t, MindMapNode target, boolean asSibling, boolean isLeft);
-
+//    void paste(Transferable t, MindMapNode parent);
+//    /** @param isLeft determines, whether or not the node is placed on the left or right. **/
+//    void paste(Transferable t, MindMapNode target, boolean asSibling, boolean isLeft);
+//
     //    void paste(MindMapNode node, MindMapNode parent);
 
-    boolean find(MindMapNode node, String what, boolean caseSensitive);
-    boolean findNext();
-    String getFindWhat();
-    String getFindFromText();
 
-    /** Display a node in the display (used by find and the goto action by arrow link actions).*/
-    void displayNode(MindMapNode node, ArrayList NodesUnfoldedByDisplay);
-
+ 
     
     /**
      * Returns the file name of the map edited or null if not possible.
@@ -73,6 +77,12 @@ public interface MindMap extends TreeModel {
      * Return URL of the map (whether as local file or a web location)
      */
     URL getURL() throws MalformedURLException;
+    
+    /** writes the content of the map to a writer.
+	 * @param fileout
+	 * @throws IOException
+	 */
+	void getXml(Writer fileout) throws IOException;
 
     /**
      * Returns a string that may be given to the modes restore()
@@ -88,11 +98,11 @@ public interface MindMap extends TreeModel {
     
     void setBackgroundColor(Color color);
 
-    void setFolded(MindMapNode node, boolean folded);
 
     /** @return returns the link registry associated with this mode, or null, if no registry is present.*/
     MindMapLinkRegistry getLinkRegistry();
-    
+
+   
     /**
      * Destroy everything you have created upon opening.  
      */

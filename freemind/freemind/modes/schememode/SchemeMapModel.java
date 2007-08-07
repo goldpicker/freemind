@@ -16,13 +16,15 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: SchemeMapModel.java,v 1.11 2003-11-03 11:00:22 sviles Exp $*/
+/*$Id: SchemeMapModel.java,v 1.12 2007-08-07 17:37:46 dpolivaev Exp $*/
 
 package freemind.modes.schememode;
 
 import freemind.main.FreeMindMain;
 
 import freemind.modes.MapAdapter;
+import freemind.modes.MindMapNode;
+
 import java.io.File;
 import java.io.Reader;
 import java.io.BufferedWriter;
@@ -33,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.StreamTokenizer;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.io.Writer;
 
 public class SchemeMapModel extends MapAdapter {
     
@@ -146,4 +149,17 @@ public class SchemeMapModel extends MapAdapter {
 	    return getFile().getName();
 	}
     }
+
+    /* (non-Javadoc)
+     * @see freemind.modes.MindMap#setLinkInclinationChanged()
+     */
+    public void setLinkInclinationChanged() {
+    }
+	/* (non-Javadoc)
+	 * @see freemind.modes.MindMap#getXml(java.io.Writer)
+	 */
+	public void getXml(Writer fileout) throws IOException {
+		fileout.write(getCode());
+	}
+
 }

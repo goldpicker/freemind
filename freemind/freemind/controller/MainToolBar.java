@@ -16,42 +16,51 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: MainToolBar.java,v 1.16 2004-01-10 18:22:25 christianfoltin Exp $*/
+/*$Id: MainToolBar.java,v 1.17 2007-08-07 17:37:12 dpolivaev Exp $*/
 
 package freemind.controller;
 
-import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
-import javax.swing.JToolBar;
+import java.awt.event.ItemListener;
+import java.util.logging.Logger;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 
-public class MainToolBar extends JToolBar {
-    JComboBox zoom;	    
+public class MainToolBar extends FreeMindToolBar {
+    private JComboBox zoom;	    
     Controller c;
     String userDefinedZoom;
-
+    private static Logger logger= null;
+	
     public MainToolBar(final Controller c) {
+    	super();
         this.setRollover(true);
         this.c = c;
+        if(logger == null) {
+            logger = c.getFrame().getLogger(this.getClass().getName());
+        }
         userDefinedZoom = c.getResourceString("user_defined_zoom");
 	JButton button;
 
 	button = add(c.navigationPreviousMap);
-	button.setText("");
 	button = add(c.navigationNextMap);
-	button.setText("");
 	button = add(c.printDirect);
-	button.setText("");
 
         zoom = new JComboBox(c.getZooms());
         zoom.setSelectedItem("100%");
         zoom.addItem(userDefinedZoom);
         add(zoom);
-        zoom.addItemListener(new ItemListener(){
-              public void itemStateChanged(ItemEvent e) {
-                  // todo: dialog with user zoom value, if user zoom is chosen.
-                 setZoomByItem(e.getItem()); }}); }
+		zoom.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				// todo: dialog with user zoom value, if user zoom is chosen.
+				// change proposed by dimitri:
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					setZoomByItem(e.getItem());
+				}
+			}
+		});
+	}
 
     private void setZoomByItem(Object item) {
         if(((String) item).equals(userDefinedZoom))
@@ -76,6 +85,7 @@ public class MainToolBar extends JToolBar {
        return (int)(f*100F)+"%"; }
 
     public void setZoomComboBox(float f) {
+        logger.info("setZoomComboBox is called with "+f+".");
         String toBeFound = getItemForZoom(f);
         for(int i = 0; i < zoom.getItemCount(); ++i) {
             if(toBeFound.equals((String) zoom.getItemAt(i))) {
@@ -90,4 +100,5 @@ public class MainToolBar extends JToolBar {
     public void setAllActions(boolean enabled) {
 	if (zoom != null) {
            zoom.setEnabled(enabled); }}
+
 }

@@ -16,16 +16,18 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: ModesCreator.java,v 1.9 2003-11-03 11:00:12 sviles Exp $*/
+/*$Id: ModesCreator.java,v 1.10 2007-08-07 17:37:26 dpolivaev Exp $*/
 
 package freemind.modes;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 import freemind.controller.Controller;
-
 
 /**
  * This class creates all the modes that are available. To add your own mode,
@@ -33,55 +35,66 @@ import freemind.controller.Controller;
  * with MindMapMode). Thats all!
  */
 public class ModesCreator {
-    private Controller c;
-    private Map modes = new TreeMap();
+	private Controller c;
 
-    public ModesCreator(Controller c) {
-	this.c = c;
-    }
+	private Map modes;
 
-    public Map getAllModes() {
-	Mode mode;
-	//Copy these two lines for every new Mode,
-	//and replace MindMapMode(c) with YourNewMode(c)
+	private Map modesTranslation;
 
-	String modestring = c.getFrame().getProperty("modes");
+	private static Logger logger;
+	
+	public ModesCreator(Controller c) {
+		this.c = c;
+	}
 
-	StringTokenizer tokens = new StringTokenizer(modestring,",");
+	public Set getAllModes() {
+		if(logger==null) {
+			logger = c.getFrame().getLogger(this.getClass().getName());
+		}
+		if (modes == null) {
+			modes = new TreeMap();
+			modesTranslation = new HashMap();
+			String modestring = c.getFrame().getProperty("modes_since_0_8_0");
 
-	while (tokens.hasMoreTokens()) {
-	    String modename = tokens.nextToken();
-	    try {
-		mode = (Mode)Class.forName(modename).newInstance();
-		mode.init(c);
-		modes.put(mode.toString(), mode);
-	    } catch (Exception ex) {
-		System.err.println("Mode "+modename+" could not be loaded.");
-		ex.printStackTrace();
-	    }
+			StringTokenizer tokens = new StringTokenizer(modestring, ",");
+
+			while (tokens.hasMoreTokens()) {
+				String modename = tokens.nextToken();
+				String modeAlias = tokens.nextToken();
+				modes.put(modename, null);
+				modesTranslation.put(modeAlias, modename);
+			}
+			logger.info("Modes:" + modes.keySet());
+		}
+		return modesTranslation.keySet();
 	}
 
 	
+	/** Creates a new ModeController.
+	 * 
+	 * @param modeAlias
+	 * @return
+	 */
+	public Mode getMode(String modeAlias) {
+		getAllModes();
+		Mode mode = null;
+		if (!modesTranslation.containsKey(modeAlias)) {
+			throw new IllegalArgumentException("Unknown mode " + modeAlias);
+		}
+		String modeName = (String) modesTranslation.get(modeAlias);
+		if (modes.get(modeName) == null) {
+			try {
+				mode = (Mode) Class.forName(modeName).newInstance();
+				logger.info("Initializing mode "+ modeAlias );
+				mode.init(c);
+				logger.info("Done: Initializing mode "+ modeAlias );
+				modes.put(modeName, mode);
+			} catch (Exception ex) {
+				logger.severe("Mode " + modeName + " could not be loaded.");
+				ex.printStackTrace();
+			}
+		}
+		return (Mode) modes.get(modeName);
+	}
 
-	//	mode = new MindMapMode(c);
-	//	modes.put(mode.toString(), mode);
-	/*	try {
-	mode = (Mode)Class.forName("freemind.modes.browsemode.BrowseMode").newInstance();
-	mode.init(c);
-	modes.put(mode.toString(), mode);
-
-	} catch (Exception ex) {
-	    System.err.println("Tjuschi");
-	ex.printStackTrace();}
-
-	//	mode = new FileMode(c);
-	//	modes.put(mode.toString(), mode);
-
-	//	mode = new SchemeMode(c);
-	//	modes.put(mode.toString(), mode);
-	*/
-
-
-	return modes;
-    }
 }

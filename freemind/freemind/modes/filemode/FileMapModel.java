@@ -16,29 +16,42 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: FileMapModel.java,v 1.7 2003-11-03 11:00:13 sviles Exp $*/
+/*$Id: FileMapModel.java,v 1.8 2007-08-07 17:37:43 dpolivaev Exp $*/
 
 package freemind.modes.filemode;
 
 import freemind.main.FreeMindMain;
+import freemind.modes.LinkRegistryAdapter;
+import freemind.modes.MindMapLinkRegistry;
 import freemind.modes.MindMapNode;
 import freemind.modes.MapAdapter;
 import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
 
 public class FileMapModel extends MapAdapter {
     
+    private LinkRegistryAdapter linkRegistry;
+
     //
     // Constructors
     //
 
     public FileMapModel(FreeMindMain frame) {
-	super(frame);
-	setRoot(new FileNodeModel(new File(File.separator), getFrame()));
+        this(new File(File.separator), frame);
     }
     
     public FileMapModel( File root , FreeMindMain frame) {
-	super(frame);
- 	setRoot(new FileNodeModel(root,getFrame()));
+        super(frame);
+        setRoot(new FileNodeModel(root,getFrame()));
+ 		linkRegistry = new LinkRegistryAdapter();
+    }
+
+    //
+    // Other methods
+    //
+    public MindMapLinkRegistry getLinkRegistry() {
+        return linkRegistry;
     }
 
     //
@@ -48,6 +61,15 @@ public class FileMapModel extends MapAdapter {
     	return true;
     }
     
+    /**
+     *
+     */
+
+    public void destroy() {
+        /* fc, 8.8.2004: don't call super.destroy as this method tries to remove the hooks recursively.
+         * This must fail. */
+        //super.destroy();
+    }
     public void load(File file) {
     }
     
@@ -72,6 +94,23 @@ public class FileMapModel extends MapAdapter {
 
 // 	nodeChanged(node);
     }
+
+    /* (non-Javadoc)
+     * @see freemind.modes.MindMap#setLinkInclinationChanged()
+     */
+    public void setLinkInclinationChanged() {
+    }
+    
+	/* (non-Javadoc)
+	 * @see freemind.modes.MindMap#getXml(java.io.Writer)
+	 */
+	public void getXml(Writer fileout) throws IOException {
+		// nothing. 
+		//FIXME: Implement me if you need me.
+		throw new RuntimeException("Unimplemented method called.");
+	}
+
+
 }
 
 

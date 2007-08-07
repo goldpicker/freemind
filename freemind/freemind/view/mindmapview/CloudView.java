@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: CloudView.java,v 1.1 2003-11-09 22:09:26 christianfoltin Exp $*/
+/*$Id: CloudView.java,v 1.2 2007-08-07 17:37:48 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 import freemind.modes.MindMapCloud;
@@ -55,16 +55,18 @@ import java.awt.RenderingHints;
 public class CloudView {
     protected MindMapCloud cloudModel;
     protected NodeView source;
-    protected int iterativeLevel;
+    /** getIterativeLevel() describes the n-th nested cloud that is to be painted.*/
+    protected int getIterativeLevel() {
+    	return cloudModel.getIterativeLevel();
+    }
     static final Stroke DEF_STROKE = new BasicStroke(3);
+    static private CloudView heightCalculator = new CloudView(null, null);
 
-    protected CloudView(MindMapCloud cloudModel, NodeView source, int iterativeLevel) {
+    protected CloudView(MindMapCloud cloudModel, NodeView source) {
         this.cloudModel = cloudModel;
         this.source = source;
-        this.iterativeLevel = iterativeLevel;
     }
 
-    /** \param iterativeLevel describes the n-th nested cloud that is to be painted.*/
     public void paint(Graphics graphics) {
         Graphics2D g = (Graphics2D) graphics.create();
         /* antialias */  setRendering(g);
@@ -75,15 +77,16 @@ public class CloudView {
         /* now bold */
         gstroke.setColor(getExteriorColor());
         gstroke.setStroke(getStroke());
-        /* calculate the distances between two points on the convex hull depending on the iterativeLevel.*/
-        double distanceBetweenPoints = 50 / (iterativeLevel+1) * getZoom();
-        if(distanceBetweenPoints < 15* getZoom()) 
+        /* calculate the distances between two points on the convex hull depending on the getIterativeLevel().*/
+        double distanceBetweenPoints = 3 * getDistanceToConvexHull();
+        if(getIterativeLevel() > 4) 
             distanceBetweenPoints = 100 * getZoom(); /* flat*/
-        double distanceToConvexHull = 25 / (iterativeLevel+1) * getZoom();
+        double distanceToConvexHull = getDistanceToConvexHull();
         /** get coordinates */
         LinkedList coordinates = new LinkedList();
         ConvexHull hull = new ConvexHull();
-        source.getCoordinates(coordinates, (iterativeLevel==0)?(int)(5* getZoom()):0 /* = additionalDistanceForConvexHull */);
+		source.getCoordinates(coordinates);
+//		source.getCoordinates(coordinates, (getIterativeLevel()==0)?(int)(5* getZoom()):0 /* = additionalDistanceForConvexHull */);
         Vector/*<Point>*/ res = hull.calculateHull(coordinates);
         Polygon p = new Polygon();
         for(int i = 0 ; i < res.size(); ++i) {
@@ -131,7 +134,6 @@ public class CloudView {
         }
     }
 
-    /** \param iterativeLevel describes the n-th nested cloud that is to be painted.*/
     private void paintClouds(Graphics2D g, Graphics2D gstroke, double x0,double y0,double x1,double y1, double distanceToConvexHull) {
         //System.out.println("double=" +  x0+ ", double=" +  y0+ ", double=" +  x1+ ", double=" +  y1);
         double x2,y2,dx,dy;
@@ -179,6 +181,17 @@ public class CloudView {
        int width = getWidth();
        return (width < 1) ? 1 : width; }
 
+    private double getDistanceToConvexHull() {
+    	return 40 /(getIterativeLevel() + 1)  * getZoom(); 
+    }
+    
+    /** the layout functions can get the additional height of the clouded node . */
+    static public int getAdditionalHeigth(MindMapCloud cloudModel, NodeView source){
+    	heightCalculator.cloudModel = cloudModel;
+    	heightCalculator.source = source;
+		 return (int) (1.1 * heightCalculator.getDistanceToConvexHull());
+	}
+    
     protected MapView getMap() {
        return source.getMap(); }
 

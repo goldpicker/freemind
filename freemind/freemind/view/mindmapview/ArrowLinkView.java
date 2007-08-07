@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: ArrowLinkView.java,v 1.8 2004-01-17 23:20:58 christianfoltin Exp $*/
+/*$Id: ArrowLinkView.java,v 1.9 2007-08-07 17:37:48 dpolivaev Exp $*/
 
 package freemind.view.mindmapview;
 import freemind.modes.MindMapArrowLink;
@@ -78,81 +78,103 @@ public class ArrowLinkView {
     }
 
     /** \param iterativeLevel describes the n-th nested arrowLink that is to be painted.*/
-    public void paint(Graphics graphics) {
-        Point p1, p2, p3, p4;
-        boolean targetIsLeft;
-        boolean sourceIsLeft;
-        Graphics2D g = (Graphics2D) graphics.create();
-        /* antialias */  setRendering(g);
-        g.setColor(getColor());
-        /* set stroke.*/
-        g.setStroke(getStroke());
-        // if one of the nodes is not present then draw a dashed line:
-        if(source == null || target == null)
-            g.setStroke(new BasicStroke(getWidth(), BasicStroke.CAP_ROUND,
-                                        BasicStroke.JOIN_ROUND, 0, new float[]{0,3,0,3}, 0));
+	public void paint(Graphics graphics) {
+	    Point p1 = null, p2 = null, p3 = null, p4 = null;
+	    boolean targetIsLeft = false;
+	    boolean sourceIsLeft = false;
+	    Graphics2D g = (Graphics2D) graphics.create();
+	    /* antialias */  setRendering(g);
+	    g.setColor(getColor());
+	    /* set stroke.*/
+	    g.setStroke(getStroke());
+	    // if one of the nodes is not present then draw a dashed line:
+	    if(source == null || target == null)
+	        g.setStroke(new BasicStroke(getWidth(), BasicStroke.CAP_ROUND,
+	                                    BasicStroke.JOIN_ROUND, 0, new float[]{0,3,0,3}, 0));
+	
+	    // determine, whether destination exists:
+	    if(source != null) {
+	        p1 = source.getLinkPoint(arrowLinkModel.getStartInclination());
+	        sourceIsLeft = source.isLeft();
+	    }
+	    if(target != null) {
+	        p2 = target.getLinkPoint(arrowLinkModel.getEndInclination());
+	        targetIsLeft = target.isLeft();
+	    }
+	    // determine point 2 and 3:
+		if (arrowLinkModel.getEndInclination() == null
+		   || arrowLinkModel.getStartInclination() == null) {
+			double dellength = source != null && target != null ? p1.distance(p2) / getZoom() : 30;
+			if(source != null && arrowLinkModel.getStartInclination() == null){
+				Point incl = calcInclination(source, dellength);
+				arrowLinkModel.setStartInclination(incl);
+		        p1 = source.getLinkPoint(arrowLinkModel.getStartInclination());
+			}
+			if(target != null && arrowLinkModel.getEndInclination() == null){
+				Point incl = calcInclination(target, dellength);
+				incl.y = -incl.y;
+				arrowLinkModel.setEndInclination(incl);
+		        p2 = target.getLinkPoint(arrowLinkModel.getEndInclination());
+			}
+		}
+		
+		arrowLinkCurve = new CubicCurve2D.Double();
+		if (p1 != null){
+	        p3 = new Point( p1 );
+	        p3.translate( ((sourceIsLeft)?-1:1) * getMap().getZoomed(arrowLinkModel.getStartInclination().x), getMap().getZoomed(arrowLinkModel.getStartInclination().y));
+	        if(p2 == null){
+				arrowLinkCurve.setCurve(p1,p3,p1,p3);
+	        }
+		}
+		if (p2 != null){
+	    	p4 = new Point( p2 );
+	    	p4.translate( ((targetIsLeft)?-1:1) * getMap().getZoomed(arrowLinkModel.getEndInclination().x), getMap().getZoomed(arrowLinkModel.getEndInclination().y));
+			if(p1 == null){
+				arrowLinkCurve.setCurve(p2,p4,p2,p4);
+			}
+		}
+		
+		if(p1 != null && p2 != null){
+	        arrowLinkCurve.setCurve(p1,p3,p4,p2);
+	        g.draw(arrowLinkCurve);
+	        // arrow source:
+		}
+	    if(source != null && !arrowLinkModel.getStartArrow().equals("None")) {
+	        paintArrow(p1, p3, g);
+	    }
+	    // arrow target:
+	    if(target != null && !arrowLinkModel.getEndArrow().equals("None")) {
+	        paintArrow(p2, p4, g);
+	    }
+	    // Control Points
+	    if(arrowLinkModel.getShowControlPointsFlag() || source == null || target == null){
+			g.setStroke(new BasicStroke(getWidth(), BasicStroke.CAP_ROUND,
+										BasicStroke.JOIN_ROUND, 0, new float[]{0,3,0,3}, 0));
+			if (p1 != null){
+				g.drawLine(p1.x, p1.y, p3.x, p3.y);
+			}
+			if (p2 != null){
+				g.drawLine(p2.x, p2.y, p4.x, p4.y);
+			}
+	    }
+	}
 
-        // determine, whether destination exists:
-        if(source == null) {
-            p1 = new Point(target.getLinkPoint());
-            p1.translate(100,0);
-            sourceIsLeft = true;
-        } else {
-            p1 = source.getLinkPoint();
-            sourceIsLeft = source.isLeft();
-        }
-        if(target == null) {
-            p2 = new Point(p1);
-            p2.translate(100,0);
-            targetIsLeft = true;
-        } else {
-            p2 = target.getLinkPoint();
-            targetIsLeft = target.isLeft();
-        }
-        // determine point 2 and 3:
-        double delx, dely;
-        delx = p2.x - p1.x; /* direction of p1 -> p3*/
-        dely = p2.y - p1.y;
-        double dellength = Math.sqrt(delx*delx + dely*dely);
-        int deltax = (int) (getZoom() * dellength);
-        p3 = new Point( p1 );
-        if(arrowLinkModel.getStartInclination() != null) {
-            p3.translate( arrowLinkModel.getStartInclination().x, arrowLinkModel.getStartInclination().y);
-        } else {
-            // automatic translation in outside direction:
-            p3.translate(((sourceIsLeft)?-1:1) * deltax, 0);
-        }            
-        p4 = new Point( p2 );
-        if(arrowLinkModel.getEndInclination() != null) {
-            p4.translate( arrowLinkModel.getEndInclination().x, arrowLinkModel.getEndInclination().y);
-        } else {
-            // automatic translation in outside direction:
-            p4.translate(((targetIsLeft)?-1:1) * deltax, 0);
-        }
-        //
-        if(source == null) {
-            p1 = p4;
-            p3 = p2;
-        }
-        if(target == null) {
-            p2 = p3;
-            p4 = p1;
-        }
-        //
-        arrowLinkCurve = new CubicCurve2D.Double();
-        arrowLinkCurve.setCurve(p1,p3,p4,p2);
-        g.draw(arrowLinkCurve);
-        // arrow source:
-        if(source != null && !arrowLinkModel.getStartArrow().equals("None")) {
-            paintArrow(p1, p3, g);
-        }
-        // arrow target:
-        if(target != null && !arrowLinkModel.getEndArrow().equals("None")) {
-            paintArrow(p2, p4, g);
-        }
-    }
+    /**
+	 * @param dellength
+	 */
+	private Point calcInclination(NodeView node, double dellength) {
+/*	    
+		int w = node.getWidth();
+		int h = node.getHeight();
+		double r = Math.sqrt(w*w+h*h);
+		double wr = dellength * w / r;
+		double hr = dellength * h / r;
+		return  new Point((int)wr, (int)hr);
+*/		
+		return  new Point((int) dellength, 0);
+	}
 
-    /** @param p1 is the start point 
+	/** @param p1 is the start point 
         @param p3 is the another point indicating the direction of the arrow.*/
     private void paintArrow(Point p1, Point p3, Graphics2D g) {
         double dx, dy, dxn, dyn;
@@ -253,5 +275,14 @@ public class ArrowLinkView {
       if (getMap().getController().getAntialiasEdges() || getMap().getController().getAntialiasAll()) {
          g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); }}
 
-
+    /**
+     * @param originX
+     * @param originY
+     * @param newX
+     * @param newY
+     */
+    public void changeInclination(int originX, int originY, int newX, int newY) {
+        // TODO Auto-generated method stub
+        
+    }
 }
