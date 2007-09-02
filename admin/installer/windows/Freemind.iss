@@ -117,8 +117,8 @@ LicenseFile=license.txt
 WindowVisible=true
 
 
-AppCopyright=Copyright ï¿½ 2007 Christian Foltin, Dimitry Polivaev and others
-;AppCopyright=Copyright ï¿½ {code:InstallationDate}
+AppCopyright=Copyright © 2007 Christian Foltin, Dimitry Polivaev and others
+;AppCopyright=Copyright © {code:InstallationDate}
 AppVersion=0.9.0.Beta13
 InfoAfterFile=after.txt
 InfoBeforeFile=before.txt
