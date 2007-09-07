@@ -43,7 +43,7 @@ class visorFreeMind.ButtonsCreator{
 	private var mc_Color_rollout;
 	private var mainColor;
 	public static var alfa=100;
-	public static var min_alpha_buttons=40;
+	public static var min_alpha_buttons=60;
 	public static var max_alpha_buttons=100;
 	private var browser:Browser;
 	public static var mc_now_over:MovieClip=null;
@@ -54,6 +54,7 @@ class visorFreeMind.ButtonsCreator{
 								0xFFEEEE,0xEEFFEE,0xEEEEFF];
 
 	public function ButtonsCreator(browser:Browser){
+		AttributeChanger.init(browser.mc_container);
 		this.browser=browser;
 		resetMainColor();
 		createFading(browser);
@@ -124,13 +125,16 @@ class visorFreeMind.ButtonsCreator{
 	function addToolTipsButtons(){
 		var over=function(){
 			this.browser.showTooltip("<p>"+this.tooltip+"</p>",14,20);
-			ButtonsCreator.mc_now_over=this;
+			AttributeChanger.deleteElem(this);
+			this._alpha=ButtonsCreator.max_alpha_buttons;
+			AttributeChanger.add(this,"_rotation",120,4);
 		}
 
 		var out=function(){
 			this.browser.hideTooltip();
-			//this._alpha=ButtonsCreator.min_alpha_buttons;
-			ButtonsCreator.mc_now_over=null;			
+			AttributeChanger.deleteElem(this);
+			AttributeChanger.add(this,"_alpha",ButtonsCreator.min_alpha_buttons,30);
+			AttributeChanger.add(this,"_rotation",0,30);		
 		}
 
 		
