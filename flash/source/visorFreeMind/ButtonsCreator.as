@@ -127,14 +127,14 @@ class visorFreeMind.ButtonsCreator{
 			this.browser.showTooltip("<p>"+this.tooltip+"</p>",14,20);
 			AttributeChanger.deleteElem(this);
 			this._alpha=ButtonsCreator.max_alpha_buttons;
-			AttributeChanger.add(this,"_rotation",120,4);
+			//AttributeChanger.add(this,"_rotation",120,4);
 		}
 
 		var out=function(){
 			this.browser.hideTooltip();
 			AttributeChanger.deleteElem(this);
 			AttributeChanger.add(this,"_alpha",ButtonsCreator.min_alpha_buttons,30);
-			AttributeChanger.add(this,"_rotation",0,30);		
+			//AttributeChanger.add(this,"_rotation",0,30);		
 		}
 
 		

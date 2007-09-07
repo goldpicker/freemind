@@ -40,7 +40,7 @@ class visorFreeMind.AttributeChanger
 		map[mc]=[mc,att,start_value,end_value,numFrames,(end_value-start_value)/numFrames];
 	}
 	
-	static function add(mc:MovieClip,att:String,end_value:Number,numFrames){
+	static function addChange(mc:MovieClip,att:String,end_value:Number,numFrames){
 		if(!inited) init();
 		var map=getMap(att);
 		var start_value=mc[att];

@@ -40,7 +40,7 @@ class visorFreeMind.Main {
 		
 		static function redefineRightMenu(){
 			var mycm=new ContextMenu();
-			mycm.hideBuiltInItems();
+			//mycm.hideBuiltInItems();
 			mycm.onSelect = visorFreeMind.Main.copyInfoNodeOver;
 			var copy=new ContextMenuItem("move back",visorFreeMind.Main.backward);
 			mycm.customItems.push(copy);
@@ -56,8 +56,9 @@ class visorFreeMind.Main {
 				copy=new ContextMenuItem("gen shots for linked maps",visorFreeMind.Main.genShotsForLinkedMaps);
 				mycm.customItems.push(copy);
 			}
-			copy=new ContextMenuItem("FREEMIND BROWSER v.98",visorFreeMind.Main.nada);
+			copy=new ContextMenuItem("FREEMIND BROWSER v1.0a",visorFreeMind.Main.nada);
 			mycm.customItems.push(copy);
+			mycm.hideBuiltInItems();
 			_root.menu = mycm;
 		}
 
@@ -103,7 +104,7 @@ class visorFreeMind.Main {
 	   {
 	   	   if(initialized==true)return true;
 	   	   else initialized=true;
-	   	   Flashout.init();
+	   	   //Flashout.init();
 		   trace("Starting flash FreeMind Browser",2);
 
 			// set the Flash movie to have a fixed anchor

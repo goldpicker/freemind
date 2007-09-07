@@ -177,8 +177,9 @@ class visorFreeMind.Node {
 	}
 
 	function getText(node_xml:XMLNode){
-		if(node_xml.attributes.TEXT!=undefined){
-			if(node_xml.attributes.TEXT.indexof("<html>")>=0)
+		trace(node_xml.attributes.TEXT);
+		if(node_xml.attributes.TEXT!=undefined){//ff
+			if(node_xml.attributes.TEXT.indexOf("<html>")>=0)
 				richText=true;
 			return node_xml.attributes.TEXT;
 		}else{//richcontent
@@ -204,7 +205,7 @@ class visorFreeMind.Node {
 		for(var i=0;i<node_xml.childNodes.length;i++){
 				if(node_xml.childNodes[i].nodeName=="richcontent" &&
 					node_xml.childNodes[i].attributes.TYPE=="NOTE"){
-					trace(node_xml.childNodes[i].firstChild.toString());
+					//trace(node_xml.childNodes[i].firstChild.toString());
 					return node_xml.childNodes[i].firstChild.toString();
 				}
 			}
@@ -251,7 +252,7 @@ class visorFreeMind.Node {
 					return;
 				}
 				if(url.indexOf("http://") > -1 || url.indexOf(".mm")==-1){
-					trace("versionss: "+Browser.flashVersion);
+					//trace("versionss: "+Browser.flashVersion);
 					if(Browser.flashVersion>=9){
 						//sendToURL(new URLRequest(url),Node.openUrl);
 						//getURL(url,Node.openUrl);
@@ -334,7 +335,7 @@ class visorFreeMind.Node {
 		eventControler.onRollOut=function(){
 			this.inst.browser.hideTooltip();
 			this.inst.colorNoSelect();
-			trace("onRollOut");
+			//trace("onRollOut");
 			Node.currentOver=null;
 			if(this.inst.noteIcon!=null  || (this.inst.atrsIcon!=null) ||
 				(this.inst.node_xml.attributes.LINK != undefined)) {
@@ -345,7 +346,7 @@ class visorFreeMind.Node {
 	}
 
 	public function globalColorSelect(){
-		trace("globalColorSelect");
+		//trace("globalColorSelect");
 		if (Node.currentOver instanceof Node ){
 			Node.currentOver.colorNoSelect();
 			trace("globalColorSelect: currentOver  exist");
@@ -547,10 +548,10 @@ class visorFreeMind.Node {
 			ref_mc.node_txt.node_txt.html=true;
 			ref_mc.node_txt.node_txt.multiline=true;
 			ref_mc.node_txt.node_txt.htmlText=text;
-			//trace (Flashout.DEBUG +" textfield html text="+text+"--");			
+			//trace (" textfield html text="+text+"--");			
 		}else{
 			ref_mc.node_txt.node_txt.text=text;
-			//trace (Flashout.DEBUG +"textfield text="+text+"--");
+			//trace ("textfield text="+text+"--");
 		}
 		var txt=ref_mc.node_txt.node_txt;
 		txt.background=false;

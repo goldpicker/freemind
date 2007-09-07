@@ -82,7 +82,7 @@ class visorFreeMind.HistoryManager {
 			}
 			if(actualDepth!="")
 				fn=actualDepth+"/"+fn;
-			trace(Flashout.INFO+actualDepth+" "+fn+" "+numUp);
+			//trace(Flashout.INFO+actualDepth+" "+fn+" "+numUp);
 		}
 		return fn;
 	}
