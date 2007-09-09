@@ -58,6 +58,8 @@ function renderMindmap($input)
         } else {
             if ("flash" === $param || "applet" === $param) {
                 $mm_type = $param;
+            } elseif ("notitle" === $param) {
+                $mm_notitle = 1;
             } else {
                 $mm_description .= $param;
             }
@@ -68,7 +70,10 @@ function renderMindmap($input)
         $mm_description = $url;
     }
 
-    if ($mm_title === "") {
+	if($mm_notitle){
+		$mm_title = "";
+	}
+    elseif ($mm_title === "") {
         $mm_title = $url;
     }
     $imageTitle = Title::makeTitleSafe("Image", $url);

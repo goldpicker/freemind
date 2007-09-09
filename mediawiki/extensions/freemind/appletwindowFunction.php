@@ -1,7 +1,11 @@
 <?php
 function getMindMapAppletOutput($mm_title, $parameters, $mm_height, $path) {
-$output = '
-<p style="text-align:center"><a href="'.$parameters['browsemode_initial_map'].'">'.$mm_title.'</a></p>
+$output = '';
+if($mm_title != ""){
+	$output = '
+<p style="text-align:center"><a href="'.$parameters['browsemode_initial_map'].'">'.$mm_title.'</a></p>';
+}
+$output .= '
 <APPLET CODE="freemind.main.FreeMindApplet.class" ARCHIVE="'.$path.'freemindbrowser.jar" WIDTH="100%" HEIGHT="'.$mm_height.'">';
 	foreach ($parameters as $key => $value)
 		$output .="<PARAM NAME=\"$key\" VALUE=\"$value\">\n";
