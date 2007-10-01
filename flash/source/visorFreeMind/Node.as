@@ -37,6 +37,8 @@ class visorFreeMind.Node {
 	public static var lastOverTxt=null;
 	public static var openUrl="_blank";
 	public static var mainNodeShape=null;
+	public static var baseImagePath:String="";
+	
 	public var childNodes:Array;
 	private var lastClicks:Number=0;
 	public var text:String; // Text of the node
@@ -531,8 +533,9 @@ class visorFreeMind.Node {
 			var cont_image=ref_mc.node_txt.createEmptyMovieClip("node_image",2);
 			//Have to use the Flash Loader
 			var imgtext=text.substr(start,length);
-			trace("cargamos:"+imgtext);
-			browser.loadImage(imgtext,cont_image);
+			trace("cargamos:"+baseImagePath+imgtext);
+			trace("baseImagePath:"+baseImagePath);
+			browser.loadImage(baseImagePath+imgtext,cont_image);
 			withImage=true;
 			var aux=text.substr(start);
 			var auxi=aux.indexOf(">");

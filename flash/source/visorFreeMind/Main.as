@@ -56,7 +56,7 @@ class visorFreeMind.Main {
 				copy=new ContextMenuItem("gen shots for linked maps",visorFreeMind.Main.genShotsForLinkedMaps);
 				mycm.customItems.push(copy);
 			}
-			copy=new ContextMenuItem("FREEMIND BROWSER v1.0a",visorFreeMind.Main.nada);
+			copy=new ContextMenuItem("FREEMIND BROWSER v1.0b",visorFreeMind.Main.nada);
 			mycm.customItems.push(copy);
 			mycm.hideBuiltInItems();
 			_root.menu = mycm;
@@ -104,7 +104,7 @@ class visorFreeMind.Main {
 	   {
 	   	   if(initialized==true)return true;
 	   	   else initialized=true;
-	   	   //Flashout.init();
+	   	   Flashout.init();
 		   trace("Starting flash FreeMind Browser",2);
 
 			// set the Flash movie to have a fixed anchor
@@ -138,9 +138,9 @@ class visorFreeMind.Main {
 		   		Node.defaultWordWrap=Number(_root.defaultWordWrap);
 		   if(!isNaN(_root.defaultToolTipWordWrap))
 		   		Browser.defaultToolTipWordWrap=Number(_root.defaultToolTipWordWrap);
-		   if(_root.offsetX!=null && (_root.offsetX=="left" ||_root.offsetX=="left" || isNaN(_root.offsetX)) )
+		   if(_root.offsetX!=null && (_root.offsetX=="left" ||_root.offsetX=="left" || !isNaN(_root.offsetX)) )
 		   		Browser.offsetX=_root.offsetX;
-		   if(_root.offsetY!=null && (_root.offsetY=="top" ||_root.offsetY=="bottom" || isNaN(_root.offsetY)) )
+		   if(_root.offsetY!=null && (_root.offsetY=="top" ||_root.offsetY=="bottom" || !isNaN(_root.offsetY)) )
 		   		Browser.offsetY=_root.offsetY;
 		   if(_root.buttonsPos!=null && (_root.buttonsPos=="top" ||_root.buttonsPos=="bottom" ) )
 		   		ButtonsCreator.buttonsPos=_root.buttonsPos;
@@ -154,12 +154,14 @@ class visorFreeMind.Main {
 		   		Node.mainNodeShape=_root.mainNodeShape;
 		   if(!isNaN(_root.ShotsWidth))
 		   		PictureTaker.ShotsWidth=Number(_root.ShotsWidth);
+		   if(_root.baseImagePath!=null)
+		   		Node.baseImagePath=_root.baseImagePath;
+		   if(_root.CSSFile!=null)
+		   		Browser.CSSFile=_root.CSSFile;
 		   if(_root.initLoadFile!=null){
-				trace("initial mindmap: "+_root.initLoadFile,2);
 				browser=new Browser(_root.initLoadFile,_root);
 		   }
 			else{
-				trace("initial mindmap: index.mm",2);
 				browser=new Browser("index.mm",_root);
 			}
 

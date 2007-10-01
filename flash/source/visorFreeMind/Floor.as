@@ -83,7 +83,10 @@ class  visorFreeMind.Floor {
 	function getBackgroundColor(){
 		var freeMindVars = SharedObject.getLocal("freeMindBrowser");
 		if(!freeMindVars.data.bgColor){
-			freeMindVars.data.bgColor=0xFFFFFF;
+			if(_root.bgcolor!=null)
+				return _root.bgcolor;
+			else
+				return 0xFFFFFF;
 		}
 		return freeMindVars.data.bgColor;
 	}

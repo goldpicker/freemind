@@ -369,7 +369,7 @@ class visorFreeMind.ButtonsCreator{
 		bShadow.tooltip="SHADOW ON";
 		bInfo=mc_container.createEmptyMovieClip("bInfo",7792);
 		bInfo.browser=browser;
-		bInfo.tooltip="<p><b>This is a free</b> FREEMIND BROWSER v1.0a\n<b>shortcuts</b>\n"+
+		bInfo.tooltip="<p><b>This is a free</b> FREEMIND BROWSER v1.0b\n<b>shortcuts</b>\n"+
 			"LEFT : move left\n"+
 			"RIGHT : move right\n"+
 			"UP : move up\n"+

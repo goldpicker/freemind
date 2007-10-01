@@ -71,6 +71,7 @@ class visorFreeMind.Browser {
 	public static var scaleTooltips:Boolean=false;
 	public static var toolTipsBgColor:Number=0xFFDD88;
 	public static var toolTipsFgColor:Number=0x664400;
+	public static var CSSFile:String="flashfreemind.css";
 	public static var flashVersion:Number=0;
 
 	public var text_selectable=null;
@@ -221,7 +222,7 @@ class visorFreeMind.Browser {
 			
 			//CSS for the tooltiip
 			myCSS = new TextField.StyleSheet();
-			var cssURL = "flashfreemind.css";
+			var cssURL = Browser.CSSFile;
 			myCSS.load(cssURL);
 			myCSS.onLoad = function(exito) {
 			        if (exito) {
@@ -357,26 +358,30 @@ class visorFreeMind.Browser {
 
 	function relocateFloor(){
 		if(initialization){
+			trace("relocate con inicializacion");
 			mc_floor._x=0;
 			mc_floor._y=0;
 			var bbox=mc_floor.getBounds(_root);
 			//X
-			if(offsetX=="left")			
+			if(offsetX=="left")	{		
 				mc_floor._x=-bbox.xMin;
-			else if(offsetX=="right")
+			}else if(offsetX=="right"){
 				mc_floor._x=Stage.width-bbox.xMax;
-			else
-				mc_floor._x=Stage.width/2+offsetX-first_node.ref_mc._x;
+			}else{
+				var aux=Stage.width/2+offsetX;
+				mc_floor._x=Stage.width/2+Number(offsetX)-first_node.ref_mc._x;
+			}
 			//Y
-			if(offsetY=="top")			
+			if(offsetY=="top"){	
 				mc_floor._y=-bbox.yMin;
-			else if(offsetY=="bottom")
+			}else if(offsetY=="bottom"){
 				mc_floor._y=Stage.height-bbox.yMax;
-			else
-				mc_floor._y=Stage.height/2+offsetY-first_node.ref_mc._y;
-				
+			}else{
+				mc_floor._y=Stage.height/2+Number(offsetY)-first_node.ref_mc._y;
+			}
 			initialization=false;
 		}else{
+			trace("relocate sin inicializacion");
 			mc_floor._y=ant_floor_y+ant_pnode_y-first_node.ref_mc._y;
 			mc_floor._x=ant_floor_x+ant_pnode_x-first_node.ref_mc._x;
 		}
