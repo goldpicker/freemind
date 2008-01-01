@@ -1,3 +1,8 @@
+Changes made in Freemind 0.8.1:
+===============================
+* Bug fix: Preferences dialog can be opened with Java 6
+* Bug fix: Encrypted nodes and maps work with Java 6
+
 Changes made in Freemind 0.8.0:
 ===============================
 * From Koh (thanks): Standard Macintosh application use Command(meta) key based Keyboard shortcut. (ex. copy is Command(meta) + C). I think that mac version's freemind should allow to assign meta key based shortcut. 

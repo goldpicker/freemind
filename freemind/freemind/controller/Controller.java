@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: Controller.java,v 1.40.14.16 2005-06-14 20:38:06 christianfoltin Exp $*/
+/*$Id: Controller.java,v 1.40.14.16.4.1 2008-01-01 17:39:37 dpolivaev Exp $*/
 
 package freemind.controller;
 
@@ -1191,7 +1191,7 @@ public class Controller {
 			options.buildPanel();
 			options.setProperties(getFrame().getProperties());
 			dialog.setTitle("Freemind Properties");
-			dialog.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			dialog.addWindowListener(new WindowAdapter(){
 			    public void windowClosing(WindowEvent event) {
 			        options.closeWindow();

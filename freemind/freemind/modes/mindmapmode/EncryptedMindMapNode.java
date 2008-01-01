@@ -16,7 +16,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-/* $Id: EncryptedMindMapNode.java,v 1.1.2.10 2005-06-15 20:13:48 christianfoltin Exp $ */
+/* $Id: EncryptedMindMapNode.java,v 1.1.2.10.4.1 2008-01-01 17:39:38 dpolivaev Exp $ */
 
 package freemind.modes.mindmapmode;
 
@@ -366,7 +366,7 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
 					KeySpec keySpec = new PBEKeySpec(passPhrase,
 							salt, iterationCount);
 					SecretKey key = SecretKeyFactory.getInstance(
-							"PBEWithMD5AndTripleDES").generateSecret(keySpec);
+							"PBEWithMD5AndDES").generateSecret(keySpec);
 					ecipher = Cipher.getInstance(key.getAlgorithm());
 					dcipher = Cipher.getInstance(key.getAlgorithm());
 
