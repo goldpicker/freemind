@@ -1,5 +1,5 @@
 <project name="freemind" default="dist" basedir=".">
-	<property name="ver" value="0_8_0" />
+	<property name="ver" value="0_8_1" />
 	<property name="src" value="." />
 	<property name="src_base_for_post" value="../" />
 	<property name="build" value="../bin/classes" />
@@ -174,7 +174,7 @@
 		                    mainclass="freemind.main.FreeMind"
 		                    icon="${src}/images/FreeMindWindowIcon.icns"
 		                    version="${ver}"
-		                    infostring="FreeMind ${ver} application (c) 2005"
+		                    infostring="FreeMind ${ver} application (c) 2008"
 		                    aboutmenuname="FreeMind"
 		                    bundleid="freemind.main.FreeMind"
 		                    signature="FM"
