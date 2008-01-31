@@ -13,11 +13,12 @@
 ;* Christian Foltin   (FC ) 04/03/2007 - Version 0.9.0 Beta9
 ;* Christian Foltin   (FC ) 25/06/2007 - Version 0.9.0 Beta10
 ;* Dimitry Polivaev   (DP ) 15/07/2007 - Version 0.9.0 Beta11
-;* Christian Foltin   (FC ) 21/07/2007 - Version 0.9.0 Beta12
-;* Christian Foltin   (FC ) 07/08/2007 - Version 0.9.0 Beta13
+;* Christian Foltin   (DP ) 21/07/2007 - Version 0.9.0 Beta12
+;* Christian Foltin   (DP ) 07/08/2007 - Version 0.9.0 Beta13
 ;* Dimitry Polivaev   (DP ) 19/10/2007 - Version 0.9.0 Beta14
 ;* Christian Foltin   (FC ) 30/11/2007 - Version 0.9.0 Beta15
 ;* Christian Foltin   (FC ) 02/01/2008 - Version 0.8.1
+;* Dimitry Polivaev   (DP ) 31/01/2008 - Version 0.9.0 Beta16
 ;****************************************************************************
 
 [Files]
@@ -46,17 +47,17 @@ Source: FreeMind1.gif; DestDir: {tmp}; Flags: dontcopy
 
 [Code]
 const
-  TOPLEFT			= 1;
-  TOPRIGHT			= 2;
-  BOTTOMLEFT		= 3;
-  BOTTOMRIGHT		= 4;
-  CENTER			= 5;
-  BACKGROUND		= 6;
-  TOP				= 7;
-  BOTTOM			= 8;
-  LEFT				= 9;
-  RIGHT				= 10;
-  TIMER				= 16;
+  TOPLEFT     = 1;
+  TOPRIGHT      = 2;
+  BOTTOMLEFT    = 3;
+  BOTTOMRIGHT   = 4;
+  CENTER      = 5;
+  BACKGROUND    = 6;
+  TOP       = 7;
+  BOTTOM      = 8;
+  LEFT        = 9;
+  RIGHT       = 10;
+  TIMER       = 16;
 
 
 
@@ -80,17 +81,17 @@ begin
   Result := False;
   if RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\JavaSoft\Java Runtime Environment', 'CurrentVersion', AVersion) then
   begin
-    	if (AVersion = '1.4') or (AVersion = '1.5') or (AVersion = '1.6') then
-    		Result := True;
+      if (AVersion = '1.4') or (AVersion = '1.5') or (AVersion = '1.6') then
+        Result := True;
       end;
 
 
-  if Result = False then	// Java 1.4 not found/detected
+  if Result = False then  // Java 1.4 not found/detected
   begin
-	if MsgBox( 'Java 1.4 or greater not detected - Continue with installation ?', mbError, MB_YESNO) = MRYES then
-		Result := True
-	else
-		Result := False;
+  if MsgBox( 'Java 1.4 or greater not detected - Continue with installation ?', mbError, MB_YESNO) = MRYES then
+    Result := True
+  else
+    Result := False;
   end;
 end;
 
@@ -109,7 +110,7 @@ begin
 end;
 [Setup]
 AppName=FreeMind
-AppVerName=FreeMind 0.8.1
+AppVerName=FreeMind 0.9.0 Beta16
 AppPublisherURL=http://freemind.sourceforge.net
 AppSupportURL=http://freemind.sourceforge.net
 AppUpdatesURL=http://freemind.sourceforge.net
@@ -120,9 +121,9 @@ LicenseFile=license.txt
 WindowVisible=true
 
 
-AppCopyright=Copyright © 2008 Christian Foltin, Dimitry Polivaev and others
+AppCopyright=Copyright © 2007 Christian Foltin, Dimitry Polivaev and others
 ;AppCopyright=Copyright © {code:InstallationDate}
-AppVersion=0.8.1
+AppVersion=0.9.0.Beta16
 InfoAfterFile=after.txt
 InfoBeforeFile=before.txt
 PrivilegesRequired=admin
@@ -133,7 +134,7 @@ AppID=B991B020-2968-11D8-AF23-444553540000
 UninstallRestartComputer=false
 ChangesAssociations=true
 FlatComponentsList=false
-OutputBaseFilename=FreeMind-Windows-Installer-0_8_1
+OutputBaseFilename=FreeMind-Windows-Installer-0_9_0-Beta16
 SolidCompression=false
 ; old: InternalCompressLevel=9
 Compression=zip/9
