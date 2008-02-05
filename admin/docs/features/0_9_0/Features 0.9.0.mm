@@ -405,7 +405,7 @@
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 </node>
-<node COLOR="#00b439" CREATED="1201506580407" ID="Freemind_Link_1055396713" MODIFIED="1201717092414" STYLE="fork" TEXT="Little FreeMind Scripting Guide">
+<node COLOR="#00b439" CREATED="1201506580407" ID="Freemind_Link_1055396713" MODIFIED="1202241598369" STYLE="fork" TEXT="Little FreeMind Scripting Guide">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -416,16 +416,81 @@
     </p>
     <ul>
       <li>
+        Read and change the nodes text:<br />c.setNodeText(node, node.getText() + &quot;_CHANGED&quot;);
+      </li>
+      <li>
         Read an attribute<br />def value = node.getAttribute(&quot;key&quot;); // value is of type String.<br /><br />
       </li>
       <li>
         Create or change attributes: the following method checks whether or not an attribute with the same key exists and replaces it. Otherwise a new attribute is created and added.<br />c.editAttribute(node, &quot;key&quot;, &quot;new value&quot;);<br />
       </li>
       <li>
-        Traverse all children<br />def it = node.childrenUnfolded();<br />while(it.hasNext()) {<br />def child = i.next();<br />}
+        Traverse all children<br />def it = node.childrenUnfolded();<br />while(it.hasNext()) {<br />def child = it.next();<br />}
       </li>
       <li>
-        Traverse all children and its children recursively. The following examples prints the content of every node including its childs<br />def stack = new java.util.Stack();<br />stack.push(node);<br />while(stack.size()&gt;0) {<br />def current =stack.pop();<br />print current.getShortText(c) + &quot;, &quot;;<br />stack.addAll(current.getChildren());<br />}<br /><br />
+        Traverse all children and its children recursively. The following examples prints the content of every node including its childs<br />
+
+        <pre>def stack = new java.util.Stack();<br />stack.push(node);<br />while(stack.size()&gt;0) 
+        {<br />		def current =stack.pop();<br />		print current.getShortText(c) + &quot;, &quot;;<br />		stack.addAll(current.getChildren());<br />	}</pre>
+        <br />
+        <br />
+        
+      </li>
+      <li>
+        Real world example: nodes may have an attribute &quot;work&quot; that specifies the work needed for the specific work package (e.g. in days). This script computes the sum of all work packages such that each node gets an attribute &quot;sum&quot; containing the amount of work needed for all descendants. This script, if executed via Alt+F8, automatically applies to the root of the map. But, every time, you change the values, you have to reexecute this script.<br /><br />
+
+        <pre>def calcWork(child) {
+	def sum = 0;
+	def it = child.childrenUnfolded(); 
+	while(it.hasNext()) { 
+		def child2 = it.next(); 
+		sum += calcWork(child2);
+		def w = child2.getAttribute(&quot;work&quot;);
+		if(w != null)
+			sum += Integer.parseInt( w);
+	}
+	if(sum&gt;0)
+		c.editAttribute(child, &quot;sum&quot;, (String) sum);
+	return sum;
+}
+
+calcWork(c.getRootNode());</pre>
+      </li>
+      <li>
+        A very advanced example: the last script is integrated into a listener that detects node changes, so the sums are always recreated when a node is changed. This script should only be executed once, as it registers a handler at the controller every time it is executed.<br />
+
+        <pre>class MyNodeListener implements freemind.modes.ModeController.NodeSelectionListener {
+	freemind.modes.mindmapmode.MindMapController c;
+        MyNodeListener(freemind.modes.mindmapmode.MindMapController con) {
+		this.c = con;
+		}
+
+        void onUpdateNodeHook(freemind.modes.MindMapNode node){	
+			calcWork(c.getRootNode());
+		};
+
+        void onSelectHook(freemind.view.mindmapview.NodeView node){};
+        void onDeselectHook(freemind.view.mindmapview.NodeView node){};
+        void onSaveNode(freemind.modes.MindMapNode node){};
+
+def calcWork(child) {
+	def sum = 0;
+	def it = child.childrenUnfolded(); 
+	while(it.hasNext()) { 
+		def child2 = it.next(); 
+		sum += calcWork(child2);
+		def w = child2.getAttribute(&quot;work&quot;);
+		if(w != null)
+			sum += Integer.parseInt( w);
+	}
+	if(sum&gt;0)
+		c.editAttribute(child, &quot;sum&quot;, (String) sum);
+	return sum;
+}
+
+}
+c.registerNodeSelectionListener(new MyNodeListener(c));
+      </pre>
       </li>
     </ul>
   </body>
