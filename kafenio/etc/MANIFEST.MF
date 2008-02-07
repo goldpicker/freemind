@@ -1,2 +1,0 @@
-Main-Class: de.xeinfach.kafenio.Kafenio
-Class-Path: kafenio.jar kafenio-config.jar kafenio-icons.jar gnu-regexp-1.1.4.jar
