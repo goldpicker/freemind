@@ -1,9 +1,8 @@
 <map version="0.9.0_Beta_8">
 <!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->
-<node COLOR="#000000" CREATED="1201282183606" ID="Freemind_Link_1027666650" MODIFIED="1201716973969" STYLE="fork" TEXT="Features 0.9.0">
+<node COLOR="#000000" CREATED="1201282183606" ID="Freemind_Link_1027666650" MODIFIED="1202399146245" STYLE="fork" TEXT="Features 0.9.0">
 <font NAME="SansSerif" SIZE="20"/>
 <hook NAME="accessories/plugins/AutomaticLayout.properties"/>
-<attribute NAME="script1" VALUE="def stack = new java.util.Stack();&#xa;stack.push(node);&#xa;while(stack.size()&gt;0) {&#xa;&#x9;def current =stack.pop();&#xa;&#x9;print current.getShortText(c) + &quot;, &quot;;&#xa;&#x9;stack.addAll(current.getChildren());&#xa;}"/>
 <node COLOR="#0033ff" CREATED="1201283648829" ID="Freemind_Link_813308322" MODIFIED="1201283659663" POSITION="right" STYLE="fork" TEXT="Main new features">
 <edge STYLE="sharp_bezier" WIDTH="8"/>
 <font NAME="SansSerif" SIZE="18"/>
@@ -258,6 +257,44 @@
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 </node>
+<node COLOR="#00b439" CREATED="1202399993070" FOLDED="true" ID="Freemind_Link_860723289" MODIFIED="1202400005244" STYLE="fork" TEXT="Format changes are now available at a single dialog">
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
+<node COLOR="#990000" CREATED="1202400006582" ID="Freemind_Link_673738479" MODIFIED="1202400011328">
+<richcontent TYPE="NODE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <img src="format_window.png" />
+  </body>
+</html>
+</richcontent>
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+</node>
+<node COLOR="#00b439" CREATED="1202400125364" FOLDED="true" ID="Freemind_Link_1848794893" MODIFIED="1202400218246" STYLE="fork" TEXT="New Pattern editor">
+<edge STYLE="bezier" WIDTH="thin"/>
+<cloud/>
+<font NAME="SansSerif" SIZE="16"/>
+<node COLOR="#990000" CREATED="1202400173321" ID="Freemind_Link_1108991945" MODIFIED="1202400181702">
+<richcontent TYPE="NODE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <img src="pattern_window_with_popup.png" />
+  </body>
+</html>
+</richcontent>
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+</node>
+<node COLOR="#00b439" CREATED="1202400209358" ID="Freemind_Link_60926823" MODIFIED="1202400215450" STYLE="fork" TEXT="Search dialog">
+<edge STYLE="bezier" WIDTH="thin"/>
+<cloud/>
+<font NAME="SansSerif" SIZE="16"/>
+</node>
 </node>
 <node COLOR="#0033ff" CREATED="1201282939150" ID="Freemind_Link_150258579" MODIFIED="1201282942471" POSITION="right" STYLE="fork" TEXT="New Exports">
 <edge STYLE="sharp_bezier" WIDTH="8"/>
@@ -305,7 +342,7 @@
 </node>
 </node>
 </node>
-<node COLOR="#0033ff" CREATED="1201506466515" ID="Freemind_Link_676471791" MODIFIED="1201541941214" POSITION="right" STYLE="fork" TEXT="Scripting Support">
+<node COLOR="#0033ff" CREATED="1201506466515" ID="Freemind_Link_676471791" MODIFIED="1202399818723" POSITION="right" STYLE="fork" TEXT="Scripting Support">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -344,7 +381,7 @@
         If a script starts with &quot;=&quot;, the result of the script is taken to be the new nodes text. Example script1: =17+4. If executed, the node the script is associated to will be changed to 21.
       </li>
       <li>
-        If a script starts with letters only and then a &quot;=&quot; sign, like &quot;sum=17+4&quot;, the result is taken to be a (possibly new) attribute named &quot;sum&quot; in this case with the content 21.
+        If a script starts with letters (digits and '_') only and then a &quot;=&quot; sign, like &quot;sum=17+4&quot;, the result is taken to be a (possibly new) attribute named &quot;sum&quot; in this case with the content 21.
       </li>
     </ol>
     <p>
@@ -354,67 +391,26 @@
       A last word on security: before scripts is evaluated for the first time in FreeMind, the user is asked whether or not he allows it. The answer can be stored for every script but observe that a malicious script is able to perform every action on your computer that your users rights allow up to delete all files or send them to pirates.ru. This said, be careful and don't allow scripts when you don't know that the author is trusted. Finally, scripts are never evaluated automatically in FreeMind for these reasons. Thus, you can open a map without problems and have a look at the scripts it contains.
     </p>
   </body>
-</html></richcontent>
+</html>
+</richcontent>
 <edge STYLE="sharp_bezier" WIDTH="8"/>
 <font NAME="SansSerif" SIZE="18"/>
-<node COLOR="#00b439" CREATED="1201506526029" ID="Freemind_Link_1885521461" MODIFIED="1201506532746" STYLE="fork">
-<richcontent TYPE="NODE"><html>
-  <head>
-    
-  </head>
-  <body>
-    <img src="script_editor.png" />
-  </body>
-</html></richcontent>
-<edge STYLE="bezier" WIDTH="thin"/>
-<font NAME="SansSerif" SIZE="16"/>
-</node>
-<node COLOR="#00b439" CREATED="1201506546021" ID="Freemind_Link_1289478680" MODIFIED="1201506552477" STYLE="fork">
-<richcontent TYPE="NODE"><html>
-  <head>
-    
-  </head>
-  <body>
-    <img src="script_editor_attached_script.png" />
-  </body>
-</html></richcontent>
-<edge STYLE="bezier" WIDTH="thin"/>
-<font NAME="SansSerif" SIZE="16"/>
-</node>
-<node COLOR="#00b439" CREATED="1201506596957" ID="Freemind_Link_1136959722" MODIFIED="1201506612855" STYLE="fork">
-<richcontent TYPE="NODE"><html>
-  <head>
-    
-  </head>
-  <body>
-    <img src="script_example_script_editor.png" />
-  </body>
-</html></richcontent>
-<edge STYLE="bezier" WIDTH="thin"/>
-<font NAME="SansSerif" SIZE="16"/>
-</node>
-<node COLOR="#00b439" CREATED="1201506491455" ID="Freemind_Link_1324027157" MODIFIED="1201506510094" STYLE="fork">
-<richcontent TYPE="NODE"><html>
-  <head>
-    
-  </head>
-  <body>
-    <img src="script_example_mm.png" />
-  </body>
-</html></richcontent>
-<edge STYLE="bezier" WIDTH="thin"/>
-<font NAME="SansSerif" SIZE="16"/>
-</node>
-<node COLOR="#00b439" CREATED="1201506580407" ID="Freemind_Link_1055396713" MODIFIED="1202241598369" STYLE="fork" TEXT="Little FreeMind Scripting Guide">
+<node COLOR="#00b439" CREATED="1201506580407" ID="Freemind_Link_1055396713" MODIFIED="1202399091855" STYLE="fork" TEXT="Little FreeMind Scripting Guide">
 <richcontent TYPE="NOTE"><html>
   <head>
     
   </head>
   <body>
     <p>
-      Here we present some snippets of useful Groovy code that can be used as parts of your scripts. More scripts can be found on our web sides.
+      Here we present some snippets of useful Groovy code that can be used as parts of your scripts. More scripts can be found on our web sites.
     </p>
     <ul>
+      <li>
+        Change the node text:<br />=17+4<br />(Explanation: if a script starts with &quot;=&quot;, the result of the script is taken as the new nodes text.)
+      </li>
+      <li>
+        Change an attributes value:<br />attribute_name=17+4<br />(Explanation: if a script starts with a name and then directly a &quot;=&quot; sign, its result is associated to this attribute which is created if not already present.)
+      </li>
       <li>
         Read and change the nodes text:<br />c.setNodeText(node, node.getText() + &quot;_CHANGED&quot;);
       </li>
@@ -463,11 +459,11 @@ calcWork(c.getRootNode());</pre>
 	freemind.modes.mindmapmode.MindMapController c;
         MyNodeListener(freemind.modes.mindmapmode.MindMapController con) {
 		this.c = con;
-		}
+	}
 
         void onUpdateNodeHook(freemind.modes.MindMapNode node){	
 			calcWork(c.getRootNode());
-		};
+	};
 
         void onSelectHook(freemind.view.mindmapview.NodeView node){};
         void onDeselectHook(freemind.view.mindmapview.NodeView node){};
@@ -492,12 +488,120 @@ def calcWork(child) {
 c.registerNodeSelectionListener(new MyNodeListener(c));
       </pre>
       </li>
+      <li>
+        A sorting example: Currently we provide a function that sorts all children by name, but if you want to sort them by their icons for example, you can use the following script (or change it, if you have different sorting criteria):<br />
+
+        <pre>import java.awt.datatransfer.Transferable;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.TreeSet;
+import java.util.Vector;
+import freemind.modes.MindMapNode;
+
+	class IconComparator implements java.util.Comparator {
+			int compare(java.lang.Object pArg0, java.lang.Object pArg1) {
+				if (pArg0 instanceof MindMapNode) {
+					MindMapNode node1 = (MindMapNode) pArg0;
+					if (pArg1 instanceof MindMapNode) {
+						MindMapNode node2 = (MindMapNode) pArg1;
+						String iconText1 = getIconText(node1);
+						String iconText2 = getIconText(node2);
+						//print &quot;comparing&quot; + iconText1 + &quot; with &quot; + iconText2 + &quot;\n&quot;;
+						return iconText1.compareToIgnoreCase(iconText2);
+					}
+				}
+				return 0;
+			}
+		def getIconText(MindMapNode n) {
+			if(n.getIcons() == null || n.getIcons().size()==0) 
+				return &quot;&quot;;
+			def retString = &quot;&quot;;
+			def it = n.getIcons().iterator();
+			while(it.hasNext()) {
+				retString +=it.next().getName()+&quot;, &quot;;
+			}
+			return retString;
+		}
+	}
+
+
+		// we want to sort the children of the node:
+	 	Vector children = new Vector();
+		// put in all children of the node
+		children.addAll(node.getChildren());
+		// sort them
+		java.util.Collections.sort(children, new IconComparator());
+		//print &quot;The set has &quot; + children.size() + &quot; entries\n&quot;;
+		// now, as it is sorted. we cut the children
+		def it2 = children.iterator();
+		while (it2.hasNext()) {
+			MindMapNode child = (MindMapNode) it2.next();
+			Vector childList = new Vector();
+			childList.add(child);
+			Transferable cut = c.cut(childList);
+			// paste directly again causes that the node is added as the last one.
+			c.paste(cut, node);
+		}
+		c.select(c.getNodeView(node));</pre>
+      </li>
     </ul>
   </body>
 </html>
 </richcontent>
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
+</node>
+<node COLOR="#00b439" CREATED="1202399428098" FOLDED="true" ID="Freemind_Link_194673968" MODIFIED="1202399767627" STYLE="fork" TEXT="Pictures">
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
+<node COLOR="#990000" CREATED="1201506526029" ID="Freemind_Link_1885521461" MODIFIED="1202399428111" STYLE="fork">
+<richcontent TYPE="NODE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <img src="script_editor.png" />
+  </body>
+</html></richcontent>
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+<node COLOR="#990000" CREATED="1201506546021" ID="Freemind_Link_1289478680" MODIFIED="1202399428193" STYLE="fork">
+<richcontent TYPE="NODE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <img src="script_editor_attached_script.png" />
+  </body>
+</html></richcontent>
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+<node COLOR="#990000" CREATED="1201506596957" ID="Freemind_Link_1136959722" MODIFIED="1202399428663" STYLE="fork">
+<richcontent TYPE="NODE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <img src="script_example_script_editor.png" />
+  </body>
+</html></richcontent>
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+<node COLOR="#990000" CREATED="1201506491455" ID="Freemind_Link_1324027157" MODIFIED="1202399428737" STYLE="fork">
+<richcontent TYPE="NODE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <img src="script_example_mm.png" />
+  </body>
+</html></richcontent>
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="14"/>
+</node>
 </node>
 </node>
 </node>
