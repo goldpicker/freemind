@@ -6,10 +6,10 @@
 Name: freemind
 Summary: Java Program for creating and viewing Mindmaps
 URL: http://%{name}.sourceforge.net/
-Version: 0.8.0
-Release: 6%{FM_release}
+Version: 0.8.1
+Release: 1%{FM_release}
 License: GPL
-Packager: Eric Lavarde <rpm@zorglub.s.bawue.de>
+Packager: Eric Lavarde <rpm at zorglub.s.bawue.de>
 Vendor: (none)
 Distribution: JPackage (contrib/unofficial)
 Requires: java >= 0:1.4, jakarta-commons-lang, relaxngDatatype, msv-xsdlib, jgoodies-forms, xml-commons-apis, ws-jaxme, jakarta-commons-codec
@@ -239,7 +239,11 @@ fi
 
 # date +"%a %b %d %Y"
 %changelog
-* Fri Nov 11 2005 Eric Lavarde <rpm@zorglub.s.bawue.de>
+* Thu Feb 08 2008 Eric Lavarde <rpm at zorglub.s.bawue.de>
+- Upstream version 0.8.1 to add Java 6 support.
+- Better freemind.sh and urlsee scripts.
+- Added support for batik package 1.7 (under SuSE).
+* Fri Nov 11 2005 Eric Lavarde <rpm at zorglub.s.bawue.de>
 - Corrected polish translation (thanks to hekto5 on sf.net).
 - Add debug dpkg/rpm information and check for Sun/Blackdown VM in freemind.sh.
 - Introduce usage of commons-codec to replace sun.misc.Base64Encoder/Decoder.
@@ -251,36 +255,36 @@ fi
   defined because FreeMind discards all output.
 - corrected urlsee to transform %20 into <space> when using 'see' or
   other local command.
-* Mon Nov 07 2005 Eric Lavarde <rpm@zorglub.s.bawue.de>
+* Mon Nov 07 2005 Eric Lavarde <rpm at zorglub.s.bawue.de>
 - packaging version 0.8.0-5.
 - integration using freedesktop.org standards.
-* Wed Oct 19 2005 Eric Lavarde <rpm@zorglub.s.bawue.de>
+* Wed Oct 19 2005 Eric Lavarde <rpm at zorglub.s.bawue.de>
 - packaging version 0.8.0-3.
 - rollbacking ws-jaxme integration, due to some incompatibilities.
 - modification of freemind.sh to integrate forms and xml-commons-apis instead
   of dom & sax.
-* Tue Oct 18 2005 Eric Lavarde <rpm@zorglub.s.bawue.de>
+* Tue Oct 18 2005 Eric Lavarde <rpm at zorglub.s.bawue.de>
 - packaging version 0.8.0-2.
 - added dependency to ws-jaxme and jgoodies-forms.
 - removed sax, dom and forms jar files from sources.
-* Sat Sep 10 2005 Eric Lavarde <rpm@zorglub.s.bawue.de>
+* Sat Sep 10 2005 Eric Lavarde <rpm at zorglub.s.bawue.de>
 - packaging version 0.8.0-1.
-* Sat Jul 24 2005 Eric Lavarde <rpm@zorglub.s.bawue.de>
+* Sat Jul 24 2005 Eric Lavarde <rpm at zorglub.s.bawue.de>
 - replacing jar files coming with freemind through external dependencies:
   batik, jakarta-commons-lang, relaxngDatatype, rhino, jcalendar, javahelp2
 - packaging version 0.8.0.rc5 (-browser and -plugins-collab-jabber removed)
-* Wed Jun 15 2005 Eric Lavarde <rpm@zorglub.s.bawue.de>
+* Wed Jun 15 2005 Eric Lavarde <rpm at zorglub.s.bawue.de>
 - continuing direction JPackage.org compatibility with 0.8.0.rc3.
 - first working package but with all jars included.
 - added urlsee and manpage to package.
-* Tue Mar 22 2005 Eric Lavarde <rpm@zorglub.s.bawue.de>
+* Tue Mar 22 2005 Eric Lavarde <rpm at zorglub.s.bawue.de>
 - going for JPackage.org compatibility.
 - upstream version 0_8_0_rc2.
-* Sat Jul 03 2004 Eric Lavarde <rpm@zorglub.s.bawue.de>
+* Sat Jul 03 2004 Eric Lavarde <rpm at zorglub.s.bawue.de>
 - Slowly I start to come behind how to have a cross-platform spec...
-* Mon Jun 28 2004 Eric Lavarde <rpm@zorglub.s.bawue.de>
+* Mon Jun 28 2004 Eric Lavarde <rpm at zorglub.s.bawue.de>
 - Did some more non-SuSE vendor adaptation (can't create anymore cross-platform)
-* Mon Jun 21 2004 Eric Lavarde <rpm@zorglub.s.bawue.de>
+* Mon Jun 21 2004 Eric Lavarde <rpm at zorglub.s.bawue.de>
 - Trying to make at least spec file platform independent (with macros)
 - Upgrade freemind.sh to better find the java binary (Thanks to Jan Schulz
   again) and copy patterns.xml to user directory.
@@ -288,12 +292,12 @@ fi
   used by freemind start script.
 - Remove user.properties because freemind does create it itself now
   (removes need for /etc/skel files).
-* Sat May 01 2004 Eric Lavarde <rpm@zorglub.s.bawue.de>
+* Sat May 01 2004 Eric Lavarde <rpm at zorglub.s.bawue.de>
 - Changed to patches as sent to upstream team.
 - Small fixes of the manpage.
 - Taken KDE Integration from Packman package (menu and mime type)
   http://packman.links2linux.org/?query=freemind&action=search
 - Taken description from same source.
 - Added new property 'browser_other' for mozilla vs. konqueror.
-* Tue Mar 13 2004 Eric Lavarde <rpm@zorglub.s.bawue.de>
+* Tue Mar 13 2004 Eric Lavarde <rpm at zorglub.s.bawue.de>
 - First packaged release

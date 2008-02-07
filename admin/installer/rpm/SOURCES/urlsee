@@ -34,14 +34,14 @@ _error() {
 
 try_all_cmds() {
 	local file cmd
-	file=$1
+	file="$1"
 	shift
 	for cmd in "${@}"
 	do
 		cmd=$(which "${cmd}")
 		if [ -x "${cmd}" ]
 		then
-			_debug "${cmd}" "${file}"
+			_debug "CALLING ${cmd}" "${file}"
 			exec "${cmd}" "${file}"
 		fi
 	done
@@ -54,6 +54,49 @@ then
 else
 	FILENAME="$1"
 fi
+
+### we start with the most generic and portable possibility ###
+if [ -x "$(which xdg-open)" ]
+then
+	_debug "exec xdg-open ${FILENAME}"
+	exec xdg-open "${FILENAME}"
+fi
+
+### if this wasn't possible, we try with desktop specific commands ###
+
+# try KDE with kfmclient
+if [ "${DESKTOP_SESSION}" = "kde" ] && [ -x "$(which kfmclient)" ]
+then
+	_debug "CALLING KDE kfmclient exec ${FILENAME}"
+	exec kfmclient exec "${FILENAME}"
+fi
+
+# try GNOME with gnome-open
+if [ "${DESKTOP_SESSION}" = "gnome" ] && [ -x "$(which gnome-open)" ]
+then
+	_debug "CALLING GNOME gnome-open ${FILENAME}"
+	exec gnome-open "${FILENAME}"
+fi
+
+# try XFce with exo-open
+if [ "${DESKTOP_SESSION}" = "xfc4" ] && [ -x "$(which exo-open)" ]
+then
+	_debug "CALLING XFce4 exo-open ${FILENAME}"
+	exec exo-open "${FILENAME}"
+fi
+
+### Looks like we're not using one of the standard desktops, ###
+### so we just try the same commands without caring for env. ###
+try_all_cmds "${FILENAME}" gnome-open exo-open
+if [ -x "$(which kfmclient)" ]
+then # we can't use try_all_cmds because we have 2 parameters
+	_debug "CALLING kfmclient exec ${FILENAME}"
+	exec kfmclient exec "${FILENAME}"
+fi
+
+### And now, we need to go the messy way ###
+### I might remove this part in the future ###
+_debug "Going for the messy path, it might fail..."
 
 HTTPNAME=${FILENAME#*://} # covers all kind of url protocol
 MAILNAME=${FILENAME#mailto:} # covers only mailto addresses

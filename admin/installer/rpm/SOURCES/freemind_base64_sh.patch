@@ -10,8 +10,8 @@
  _debug() {
 @@ -169,6 +170,7 @@
  /usr/share/java/xml-commons-apis.jar:\
- /usr/share/java/forms-1.0.5.jar:\
- /usr/share/java/commons-lang-2.1.jar:\
+ /usr/share/java/forms.jar:\
+ /usr/share/java/commons-lang.jar:\
 +/usr/share/java/commons-codec.jar:\
  ${freedir}"
  _debug "Calling: '${JAVACMD} -Dfreemind.base.dir=${freedir} -cp ${CLASSPATH} freemind.main.FreeMind  $@'."

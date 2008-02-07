@@ -16,9 +16,9 @@ mkdir -p freemind-${pkgver}
 cd freemind-${pkgver}
 if [ -n "${rcstag}" ]
 then
-	#cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/freemind export -r ${rcstag} freemind
+	cvs -z3 -d:pserver:anonymous@freemind.cvs.sourceforge.net:/cvsroot/freemind export -r ${rcstag} freemind
 	#cvs -z3 -d:ext:ewl@cvs.sourceforge.net:/cvsroot/freemind export -r ${rcstag} freemind
-	echo "CVS command not available, please extract from source file." && exit 2
+	#echo "CVS command not available, please extract from source file." && exit 2
 fi
 
 if [ ${pkgtype} = "deb" ]
