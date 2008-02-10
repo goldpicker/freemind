@@ -1,7 +1,9 @@
 		    AUTHORS AND CONTRIBUTORS
 	
 
-The current project director: Daniel Polansky, the current project managers: Christian Foltin and Dimitry Polivaev. 
+The current project director is Daniel Polansky, while the current project manager is Christian Foltin.
+
+Version 0.8.1 is a bug fix release the makes FreeMind Java6 compatible.
 
 Version 0.8.0 is released due to the major contributions of Christian Foltin and Dimitri Polivaev, quality and documentation support of Daniel Polansky, our translators, our linux packager Eric Lavarde and many others.
 
