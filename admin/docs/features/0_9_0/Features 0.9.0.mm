@@ -3,7 +3,7 @@
 <node COLOR="#000000" CREATED="1201282183606" ID="Freemind_Link_1027666650" MODIFIED="1202399146245" STYLE="fork" TEXT="Features 0.9.0">
 <font NAME="SansSerif" SIZE="20"/>
 <hook NAME="accessories/plugins/AutomaticLayout.properties"/>
-<node COLOR="#0033ff" CREATED="1201283648829" ID="Freemind_Link_813308322" MODIFIED="1201283659663" POSITION="right" STYLE="fork" TEXT="Main new features">
+<node COLOR="#0033ff" CREATED="1201283648829" ID="Freemind_Link_813308322" MODIFIED="1203097937857" POSITION="right" STYLE="fork" TEXT="Main new features">
 <edge STYLE="sharp_bezier" WIDTH="8"/>
 <font NAME="SansSerif" SIZE="18"/>
 <node COLOR="#00b439" CREATED="1201283660674" FOLDED="true" ID="Freemind_Link_1390621915" MODIFIED="1201283805485" STYLE="fork" TEXT="New Editor">
@@ -90,7 +90,7 @@
 <font NAME="SansSerif" SIZE="16"/>
 </node>
 </node>
-<node COLOR="#0033ff" CREATED="1201282217311" ID="Freemind_Link_849247054" MODIFIED="1201282223659" POSITION="right" STYLE="fork" TEXT="Visual Changes">
+<node COLOR="#0033ff" CREATED="1201282217311" ID="Freemind_Link_849247054" MODIFIED="1203097937860" POSITION="right" STYLE="fork" TEXT="Visual Changes">
 <edge STYLE="sharp_bezier" WIDTH="8"/>
 <font NAME="SansSerif" SIZE="18"/>
 <node COLOR="#00b439" CREATED="1201282224869" FOLDED="true" ID="Freemind_Link_1307834035" MODIFIED="1201282277049" STYLE="fork" TEXT="Tabular MindMapping Support">
@@ -134,10 +134,10 @@
 </node>
 </node>
 </node>
-<node COLOR="#0033ff" CREATED="1201282319118" ID="Freemind_Link_1043646949" MODIFIED="1201282324582" POSITION="right" STYLE="fork" TEXT="Usability Improvements">
+<node COLOR="#0033ff" CREATED="1201282319118" ID="Freemind_Link_1043646949" MODIFIED="1203097937861" POSITION="right" STYLE="fork" TEXT="Usability Improvements">
 <edge STYLE="sharp_bezier" WIDTH="8"/>
 <font NAME="SansSerif" SIZE="18"/>
-<node COLOR="#00b439" CREATED="1201282325640" ID="Freemind_Link_556186325" MODIFIED="1201282331416" STYLE="fork" TEXT="Move in all directions">
+<node COLOR="#00b439" CREATED="1201282325640" FOLDED="true" ID="Freemind_Link_556186325" MODIFIED="1201282331416" STYLE="fork" TEXT="Move in all directions">
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 <node COLOR="#990000" CREATED="1201282465994" FOLDED="true" ID="Freemind_Link_924709284" MODIFIED="1201282711721" TEXT="Up and Down">
@@ -152,7 +152,7 @@
   </body>
 </html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
-<node COLOR="#111111" CREATED="1201282472052" ID="Freemind_Link_917772022" MODIFIED="1201282475868">
+<node COLOR="#111111" CREATED="1201282472052" ID="Freemind_Link_917772022" MODIFIED="1203097894967">
 <richcontent TYPE="NODE"><html>
   <head>
     
@@ -162,7 +162,7 @@
   </body>
 </html></richcontent>
 </node>
-<node COLOR="#111111" CREATED="1201282476870" ID="Freemind_Link_495589866" MODIFIED="1201282479045">
+<node COLOR="#111111" CREATED="1201282476870" ID="Freemind_Link_495589866" MODIFIED="1203097894968">
 <richcontent TYPE="NODE"><html>
   <head>
     
@@ -173,7 +173,7 @@
 </html></richcontent>
 </node>
 </node>
-<node COLOR="#990000" CREATED="1201282426565" ID="Freemind_Link_481786702" MODIFIED="1201282843358" TEXT="Left and Right">
+<node COLOR="#990000" CREATED="1201282426565" FOLDED="true" ID="Freemind_Link_481786702" MODIFIED="1201282843358" TEXT="Left and Right">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -185,8 +185,8 @@
   </body>
 </html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
-<node COLOR="#111111" CREATED="1201282851749" FOLDED="true" ID="Freemind_Link_774463025" MODIFIED="1201282871361" TEXT="Getting higher and lower in the tree">
-<node COLOR="#111111" CREATED="1201282873949" ID="Freemind_Link_623953260" MODIFIED="1201282894121">
+<node COLOR="#111111" CREATED="1201282851749" FOLDED="true" ID="Freemind_Link_774463025" MODIFIED="1203097894969" TEXT="Getting higher and lower in the tree">
+<node COLOR="#111111" CREATED="1201282873949" ID="Freemind_Link_623953260" MODIFIED="1203097894970">
 <richcontent TYPE="NODE"><html>
   <head>
     
@@ -196,7 +196,7 @@
   </body>
 </html></richcontent>
 </node>
-<node COLOR="#111111" CREATED="1201282895687" ID="Freemind_Link_1563328606" MODIFIED="1201282900505">
+<node COLOR="#111111" CREATED="1201282895687" ID="Freemind_Link_1563328606" MODIFIED="1203097894970">
 <richcontent TYPE="NODE"><html>
   <head>
     
@@ -206,7 +206,7 @@
   </body>
 </html></richcontent>
 </node>
-<node COLOR="#111111" CREATED="1201282902044" ID="Freemind_Link_1015311948" MODIFIED="1201282909323">
+<node COLOR="#111111" CREATED="1201282902044" ID="Freemind_Link_1015311948" MODIFIED="1203097894971">
 <richcontent TYPE="NODE"><html>
   <head>
     
@@ -217,8 +217,8 @@
 </html></richcontent>
 </node>
 </node>
-<node COLOR="#111111" CREATED="1201282843249" FOLDED="true" ID="Freemind_Link_1554785271" MODIFIED="1201282850364" TEXT="Across the root node">
-<node COLOR="#111111" CREATED="1201282434688" ID="Freemind_Link_1728934284" MODIFIED="1201282440387">
+<node COLOR="#111111" CREATED="1201282843249" FOLDED="true" ID="Freemind_Link_1554785271" MODIFIED="1203097894971" TEXT="Across the root node">
+<node COLOR="#111111" CREATED="1201282434688" ID="Freemind_Link_1728934284" MODIFIED="1203097894972">
 <richcontent TYPE="NODE"><html>
   <head>
     
@@ -228,7 +228,7 @@
   </body>
 </html></richcontent>
 </node>
-<node COLOR="#111111" CREATED="1201282441796" ID="Freemind_Link_221157986" MODIFIED="1201282446533">
+<node COLOR="#111111" CREATED="1201282441796" ID="Freemind_Link_221157986" MODIFIED="1203097894972">
 <richcontent TYPE="NODE"><html>
   <head>
     
@@ -268,14 +268,65 @@
   <body>
     <img src="format_window.png" />
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 </node>
-<node COLOR="#00b439" CREATED="1202400125364" FOLDED="true" ID="Freemind_Link_1848794893" MODIFIED="1202400218246" STYLE="fork" TEXT="New Pattern editor">
+<node COLOR="#00b439" CREATED="1202400125364" FOLDED="true" ID="Freemind_Link_1848794893" MODIFIED="1203096320403" STYLE="fork" TEXT="New Pattern editor">
+<richcontent TYPE="NOTE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      Patterns are very useful helpers to get a consistent layout of your map. You can perform various format changes with one keystroke.
+    </p>
+    <p>
+      The pattern editor is opened using F11 and presents all currently defined patterns.
+    </p>
+    <p>
+      The following basic actions are available:
+    </p>
+    <ul>
+      <li>
+        You can move the pattern(s) up&amp;down using drag and drop.
+      </li>
+      <li>
+        You can add a new pattern via the action menu.
+      </li>
+      <li>
+        You can create a pattern from the selected nodes. If only one node is selected, its format changes in comparison to an unformatted node build a new pattern. If you have selected several nodes, the format changes that are common to all selected nodes are gathered in a new pattern. For example, if you have a bold node with yellow background and an italic node with the same background color, the newly created pattern would consist of the yellow background change.
+      </li>
+      <li>
+        You can apply patterns to the currently selected nodes and finally,
+      </li>
+      <li>
+        you can remove patterns.
+      </li>
+    </ul>
+    <p>
+      The patterns are stored in the patterns.xml file in your &lt;user directory&gt;/.freemind/ directory and are reloaded the next time you use freemind. The patterns are not part of the maps.
+    </p>
+    <p>
+      Inside the patterns, there is a left and right hand side. On the right hand side, the format changes are displayed. On the left side there is a plus or minus or empty box. They mean the following:
+    </p>
+    <ul>
+      <li>
+        Plus: indicates that the format on the left is applied.
+      </li>
+      <li>
+        Minus: forces the corresponding format to be reverted to the standard value.
+      </li>
+      <li>
+        Empty: No change.
+      </li>
+    </ul>
+    <p>
+      A novelity is the possibility to associate a script to a pattern. Thus, patterns can now change much more than the pure format changes. For example, you can put macros inside the patterns that change the selected or more nodes at once. This functionality can't be overestimated as it opens complete new automatism capabilities to FreeMind.
+    </p>
+  </body>
+</html></richcontent>
 <edge STYLE="bezier" WIDTH="thin"/>
-<cloud/>
 <font NAME="SansSerif" SIZE="16"/>
 <node COLOR="#990000" CREATED="1202400173321" ID="Freemind_Link_1108991945" MODIFIED="1202400181702">
 <richcontent TYPE="NODE"><html>
@@ -285,8 +336,45 @@
   <body>
     <img src="pattern_window_with_popup.png" />
   </body>
+</html></richcontent>
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+</node>
+<node COLOR="#00b439" CREATED="1203059325942" FOLDED="true" ID="Freemind_Link_1489168699" MODIFIED="1203098035241" STYLE="fork" TEXT="Automatic Layout Customizable">
+<richcontent TYPE="NOTE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      Inside the preferences there is the possibility to change the layout of the automatic layout functionality.
+    </p>
+    <p>
+      Thus, you can change the color and appearance of each level. For example, the used color green is difficult to be read with a beamer. Now, you can change the color to dark green.
+    </p>
+    <p>
+      Observe, that changes to the specification doesn't change the layout of the map directly. You have to close and reopen the map, first.
+    </p>
+    <p>
+      Currently, these format specifications are stored in the preferences of the current user and not inside the map. Thus, on a different system, the automatic layout of a map may look different. This will be changed in the next release of FreeMind.
+    </p>
+    <p>
+      For advanced users it is even possible to change the number of levels. Change something in the preferences of the automatic layout. Now, the format specification is stored in the user preferences. Open the file &lt;user_directory&gt;/.freemind/auto.properties and search for the line automaticLayout_level, and duplicate the last &lt;pattern name=...&gt;...&lt;/pattern&gt; entry. Now, you have one level more.
+    </p>
+  </body>
 </html>
 </richcontent>
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
+<node COLOR="#990000" CREATED="1203096440679" ID="Freemind_Link_1204327766" MODIFIED="1203096480552">
+<richcontent TYPE="NODE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <img src="automatic_layout_customization.png" />
+  </body>
+</html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 </node>
@@ -296,7 +384,7 @@
 <font NAME="SansSerif" SIZE="16"/>
 </node>
 </node>
-<node COLOR="#0033ff" CREATED="1201282939150" ID="Freemind_Link_150258579" MODIFIED="1201282942471" POSITION="right" STYLE="fork" TEXT="New Exports">
+<node COLOR="#0033ff" CREATED="1201282939150" ID="Freemind_Link_150258579" MODIFIED="1203097937866" POSITION="right" STYLE="fork" TEXT="New Exports">
 <edge STYLE="sharp_bezier" WIDTH="8"/>
 <font NAME="SansSerif" SIZE="18"/>
 <node COLOR="#00b439" CREATED="1201282945124" FOLDED="true" ID="Freemind_Link_1356291624" MODIFIED="1201283459618" STYLE="fork" TEXT="As flash and as a Java applet">
@@ -342,7 +430,7 @@
 </node>
 </node>
 </node>
-<node COLOR="#0033ff" CREATED="1201506466515" ID="Freemind_Link_676471791" MODIFIED="1202399818723" POSITION="right" STYLE="fork" TEXT="Scripting Support">
+<node COLOR="#0033ff" CREATED="1201506466515" ID="Freemind_Link_676471791" MODIFIED="1203097937867" POSITION="right" STYLE="fork" TEXT="Scripting Support">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -391,11 +479,10 @@
       A last word on security: before scripts is evaluated for the first time in FreeMind, the user is asked whether or not he allows it. The answer can be stored for every script but observe that a malicious script is able to perform every action on your computer that your users rights allow up to delete all files or send them to pirates.ru. This said, be careful and don't allow scripts when you don't know that the author is trusted. Finally, scripts are never evaluated automatically in FreeMind for these reasons. Thus, you can open a map without problems and have a look at the scripts it contains.
     </p>
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 <edge STYLE="sharp_bezier" WIDTH="8"/>
 <font NAME="SansSerif" SIZE="18"/>
-<node COLOR="#00b439" CREATED="1201506580407" ID="Freemind_Link_1055396713" MODIFIED="1202399091855" STYLE="fork" TEXT="Little FreeMind Scripting Guide">
+<node COLOR="#00b439" CREATED="1201506580407" ID="Freemind_Link_1055396713" MODIFIED="1202888187625" STYLE="fork" TEXT="Little FreeMind Scripting Guide">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -453,21 +540,33 @@
 calcWork(c.getRootNode());</pre>
       </li>
       <li>
-        A very advanced example: the last script is integrated into a listener that detects node changes, so the sums are always recreated when a node is changed. This script should only be executed once, as it registers a handler at the controller every time it is executed.<br />
+        A very advanced example: the last script is integrated into a listener that detects node changes, so the sums are always recreated when a node is changed. This script introduces a new element in scripting: the &quot;cookies&quot;. It is a usual HashMap where scripts can store values that they need the next time, they are executed. For every map, there is a new cookie map, such that cookies are map local. Moreover, they are not stored persistently and are lost after termination of FreeMind or after closing a map. In this example, they serve as a static variable in which it is stored whether or not the script was already executed and which listener was used in order to deregister the old one first.<br />
 
         <pre>class MyNodeListener implements freemind.modes.ModeController.NodeSelectionListener {
 	freemind.modes.mindmapmode.MindMapController c;
         MyNodeListener(freemind.modes.mindmapmode.MindMapController con) {
 		this.c = con;
-	}
+		}
 
-        void onUpdateNodeHook(freemind.modes.MindMapNode node){	
+		/** 
+         * Sent, if a node is changed
+         * */
+        void onUpdateNodeHook(freemind.modes.MindMapNode node){		
 			calcWork(c.getRootNode());
-	};
+		};
 
+        /** Is sent when a node is selected.
+         */
         void onSelectHook(freemind.view.mindmapview.NodeView node){};
+        /**
+         * Is sent when a node is deselected.
+         */
         void onDeselectHook(freemind.view.mindmapview.NodeView node){};
-        void onSaveNode(freemind.modes.MindMapNode node){};
+
+		/**
+		 * Is issued before a node is saved (eg. to save its notes, too, even if the notes is currently edited).
+		 */
+		void onSaveNode(freemind.modes.MindMapNode node){};
 
 def calcWork(child) {
 	def sum = 0;
@@ -485,7 +584,14 @@ def calcWork(child) {
 }
 
 }
-c.registerNodeSelectionListener(new MyNodeListener(c));
+
+def cookieKey = &quot;work_update_listener&quot;;
+if(cookies.get(cookieKey) != null) {
+	c.deregisterNodeSelectionListener(cookies.get(cookieKey));
+}
+def newListener = new MyNodeListener(c);
+cookies.put(cookieKey, newListener);
+c.registerNodeSelectionListener(newListener);
       </pre>
       </li>
       <li>
@@ -546,8 +652,7 @@ import freemind.modes.MindMapNode;
       </li>
     </ul>
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 </node>
