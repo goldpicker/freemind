@@ -1,3 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     22.02.2008 06:23:22                                                        
+
+     freemind_installer_windows    
+     Creates the installer Freemind.iss file for different purposes
+                   
+     foltin                                                                
+     ====================================================================== -->
+<project name="freemind_installer_windows" default="installer">
+    <description>
+            Creates the installer Freemind.iss file for different purposes
+    </description>
+	<property name="freemind.version" value="0.8.1"/>
+	<property name="freemind.installer_year" value="2008"/>
+
+    <!-- ================================= 
+          target: installer              
+         ================================= -->
+    <target name="installer" depends="" description="--> Creates the installer Freemind.iss file.">
+    	<property name="freemind.installer.additional_sources" value="Source: ..\..\..\bin\dist\plugins\*.*; DestDir: {app}\plugins; Flags: promptifolder overwritereadonly  recursesubdirs"/>
+    	<property name="freemind.version.extension" value="-max"/>
+    	<antcall target="write_installer"></antcall>
+	</target>
+    <!-- ================================= 
+          target: installer_min              
+         ================================= -->
+    <target name="installer_min" depends="" description="--> Creates the min installer Freemind.iss file.">
+    	<property name="freemind.installer.additional_sources" value=""/>
+    	<property name="freemind.version.extension" value="-min"/>
+    	<antcall target="write_installer"></antcall>
+	</target>
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: write_installer                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="write_installer">
+
+
+        <echo file="Freemind.iss" append="false">
 ;****************************************************************************
 ;* Install Script for FreeMind
 ;****************************************************************************
@@ -18,6 +57,7 @@
 ;* Dimitry Polivaev   (DP ) 19/10/2007 - Version 0.9.0 Beta14
 ;* Christian Foltin   (FC ) 30/11/2007 - Version 0.9.0 Beta15
 ;* Christian Foltin   (FC ) 02/01/2008 - Version 0.8.1
+;* Christian Foltin   (FC ) 22/02/2008 - Universial Version 
 ;****************************************************************************
 
 [Files]
@@ -29,17 +69,10 @@ Source: ..\..\..\bin\dist\accessories\*.*; DestDir: {app}\accessories; Flags: pr
 Source: ..\..\..\bin\dist\browser\*.*; DestDir: {app}\browser; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\doc\*.*; DestDir: {app}\doc; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\lib\*.*; DestDir: {app}\lib; Flags: promptifolder overwritereadonly  recursesubdirs
-;Source: ..\..\..\bin\dist\plugins\*.*; DestDir: {app}\plugins; Flags: promptifolder overwritereadonly  recursesubdirs
+${freemind.installer.additional_sources}
 Source: license.txt; DestDir: {app}; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\patterns.xml; DestDir: {app}; Flags: promptifolder overwritereadonly
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
-
-;Source: {app}\*.*; DestDir: {app}\backup; Flags: external skipifsourcedoesntexist uninsneveruninstall
-;Source: {app}\accessories\*.*; DestDir: {app}\backup\accessories; Flags: external skipifsourcedoesntexist uninsneveruninstall
-;Source: {app}\browser\*.*; DestDir: {app}\backup\browser; Flags: external skipifsourcedoesntexist uninsneveruninstall
-;Source: {app}\doc\*.*; DestDir: {app}\backup\doc; Flags: external skipifsourcedoesntexist uninsneveruninstall
-;Source: {app}\lib\*.*; DestDir: {app}\backup\lib; Flags: recursesubdirs external skipifsourcedoesntexist uninsneveruninstall
-;Source: {app}\plugins\*.*; DestDir: {app}\backup\plugins; Flags: external skipifsourcedoesntexist uninsneveruninstall
 
 Source: FreeMind.gif; DestDir: {tmp}; Flags: dontcopy
 Source: FreeMind1.gif; DestDir: {tmp}; Flags: dontcopy
@@ -80,14 +113,14 @@ begin
   Result := False;
   if RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\JavaSoft\Java Runtime Environment', 'CurrentVersion', AVersion) then
   begin
-    	if (AVersion = '1.4') or (AVersion = '1.5') or (AVersion = '1.6') then
+    	if (AVersion = '1.4') or (AVersion = '1.5') or (AVersion = '1.6') or (AVersion = '1.7') then
     		Result := True;
       end;
 
 
   if Result = False then	// Java 1.4 not found/detected
   begin
-	if MsgBox( 'Java 1.4 or greater not detected - Continue with installation ?', mbError, MB_YESNO) = MRYES then
+	if MsgBox( 'Java 1.4 or greater not detected. - You have to download and install Java from http://java.sun.com/ - \nContinue with installation?', mbError, MB_YESNO) = MRYES then
 		Result := True
 	else
 		Result := False;
@@ -109,7 +142,7 @@ begin
 end;
 [Setup]
 AppName=FreeMind
-AppVerName=FreeMind 0.8.1
+AppVerName=FreeMind ${freemind.version}
 AppPublisherURL=http://freemind.sourceforge.net
 AppSupportURL=http://freemind.sourceforge.net
 AppUpdatesURL=http://freemind.sourceforge.net
@@ -120,9 +153,9 @@ LicenseFile=license.txt
 WindowVisible=true
 
 
-AppCopyright=Copyright  � 2000-2008 J�rg M�ller, Daniel Polansky, Petr Novak, Christian Foltin, Dimitry Polivaev and others
+AppCopyright=Copyright  � 2000-${freemind.installer_year} J�rg M�ller, Daniel Polansky, Petr Novak, Christian Foltin, Dimitry Polivaev and others
 ;AppCopyright=Copyright � {code:InstallationDate}
-AppVersion=0.8.1
+AppVersion=${freemind.version}
 InfoAfterFile=after.txt
 InfoBeforeFile=before.txt
 PrivilegesRequired=admin
@@ -133,7 +166,7 @@ AppID=B991B020-2968-11D8-AF23-444553540000
 UninstallRestartComputer=false
 ChangesAssociations=true
 FlatComponentsList=false
-OutputBaseFilename=FreeMind-Windows-Installer-0_8_1-min
+OutputBaseFilename=FreeMind-Windows-Installer-${freemind.version}${freemind.version.extension}
 SolidCompression=false
 ; old: InternalCompressLevel=9
 Compression=zip/9
@@ -144,10 +177,10 @@ ComponentsDiskSpaceMBLabel=Current selection requires at least [kb] KB of disk s
 
 [Tasks]
 ; NOTE: The following entry contains English phrases ("Create a desktop icon" and "Additional icons"). You are free to translate them into another language if required.
-Name: desktopicon; Description: Create a &desktop icon; GroupDescription: Additional icons:
+Name: desktopicon; Description: Create a &amp;desktop icon; GroupDescription: Additional icons:
 ; NOTE: The following entry contains English phrases ("Create a Quick Launch icon" and "Additional icons"). You are free to translate them into another language if required.
-Name: quicklaunchicon; Description: Create a &Quick Launch icon; GroupDescription: Additional icons:; Flags: unchecked
-Name: fileassoc; Description: &Associate FreeMind Extensions with the .mm file extension; GroupDescription: File Association:
+Name: quicklaunchicon; Description: Create a &amp;Quick Launch icon; GroupDescription: Additional icons:; Flags: unchecked
+Name: fileassoc; Description: &amp;Associate FreeMind Extensions with the .mm file extension; GroupDescription: File Association:
 
 [Icons]
 Name: {group}\FreeMind; Filename: {app}\Freemind.exe; WorkingDir: {app}; IconIndex: 0; IconFilename: {app}\Freemind.exe
@@ -167,3 +200,7 @@ Root: HKCR; SubKey: .mm; ValueType: string; ValueData: FreeMind Map; Flags: unin
 Root: HKCR; SubKey: FreeMind Map; ValueType: string; ValueData: FreeMind Map; Flags: uninsdeletekey; Tasks: fileassoc
 Root: HKCR; SubKey: FreeMind Map\Shell\Open\Command; ValueType: string; ValueData: """{app}\Freemind.exe"" ""%1"""; Flags: uninsdeletekey; Tasks: fileassoc
 Root: HKCR; Subkey: FreeMind Map\DefaultIcon; ValueType: string; ValueData: {app}\Freemind.exe,0; Flags: uninsdeletekey; Tasks: fileassoc
+</echo>
+    </target>
+
+</project>
