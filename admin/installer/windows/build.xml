@@ -153,8 +153,8 @@ LicenseFile=license.txt
 WindowVisible=true
 
 
-AppCopyright=Copyright  � 2000-${freemind.installer_year} J�rg M�ller, Daniel Polansky, Petr Novak, Christian Foltin, Dimitry Polivaev and others
-;AppCopyright=Copyright � {code:InstallationDate}
+AppCopyright=Copyright © 2000-${freemind.installer_year} Jörg Müller, Daniel Polansky, Petr Novak, Christian Foltin, Dimitry Polivaev and others
+;AppCopyright=Copyright © {code:InstallationDate}
 AppVersion=${freemind.version}
 InfoAfterFile=after.txt
 InfoBeforeFile=before.txt
