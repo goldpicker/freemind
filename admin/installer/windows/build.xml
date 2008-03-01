@@ -30,12 +30,43 @@
     	<property name="freemind.version.extension" value="-min"/>
     	<antcall target="write_installer"></antcall>
 	</target>
+    <!-- ================================= 
+          target: installer_java_embedded              
+         ================================= -->
+    <target name="installer_java_embedded" depends="" description="--> Creates the java embedded max installer Freemind.iss file.">
+    	<property name="freemind.installer.additional_sources" value="Source: ..\..\..\bin\dist\plugins\*.*; DestDir: {app}\plugins; Flags: promptifolder overwritereadonly  recursesubdirs"/>
+    	<property name="freemind.installer.embedded_jre" value="Source: Z:\home\foltin\java\jre7\jre1.7.0\*.*; DestDir: {app}\jre; Flags: promptifolder overwritereadonly  recursesubdirs"/>
+    	<!-- No java check necessary here... -->
+    	<property name="freemind.installer.jre_check" value="  Result := true;"/>
+    	<property name="freemind.version.extension" value="-max-java-embedded"/>
+    	<copy todir="." overwrite="true">
+    		<fileset dir="../../../bin/dist">
+			    <include name="freemind.bat"/>
+			</fileset>
+    		<fileset dir="../../../freemind/windows-launcher">
+			    <include name="FreeMind-butterfly-alternative-path.exe"/>
+			</fileset>
+    	</copy>
+    	<move tofile="FreeMind.exe" file="FreeMind-butterfly-alternative-path.exe"/>
+    	<replaceregexp byline="true" file="freemind.bat" match="^java" replace="jre\\\\bin\\\\java.exe"></replaceregexp>
+    	<property name="freemind.installer.freemind_bat" value="Source: Freemind.bat; DestDir: {app}; Flags: promptifolder overwritereadonly"/>
+    	<property name="freemind.installer.freemind_exe" value="Source: FreeMind.exe; DestDir: {app}; Flags: promptifolder overwritereadonly"/>
+    	<antcall target="write_installer_base"></antcall> 
+	</target>
 	<!-- - - - - - - - - - - - - - - - - - 
           target: write_installer                      
          - - - - - - - - - - - - - - - - - -->
     <target name="write_installer">
-
-
+    	<property name="freemind.installer.embedded_jre" value=""/>
+    	<property name="freemind.installer.jre_check" value="  Result := CheckJavaVersion;"/>
+    	<property name="freemind.installer.freemind_bat" value="Source: ..\..\..\bin\dist\Freemind.bat; DestDir: {app}; Flags: promptifolder overwritereadonly"/>
+    	<property name="freemind.installer.freemind_exe" value="Source: ..\..\..\bin\dist\Freemind.exe; DestDir: {app}; Flags: promptifolder overwritereadonly"/>
+		<antcall target="write_installer_base"></antcall>
+	</target>        	
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: write_installer base                 
+         - - - - - - - - - - - - - - - - - -->
+    <target name="write_installer_base">
         <echo file="Freemind.iss" append="false" encoding="ISO-8859-1">
 ;****************************************************************************
 ;* Install Script for FreeMind
@@ -63,13 +94,16 @@
 [Files]
 Source: isxbb.dll; DestDir: {tmp}; Flags: dontcopy
 
-Source: ..\..\..\bin\dist\Freemind.exe; DestDir: {app}; Flags: promptifolder overwritereadonly
-Source: ..\..\..\bin\dist\Freemind.bat; DestDir: {app}; Flags: promptifolder overwritereadonly
+;Source: ..\..\..\bin\dist\Freemind.exe; DestDir: {app}; Flags: promptifolder overwritereadonly
+;Source: ..\..\..\bin\dist\Freemind.bat; DestDir: {app}; Flags: promptifolder overwritereadonly
+${freemind.installer.freemind_exe}
+${freemind.installer.freemind_bat}
 Source: ..\..\..\bin\dist\accessories\*.*; DestDir: {app}\accessories; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\browser\*.*; DestDir: {app}\browser; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\doc\*.*; DestDir: {app}\doc; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\lib\*.*; DestDir: {app}\lib; Flags: promptifolder overwritereadonly  recursesubdirs
 ${freemind.installer.additional_sources}
+${freemind.installer.embedded_jre}
 Source: license.txt; DestDir: {app}; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\patterns.xml; DestDir: {app}; Flags: promptifolder overwritereadonly
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
@@ -138,7 +172,8 @@ begin
     isxbb_AddImage(ExpandConstant('{tmp}')+'\FreeMind1.gif',TOPRIGHT);
 
     isxbb_Init(StrToInt(ExpandConstant('{hwnd}')));
-  Result := CheckJavaVersion;
+${freemind.installer.jre_check}
+        	
 end;
 [Setup]
 AppName=FreeMind

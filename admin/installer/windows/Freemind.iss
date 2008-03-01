@@ -1,3 +1,4 @@
+
 ;****************************************************************************
 ;* Install Script for FreeMind
 ;****************************************************************************
@@ -18,28 +19,25 @@
 ;* Dimitry Polivaev   (DP ) 19/10/2007 - Version 0.9.0 Beta14
 ;* Christian Foltin   (FC ) 30/11/2007 - Version 0.9.0 Beta15
 ;* Christian Foltin   (FC ) 02/01/2008 - Version 0.8.1
+;* Christian Foltin   (FC ) 22/02/2008 - Universial Version 
 ;****************************************************************************
 
 [Files]
 Source: isxbb.dll; DestDir: {tmp}; Flags: dontcopy
 
-Source: ..\..\..\bin\dist\Freemind.exe; DestDir: {app}; Flags: promptifolder overwritereadonly
-Source: ..\..\..\bin\dist\Freemind.bat; DestDir: {app}; Flags: promptifolder overwritereadonly
+;Source: ..\..\..\bin\dist\Freemind.exe; DestDir: {app}; Flags: promptifolder overwritereadonly
+;Source: ..\..\..\bin\dist\Freemind.bat; DestDir: {app}; Flags: promptifolder overwritereadonly
+Source: FreeMind.exe; DestDir: {app}; Flags: promptifolder overwritereadonly
+Source: Freemind.bat; DestDir: {app}; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\accessories\*.*; DestDir: {app}\accessories; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\browser\*.*; DestDir: {app}\browser; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\doc\*.*; DestDir: {app}\doc; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\lib\*.*; DestDir: {app}\lib; Flags: promptifolder overwritereadonly  recursesubdirs
-;Source: ..\..\..\bin\dist\plugins\*.*; DestDir: {app}\plugins; Flags: promptifolder overwritereadonly  recursesubdirs
+Source: ..\..\..\bin\dist\plugins\*.*; DestDir: {app}\plugins; Flags: promptifolder overwritereadonly  recursesubdirs
+Source: Z:\home\foltin\java\jre7\jre1.7.0\*.*; DestDir: {app}\jre; Flags: promptifolder overwritereadonly  recursesubdirs
 Source: license.txt; DestDir: {app}; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\patterns.xml; DestDir: {app}; Flags: promptifolder overwritereadonly
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
-
-;Source: {app}\*.*; DestDir: {app}\backup; Flags: external skipifsourcedoesntexist uninsneveruninstall
-;Source: {app}\accessories\*.*; DestDir: {app}\backup\accessories; Flags: external skipifsourcedoesntexist uninsneveruninstall
-;Source: {app}\browser\*.*; DestDir: {app}\backup\browser; Flags: external skipifsourcedoesntexist uninsneveruninstall
-;Source: {app}\doc\*.*; DestDir: {app}\backup\doc; Flags: external skipifsourcedoesntexist uninsneveruninstall
-;Source: {app}\lib\*.*; DestDir: {app}\backup\lib; Flags: recursesubdirs external skipifsourcedoesntexist uninsneveruninstall
-;Source: {app}\plugins\*.*; DestDir: {app}\backup\plugins; Flags: external skipifsourcedoesntexist uninsneveruninstall
 
 Source: FreeMind.gif; DestDir: {tmp}; Flags: dontcopy
 Source: FreeMind1.gif; DestDir: {tmp}; Flags: dontcopy
@@ -80,14 +78,14 @@ begin
   Result := False;
   if RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\JavaSoft\Java Runtime Environment', 'CurrentVersion', AVersion) then
   begin
-    	if (AVersion = '1.4') or (AVersion = '1.5') or (AVersion = '1.6') then
+    	if (AVersion = '1.4') or (AVersion = '1.5') or (AVersion = '1.6') or (AVersion = '1.7') then
     		Result := True;
       end;
 
 
   if Result = False then	// Java 1.4 not found/detected
   begin
-	if MsgBox( 'Java 1.4 or greater not detected - Continue with installation ?', mbError, MB_YESNO) = MRYES then
+	if MsgBox( 'Java 1.4 or greater not detected. - You have to download and install Java from http://java.sun.com/ - \nContinue with installation?', mbError, MB_YESNO) = MRYES then
 		Result := True
 	else
 		Result := False;
@@ -105,7 +103,8 @@ begin
     isxbb_AddImage(ExpandConstant('{tmp}')+'\FreeMind1.gif',TOPRIGHT);
 
     isxbb_Init(StrToInt(ExpandConstant('{hwnd}')));
-  Result := CheckJavaVersion;
+  Result := true;
+        	
 end;
 [Setup]
 AppName=FreeMind
@@ -120,8 +119,8 @@ LicenseFile=license.txt
 WindowVisible=true
 
 
-AppCopyright=Copyright  ï¿½ 2000-2008 Jï¿½rg Mï¿½ller, Daniel Polansky, Petr Novak, Christian Foltin, Dimitry Polivaev and others
-;AppCopyright=Copyright ï¿½ {code:InstallationDate}
+AppCopyright=Copyright © 2000-2008 Jörg Müller, Daniel Polansky, Petr Novak, Christian Foltin, Dimitry Polivaev and others
+;AppCopyright=Copyright © {code:InstallationDate}
 AppVersion=0.8.1
 InfoAfterFile=after.txt
 InfoBeforeFile=before.txt
@@ -133,7 +132,7 @@ AppID=B991B020-2968-11D8-AF23-444553540000
 UninstallRestartComputer=false
 ChangesAssociations=true
 FlatComponentsList=false
-OutputBaseFilename=FreeMind-Windows-Installer-0_8_1-min
+OutputBaseFilename=FreeMind-Windows-Installer-0.8.1-max-java-embedded
 SolidCompression=false
 ; old: InternalCompressLevel=9
 Compression=zip/9
