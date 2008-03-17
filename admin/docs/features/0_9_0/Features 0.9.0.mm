@@ -377,10 +377,94 @@
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 </node>
-<node COLOR="#00b439" CREATED="1202400209358" ID="Freemind_Link_60926823" MODIFIED="1202400215450" STYLE="fork" TEXT="Search dialog">
+<node COLOR="#00b439" CREATED="1202400209358" FOLDED="true" ID="Freemind_Link_60926823" MODIFIED="1205774913599" STYLE="fork" TEXT="Search &amp; Replace Dialog">
+<richcontent TYPE="NOTE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      A new search and replace dialog enables to quickly search for text fragments and to replace them.
+    </p>
+    <p>
+      Its functionality includes
+    </p>
+    <ul>
+      <li>
+        Find as you type: when you start to specify your search text, it starts to reduce the amount of displayed nodes. It searches for the text inside the nodes text only (attached notes are currently not searched).
+      </li>
+      <li>
+        Sortable node list: the main table is sortable by each criterion. Even by Icon. Thus, it is easy to find all nodes with attached note for example. Or to sort them by creation date to get the latest changes to the map!
+      </li>
+      <li>
+        Cursor support: moving down moves from the search field to the replace field and then into the list.
+      </li>
+      <li>
+        Node Path display: if you select a line, its path from the root of the map is displayed below.
+      </li>
+      <li>
+        Direct access: if you press enter inside the table, the mind map displays the selected node (menu item &quot;select&quot; and &quot;select and close&quot;).
+      </li>
+      <li>
+        Replace: it is possible to replace all occurences or only the nodes belonging to the selected lines.
+      </li>
+      <li>
+        Export: new striking possibility. Select some nodes and export them to a new mindmap. This makes it easy to generate a todo list from a hierachical mind map. For example, if you mark every todo item with the bell sign, then simply sort this list by icon and mark those containing the bell. Then press &quot;export&quot; and you get all these nodes as single nodes in a new map.
+      </li>
+    </ul>
+  </body>
+</html>
+</richcontent>
 <edge STYLE="bezier" WIDTH="thin"/>
-<cloud/>
 <font NAME="SansSerif" SIZE="16"/>
+<node COLOR="#990000" CREATED="1205774722014" ID="ID_169236260" MODIFIED="1205774808455">
+<richcontent TYPE="NODE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <img src="search_replace.png" />
+  </body>
+</html>
+</richcontent>
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+<node COLOR="#990000" CREATED="1205774810750" ID="ID_1997326720" MODIFIED="1205774823462">
+<richcontent TYPE="NODE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <img src="search_replace_export.png" />
+  </body>
+</html>
+</richcontent>
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+<node COLOR="#990000" CREATED="1205774824749" ID="ID_1588597986" MODIFIED="1205774831370">
+<richcontent TYPE="NODE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <img src="search_replace_export_window.png" />
+  </body>
+</html>
+</richcontent>
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+<node COLOR="#990000" CREATED="1205774835257" ID="ID_801476713" MODIFIED="1205774840638">
+<richcontent TYPE="NODE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <img src="search_replace_export_result.png" />
+  </body>
+</html>
+</richcontent>
+<font NAME="SansSerif" SIZE="14"/>
+</node>
 </node>
 </node>
 <node COLOR="#0033ff" CREATED="1201282939150" ID="Freemind_Link_150258579" MODIFIED="1203097937866" POSITION="right" STYLE="fork" TEXT="New Exports">
@@ -716,8 +800,7 @@ c.registerNodeSelectionListener(newListener);</pre>
       </li>
     </ul>
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 </node>
