@@ -413,8 +413,7 @@
       </li>
     </ul>
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 <node COLOR="#990000" CREATED="1205774722014" ID="ID_169236260" MODIFIED="1205774808455">
@@ -425,8 +424,7 @@
   <body>
     <img src="search_replace.png" />
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 <node COLOR="#990000" CREATED="1205774810750" ID="ID_1997326720" MODIFIED="1205774823462">
@@ -437,8 +435,7 @@
   <body>
     <img src="search_replace_export.png" />
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 <node COLOR="#990000" CREATED="1205774824749" ID="ID_1588597986" MODIFIED="1205774831370">
@@ -449,8 +446,7 @@
   <body>
     <img src="search_replace_export_window.png" />
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 <node COLOR="#990000" CREATED="1205774835257" ID="ID_801476713" MODIFIED="1205774840638">
@@ -461,8 +457,7 @@
   <body>
     <img src="search_replace_export_result.png" />
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 </node>
@@ -565,12 +560,27 @@
 </html></richcontent>
 <edge STYLE="sharp_bezier" WIDTH="8"/>
 <font NAME="SansSerif" SIZE="18"/>
-<node COLOR="#00b439" CREATED="1201506580407" ID="Freemind_Link_1055396713" MODIFIED="1205531456999" STYLE="fork" TEXT="Little FreeMind Scripting Guide">
+<node COLOR="#00b439" CREATED="1201506580407" ID="Freemind_Link_1055396713" MODIFIED="1205836062849" STYLE="fork" TEXT="Little FreeMind Scripting Guide">
 <richcontent TYPE="NOTE"><html>
   <head>
     
   </head>
   <body>
+    <p>
+      If your scripts want to change some map data (which they commonly want to) they should rely on the methods provided by the MindMapController c.
+    </p>
+    <p>
+      These methods are summarized and partially documented in the class &quot;MindMapActions&quot;:
+    </p>
+    <p>
+      <a href="http://freemind.cvs.sourceforge.net/freemind/freemind/freemind/modes/mindmapmode/actions/MindMapActions.java?view=log&amp;pathrev=fm_060405_integration">http://freemind.cvs.sourceforge.net/freemind/freemind/freemind/modes/mindmapmode/actions/MindMapActions.java?view=log&amp;pathrev=fm_060405_integration</a>
+    </p>
+    <p>
+      The listeners mentioned below (ie. NodeSelectionListener and NodeLifetimeListener) can be registered and found in the class &quot;ModeController&quot; (also c):
+    </p>
+    <p>
+      <a href="http://freemind.cvs.sourceforge.net/freemind/freemind/freemind/modes/ModeController.java?view=log&amp;pathrev=fm_060405_integration">http://freemind.cvs.sourceforge.net/freemind/freemind/freemind/modes/ModeController.java?view=log&amp;pathrev=fm_060405_integration</a>
+    </p>
     <p>
       Here we present some snippets of useful Groovy code that can be used as parts of your scripts. More scripts can be found on our web sites.
     </p>
@@ -800,7 +810,8 @@ c.registerNodeSelectionListener(newListener);</pre>
       </li>
     </ul>
   </body>
-</html></richcontent>
+</html>
+</richcontent>
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 </node>
