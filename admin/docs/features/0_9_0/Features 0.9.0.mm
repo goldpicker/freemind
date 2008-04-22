@@ -461,6 +461,24 @@
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 </node>
+<node COLOR="#00b439" CREATED="1208893265045" ID="ID_224953554" MODIFIED="1208893481075" TEXT="Icons">
+<richcontent TYPE="NOTE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      Some key strokes makes the handling of icons even more easier. If you hold the SHIFT key while pressing on an icon on the left toolbar, all other icons are removed and this icon is the only one after the action. This is for example useful for changing the priority of a node.
+    </p>
+    <p>
+      Another feature comes with pressing CTRL while choosing an icon. It causes this type of icon to be removed one by one. Suppose you have a node with the icons (1)(2)(1)(3) and you press CTRL-1 you get (1)(2)(3). This is useful as with the normal remove methods, only the last icon can be removed.
+    </p>
+  </body>
+</html>
+</richcontent>
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
+</node>
 </node>
 <node COLOR="#0033ff" CREATED="1201282939150" ID="Freemind_Link_150258579" MODIFIED="1203097937866" POSITION="right" STYLE="fork" TEXT="New Exports">
 <edge STYLE="sharp_bezier" WIDTH="8"/>
@@ -560,7 +578,7 @@
 </html></richcontent>
 <edge STYLE="sharp_bezier" WIDTH="8"/>
 <font NAME="SansSerif" SIZE="18"/>
-<node COLOR="#00b439" CREATED="1201506580407" ID="Freemind_Link_1055396713" MODIFIED="1205836062849" STYLE="fork" TEXT="Little FreeMind Scripting Guide">
+<node COLOR="#00b439" CREATED="1201506580407" ID="Freemind_Link_1055396713" MODIFIED="1207841180246" STYLE="fork" TEXT="Little FreeMind Scripting Guide">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -599,6 +617,9 @@
       </li>
       <li>
         Create or change attributes: the following method checks whether or not an attribute with the same key exists and replaces it. Otherwise a new attribute is created and added.<br />c.editAttribute(node, &quot;key&quot;, &quot;new value&quot;);<br />
+      </li>
+      <li>
+        Remove an attribute by name:<br />c.editAttribute(node, &quot;key&quot;, null);<br />This method returns the former index of the attribute, or -1 if the key wasn't found.<br />
       </li>
       <li>
         Traverse all children<br />def it = node.childrenUnfolded();<br />while(it.hasNext()) {<br />def child = it.next();<br />}
@@ -810,8 +831,7 @@ c.registerNodeSelectionListener(newListener);</pre>
       </li>
     </ul>
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 </node>
