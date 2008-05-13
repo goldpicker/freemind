@@ -27,14 +27,14 @@ Source: isxbb.dll; DestDir: {tmp}; Flags: dontcopy
 
 ;Source: ..\..\..\bin\dist\Freemind.exe; DestDir: {app}; Flags: promptifolder overwritereadonly
 ;Source: ..\..\..\bin\dist\Freemind.bat; DestDir: {app}; Flags: promptifolder overwritereadonly
-Source: FreeMind.exe; DestDir: {app}; Flags: promptifolder overwritereadonly
-Source: Freemind.bat; DestDir: {app}; Flags: promptifolder overwritereadonly
+Source: ..\..\..\bin\dist\Freemind.exe; DestDir: {app}; Flags: promptifolder overwritereadonly
+Source: ..\..\..\bin\dist\Freemind.bat; DestDir: {app}; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\accessories\*.*; DestDir: {app}\accessories; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\browser\*.*; DestDir: {app}\browser; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\doc\*.*; DestDir: {app}\doc; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\lib\*.*; DestDir: {app}\lib; Flags: promptifolder overwritereadonly  recursesubdirs
 Source: ..\..\..\bin\dist\plugins\*.*; DestDir: {app}\plugins; Flags: promptifolder overwritereadonly  recursesubdirs
-Source: Z:\home\foltin\java\jre7\jre1.7.0\*.*; DestDir: {app}\jre; Flags: promptifolder overwritereadonly  recursesubdirs
+Source: jre_installer.exe; Flags: dontcopy
 Source: license.txt; DestDir: {app}; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\patterns.xml; DestDir: {app}; Flags: promptifolder overwritereadonly
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
@@ -71,25 +71,50 @@ function isxbb_KillTimer(Flags: Cardinal): Integer;
 external 'isxbb_KillTimer@files:isxbb.dll stdcall';
 
 
-function CheckJavaVersion: Boolean;
+function SearchForJavaVersion: Boolean;
 var
   AVersion: String;
 begin
   Result := False;
   if RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\JavaSoft\Java Runtime Environment', 'CurrentVersion', AVersion) then
   begin
-    	if (AVersion = '1.4') or (AVersion = '1.5') or (AVersion = '1.6') or (AVersion = '1.7') then
-    		Result := True;
-      end;
+	if (AVersion = '1.4') or (AVersion = '1.5') or (AVersion = '1.6') or (AVersion = '1.7') then
+		Result := True;
+  end;
+end;
 
-
-  if Result = False then	// Java 1.4 not found/detected
+function CheckJavaVersion: Boolean;
+begin
+  Result := SearchForJavaVersion;
+  if Result = False then	// Java not found/detected
   begin
 	if MsgBox( 'Java 1.4 or greater not detected. - You have to download and install Java from http://java.sun.com/ - \nContinue with installation?', mbError, MB_YESNO) = MRYES then
 		Result := True
 	else
 		Result := False;
   end;
+end;
+
+function InstallJavaVersion: Boolean;
+var
+  ErrorCode: Integer;
+        	
+begin
+  Result := SearchForJavaVersion;
+  if Result = False then	// Java not found/detected
+	  begin
+		if MsgBox( 'Java not detected. Do you want to install it?', mbError, MB_YESNO) = MRYES then
+        	begin
+	        	ExtractTemporaryFile('jre_installer.exe');
+	        	if not Exec(ExpandConstant('{tmp}\jre_installer.exe'), '', '',  SW_SHOWNORMAL, ewWaitUntilTerminated, ErrorCode) then
+	        	begin
+	        		MsgBox('Java Installation:' #13#13 'Execution of ''jre_installer.exe'' failed. ' + SysErrorMessage(ErrorCode) + '.', mbError, MB_OK);
+	        		Result := False;
+	        	end;
+        	end;
+      end;
+  // in any case, we proceed.
+  Result := True;
 end;
 
 function InitializeSetup(): Boolean;
@@ -103,12 +128,12 @@ begin
     isxbb_AddImage(ExpandConstant('{tmp}')+'\FreeMind1.gif',TOPRIGHT);
 
     isxbb_Init(StrToInt(ExpandConstant('{hwnd}')));
-  Result := true;
+  Result := InstallJavaVersion;
         	
 end;
 [Setup]
 AppName=FreeMind
-AppVerName=FreeMind 0.8.1
+AppVerName=FreeMind 0.9.0_Beta_17
 AppPublisherURL=http://freemind.sourceforge.net
 AppSupportURL=http://freemind.sourceforge.net
 AppUpdatesURL=http://freemind.sourceforge.net
@@ -117,11 +142,12 @@ DefaultGroupName=FreeMind
 AllowNoIcons=true
 LicenseFile=license.txt
 WindowVisible=true
+ShowLanguageDialog=true
 
 
 AppCopyright=Copyright © 2000-2008 Jörg Müller, Daniel Polansky, Petr Novak, Christian Foltin, Dimitry Polivaev and others
 ;AppCopyright=Copyright © {code:InstallationDate}
-AppVersion=0.8.1
+AppVersion=0.9.0_Beta_17
 InfoAfterFile=after.txt
 InfoBeforeFile=before.txt
 PrivilegesRequired=admin
@@ -132,7 +158,7 @@ AppID=B991B020-2968-11D8-AF23-444553540000
 UninstallRestartComputer=false
 ChangesAssociations=true
 FlatComponentsList=false
-OutputBaseFilename=FreeMind-Windows-Installer-0.8.1-max-java-embedded
+OutputBaseFilename=FreeMind-Windows-Installer-0.9.0_Beta_17-max-java-installer-embedded
 SolidCompression=false
 ; old: InternalCompressLevel=9
 Compression=zip/9

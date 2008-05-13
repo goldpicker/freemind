@@ -53,6 +53,18 @@
     	<property name="freemind.installer.freemind_exe" value="Source: FreeMind.exe; DestDir: {app}; Flags: promptifolder overwritereadonly"/>
     	<antcall target="write_installer_base"></antcall> 
 	</target>
+    <!-- ================================= 
+          target: installer_java_installer_embedded              
+         ================================= -->
+    <target name="installer_java_installer_embedded" depends="" description="--> Creates the jre installer embedded max installer Freemind.iss file.">
+    	<property name="freemind.installer.additional_sources" value="Source: ..\..\..\bin\dist\plugins\*.*; DestDir: {app}\plugins; Flags: promptifolder overwritereadonly  recursesubdirs"/>
+    	<property name="freemind.installer.embedded_jre" value="Source: jre_installer.exe; Flags: dontcopy"/>
+    	<property name="freemind.version.extension" value="-max-java-installer-embedded"/>
+    	<property name="freemind.installer.jre_check" value="  Result := InstallJavaVersion;"/>
+    	<property name="freemind.installer.freemind_bat" value="Source: ..\..\..\bin\dist\Freemind.bat; DestDir: {app}; Flags: promptifolder overwritereadonly"/>
+    	<property name="freemind.installer.freemind_exe" value="Source: ..\..\..\bin\dist\Freemind.exe; DestDir: {app}; Flags: promptifolder overwritereadonly"/>
+    	<antcall target="write_installer_base"></antcall> 
+	</target>
 	<!-- - - - - - - - - - - - - - - - - - 
           target: write_installer                      
          - - - - - - - - - - - - - - - - - -->
@@ -140,25 +152,50 @@ function isxbb_KillTimer(Flags: Cardinal): Integer;
 external 'isxbb_KillTimer@files:isxbb.dll stdcall';
 
 
-function CheckJavaVersion: Boolean;
+function SearchForJavaVersion: Boolean;
 var
   AVersion: String;
 begin
   Result := False;
   if RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\JavaSoft\Java Runtime Environment', 'CurrentVersion', AVersion) then
   begin
-    	if (AVersion = '1.4') or (AVersion = '1.5') or (AVersion = '1.6') or (AVersion = '1.7') then
-    		Result := True;
-      end;
+	if (AVersion = '1.4') or (AVersion = '1.5') or (AVersion = '1.6') or (AVersion = '1.7') then
+		Result := True;
+  end;
+end;
 
-
-  if Result = False then	// Java 1.4 not found/detected
+function CheckJavaVersion: Boolean;
+begin
+  Result := SearchForJavaVersion;
+  if Result = False then	// Java not found/detected
   begin
 	if MsgBox( 'Java 1.4 or greater not detected. - You have to download and install Java from http://java.sun.com/ - \nContinue with installation?', mbError, MB_YESNO) = MRYES then
 		Result := True
 	else
 		Result := False;
   end;
+end;
+
+function InstallJavaVersion: Boolean;
+var
+  ErrorCode: Integer;
+        	
+begin
+  Result := SearchForJavaVersion;
+  if Result = False then	// Java not found/detected
+	  begin
+		if MsgBox( 'Java not detected. Do you want to install it?', mbError, MB_YESNO) = MRYES then
+        	begin
+	        	ExtractTemporaryFile('jre_installer.exe');
+	        	if not Exec(ExpandConstant('{tmp}\jre_installer.exe'), '', '',  SW_SHOWNORMAL, ewWaitUntilTerminated, ErrorCode) then
+	        	begin
+	        		MsgBox('Java Installation:' #13#13 'Execution of ''jre_installer.exe'' failed. ' + SysErrorMessage(ErrorCode) + '.', mbError, MB_OK);
+	        		Result := False;
+	        	end;
+        	end;
+      end;
+  // in any case, we proceed.
+  Result := True;
 end;
 
 function InitializeSetup(): Boolean;
@@ -186,6 +223,7 @@ DefaultGroupName=FreeMind
 AllowNoIcons=true
 LicenseFile=license.txt
 WindowVisible=true
+ShowLanguageDialog=true
 
 
 AppCopyright=Copyright © 2000-${freemind.installer_year} Jörg Müller, Daniel Polansky, Petr Novak, Christian Foltin, Dimitry Polivaev and others
