@@ -1,15 +1,13 @@
 		    AUTHORS AND CONTRIBUTORS
 	
 
-The current project director is Daniel Polansky, while the current project manager is Christian Foltin.
+The current project director is Christian Foltin.
 
-Version 0.8.1 is a bug fix release the makes FreeMind Java6 compatible.
+Version 0.9.0 Beta18 is a bug fix release. 
+
+Version 0.8.1 is a bug fix release that makes FreeMind Java6 compatible.
 
 Version 0.8.0 is released due to the major contributions of Christian Foltin and Dimitri Polivaev, quality and documentation support of Daniel Polansky, our translators, our linux packager Eric Lavarde and many others.
-
-Version 0.8.0RC5 is a release candidate version of 0.8.0 including mindmanager import and open office export.
-
-Version 0.8.0RC3 is a release candidate version of 0.8.0 including undo, movable nodes and many more with contributions by Christian Foltin, Dimitri Polivaev and others.
 
 Up to the version 0.4, FreeMind was developed by Jörg Müller. Jörg has not only started the project, he has also done a very good registration on Open Directory and designed the architecture that is still in use today. 
 
