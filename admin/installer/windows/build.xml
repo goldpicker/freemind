@@ -188,7 +188,7 @@ begin
   Result := SearchForJavaVersion;
   if Result = False then	// Java not found/detected
 	  begin
-		if MsgBox( 'Java not detected. Do you want to install it?', mbError, MB_YESNO) = MRYES then
+		if MsgBox( 'Java not detected. It is needed for FreeMind. Do you want to install it?', mbError, MB_YESNO) = MRYES then
         	begin
 	        	ExtractTemporaryFile('jre_installer.exe');
 	        	if not Exec(ExpandConstant('{tmp}\jre_installer.exe'), '', '',  SW_SHOWNORMAL, ewWaitUntilTerminated, ErrorCode) then
@@ -276,7 +276,7 @@ EnableISX=true
 Root: HKCR; SubKey: .mm; ValueType: string; ValueData: FreeMind Map; Flags: uninsdeletekey; Tasks: fileassoc
 Root: HKCR; SubKey: FreeMind Map; ValueType: string; ValueData: FreeMind Map; Flags: uninsdeletekey; Tasks: fileassoc
 Root: HKCR; SubKey: FreeMind Map\Shell\Open\Command; ValueType: string; ValueData: """{app}\Freemind.exe"" ""%1"""; Flags: uninsdeletekey; Tasks: fileassoc
-Root: HKCR; Subkey: FreeMind Map\DefaultIcon; ValueType: string; ValueData: {app}\Freemind.exe,0; Flags: uninsdeletekey; Tasks: fileassoc
+Root: HKCR; Subkey: FreeMind Map\DefaultIcon; ValueType: string; ValueData: {app}\Freemind.exe,1; Flags: uninsdeletekey; Tasks: fileassoc
 </echo>
     </target>
 
