@@ -1,4 +1,4 @@
-<map version="0.9.0_Beta_8">
+<map version="0.9.0">
 <!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->
 <node COLOR="#000000" CREATED="1201282183606" ID="Freemind_Link_1027666650" MODIFIED="1202399146245" STYLE="fork" TEXT="Features 0.9.0">
 <font NAME="SansSerif" SIZE="20"/>
@@ -28,7 +28,7 @@
     
   </head>
   <body>
-    <img src="node_editor_simplyhtml.png" />
+    <img src="node_editor_simplyhtml.png"/>
   </body>
 </html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
@@ -39,7 +39,7 @@
     
   </head>
   <body>
-    <img src="node_editor_simplyhtml_html_view.png" />
+    <img src="node_editor_simplyhtml_html_view.png"/>
   </body>
 </html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
@@ -64,7 +64,7 @@
     
   </head>
   <body>
-    <img src="note_window.png" />
+    <img src="note_window.png"/>
   </body>
 </html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
@@ -75,13 +75,33 @@
     
   </head>
   <body>
-    <img src="note_window_tooltip.png" />
+    <img src="note_window_tooltip.png"/>
   </body>
 </html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 </node>
-<node COLOR="#00b439" CREATED="1201506800600" ID="Freemind_Link_9416334" MODIFIED="1201506802120" STYLE="fork" TEXT="Filter">
+<node COLOR="#00b439" CREATED="1201506800600" ID="Freemind_Link_9416334" MODIFIED="1228895305098" STYLE="fork" TEXT="Filter">
+<richcontent TYPE="NOTE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      Using&#160;Filters&#160;the&#160;current&#160;mindmap&#160;can&#160;be&#160;reduced&#160;to&#160;nodes&#160;satisfying&#160;certain&#160;criteria.&#160;For&#160;example,&#160;if&#160;you&#160;only&#160;want&#160;to&#160;see&#160;every&#160;node&#160;containing&#160;&quot;TODO&quot;,&#160;then&#160;you&#160;have&#160;to&#160;press&#160;on&#160;the&#160;filter&#160;symbol&#160;(the&#160;funnel&#160;beside&#160;the&#160;zoom&#160;box),&#160;the&#160;filter&#160;toolbar&#160;appears,&#160;choose&#160;&quot;edit&quot;&#160;and&#160;add&#160;the&#160;condition&#160;that&#160;the&#160;node&#160;content&#160;contains&#160;&quot;TODO&quot;.&#160;Then&#160;select&#160;the&#160;filter&#160;in&#160;the&#160;filter&#160;toolbar.&#160;Now,&#160;only&#160;the&#160;filtered&#160;nodes&#160;and&#160;its&#160;ancestors&#160;are&#160;displayed&#160;unless&#160;you&#160;choose&#160;&quot;No&#160;filtering&quot;&#160;in&#160;the&#160;toolbar.&#160;
+    </p>
+    <p>
+      Using&#160;the&#160;settings&#160;&quot;Show&#160;ancestors&quot;&#160;and&#160;&quot;Show&#160;descendants&quot;&#160;you&#160;can&#160;influence&#160;the&#160;apperance&#160;of&#160;the&#160;parent&#160;and&#160;child&#160;nodes&#160;that&#160;are&#160;connected&#160;with&#160;the&#160;nodes&#160;being&#160;filtered.
+    </p>
+    <p>
+      There&#160;are&#160;many&#160;different&#160;criteria&#160;filters&#160;can&#160;be&#160;based&#160;on&#160;such&#160;as&#160;a&#160;set&#160;of&#160;selected&#160;nodes,&#160;a&#160;specific&#160;icon&#160;and&#160;some&#160;attributes.
+    </p>
+    <p>
+      &#160;
+    </p>
+  </body>
+</html>
+</richcontent>
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 </node>
@@ -112,7 +132,7 @@
     
   </head>
   <body>
-    <img src="tabular_support.png" />
+    <img src="tabular_support.png"/>
   </body>
 </html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
@@ -127,7 +147,7 @@
     
   </head>
   <body>
-    <img src="icon_toolbar_scrollable.png" />
+    <img src="icon_toolbar_scrollable.png"/>
   </body>
 </html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
@@ -158,7 +178,7 @@
     
   </head>
   <body>
-    <img src="move_nodes_up_example.png" />
+    <img src="move_nodes_up_example.png"/>
   </body>
 </html></richcontent>
 </node>
@@ -168,7 +188,7 @@
     
   </head>
   <body>
-    <img src="move_nodes_up_example1.png" />
+    <img src="move_nodes_up_example1.png"/>
   </body>
 </html></richcontent>
 </node>
@@ -192,7 +212,7 @@
     
   </head>
   <body>
-    <img src="move_nodes_right_example2.png" />
+    <img src="move_nodes_right_example2.png"/>
   </body>
 </html></richcontent>
 </node>
@@ -202,7 +222,7 @@
     
   </head>
   <body>
-    <img src="move_nodes_right_example3.png" />
+    <img src="move_nodes_right_example3.png"/>
   </body>
 </html></richcontent>
 </node>
@@ -212,7 +232,7 @@
     
   </head>
   <body>
-    <img src="move_nodes_right_example5.png" />
+    <img src="move_nodes_right_example5.png"/>
   </body>
 </html></richcontent>
 </node>
@@ -224,7 +244,7 @@
     
   </head>
   <body>
-    <img src="move_nodes_right_example.png" />
+    <img src="move_nodes_right_example.png"/>
   </body>
 </html></richcontent>
 </node>
@@ -234,7 +254,7 @@
     
   </head>
   <body>
-    <img src="move_nodes_right_example1.png" />
+    <img src="move_nodes_right_example1.png"/>
   </body>
 </html></richcontent>
 </node>
@@ -250,7 +270,7 @@
     
   </head>
   <body>
-    <img src="menu_mnemonics_support.png" />
+    <img src="menu_mnemonics_support.png"/>
   </body>
 </html></richcontent>
 <edge STYLE="bezier" WIDTH="thin"/>
@@ -266,7 +286,7 @@
     
   </head>
   <body>
-    <img src="format_window.png" />
+    <img src="format_window.png"/>
   </body>
 </html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
@@ -334,7 +354,7 @@
     
   </head>
   <body>
-    <img src="pattern_window_with_popup.png" />
+    <img src="pattern_window_with_popup.png"/>
   </body>
 </html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
@@ -371,7 +391,7 @@
     
   </head>
   <body>
-    <img src="automatic_layout_customization.png" />
+    <img src="automatic_layout_customization.png"/>
   </body>
 </html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
@@ -403,13 +423,13 @@
         Node Path display: if you select a line, its path from the root of the map is displayed below.
       </li>
       <li>
-        Direct access: if you press enter inside the table, the mind map displays the selected node (menu item &quot;select&quot; and &quot;select and close&quot;).
+        Direct access: if you press enter inside the table, the mind map displays the selected node (menu item "select" and "select and close").
       </li>
       <li>
         Replace: it is possible to replace all occurences or only the nodes belonging to the selected lines.
       </li>
       <li>
-        Export: new striking possibility. Select some nodes and export them to a new mindmap. This makes it easy to generate a todo list from a hierachical mind map. For example, if you mark every todo item with the bell sign, then simply sort this list by icon and mark those containing the bell. Then press &quot;export&quot; and you get all these nodes as single nodes in a new map.
+        Export: new striking possibility. Select some nodes and export them to a new mindmap. This makes it easy to generate a todo list from a hierachical mind map. For example, if you mark every todo item with the bell sign, then simply sort this list by icon and mark those containing the bell. Then press "export" and you get all these nodes as single nodes in a new map.
       </li>
     </ul>
   </body>
@@ -422,7 +442,7 @@
     
   </head>
   <body>
-    <img src="search_replace.png" />
+    <img src="search_replace.png"/>
   </body>
 </html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
@@ -433,7 +453,7 @@
     
   </head>
   <body>
-    <img src="search_replace_export.png" />
+    <img src="search_replace_export.png"/>
   </body>
 </html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
@@ -444,7 +464,7 @@
     
   </head>
   <body>
-    <img src="search_replace_export_window.png" />
+    <img src="search_replace_export_window.png"/>
   </body>
 </html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
@@ -455,7 +475,7 @@
     
   </head>
   <body>
-    <img src="search_replace_export_result.png" />
+    <img src="search_replace_export_result.png"/>
   </body>
 </html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
@@ -474,8 +494,7 @@
       Another feature comes with pressing CTRL while choosing an icon. It causes this type of icon to be removed one by one. Suppose you have a node with the icons (1)(2)(1)(3) and you press CTRL-1 you get (1)(2)(3). This is useful as with the normal remove methods, only the last icon can be removed.
     </p>
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 </node>
@@ -508,7 +527,7 @@
     
   </head>
   <body>
-    <img src="new_exports.png" />
+    <img src="new_exports.png"/>
   </body>
 </html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
@@ -519,7 +538,7 @@
     
   </head>
   <body>
-    <img src="new_export_flash.png" />
+    <img src="new_export_flash.png"/>
   </body>
 </html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
@@ -540,7 +559,7 @@
     </p>
     <ol>
       <li>
-        Choose the script editor to easily add, change and test your scripts. Technically, scripts are attached to a node via an attribute starting with &quot;script&quot; (like &quot;script1&quot;) that contains the script. Every time you choose &quot;Evaluate&quot; from the tools menu, all scripts attached to nodes are executed.
+        Choose the script editor to easily add, change and test your scripts. Technically, scripts are attached to a node via an attribute starting with "script" (like "script1") that contains the script. Every time you choose "Evaluate" from the tools menu, all scripts attached to nodes are executed.
       </li>
       <li>
         Create or change a pattern and press the script button. The script editor appears and your script will be associated to a pattern. Every time you apply the pattern to some nodes, the script is executed for that nodes automatically. Thus, you can have the scripts with keyboard shortcuts as the patterns are accessible via shortcuts.
@@ -562,10 +581,10 @@
     </p>
     <ol>
       <li>
-        If a script starts with &quot;=&quot;, the result of the script is taken to be the new nodes text. Example script1: =17+4. If executed, the node the script is associated to will be changed to 21.
+        If a script starts with "=", the result of the script is taken to be the new nodes text. Example script1: =17+4. If executed, the node the script is associated to will be changed to 21.
       </li>
       <li>
-        If a script starts with letters (digits and '_') only and then a &quot;=&quot; sign, like &quot;sum=17+4&quot;, the result is taken to be a (possibly new) attribute named &quot;sum&quot; in this case with the content 21.
+        If a script starts with letters (digits and '_') only and then a "=" sign, like "sum=17+4", the result is taken to be a (possibly new) attribute named "sum" in this case with the content 21.
       </li>
     </ol>
     <p>
@@ -588,13 +607,13 @@
       If your scripts want to change some map data (which they commonly want to) they should rely on the methods provided by the MindMapController c.
     </p>
     <p>
-      These methods are summarized and partially documented in the class &quot;MindMapActions&quot;:
+      These methods are summarized and partially documented in the class "MindMapActions":
     </p>
     <p>
       <a href="http://freemind.cvs.sourceforge.net/freemind/freemind/freemind/modes/mindmapmode/actions/MindMapActions.java?view=log&amp;pathrev=fm_060405_integration">http://freemind.cvs.sourceforge.net/freemind/freemind/freemind/modes/mindmapmode/actions/MindMapActions.java?view=log&amp;pathrev=fm_060405_integration</a>
     </p>
     <p>
-      The listeners mentioned below (ie. NodeSelectionListener and NodeLifetimeListener) can be registered and found in the class &quot;ModeController&quot; (also c):
+      The listeners mentioned below (ie. NodeSelectionListener and NodeLifetimeListener) can be registered and found in the class "ModeController" (also c):
     </p>
     <p>
       <a href="http://freemind.cvs.sourceforge.net/freemind/freemind/freemind/modes/ModeController.java?view=log&amp;pathrev=fm_060405_integration">http://freemind.cvs.sourceforge.net/freemind/freemind/freemind/modes/ModeController.java?view=log&amp;pathrev=fm_060405_integration</a>
@@ -604,37 +623,37 @@
     </p>
     <ul>
       <li>
-        Change the node text:<br />=17+4<br />(Explanation: if a script starts with &quot;=&quot;, the result of the script is taken as the new nodes text.)
+        Change the node text:<br/>=17+4<br/>(Explanation: if a script starts with "=", the result of the script is taken as the new nodes text.)
       </li>
       <li>
-        Change an attributes value:<br />attribute_name=17+4<br />(Explanation: if a script starts with a name and then directly a &quot;=&quot; sign, its result is associated to this attribute which is created if not already present.)
+        Change an attributes value:<br/>attribute_name=17+4<br/>(Explanation: if a script starts with a name and then directly a "=" sign, its result is associated to this attribute which is created if not already present.)
       </li>
       <li>
-        Read and change the nodes text:<br />c.setNodeText(node, node.getText() + &quot;_CHANGED&quot;);
+        Read and change the nodes text:<br/>c.setNodeText(node, node.getText() + "_CHANGED");
       </li>
       <li>
-        Read an attribute<br />def value = node.getAttribute(&quot;key&quot;); // value is of type String.<br /><br />
+        Read an attribute<br/>def value = node.getAttribute("key"); // value is of type String.<br/><br/>
       </li>
       <li>
-        Create or change attributes: the following method checks whether or not an attribute with the same key exists and replaces it. Otherwise a new attribute is created and added.<br />c.editAttribute(node, &quot;key&quot;, &quot;new value&quot;);<br />
+        Create or change attributes: the following method checks whether or not an attribute with the same key exists and replaces it. Otherwise a new attribute is created and added.<br/>c.editAttribute(node, "key", "new value");<br/>
       </li>
       <li>
-        Remove an attribute by name:<br />c.editAttribute(node, &quot;key&quot;, null);<br />This method returns the former index of the attribute, or -1 if the key wasn't found.<br />
+        Remove an attribute by name:<br/>c.editAttribute(node, "key", null);<br/>This method returns the former index of the attribute, or -1 if the key wasn't found.<br/>
       </li>
       <li>
-        Traverse all children<br />def it = node.childrenUnfolded();<br />while(it.hasNext()) {<br />def child = it.next();<br />}
+        Traverse all children<br/>def it = node.childrenUnfolded();<br/>while(it.hasNext()) {<br/>def child = it.next();<br/>}
       </li>
       <li>
-        Traverse all children and its children recursively. The following examples prints the content of every node including its childs<br />
+        Traverse all children and its children recursively. The following examples prints the content of every node including its childs<br/>
 
-        <pre>def stack = new java.util.Stack();<br />stack.push(node);<br />while(stack.size()&gt;0) 
-        {<br />		def current =stack.pop();<br />		print current.getShortText(c) + &quot;, &quot;;<br />		stack.addAll(current.getChildren());<br />	}</pre>
-        <br />
-        <br />
+        <pre>def stack = new java.util.Stack();<br/>stack.push(node);<br/>while(stack.size()&gt;0) 
+        {<br/>		def current =stack.pop();<br/>		print current.getShortText(c) + ", ";<br/>		stack.addAll(current.getChildren());<br/>	}</pre>
+        <br/>
+        <br/>
         
       </li>
       <li>
-        Real world example: nodes may have an attribute &quot;work&quot; that specifies the work needed for the specific work package (e.g. in days). This script computes the sum of all work packages such that each node gets an attribute &quot;sum&quot; containing the amount of work needed for all descendants. This script, if executed via Alt+F8, automatically applies to the root of the map. But, every time, you change the values, you have to reexecute this script.<br /><br />
+        Real world example: nodes may have an attribute "work" that specifies the work needed for the specific work package (e.g. in days). This script computes the sum of all work packages such that each node gets an attribute "sum" containing the amount of work needed for all descendants. This script, if executed via Alt+F8, automatically applies to the root of the map. But, every time, you change the values, you have to reexecute this script.<br/><br/>
 
         <pre>def calcWork(child) {
 	def sum = 0;
@@ -642,19 +661,19 @@
 	while(it.hasNext()) { 
 		def child2 = it.next(); 
 		sum += calcWork(child2);
-		def w = child2.getAttribute(&quot;work&quot;);
+		def w = child2.getAttribute("work");
 		if(w != null)
 			sum += Integer.parseInt( w);
 	}
 	if(sum&gt;0)
-		c.editAttribute(child, &quot;sum&quot;, (String) sum);
+		c.editAttribute(child, "sum", (String) sum);
 	return sum;
 }
 
 calcWork(c.getRootNode());</pre>
       </li>
       <li>
-        A very advanced example: the last script is integrated into a listener that detects node changes, so the sums are always recreated when a node is changed. This script introduces a new element in scripting: the &quot;cookies&quot;. It is a usual HashMap where scripts can store values that they need the next time, they are executed. For every map, there is a new cookie map, such that cookies are map local. Moreover, they are not stored persistently and are lost after termination of FreeMind or after closing a map. In this example, they serve as a static variable in which it is stored whether or not the script was already executed and which listener was used in order to deregister the old one first.<br />
+        A very advanced example: the last script is integrated into a listener that detects node changes, so the sums are always recreated when a node is changed. This script introduces a new element in scripting: the "cookies". It is a usual HashMap where scripts can store values that they need the next time, they are executed. For every map, there is a new cookie map, such that cookies are map local. Moreover, they are not stored persistently and are lost after termination of FreeMind or after closing a map. In this example, they serve as a static variable in which it is stored whether or not the script was already executed and which listener was used in order to deregister the old one first.<br/>
 
         <pre>class MyNodeListener implements freemind.modes.ModeController.NodeSelectionListener {
 	freemind.modes.mindmapmode.MindMapController c;
@@ -688,18 +707,18 @@ def calcWork(child) {
 	while(it.hasNext()) { 
 		def child2 = it.next(); 
 		sum += calcWork(child2);
-		def w = child2.getAttribute(&quot;work&quot;);
+		def w = child2.getAttribute("work");
 		if(w != null)
 			sum += Integer.parseInt( w);
 	}
 	if(sum&gt;0)
-		c.editAttribute(child, &quot;sum&quot;, (String) sum);
+		c.editAttribute(child, "sum", (String) sum);
 	return sum;
 }
 
 }
 
-def cookieKey = &quot;work_update_listener&quot;;
+def cookieKey = "work_update_listener";
 if(cookies.get(cookieKey) != null) {
 	c.deregisterNodeSelectionListener(cookies.get(cookieKey));
 }
@@ -709,7 +728,7 @@ c.registerNodeSelectionListener(newListener);
       </pre>
       </li>
       <li>
-        A sorting example: Currently we provide a function that sorts all children by name, but if you want to sort them by their icons for example, you can use the following script (or change it, if you have different sorting criteria):<br />
+        A sorting example: Currently we provide a function that sorts all children by name, but if you want to sort them by their icons for example, you can use the following script (or change it, if you have different sorting criteria):<br/>
 
         <pre>import java.awt.datatransfer.Transferable;
 import java.util.Comparator;
@@ -726,7 +745,7 @@ import freemind.modes.MindMapNode;
 						MindMapNode node2 = (MindMapNode) pArg1;
 						String iconText1 = getIconText(node1);
 						String iconText2 = getIconText(node2);
-						//print &quot;comparing&quot; + iconText1 + &quot; with &quot; + iconText2 + &quot;\n&quot;;
+						//print "comparing" + iconText1 + " with " + iconText2 + "\n";
 						return iconText1.compareToIgnoreCase(iconText2);
 					}
 				}
@@ -734,11 +753,11 @@ import freemind.modes.MindMapNode;
 			}
 		def getIconText(MindMapNode n) {
 			if(n.getIcons() == null || n.getIcons().size()==0) 
-				return &quot;&quot;;
-			def retString = &quot;&quot;;
+				return "";
+			def retString = "";
 			def it = n.getIcons().iterator();
 			while(it.hasNext()) {
-				retString +=it.next().getName()+&quot;, &quot;;
+				retString +=it.next().getName()+", ";
 			}
 			return retString;
 		}
@@ -751,7 +770,7 @@ import freemind.modes.MindMapNode;
 		children.addAll(node.getChildren());
 		// sort them
 		java.util.Collections.sort(children, new IconComparator());
-		//print &quot;The set has &quot; + children.size() + &quot; entries\n&quot;;
+		//print "The set has " + children.size() + " entries\n";
 		// now, as it is sorted. we cut the children
 		def it2 = children.iterator();
 		while (it2.hasNext()) {
@@ -765,7 +784,7 @@ import freemind.modes.MindMapNode;
 		c.select(c.getNodeView(node));</pre>
       </li>
       <li>
-        A presentation script. Everytime you select a node, all other nodes are closed and this node is expanded by one. Just give it a try..<br />
+        A presentation script. Everytime you select a node, all other nodes are closed and this node is expanded by one. Just give it a try..<br/>
 
         <pre>class MyNodeListener implements freemind.modes.ModeController.NodeSelectionListener {
 	freemind.modes.mindmapmode.MindMapController c;
@@ -821,7 +840,7 @@ def foldEverybody(child, exception) {
 
 }
 
-def cookieKey = &quot;presentation_listener&quot;;
+def cookieKey = "presentation_listener";
 if(cookies.get(cookieKey) != null) {
 	c.deregisterNodeSelectionListener(cookies.get(cookieKey));
 }
@@ -845,41 +864,41 @@ c.registerNodeSelectionListener(newListener);</pre>
       Once, you've created or found some interesting scripts, you probably want to get a FreeMind menu item with an own shortcut to execute the script.
     </p>
     <p>
-      To do this, save the script to a file and edit &quot;ScriptingEngine.xml&quot; inside the FreeMind script directory inside your installation.
+      To do this, save the script to a file and edit "ScriptingEngine.xml" inside the FreeMind script directory inside your installation.
     </p>
     <p>
       You'll find a template for a script action that is commented out (ie. surrounded by &lt;!-- ... --&gt;). Uncomment the template and fill out the following bold places:
     </p>
     <pre>      &lt;plugin_action
-      name=&quot;<b>GroovyGroovy</b>&quot;
-      documentation=&quot;<b>this is my first installed groovy script.</b>&quot;
-      label=&quot;<b>plugins/GroovyScript1</b>&quot;
-      base=&quot;freemind.extensions.ModeControllerHookAdapter&quot;
-      class_name=&quot;plugins.script.ScriptingEngine&quot;&gt;
-      &lt;plugin_mode class_name=&quot;freemind.modes.mindmapmode&quot;/&gt;
-      &lt;plugin_menu location=&quot;<b>menu_bar/extras/first/scripting/groovy1</b>&quot;/&gt;
-      &lt;plugin_property name=&quot;ScriptLocation&quot; value=&quot;<b>/home/foltin/test.groovy</b>&quot;/&gt;
+      name="<b>GroovyGroovy</b>"
+      documentation="<b>this is my first installed groovy script.</b>"
+      label="<b>plugins/GroovyScript1</b>"
+      base="freemind.extensions.ModeControllerHookAdapter"
+      class_name="plugins.script.ScriptingEngine"&gt;
+      &lt;plugin_mode class_name="freemind.modes.mindmapmode"/&gt;
+      &lt;plugin_menu location="<b>menu_bar/extras/first/scripting/groovy1</b>"/&gt;
+      &lt;plugin_property name="ScriptLocation" value="<b>/home/foltin/test.groovy</b>"/&gt;
       &lt;/plugin_action&gt;
     </pre>
     <p>
       The most important change is the location of the script. Moreover, if you have several scripts you want to install, the labels and the menu_location must be unique.
     </p>
     <p>
-      If you now restart FreeMind you get a new menu item (in this example in the &quot;Extras&quot; menu) that carries out your script. Observe, that the &quot;node&quot; variable points to the root node.
+      If you now restart FreeMind you get a new menu item (in this example in the "Extras" menu) that carries out your script. Observe, that the "node" variable points to the root node.
     </p>
     <p>
       If you want to have a keyboard short cut for the new script, you have to add the bold line into the entry in ScriptingEngine.xml like:
     </p>
     <pre>      &lt;plugin_action
-      name=&quot;GroovyGroovy&quot;
-      documentation=&quot;this is my first installed groovy script.&quot;
-      label=&quot;plugins/GroovyScript1&quot;
-      <b>key_stroke=&quot;control shift M&quot; </b>
-      base=&quot;freemind.extensions.ModeControllerHookAdapter&quot;
-      class_name=&quot;plugins.script.ScriptingEngine&quot;&gt;
-      &lt;plugin_mode class_name=&quot;freemind.modes.mindmapmode&quot;/&gt;
-      &lt;plugin_menu location=&quot;menu_bar/extras/first/scripting/groovy1&quot;/&gt;
-      &lt;plugin_property name=&quot;ScriptLocation&quot; value=&quot;/home/foltin/test.groovy&quot;/&gt;
+      name="GroovyGroovy"
+      documentation="this is my first installed groovy script."
+      label="plugins/GroovyScript1"
+      <b>key_stroke="control shift M" </b>
+      base="freemind.extensions.ModeControllerHookAdapter"
+      class_name="plugins.script.ScriptingEngine"&gt;
+      &lt;plugin_mode class_name="freemind.modes.mindmapmode"/&gt;
+      &lt;plugin_menu location="menu_bar/extras/first/scripting/groovy1"/&gt;
+      &lt;plugin_property name="ScriptLocation" value="/home/foltin/test.groovy"/&gt;
       &lt;/plugin_action&gt;
     </pre>
   </body>
@@ -896,7 +915,7 @@ c.registerNodeSelectionListener(newListener);</pre>
     
   </head>
   <body>
-    <img src="script_editor.png" />
+    <img src="script_editor.png"/>
   </body>
 </html></richcontent>
 <edge STYLE="bezier" WIDTH="thin"/>
@@ -908,7 +927,7 @@ c.registerNodeSelectionListener(newListener);</pre>
     
   </head>
   <body>
-    <img src="script_editor_attached_script.png" />
+    <img src="script_editor_attached_script.png"/>
   </body>
 </html></richcontent>
 <edge STYLE="bezier" WIDTH="thin"/>
@@ -920,7 +939,7 @@ c.registerNodeSelectionListener(newListener);</pre>
     
   </head>
   <body>
-    <img src="script_example_script_editor.png" />
+    <img src="script_example_script_editor.png"/>
   </body>
 </html></richcontent>
 <edge STYLE="bezier" WIDTH="thin"/>
@@ -932,7 +951,7 @@ c.registerNodeSelectionListener(newListener);</pre>
     
   </head>
   <body>
-    <img src="script_example_mm.png" />
+    <img src="script_example_mm.png"/>
   </body>
 </html></richcontent>
 <edge STYLE="bezier" WIDTH="thin"/>
