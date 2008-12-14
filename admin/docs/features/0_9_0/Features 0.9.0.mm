@@ -6,7 +6,7 @@
 <node COLOR="#0033ff" CREATED="1201283648829" ID="Freemind_Link_813308322" MODIFIED="1203097937857" POSITION="right" STYLE="fork" TEXT="Main new features">
 <edge STYLE="sharp_bezier" WIDTH="8"/>
 <font NAME="SansSerif" SIZE="18"/>
-<node COLOR="#00b439" CREATED="1201283660674" FOLDED="true" ID="Freemind_Link_1390621915" MODIFIED="1201283805485" STYLE="fork" TEXT="New Editor">
+<node COLOR="#00b439" CREATED="1201283660674" FOLDED="true" ID="Freemind_Link_1390621915" MODIFIED="1229067974470" STYLE="fork" TEXT="New Editor">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -45,7 +45,7 @@
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 </node>
-<node COLOR="#00b439" CREATED="1201283806888" FOLDED="true" ID="Freemind_Link_1546698647" MODIFIED="1201283938618" STYLE="fork" TEXT="Notes enhancements">
+<node COLOR="#00b439" CREATED="1201283806888" FOLDED="true" ID="Freemind_Link_1546698647" MODIFIED="1229067974470" STYLE="fork" TEXT="Notes enhancements">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -81,23 +81,20 @@
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 </node>
-<node COLOR="#00b439" CREATED="1201506800600" ID="Freemind_Link_9416334" MODIFIED="1228895305098" STYLE="fork" TEXT="Filter">
+<node COLOR="#00b439" CREATED="1201506800600" ID="Freemind_Link_9416334" MODIFIED="1229067813292" STYLE="fork" TEXT="Filter">
 <richcontent TYPE="NOTE"><html>
   <head>
     
   </head>
   <body>
     <p>
-      Using&#160;Filters&#160;the&#160;current&#160;mindmap&#160;can&#160;be&#160;reduced&#160;to&#160;nodes&#160;satisfying&#160;certain&#160;criteria.&#160;For&#160;example,&#160;if&#160;you&#160;only&#160;want&#160;to&#160;see&#160;every&#160;node&#160;containing&#160;&quot;TODO&quot;,&#160;then&#160;you&#160;have&#160;to&#160;press&#160;on&#160;the&#160;filter&#160;symbol&#160;(the&#160;funnel&#160;beside&#160;the&#160;zoom&#160;box),&#160;the&#160;filter&#160;toolbar&#160;appears,&#160;choose&#160;&quot;edit&quot;&#160;and&#160;add&#160;the&#160;condition&#160;that&#160;the&#160;node&#160;content&#160;contains&#160;&quot;TODO&quot;.&#160;Then&#160;select&#160;the&#160;filter&#160;in&#160;the&#160;filter&#160;toolbar.&#160;Now,&#160;only&#160;the&#160;filtered&#160;nodes&#160;and&#160;its&#160;ancestors&#160;are&#160;displayed&#160;unless&#160;you&#160;choose&#160;&quot;No&#160;filtering&quot;&#160;in&#160;the&#160;toolbar.&#160;
+      Using Filters the current mindmap can be reduced to nodes satisfying certain criteria. For example, if you only want to see every node containing &quot;TODO&quot;, then you have to press on the filter symbol (the funnel beside the zoom box), the filter toolbar appears, choose &quot;edit&quot; and add the condition that the node content contains &quot;TODO&quot;. Then select the filter in the filter toolbar. Now, only the filtered nodes and its ancestors are displayed unless you choose &quot;No filtering&quot; in the toolbar.
     </p>
     <p>
-      Using&#160;the&#160;settings&#160;&quot;Show&#160;ancestors&quot;&#160;and&#160;&quot;Show&#160;descendants&quot;&#160;you&#160;can&#160;influence&#160;the&#160;apperance&#160;of&#160;the&#160;parent&#160;and&#160;child&#160;nodes&#160;that&#160;are&#160;connected&#160;with&#160;the&#160;nodes&#160;being&#160;filtered.
+      Using the settings &quot;Show ancestors&quot; and &quot;Show descendants&quot; you can influence the apperance of the parent and child nodes that are connected with the nodes being filtered.
     </p>
     <p>
-      There&#160;are&#160;many&#160;different&#160;criteria&#160;filters&#160;can&#160;be&#160;based&#160;on&#160;such&#160;as&#160;a&#160;set&#160;of&#160;selected&#160;nodes,&#160;a&#160;specific&#160;icon&#160;and&#160;some&#160;attributes.
-    </p>
-    <p>
-      &#160;
+      There are many different criteria filters can be based on such as a set of selected nodes, a specific icon and some attributes.
     </p>
   </body>
 </html>
@@ -105,7 +102,24 @@
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 </node>
-<node COLOR="#00b439" CREATED="1201506806036" ID="Freemind_Link_1096073845" MODIFIED="1201506808274" STYLE="fork" TEXT="Attributes">
+<node COLOR="#00b439" CREATED="1201506806036" ID="Freemind_Link_1096073845" MODIFIED="1229068517238" STYLE="fork" TEXT="Attributes">
+<richcontent TYPE="NOTE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      Attributes are additional meta information in the form of text pairs attached to nodes.
+    </p>
+    <p>
+      Thus, criteria like Context-&gt;Home or Context-&gt;Job can be expressed. Later a filter limits the display only to certain contexts.
+    </p>
+    <p>
+      Moreover, Groovy scripts are currently stored within attributes.
+    </p>
+  </body>
+</html>
+</richcontent>
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 </node>
@@ -113,7 +127,7 @@
 <node COLOR="#0033ff" CREATED="1201282217311" ID="Freemind_Link_849247054" MODIFIED="1203097937860" POSITION="right" STYLE="fork" TEXT="Visual Changes">
 <edge STYLE="sharp_bezier" WIDTH="8"/>
 <font NAME="SansSerif" SIZE="18"/>
-<node COLOR="#00b439" CREATED="1201282224869" FOLDED="true" ID="Freemind_Link_1307834035" MODIFIED="1201282277049" STYLE="fork" TEXT="Tabular MindMapping Support">
+<node COLOR="#00b439" CREATED="1201282224869" FOLDED="true" ID="Freemind_Link_1307834035" MODIFIED="1229067974469" STYLE="fork" TEXT="Tabular MindMapping Support">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -138,7 +152,7 @@
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 </node>
-<node COLOR="#00b439" CREATED="1201282406968" FOLDED="true" ID="Freemind_Link_101409050" MODIFIED="1201282414121" STYLE="fork" TEXT="Icon Toolbar is scrollable">
+<node COLOR="#00b439" CREATED="1201282406968" FOLDED="true" ID="Freemind_Link_101409050" MODIFIED="1229067974469" STYLE="fork" TEXT="Icon Toolbar is scrollable">
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 <node COLOR="#990000" CREATED="1201282415646" ID="Freemind_Link_695696608" MODIFIED="1201282422569">
@@ -157,10 +171,10 @@
 <node COLOR="#0033ff" CREATED="1201282319118" ID="Freemind_Link_1043646949" MODIFIED="1203097937861" POSITION="right" STYLE="fork" TEXT="Usability Improvements">
 <edge STYLE="sharp_bezier" WIDTH="8"/>
 <font NAME="SansSerif" SIZE="18"/>
-<node COLOR="#00b439" CREATED="1201282325640" FOLDED="true" ID="Freemind_Link_556186325" MODIFIED="1201282331416" STYLE="fork" TEXT="Move in all directions">
+<node COLOR="#00b439" CREATED="1201282325640" FOLDED="true" ID="Freemind_Link_556186325" MODIFIED="1229067974461" STYLE="fork" TEXT="Move in all directions">
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
-<node COLOR="#990000" CREATED="1201282465994" FOLDED="true" ID="Freemind_Link_924709284" MODIFIED="1201282711721" TEXT="Up and Down">
+<node COLOR="#990000" CREATED="1201282465994" FOLDED="true" ID="Freemind_Link_924709284" MODIFIED="1229067974460" TEXT="Up and Down">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -193,7 +207,7 @@
 </html></richcontent>
 </node>
 </node>
-<node COLOR="#990000" CREATED="1201282426565" FOLDED="true" ID="Freemind_Link_481786702" MODIFIED="1201282843358" TEXT="Left and Right">
+<node COLOR="#990000" CREATED="1201282426565" FOLDED="true" ID="Freemind_Link_481786702" MODIFIED="1229067974460" TEXT="Left and Right">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -205,7 +219,7 @@
   </body>
 </html></richcontent>
 <font NAME="SansSerif" SIZE="14"/>
-<node COLOR="#111111" CREATED="1201282851749" FOLDED="true" ID="Freemind_Link_774463025" MODIFIED="1203097894969" TEXT="Getting higher and lower in the tree">
+<node COLOR="#111111" CREATED="1201282851749" FOLDED="true" ID="Freemind_Link_774463025" MODIFIED="1229067974459" TEXT="Getting higher and lower in the tree">
 <node COLOR="#111111" CREATED="1201282873949" ID="Freemind_Link_623953260" MODIFIED="1203097894970">
 <richcontent TYPE="NODE"><html>
   <head>
@@ -237,7 +251,7 @@
 </html></richcontent>
 </node>
 </node>
-<node COLOR="#111111" CREATED="1201282843249" FOLDED="true" ID="Freemind_Link_1554785271" MODIFIED="1203097894971" TEXT="Across the root node">
+<node COLOR="#111111" CREATED="1201282843249" FOLDED="true" ID="Freemind_Link_1554785271" MODIFIED="1229067974459" TEXT="Across the root node">
 <node COLOR="#111111" CREATED="1201282434688" ID="Freemind_Link_1728934284" MODIFIED="1203097894972">
 <richcontent TYPE="NODE"><html>
   <head>
@@ -261,7 +275,7 @@
 </node>
 </node>
 </node>
-<node COLOR="#00b439" CREATED="1201282332144" FOLDED="true" ID="Freemind_Link_536412761" MODIFIED="1201282340692" STYLE="fork" TEXT="Menu items have mnemonics now">
+<node COLOR="#00b439" CREATED="1201282332144" FOLDED="true" ID="Freemind_Link_536412761" MODIFIED="1229067974459" STYLE="fork" TEXT="Menu items have mnemonics now">
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 <node COLOR="#990000" CREATED="1201282344313" ID="Freemind_Link_1686909373" MODIFIED="1201282380292" STYLE="fork">
@@ -277,7 +291,7 @@
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 </node>
-<node COLOR="#00b439" CREATED="1202399993070" FOLDED="true" ID="Freemind_Link_860723289" MODIFIED="1202400005244" STYLE="fork" TEXT="Format changes are now available at a single dialog">
+<node COLOR="#00b439" CREATED="1202399993070" FOLDED="true" ID="Freemind_Link_860723289" MODIFIED="1229067974458" STYLE="fork" TEXT="Format changes are now available at a single dialog">
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 <node COLOR="#990000" CREATED="1202400006582" ID="Freemind_Link_673738479" MODIFIED="1202400011328">
@@ -292,7 +306,7 @@
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 </node>
-<node COLOR="#00b439" CREATED="1202400125364" FOLDED="true" ID="Freemind_Link_1848794893" MODIFIED="1203096320403" STYLE="fork" TEXT="New Pattern editor">
+<node COLOR="#00b439" CREATED="1202400125364" FOLDED="true" ID="Freemind_Link_1848794893" MODIFIED="1229067974458" STYLE="fork" TEXT="New Pattern editor">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -360,7 +374,7 @@
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 </node>
-<node COLOR="#00b439" CREATED="1203059325942" FOLDED="true" ID="Freemind_Link_1489168699" MODIFIED="1203098035241" STYLE="fork" TEXT="Automatic Layout Customizable">
+<node COLOR="#00b439" CREATED="1203059325942" FOLDED="true" ID="Freemind_Link_1489168699" MODIFIED="1229067974457" STYLE="fork" TEXT="Automatic Layout Customizable">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -397,7 +411,7 @@
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 </node>
-<node COLOR="#00b439" CREATED="1202400209358" FOLDED="true" ID="Freemind_Link_60926823" MODIFIED="1205774913599" STYLE="fork" TEXT="Search &amp; Replace Dialog">
+<node COLOR="#00b439" CREATED="1202400209358" FOLDED="true" ID="Freemind_Link_60926823" MODIFIED="1229067974457" STYLE="fork" TEXT="Search &amp; Replace Dialog">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -502,7 +516,7 @@
 <node COLOR="#0033ff" CREATED="1201282939150" ID="Freemind_Link_150258579" MODIFIED="1203097937866" POSITION="right" STYLE="fork" TEXT="New Exports">
 <edge STYLE="sharp_bezier" WIDTH="8"/>
 <font NAME="SansSerif" SIZE="18"/>
-<node COLOR="#00b439" CREATED="1201282945124" FOLDED="true" ID="Freemind_Link_1356291624" MODIFIED="1201283459618" STYLE="fork" TEXT="As flash and as a Java applet">
+<node COLOR="#00b439" CREATED="1201282945124" FOLDED="true" ID="Freemind_Link_1356291624" MODIFIED="1229067974456" STYLE="fork" TEXT="As flash and as a Java applet">
 <richcontent TYPE="NOTE"><html>
   <head>
     
@@ -906,7 +920,7 @@ c.registerNodeSelectionListener(newListener);</pre>
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 </node>
-<node COLOR="#00b439" CREATED="1202399428098" FOLDED="true" ID="Freemind_Link_194673968" MODIFIED="1202399767627" STYLE="fork" TEXT="Pictures">
+<node COLOR="#00b439" CREATED="1202399428098" FOLDED="true" ID="Freemind_Link_194673968" MODIFIED="1229067974455" STYLE="fork" TEXT="Pictures">
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 <node COLOR="#990000" CREATED="1201506526029" ID="Freemind_Link_1885521461" MODIFIED="1202399428111" STYLE="fork">
