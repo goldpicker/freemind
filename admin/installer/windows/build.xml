@@ -114,12 +114,16 @@ Source: isxbb.dll; DestDir: {tmp}; Flags: dontcopy
 ;Source: ..\..\..\bin\dist\Freemind.bat; DestDir: {app}; Flags: promptifolder overwritereadonly
 ${freemind.installer.freemind_exe}
 ${freemind.installer.freemind_bat}
+
+
 Source: ..\..\..\bin\dist\accessories\*.*; DestDir: {app}\accessories; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\browser\*.*; DestDir: {app}\browser; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\doc\*.*; DestDir: {app}\doc; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\lib\*.*; DestDir: {app}\lib; Flags: promptifolder overwritereadonly  recursesubdirs
 ${freemind.installer.additional_sources}
 ${freemind.installer.embedded_jre}
+
+
 Source: license.txt; DestDir: {app}; Flags: promptifolder overwritereadonly
 Source: ..\..\..\bin\dist\patterns.xml; DestDir: {app}; Flags: promptifolder overwritereadonly
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
@@ -214,6 +218,7 @@ begin
 
     isxbb_Init(StrToInt(ExpandConstant('{hwnd}')));
 ${freemind.installer.jre_check}
+
         	
 end;
 [Setup]
@@ -222,6 +227,8 @@ AppVerName=FreeMind ${freemind.version}
 AppPublisherURL=http://freemind.sourceforge.net
 AppSupportURL=http://freemind.sourceforge.net
 AppUpdatesURL=http://freemind.sourceforge.net
+
+
 DefaultDirName={pf}\FreeMind
 DefaultGroupName=FreeMind
 AllowNoIcons=true
@@ -230,8 +237,8 @@ WindowVisible=true
 ShowLanguageDialog=true
 
 
-AppCopyright=Copyright Â© 2000-${freemind.installer_year} JÃ¶rg MÃ¼ller, Daniel Polansky, Petr Novak, Christian Foltin, Dimitry Polivaev and others
-;AppCopyright=Copyright Â© {code:InstallationDate}
+AppCopyright=Copyright © 2000-${freemind.installer_year} Jörg Müller, Daniel Polansky, Petr Novak, Christian Foltin, Dimitry Polivaev and others
+;AppCopyright=Copyright © {code:InstallationDate}
 AppVersion=${freemind.version}
 InfoAfterFile=after.txt
 InfoBeforeFile=before.txt
@@ -248,16 +255,38 @@ SolidCompression=false
 ; old: InternalCompressLevel=9
 Compression=zip/9
 ShowTasksTreeLines=true
-[Messages]
-DiskSpaceMBLabel=The program requires at least [kb] KB of disk space.
-ComponentsDiskSpaceMBLabel=Current selection requires at least [kb] KB of disk space.
+
+ShowUndisplayableLanguages=true
+
+[Languages]
+Name: english; MessagesFile: compiler:Default.isl
+Name: basque; MessagesFile: compiler:Languages\Basque.isl
+Name: brazilianportuguese; MessagesFile: compiler:Languages\BrazilianPortuguese.isl
+Name: catalan; MessagesFile: compiler:Languages\Catalan.isl
+Name: croatian; MessagesFile: compiler:Languages\Croatian.isl
+Name: czech; MessagesFile: compiler:Languages\Czech.isl
+Name: danish; MessagesFile: compiler:Languages\Danish.isl
+Name: dutch; MessagesFile: compiler:Languages\Dutch.isl
+Name: finnish; MessagesFile: compiler:Languages\Finnish.isl
+Name: french; MessagesFile: compiler:Languages\French.isl
+Name: german; MessagesFile: compiler:Languages\German.isl
+Name: hebrew; MessagesFile: compiler:Languages\Hebrew.isl
+Name: hungarian; MessagesFile: compiler:Languages\Hungarian.isl
+Name: italian; MessagesFile: compiler:Languages\Italian.isl
+Name: norwegian; MessagesFile: compiler:Languages\Norwegian.isl
+Name: polish; MessagesFile: compiler:Languages\Polish.isl
+Name: portuguese; MessagesFile: compiler:Languages\Portuguese.isl
+Name: russian; MessagesFile: compiler:Languages\Russian.isl
+Name: slovak; MessagesFile: compiler:Languages\Slovak.isl
+Name: slovenian; MessagesFile: compiler:Languages\Slovenian.isl
+Name: spanish; MessagesFile: compiler:Languages\Spanish.isl
 
 [Tasks]
-; NOTE: The following entry contains English phrases ("Create a desktop icon" and "Additional icons"). You are free to translate them into another language if required.
-Name: desktopicon; Description: Create a &amp;desktop icon; GroupDescription: Additional icons:
-; NOTE: The following entry contains English phrases ("Create a Quick Launch icon" and "Additional icons"). You are free to translate them into another language if required.
-Name: quicklaunchicon; Description: Create a &amp;Quick Launch icon; GroupDescription: Additional icons:; Flags: unchecked
-Name: fileassoc; Description: &amp;Associate FreeMind Extensions with the .mm file extension; GroupDescription: File Association:
+Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:AdditionalIcons}
+Name: quicklaunchicon; Description: {cm:CreateQuickLaunchIcon}; GroupDescription: {cm:AdditionalIcons}
+
+Name: associate; Description: {cm:AssocFileExtension,Freemind,.mm}; GroupDescription: {cm:AssocingFileExtension,Freemind,.mm}
+
 
 [Icons]
 Name: {group}\FreeMind; Filename: {app}\Freemind.exe; WorkingDir: {app}; IconIndex: 0; IconFilename: {app}\Freemind.exe
@@ -272,11 +301,16 @@ Filename: {app}\Freemind.exe; Description: Launch FreeMind; Flags: skipifsilent 
 Use7zip=false
 EnableISX=true
 
+
 [Registry]
-Root: HKCR; SubKey: .mm; ValueType: string; ValueData: FreeMind Map; Flags: uninsdeletekey; Tasks: fileassoc
-Root: HKCR; SubKey: FreeMind Map; ValueType: string; ValueData: FreeMind Map; Flags: uninsdeletekey; Tasks: fileassoc
-Root: HKCR; SubKey: FreeMind Map\Shell\Open\Command; ValueType: string; ValueData: """{app}\Freemind.exe"" ""%1"""; Flags: uninsdeletekey; Tasks: fileassoc
-Root: HKCR; Subkey: FreeMind Map\DefaultIcon; ValueType: string; ValueData: {app}\Freemind.exe,1; Flags: uninsdeletekey; Tasks: fileassoc
+Root: HKCR; Subkey: .mm; ValueType: string; ValueName: ; ValueData: Freemind; Flags: uninsdeletevalue
+;".myp" is the extension we're associating. "MyProgramFile" is the internal name for the file type as stored in the registry. Make sure you use a unique name for this so you don't inadvertently overwrite another application's registry key.
+Root: HKCR; Subkey: Freemind; ValueType: string; ValueName: ; ValueData: Freemind; Flags: uninsdeletekey
+
+;"My Program File" above is the name for the file type as shown in Explorer.
+Root: HKCR; Subkey: Freemind\DefaultIcon; ValueType: string; ValueName: ; ValueData: {app}\freemind.exe,1
+;"DefaultIcon" is the registry key that specifies the filename containing the icon to associate with the file type. ",0" tells Explorer to use the first icon from MYPROG.EXE. (",1" would mean the second icon.)
+Root: HKCR; Subkey: Freemind\shell\open\command; ValueType: string; ValueName: ; ValueData: """{app}\freemind.exe ""%1"""
 </echo>
     </target>
 
