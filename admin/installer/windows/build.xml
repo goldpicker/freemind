@@ -237,8 +237,8 @@ WindowVisible=true
 ShowLanguageDialog=true
 
 
-AppCopyright=Copyright © 2000-${freemind.installer_year} Jörg Müller, Daniel Polansky, Petr Novak, Christian Foltin, Dimitry Polivaev and others
-;AppCopyright=Copyright © {code:InstallationDate}
+AppCopyright=Copyright Â© 2000-${freemind.installer_year} JÃ¶rg MÃ¼ller, Daniel Polansky, Petr Novak, Christian Foltin, Dimitry Polivaev and others
+;AppCopyright=Copyright Â© {code:InstallationDate}
 AppVersion=${freemind.version}
 InfoAfterFile=after.txt
 InfoBeforeFile=before.txt
