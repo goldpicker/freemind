@@ -227,7 +227,7 @@ AppVerName=FreeMind ${freemind.version}
 AppPublisherURL=http://freemind.sourceforge.net
 AppSupportURL=http://freemind.sourceforge.net
 AppUpdatesURL=http://freemind.sourceforge.net
-
+VersionInfoVersion=${freemind.version}
 
 DefaultDirName={pf}\FreeMind
 DefaultGroupName=FreeMind
