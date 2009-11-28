@@ -311,7 +311,7 @@ Root: HKCR; Subkey: Freemind; ValueType: string; ValueName: ; ValueData: Freemin
 ;"My Program File" above is the name for the file type as shown in Explorer.
 Root: HKCR; Subkey: Freemind\DefaultIcon; ValueType: string; ValueName: ; ValueData: {app}\freemind.exe,1
 ;"DefaultIcon" is the registry key that specifies the filename containing the icon to associate with the file type. ",0" tells Explorer to use the first icon from MYPROG.EXE. (",1" would mean the second icon.)
-Root: HKCR; Subkey: Freemind\shell\open\command; ValueType: string; ValueName: ; ValueData: """{app}\freemind.exe"" ""%1"""
+Root: HKCR; Subkey: Freemind\shell\open\command; ValueType: string; ValueName: ; ValueData: """{app}\freemind.exe"" ""%1"""; Flags: uninsdeletekey
 </echo>
     </target>
 
