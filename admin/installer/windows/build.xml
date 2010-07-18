@@ -147,7 +147,7 @@ const
 
 
 
-function isxbb_AddImage(Image: PChar; Flags: Cardinal): Integer;
+function isxbb_AddImage(Image: PAnsiChar; Flags: Cardinal): Integer;
 external 'isxbb_AddImage@files:isxbb.dll stdcall';
 
 function isxbb_Init(hWnd: Integer): Integer;
