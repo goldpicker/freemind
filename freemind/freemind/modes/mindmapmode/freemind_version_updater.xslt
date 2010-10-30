@@ -144,7 +144,13 @@
 					  <body>
 						<p align="left">
 						<xsl:call-template name="br-replace">
-							<xsl:with-param name="input" select="hook[@NAME='accessories/plugins/NodeNote.properties']/text"/>
+							<xsl:with-param name="input">
+								<xsl:call-template name="str-replace">
+									<xsl:with-param name="input" select="hook[@NAME='accessories/plugins/NodeNote.properties']/text"/>
+									<xsl:with-param name="search-string" select="' '"></xsl:with-param>
+									<xsl:with-param name="replace-string" select="'&#160;'"></xsl:with-param>
+								</xsl:call-template>
+							</xsl:with-param>
 						</xsl:call-template>
 						</p>
 					  </body>
