@@ -183,15 +183,17 @@ public class FindAction extends AbstractAction {
             if(! node.isVisible())
                 continue;
 
-			String nodeText = caseSensitive ? node.toString() : node.toString()
-					.toLowerCase();
-			// Bug fix for http://sourceforge.net/tracker/?func=detail&aid=3035387&group_id=7118&atid=107118
-			if (HtmlTools.isHtmlNode(nodeText)) {
-				nodeText = HtmlTools.unescapeHTMLUnicodeEntity(nodeText);
-			}
-			nodeText = HtmlTools.removeHtmlTagsFromString(nodeText);
-			// End bug fix.
-			
+            // Bug fix for http://sourceforge.net/tracker/?func=detail&aid=3035387&group_id=7118&atid=107118
+            String nodeText = node.toString();
+            if (HtmlTools.isHtmlNode(nodeText)) {
+              nodeText = HtmlTools.unescapeHTMLUnicodeEntity(nodeText);
+              nodeText = HtmlTools.removeHtmlTagsFromString(nodeText);
+            }
+            if(!caseSensitive) {
+              nodeText = nodeText.toLowerCase();
+            }
+            // End bug fix.
+
             // Save the state for find next
             this.subterms = subterms;
             findCaseSensitive = caseSensitive;
