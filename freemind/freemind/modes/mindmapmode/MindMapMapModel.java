@@ -17,7 +17,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: MindMapMapModel.java,v 1.36.14.16.2.36 2010-09-11 20:13:46 christianfoltin Exp $ */
+/* $Id: MindMapMapModel.java,v 1.36.14.16.2.37 2010-11-06 22:41:39 christianfoltin Exp $ */
 
 package freemind.modes.mindmapmode;
 
@@ -27,14 +27,17 @@ import java.awt.datatransfer.Transferable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
@@ -397,7 +400,12 @@ public class MindMapMapModel extends MapAdapter  {
 		}
 
 		public Reader createReader() throws FileNotFoundException {
-			return new FileReader(mFile);
+			try {
+				return new InputStreamReader(new FileInputStream(mFile), "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				freemind.main.Resources.getInstance().logException(e);
+				return new InputStreamReader(new FileInputStream(mFile));
+			}
 		}
 
 		public String toString() {
