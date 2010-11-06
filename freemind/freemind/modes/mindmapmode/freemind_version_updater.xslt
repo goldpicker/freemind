@@ -245,10 +245,21 @@
 			<xsl:when test="contains($input,$search-string)">
 				<xsl:value-of select="substring-before($input,$search-string)"/>
 				<br/>
-				<xsl:call-template name="br-replace">
-					<xsl:with-param name="input" select="substring-after($input,$search-string)"/>
-					<xsl:with-param name="search-string" select="$search-string"/>
-				</xsl:call-template>
+				<xsl:choose>
+					<xsl:when test="starts-with(substring-after($input,$search-string), ' ')">
+						<xsl:text>&#160;</xsl:text>
+						<xsl:call-template name="br-replace">
+							<xsl:with-param name="input" select="substring(substring-after($input,$search-string),2)"/>
+							<xsl:with-param name="search-string" select="$search-string"/>
+						</xsl:call-template>					
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:call-template name="br-replace">
+							<xsl:with-param name="input" select="substring-after($input,$search-string)"/>
+							<xsl:with-param name="search-string" select="$search-string"/>
+						</xsl:call-template>
+					</xsl:otherwise>
+				</xsl:choose>
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:value-of select="$input"/>
