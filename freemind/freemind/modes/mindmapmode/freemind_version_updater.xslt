@@ -210,7 +210,7 @@
 		<xsl:choose>
 			<xsl:when test="contains($input,' ')">
 				<xsl:value-of select="substring-before($input,' ')"/>
-				<xsl:text>.</xsl:text>
+				<xsl:text> </xsl:text>
 				<xsl:call-template name="space-replace-non_breakable">
 					<xsl:with-param name="input" select="substring-after($input,' ')"/>
 				</xsl:call-template>
