@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: MainView.java,v 1.1.4.33 2009-07-04 20:38:27 christianfoltin Exp $ */
+/* $Id: MainView.java,v 1.1.4.34 2010-11-06 21:10:25 christianfoltin Exp $ */
 package freemind.view.mindmapview;
 
 import java.awt.Color;
@@ -287,7 +287,7 @@ public abstract class MainView extends JLabel{
         }
         
         protected int isDraggedOver = NodeView.DRAGGED_OVER_NO;
-		static final float ZOOM_CORRECTION_FACTOR = 0.97F;
+		public static final float ZOOM_CORRECTION_FACTOR = 1.0F;//former value, but not very understandable, was: 0.97F;
         public void setDraggedOver(int draggedOver) {
            isDraggedOver = draggedOver; }
         public void setDraggedOver(Point p) {

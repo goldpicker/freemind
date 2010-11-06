@@ -19,7 +19,7 @@
   </head>
   <body width="">
     <p align="center">
-      FreeMind<br/><small>- free mind mapping software -</small> 
+      FreeMind<br/><small>- free mind mapping software -</small>
     </p>
   </body>
 </html></richcontent>

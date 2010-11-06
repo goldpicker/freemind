@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: AttributeTableCellRenderer.java,v 1.1.2.2 2008-04-24 19:25:57 dpolivaev Exp $ */
+/* $Id: AttributeTableCellRenderer.java,v 1.1.2.3 2010-11-06 21:10:25 christianfoltin Exp $ */
 package freemind.view.mindmapview.attributeview;
 import java.awt.Component;
 import java.awt.Graphics;
@@ -28,9 +28,10 @@ import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import freemind.view.mindmapview.MainView;
+
 public class AttributeTableCellRenderer extends DefaultTableCellRenderer {
     
-	static final float ZOOM_CORRECTION_FACTOR = 0.97F;
     private boolean isPainting;
 	private float zoom;
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -48,7 +49,7 @@ public class AttributeTableCellRenderer extends DefaultTableCellRenderer {
 	    if(zoom != 1F){
 	    	// Dimitry: Workaround because Swing do not use fractional metrics 
 	    	// for laying JLabels out 
-	    	zoom *= ZOOM_CORRECTION_FACTOR;
+	    	zoom *= MainView.ZOOM_CORRECTION_FACTOR;
 	        final AffineTransform transform = g2.getTransform();                
 	        g2.scale(zoom, zoom);
 	        isPainting = true;
