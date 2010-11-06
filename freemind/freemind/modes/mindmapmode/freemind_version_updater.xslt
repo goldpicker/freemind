@@ -145,10 +145,8 @@
 						<p align="left">
 						<xsl:call-template name="br-replace">
 							<xsl:with-param name="input">
-								<xsl:call-template name="str-replace">
+								<xsl:call-template name="space-replace">
 									<xsl:with-param name="input" select="hook[@NAME='accessories/plugins/NodeNote.properties']/text"/>
-									<xsl:with-param name="search-string" select="' '"></xsl:with-param>
-									<xsl:with-param name="replace-string" select="'&#160;'"></xsl:with-param>
 								</xsl:call-template>
 							</xsl:with-param>
 						</xsl:call-template>
@@ -200,9 +198,42 @@
 				</xsl:call-template>
 			</xsl:when>
 			<xsl:otherwise>
-				<!-- There are no more occurences of the search string so 
+				<!-- There are no more occurrences of the search string so 
 				just return the current input string -->
 				<xsl:value-of select="$input"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template name="space-replace">
+		<xsl:param name="input"/>
+		<xsl:choose>
+			<xsl:when test="contains($input,' ')">
+				<xsl:value-of select="substring-before($input,' ')"/>
+				<xsl:text>.</xsl:text>
+				<xsl:call-template name="space-replace-non_breakable">
+					<xsl:with-param name="input" select="substring-after($input,' ')"/>
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$input"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+
+	<xsl:template name="space-replace-non_breakable">
+		<xsl:param name="input"/>
+		<xsl:choose>
+			<xsl:when test="starts-with($input,' ')">
+				<xsl:text>&#160;</xsl:text>
+				<xsl:call-template name="space-replace-non_breakable">
+					<xsl:with-param name="input" select="substring($input,2)"/>
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:call-template name="space-replace">
+					<xsl:with-param name="input" select="$input"/>
+				</xsl:call-template>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
