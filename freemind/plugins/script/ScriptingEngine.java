@@ -19,10 +19,11 @@
  *
  * Created on 02.09.2006
  */
-/* $Id: ScriptingEngine.java,v 1.1.2.20 2008-04-18 21:18:26 christianfoltin Exp $ */
+/* $Id: ScriptingEngine.java,v 1.1.2.21 2010-11-20 22:32:29 christianfoltin Exp $ */
 package plugins.script;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,6 +33,8 @@ import javax.swing.JOptionPane;
 
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ModuleNode;
+import org.codehaus.groovy.control.CompilationFailedException;
+import org.codehaus.groovy.runtime.InvokerHelper;
 
 import freemind.common.OptionalDontShowMeAgainDialog;
 import freemind.main.FreeMind;
@@ -46,6 +49,7 @@ import freemind.modes.mindmapmode.hooks.MindMapHookAdapter;
 import groovy.lang.Binding;
 import groovy.lang.GroovyRuntimeException;
 import groovy.lang.GroovyShell;
+import groovy.lang.Script;
 
 /**
  * @author foltin
@@ -166,7 +170,6 @@ public class ScriptingEngine extends MindMapHookAdapter {
 		binding.setVariable("c", pMindMapController);
 		binding.setVariable("node", node);
 		binding.setVariable("cookies", sScriptCookies);
-		GroovyShell shell = new GroovyShell(binding);
 
 		boolean assignResult = false;
 		String assignTo = null;
@@ -220,19 +223,41 @@ public class ScriptingEngine extends MindMapHookAdapter {
 				execPerm = true;
 			}
 		}
-		ScriptingSecurityManager scriptingSecurityManager = new ScriptingSecurityManager(
+		final ScriptingSecurityManager scriptingSecurityManager = new ScriptingSecurityManager(
 				filePerm, networkPerm, execPerm);
-		FreeMindSecurityManager securityManager = (FreeMindSecurityManager) System
+		final FreeMindSecurityManager securityManager = (FreeMindSecurityManager) System
 				.getSecurityManager();
 		try {
 			System.setOut(pOutStream);
-			// exchange security manager to prevent scripts from doing nasty
-			// things.
-			securityManager.setFinalSecurityManager(scriptingSecurityManager);
+			// copied from freeplane from http://freeplane.bzr.sourceforge.net/bzr/freeplane/freeplane_program/release_branches/1_0_x/annotate/head%3A/freeplane_plugin_script/src/org/freeplane/plugin/script/ScriptingEngine.java
+			final GroovyShell shell = new GroovyShell(binding) {
+				/**
+				 * Evaluates some script against the current Binding and returns the result
+				 *
+				 * @param in       the stream reading the script
+				 * @param fileName is the logical file name of the script (which is used to create the class name of the script)
+				 */
+				public Object evaluate(final InputStream in, final String fileName) throws CompilationFailedException {
+					Script script = null;
+					try {
+						script = parse(in, fileName);
+						securityManager.setFinalSecurityManager(scriptingSecurityManager);
+						return script.run();
+					}
+					finally {
+						if (script != null) {
+							InvokerHelper.removeClass(script.getClass());
+							securityManager.setFinalSecurityManager(scriptingSecurityManager);
+						}
+					}
+				}
+			};
 			value = shell.evaluate(script);
-		} catch (GroovyRuntimeException e) {
+		}
+		catch (final GroovyRuntimeException e) {
 			e1 = e;
-		} catch (Throwable e) {
+		}
+		catch (final Throwable e) {
 			e2 = e;
 		} finally {
 			// setting the same security manager the second time causes it to be
