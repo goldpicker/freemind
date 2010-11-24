@@ -17,7 +17,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-/* $Id: Tools.java,v 1.17.18.9.2.55 2010-10-07 21:19:51 christianfoltin Exp $ */
+/* $Id: Tools.java,v 1.17.18.9.2.56 2010-11-24 20:51:28 christianfoltin Exp $ */
 
 package freemind.main;
 
@@ -1013,7 +1013,7 @@ public class Tools {
 		    return new StringReader(writer.getBuffer().toString());
 	    }
 	    else{
-	        return getActualReader(pReader);
+	        return null;
 	    }
 	}
 

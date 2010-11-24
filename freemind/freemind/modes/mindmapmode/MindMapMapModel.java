@@ -17,7 +17,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: MindMapMapModel.java,v 1.36.14.16.2.37 2010-11-06 22:41:39 christianfoltin Exp $ */
+/* $Id: MindMapMapModel.java,v 1.36.14.16.2.38 2010-11-24 20:51:28 christianfoltin Exp $ */
 
 package freemind.modes.mindmapmode;
 
@@ -452,6 +452,12 @@ public class MindMapMapModel extends MapAdapter  {
 				}
         	}
 			reader = Tools.getUpdateReader(pReaderCreator.createReader(), FREEMIND_VERSION_UPDATER_XSLT, getFrame());
+			if(reader == null) {
+				// something went wrong on update:
+				// FIXME: Translate me.
+				this.getModeController().getFrame().out("Error on conversion. Continue without conversion. Some elements may be lost!");
+				reader = Tools.getActualReader(pReaderCreator.createReader());
+			}
         }
         try {
         	HashMap IDToTarget = new HashMap();
