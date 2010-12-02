@@ -194,10 +194,6 @@ public class FindAction extends AbstractAction {
             }
             // End bug fix.
 
-            // Save the state for find next
-            this.subterms = subterms;
-            findCaseSensitive = caseSensitive;
-            findNodeQueue = nodes;
 
             boolean found = true;
             for (Iterator i = subterms.iterator(); i.hasNext();) {
@@ -208,6 +204,10 @@ public class FindAction extends AbstractAction {
             if (found) { // Found
                 displayNode(node, findNodesUnfoldedByLastFind);
 				centerNode(node);
+				// Save the state for find next
+				this.subterms = subterms;
+				findCaseSensitive = caseSensitive;
+				findNodeQueue = nodes;
 				return true;
 			}
 		}
@@ -282,9 +282,6 @@ public class FindAction extends AbstractAction {
 		// nice, but far from critical and working quite fine.
 
         if (subterms != null) {
-            if(findNodeQueue.isEmpty()){
-                return find(controller.getSelected(), subterms, findCaseSensitive);
-            }
             return find(findNodeQueue, subterms, findCaseSensitive);
 		}
 		return false;

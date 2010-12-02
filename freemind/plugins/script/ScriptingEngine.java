@@ -19,7 +19,7 @@
  *
  * Created on 02.09.2006
  */
-/* $Id: ScriptingEngine.java,v 1.1.2.21 2010-11-20 22:32:29 christianfoltin Exp $ */
+/* $Id: ScriptingEngine.java,v 1.1.2.22 2010-12-02 21:14:07 christianfoltin Exp $ */
 package plugins.script;
 
 import java.io.File;
@@ -247,6 +247,8 @@ public class ScriptingEngine extends MindMapHookAdapter {
 					finally {
 						if (script != null) {
 							InvokerHelper.removeClass(script.getClass());
+							// setting the same security manager the second time causes it to be
+							// removed.
 							securityManager.setFinalSecurityManager(scriptingSecurityManager);
 						}
 					}
@@ -260,9 +262,6 @@ public class ScriptingEngine extends MindMapHookAdapter {
 		catch (final Throwable e) {
 			e2 = e;
 		} finally {
-			// setting the same security manager the second time causes it to be
-			// removed.
-			securityManager.setFinalSecurityManager(scriptingSecurityManager);
 			System.setOut(oldOut);
 			/* restore preferences (and assure that the values are unchanged!). */
 			frame.setProperty(
