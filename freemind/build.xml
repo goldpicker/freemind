@@ -49,7 +49,7 @@
 		<classpath path="${jibxlibs}"/>
 	</taskdef>
 
-	<property name="classpath" value="${jibxruntimelibs}:${jibxjar}:lib/commons-lang-2.0.jar:lib/forms-1.0.5.jar:lib/SimplyHTML/SimplyHTML.jar"/>
+	<property name="classpath" value="${jibxruntimelibs}:${jibxjar}:lib/forms-1.0.5.jar:lib/SimplyHTML/SimplyHTML.jar"/>
 
 	  <target name="xmlbind.checkStatusOfGeneration">
 	    <uptodate property="xmlbind.isUpToDate"
@@ -76,7 +76,7 @@
 		<mkdir dir="binding/src" />
 		<mkdir dir="binding/run" />
 		<mkdir dir="binding/classes" />
-<!-- 		<java fork="true" classname="org.jibx.xsd2jibx.Generate" classpath="${jibxlibs}:${jibxhome}/xsd2jibx.jar:${jibxhome}/commons-logging-1.0.4.jar:${jibxhome}/jaxme-js-0.3.jar:${jibxhome}/log4j-1.2.8.jar:lib/commons-lang-2.0.jar" failonerror="true">
+<!-- 		<java fork="true" classname="org.jibx.xsd2jibx.Generate" classpath="${jibxlibs}:${jibxhome}/xsd2jibx.jar:${jibxhome}/commons-logging-1.0.4.jar:${jibxhome}/jaxme-js-0.3.jar:${jibxhome}/log4j-1.2.8.jar" failonerror="true">
 			<arg line="-n freemind.controller.actions.generated.instance" />
 			<arg line="-d binding/src" />
 			<arg file="freemind_actions.xsd" />
@@ -194,7 +194,6 @@
 		<mkdir dir="${dist.lib}" />
 		<copy todir="${dist.lib}">
 			<fileset dir="${src}/lib">
-				<include name="commons-lang-2.0.jar"/>
 				<include name="forms-1.0.5.jar"/>
 				<include name="bindings.jar"/>
 				<include name="jibx/jibx-run.jar"/>

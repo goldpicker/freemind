@@ -16,22 +16,18 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/* $Id: ClickableImageCreator.java,v 1.1.2.1.12.6 2007-06-20 21:52:28 dpolivaev Exp $ */
+/* $Id: ClickableImageCreator.java,v 1.1.2.1.12.7 2010-12-04 18:55:03 christianfoltin Exp $ */
 
 package accessories.plugins.util.html;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.io.File;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JComponent;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
-import freemind.main.Tools;
+import freemind.main.HtmlTools;
 import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
 import freemind.view.mindmapview.MapView;
@@ -100,8 +96,8 @@ public class ClickableImageCreator {
             AreaHolder holder = (AreaHolder) i.next();
             htmlArea.append("<area shape=\"" + holder.shape + "\" href=\"#"
                     + holder.href.replaceFirst("^(.*)$", regExpLinkReplacement) + "\" alt=\""
-                    + StringEscapeUtils.escapeHtml(holder.alt) + "\" title=\""
-                    + StringEscapeUtils.escapeHtml(holder.title)
+                    + HtmlTools.toXMLEscapedText(holder.alt) + "\" title=\""
+                    + HtmlTools.toXMLEscapedText(holder.title)
                     + "\" coords=\"" + holder.coordinates.x + ","
                     + holder.coordinates.y + ","
                     + (holder.coordinates.width + holder.coordinates.x) + ","
