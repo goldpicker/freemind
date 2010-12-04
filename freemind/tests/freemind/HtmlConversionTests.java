@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: HtmlConversionTests.java,v 1.1.2.15 2009-06-29 17:22:31 christianfoltin Exp $*/
+/*$Id: HtmlConversionTests.java,v 1.1.2.16 2010-12-04 21:07:23 christianfoltin Exp $*/
 
 package tests.freemind;
 
@@ -110,7 +110,7 @@ public class HtmlConversionTests extends FreeMindTestBase {
      * @throws Exception
      */
     public void testSpaceHandling() throws Exception {
-		String input = getInputStringWithManySpaces("&#160;");
+		String input = getInputStringWithManySpaces(HtmlTools.SP);
 		assertEquals(input, HtmlTools.getInstance().toXhtml(input));
 	}
 //    public void testSpaceHandlingInShtml() throws Exception {
@@ -136,7 +136,7 @@ public class HtmlConversionTests extends FreeMindTestBase {
     	panel.setVisible(false);
     }
     public void testSpaceRemovalInShtml() throws Exception {
-    	String input = getInputStringWithManySpaces("&#160;");
+    	String input = getInputStringWithManySpaces(HtmlTools.SP);
     	SHTMLPanel panel = SHTMLPanel.createSHTMLPanel();
     	panel.setCurrentDocumentContent(input);
     	// set the value of the panel itself again (twice)
@@ -453,6 +453,12 @@ public class HtmlConversionTests extends FreeMindTestBase {
 		assertEquals("Wrong chars are gone", "AB&#32;&#x20;", Tools
 				.replaceUtf8AndIllegalXmlChars("&#x1f;A&#0;&#31;&#x0001B;B&#x1;&#32;&#1;&#x20;"));
 	}
+    
+    public void testSpaceReplacements() throws Exception {
+    	assertEquals("Space conversion", " " + HtmlTools.NBSP, HtmlTools.replaceSpacesToNonbreakableSpaces("  "));
+    	assertEquals("Multiple space conversion", " " + HtmlTools.NBSP+HtmlTools.NBSP+HtmlTools.NBSP, HtmlTools.replaceSpacesToNonbreakableSpaces("    "));
+    	assertEquals("Double space conversion", " " + HtmlTools.NBSP + "xy "+HtmlTools.NBSP+HtmlTools.NBSP, HtmlTools.replaceSpacesToNonbreakableSpaces("  xy   "));
+    }
     
 }
 

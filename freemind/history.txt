@@ -3,6 +3,7 @@ Changes made in FreeMind 0.9.0 RC 12
 ===============================
 * Fix: Script execution can be repeated.
 * Fix: Find finds an end of searching.
+* Space replacements on conversion done with faster converter now.
 
 ===============================
 Changes made in FreeMind 0.9.0 RC 11

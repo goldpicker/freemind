@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: HtmlTools.java,v 1.1.2.27 2010-10-02 20:27:55 christianfoltin Exp $*/
+/*$Id: HtmlTools.java,v 1.1.2.28 2010-12-04 21:07:23 christianfoltin Exp $*/
 
 package freemind.main;
 
@@ -41,7 +41,9 @@ import org.xml.sax.helpers.DefaultHandler;
 /** */
 public class HtmlTools {
 
-    private static Logger logger;
+    public static final String NBSP = "\u00A0";
+
+	private static Logger logger;
 
     private static HtmlTools sInstance = new HtmlTools();
 
@@ -55,6 +57,8 @@ public class HtmlTools {
     ")(\\s[^>]*)?)/>");
 
     private static final Pattern TAGS_PATTERN = Pattern.compile("(?s)<[^><]*>");
+
+	public static final String SP = "&#160;";
     /**
      * 
      */
@@ -625,6 +629,27 @@ public class HtmlTools {
 		}
 		output = output.substring(start, end);
 		return output;
+	}
+	
+	public static String replaceSpacesToNonbreakableSpaces(String input) {
+		StringBuffer result = new StringBuffer(input.length());
+		boolean readingSpaces = false;
+		char myChar;
+		for (int i = 0; i < input.length(); ++i) {
+			myChar = input.charAt(i);
+			if(myChar==' ') {
+				if(readingSpaces){
+					result.append(NBSP);
+				} else {
+					result.append(myChar);
+					readingSpaces = true;
+				}
+			} else {
+				readingSpaces = false;
+				result.append(myChar);
+			}
+		}
+		return result.toString();
 	}
     
 

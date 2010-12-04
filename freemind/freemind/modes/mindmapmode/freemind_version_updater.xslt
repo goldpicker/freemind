@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:HtmlTools="xalan://freemind.main.HtmlTools">
 
 	<xsl:template 
 		match="/ | node() | @* | comment() | processing-instruction()">
@@ -9,6 +9,7 @@
 	</xsl:template>
 
 	<xsl:template match="map">
+	
 		<!-- versions (the version tag is to be found in FreeMind.java as XML_VERSION.-->
 		<xsl:variable name="version"><!--
 			--><xsl:choose><!--
@@ -145,9 +146,10 @@
 						<p align="left">
 						<xsl:call-template name="br-replace">
 							<xsl:with-param name="input">
-								<xsl:call-template name="space-replace">
+								<xsl:value-of select="HtmlTools:replaceSpacesToNonbreakableSpaces(string(hook[@NAME='accessories/plugins/NodeNote.properties']/text))"/>
+<!--  								<xsl:call-template name="space-replace">
 									<xsl:with-param name="input" select="hook[@NAME='accessories/plugins/NodeNote.properties']/text"/>
-								</xsl:call-template>
+								</xsl:call-template> -->
 							</xsl:with-param>
 						</xsl:call-template>
 						</p>
