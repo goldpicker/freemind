@@ -1,4 +1,10 @@
 ===============================
+Changes made in FreeMind 0.9.0 RC 13
+===============================
+* Fix for strange html header in converted notes: <html xmlns:HtmlTools="xalan://freemind.main.HtmlTools"><head/> - http://sourceforge.net/tracker/index.php?func=detail&aid=3096369&group_id=7118&atid=107118
+* Conversion errors are reported as before.
+
+===============================
 Changes made in FreeMind 0.9.0 RC 12
 ===============================
 * Fix: Script execution can be repeated.
