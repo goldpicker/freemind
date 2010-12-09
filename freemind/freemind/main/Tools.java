@@ -17,7 +17,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-/* $Id: Tools.java,v 1.17.18.9.2.56 2010-11-24 20:51:28 christianfoltin Exp $ */
+/* $Id: Tools.java,v 1.17.18.9.2.57 2010-12-09 20:52:13 christianfoltin Exp $ */
 
 package freemind.main;
 
@@ -951,6 +951,7 @@ public class Tools {
 	    java.util.logging.Logger logger = frame.getLogger(Tools.class.getName());
 	    logger.info("Updating the reader "+pReader+" to the current version.");
         boolean successful = false;
+        String errorMessage = null;
 	    try{
 	        // try to convert map with xslt:
 	        URL updaterUrl=null;
@@ -977,7 +978,8 @@ public class Tools {
 	        // everything should run in own thread. Only after the thread dies the resources are released.
 	        class TransformerRunnable implements Runnable{
 	        	private boolean successful = false;
-	        	public void run() {
+	        	private String errorMessage;
+				public void run() {
 	        		// create an instance of TransformerFactory
 	        		TransformerFactory transFact = TransformerFactory.newInstance();
 	        		Transformer trans;
@@ -988,10 +990,14 @@ public class Tools {
 	        			successful = true;
 	        		} catch (Exception ex) {
 	        			freemind.main.Resources.getInstance().logException(ex);
+	        			errorMessage = ex.toString();
 	        		}
 				}
 				public boolean isSuccessful() {
 					return successful;
+				}
+				public String getErrorMessage() {
+					return errorMessage;
 				}
 	        }
 	        final TransformerRunnable transformer = new TransformerRunnable();
@@ -1000,6 +1006,7 @@ public class Tools {
 			transformerThread.join();
 	        logger.info("Updating the reader "+pReader+" to the current version. Done." ); //+ writer.getBuffer().toString());
 	        successful = transformer.isSuccessful();
+	        errorMessage = transformer.getErrorMessage();
 	    } catch(Exception ex) {
 	    } finally {
 	        if(inputStream!= null) {
@@ -1013,7 +1020,7 @@ public class Tools {
 		    return new StringReader(writer.getBuffer().toString());
 	    }
 	    else{
-	        return null;
+	        return new StringReader("<map><node TEXT='"+HtmlTools.toXMLEscapedText(errorMessage)+"'/></map>");
 	    }
 	}
 
