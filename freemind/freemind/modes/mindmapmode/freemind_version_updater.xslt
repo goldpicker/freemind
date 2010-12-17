@@ -144,7 +144,7 @@
 					
 					  </head>
 					  <body>
-						<p align="left">
+						<p>
 						<xsl:call-template name="br-replace">
 							<xsl:with-param name="input">
 								<xsl:value-of select="HtmlTools:replaceSpacesToNonbreakableSpaces(string(hook[@NAME='accessories/plugins/NodeNote.properties']/text))"/>
