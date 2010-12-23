@@ -16,7 +16,7 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-/*$Id: FreeMind.java,v 1.32.14.28.2.145 2010-12-18 07:14:34 christianfoltin Exp $*/
+/*$Id: FreeMind.java,v 1.32.14.28.2.146 2010-12-23 22:55:21 christianfoltin Exp $*/
 
 package freemind.main;
 
@@ -128,7 +128,7 @@ public class FreeMind extends JFrame implements FreeMindMain {
 
 	private Logger logger = null;
 	
-	protected static final VersionInformation VERSION = new VersionInformation("0.9.0 RC 13");
+	protected static final VersionInformation VERSION = new VersionInformation("0.9.0 RC 14");
 	
 	public static final String XML_VERSION = "0.9.0";
 

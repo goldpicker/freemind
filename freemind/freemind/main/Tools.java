@@ -17,7 +17,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-/* $Id: Tools.java,v 1.17.18.9.2.57 2010-12-09 20:52:13 christianfoltin Exp $ */
+/* $Id: Tools.java,v 1.17.18.9.2.58 2010-12-23 22:55:21 christianfoltin Exp $ */
 
 package freemind.main;
 
@@ -1025,20 +1025,6 @@ public class Tools {
 	}
 
 	public static String replaceUtf8AndIllegalXmlChars(String fileContents) {
-		/* Map does not load with RC4 * https://sourceforge.net/tracker/?func=detail&atid=107118&aid=2797009&group_id=7118*/
-		try {
-			byte[] bytes = fileContents.getBytes();
-			if (bytes.length >= 3 && bytes[0] == (byte) 0xEF
-					&& bytes[1] == (byte) 0xBB && bytes[2] == (byte) 0xBF) {
-					logger.info("Replacing the file by a UTF8 equivalent.");
-					fileContents = new String(bytes, 3 , bytes.length-3, "UTF-8");
-					// this would be a bad hacK:
-//			} else if(fileContents.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")) {
-//				fileContents = new String(bytes, "UTF-8");
-			}
-		} catch (UnsupportedEncodingException e) {
-			freemind.main.Resources.getInstance().logException(e);
-		}
 		return HtmlTools.removeInvalidXmlCharacters(fileContents);
 	}
 
