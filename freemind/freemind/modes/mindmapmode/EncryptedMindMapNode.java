@@ -16,7 +16,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-/* $Id: EncryptedMindMapNode.java,v 1.1.2.11.2.17 2010-09-11 20:13:46 christianfoltin Exp $ */
+/* $Id: EncryptedMindMapNode.java,v 1.1.2.11.2.18 2011-01-09 21:03:13 christianfoltin Exp $ */
 
 package freemind.modes.mindmapmode;
 
@@ -37,6 +37,7 @@ import freemind.main.Tools.SingleDesEncrypter;
 import freemind.modes.MindIcon;
 import freemind.modes.MindMap;
 import freemind.modes.MindMapLinkRegistry;
+import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
 
 public class EncryptedMindMapNode extends MindMapNodeModel {
@@ -101,26 +102,29 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
         setAccessible(true);
         if (!isDecrypted) {
         	try {
+        		MindMapNode node = null;
 	            String childXml = decryptXml(encryptedContent, password);
 	            // is it a map at all?
 	            if(childXml.startsWith(MindMapMapModel.MAP_INITIAL_START)){
-	            	MindMapNodeModel node = getNodeFromXml(childXml);
-	            	int index=0;
-					for (ListIterator i = node.childrenUnfolded(); i.hasNext();) {
-						MindMapNodeModel importNode = (MindMapNodeModel) i
-								.next();
-						((MindMapController)getModeController()).insertNodeInto(importNode,this,index++);
-					}
+	            	node = getNodeFromXml(childXml);
 	            } else {
 		            // old handling up to version 0.9.0_rc8:
 		            String[] childs = childXml.split(ModeController.NODESEPARATOR);
 		            // and now? paste it:
+		            // make a 0.8.0 map out of it:
+		            String mapContent = MindMapMapModel.MAP_INITIAL_START+"0.8.0\"><node TEXT=\"DUMMY\">";
 		            for (int j = 0; j < childs.length; j++) {
 		            	String nodeContent = childs[j];
-		            	// make a 0.8.0 map out of it:
-		            	String mapContent = MindMapMapModel.MAP_INITIAL_START+"0.8.0\">"+nodeContent+"</map>";
-		            	paste(getNodeFromXml(mapContent));		            	
+		            	mapContent += nodeContent;
 		            }
+		            mapContent += "</node></map>";
+		            node = getNodeFromXml(mapContent);
+	            }
+	            int index=0;
+	            for (ListIterator i = node.childrenUnfolded(); i.hasNext();) {
+	            	MindMapNodeModel importNode = (MindMapNodeModel) i
+	            	.next();
+	            	((MindMapController)getModeController()).insertNodeInto(importNode,this,index++);
 	            }
 	            isDecrypted = true;
         	} catch(Exception e){
