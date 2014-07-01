@@ -97,7 +97,7 @@ public class FreeMindStarter {
 		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null,
-					"freemind.main.FreeMind can't be started",
+					"freemind.main.FreeMind can't be started: " + e.getLocalizedMessage()+"\n" + Tools.getStacktrace(e),
 					"Startup problem", JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		}

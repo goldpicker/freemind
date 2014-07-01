@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -67,10 +68,7 @@ import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.KeySpec;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -114,7 +112,6 @@ import freemind.common.UnicodeReader;
 import freemind.common.XmlBindingTools;
 import freemind.controller.actions.generated.instance.CompoundAction;
 import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.main.Tools.ReaderCreator;
 import freemind.modes.EdgeAdapter;
 import freemind.modes.MindIcon;
 import freemind.modes.MindMapNode;
@@ -1619,9 +1616,7 @@ public class Tools {
 	 */
 	public static String getStackTrace() {
 		IllegalArgumentException ex = new IllegalArgumentException("HERE");
-		ByteArrayOutputStream b = new ByteArrayOutputStream();
-		ex.printStackTrace(new PrintStream(b));
-		return b.toString();
+		return getStacktrace(ex);
 	}
 
 	/**
@@ -2129,4 +2124,12 @@ public class Tools {
 	
 	}
 
+	
+	// http://stackoverflow.com/questions/1149703/stacktrace-to-string-in-java
+	public static String getStacktrace(Exception e) {
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		e.printStackTrace(pw);
+		return sw.toString(); 
+	}
 }

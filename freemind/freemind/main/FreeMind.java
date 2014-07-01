@@ -71,6 +71,7 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -682,71 +683,79 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 	public static void main(final String[] args,
 			Properties pDefaultPreferences, Properties pUserPreferences,
 			File pAutoPropertiesFile) {
-		final FreeMind frame = new FreeMind(pDefaultPreferences,
-				pUserPreferences, pAutoPropertiesFile);
-		IFreeMindSplash splash = null;
-		frame.checkForAnotherInstance(args);
-		frame.initServer();
-		final FeedBack feedBack;
-		// change here, if you don't like the splash
-		if (true) {
-			splash = new FreeMindSplashModern(frame);
-			splash.setVisible(true);
-			feedBack = splash.getFeedBack();
-			frame.mWindowIcon = splash.getWindowIcon();
-		} else {
-			feedBack = new FeedBack() {
-				int value = 0;
-
-				public int getActualValue() {
-					return value;
-				}
-
-				public void increase(String messageId,
-						Object[] pMessageParameters) {
-					progress(getActualValue() + 1, messageId,
-							pMessageParameters);
-				}
-
-				public void progress(int act, String messageId,
-						Object[] pMessageParameters) {
-					frame.logger.info("Beginnig task:" + messageId);
-				}
-
-				public void setMaximumValue(int max) {
-				}
-			};
-			frame.mWindowIcon = new ImageIcon(
-					frame.getResource("images/FreeMindWindowIcon.png"));
-		}
-		feedBack.setMaximumValue(10 + frame.getMaximumNumberOfMapsToLoad(args));
-		frame.init(feedBack);
-
-		feedBack.increase("FreeMind.progress.startCreateController", null);
-		final ModeController ctrl = frame.createModeController(args);
-
-		feedBack.increase(FREE_MIND_PROGRESS_LOAD_MAPS, null);
-
-		frame.loadMaps(args, ctrl, feedBack);
-
-		Tools.waitForEventQueue();
-		feedBack.increase("FreeMind.progress.endStartup", null);
-		// focus fix after startup.
-		frame.addWindowFocusListener(new WindowFocusListener() {
-
-			public void windowLostFocus(WindowEvent e) {
+		try {
+			final FreeMind frame = new FreeMind(pDefaultPreferences,
+					pUserPreferences, pAutoPropertiesFile);
+			IFreeMindSplash splash = null;
+			frame.checkForAnotherInstance(args);
+			frame.initServer();
+			final FeedBack feedBack;
+			// change here, if you don't like the splash
+			if (true) {
+				splash = new FreeMindSplashModern(frame);
+				splash.setVisible(true);
+				feedBack = splash.getFeedBack();
+				frame.mWindowIcon = splash.getWindowIcon();
+			} else {
+				feedBack = new FeedBack() {
+					int value = 0;
+	
+					public int getActualValue() {
+						return value;
+					}
+	
+					public void increase(String messageId,
+							Object[] pMessageParameters) {
+						progress(getActualValue() + 1, messageId,
+								pMessageParameters);
+					}
+	
+					public void progress(int act, String messageId,
+							Object[] pMessageParameters) {
+						frame.logger.info("Beginnig task:" + messageId);
+					}
+	
+					public void setMaximumValue(int max) {
+					}
+				};
+				frame.mWindowIcon = new ImageIcon(
+						frame.getResource("images/FreeMindWindowIcon.png"));
 			}
-
-			public void windowGainedFocus(WindowEvent e) {
-				frame.getController().obtainFocusForSelected();
-				frame.removeWindowFocusListener(this);
+			feedBack.setMaximumValue(10 + frame.getMaximumNumberOfMapsToLoad(args));
+			frame.init(feedBack);
+	
+			feedBack.increase("FreeMind.progress.startCreateController", null);
+			final ModeController ctrl = frame.createModeController(args);
+	
+			feedBack.increase(FREE_MIND_PROGRESS_LOAD_MAPS, null);
+	
+			frame.loadMaps(args, ctrl, feedBack);
+	
+			Tools.waitForEventQueue();
+			feedBack.increase("FreeMind.progress.endStartup", null);
+			// focus fix after startup.
+			frame.addWindowFocusListener(new WindowFocusListener() {
+	
+				public void windowLostFocus(WindowEvent e) {
+				}
+	
+				public void windowGainedFocus(WindowEvent e) {
+					frame.getController().obtainFocusForSelected();
+					frame.removeWindowFocusListener(this);
+				}
+			});
+			frame.setVisible(true);
+			if (splash != null) {
+				splash.setVisible(false);
 			}
-		});
-		frame.setVisible(true);
-		if (splash != null) {
-			splash.setVisible(false);
+			frame.fireStartupDone();
+		} catch(Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null,
+					"FreeMind can't be started: " + e.getLocalizedMessage()+"\n" + Tools.getStacktrace(e),
+					"Startup problem", JOptionPane.ERROR_MESSAGE);
+			System.exit(1);			
 		}
-		frame.fireStartupDone();
 	}
 
 	private void setupSpellChecking() {
