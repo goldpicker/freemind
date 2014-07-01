@@ -326,8 +326,7 @@ public class TimeManagement extends MindMapHookAdapter implements
 				gb2.gridy = 0;
 				gb2.fill = GridBagConstraints.HORIZONTAL;
 				hourField = new JTextField(2);
-				hourField.setText(new Integer(getCalendar().get(
-						Calendar.HOUR_OF_DAY)).toString());
+				hourField.setText(""+Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
 				timePanel.add(hourField, gb2);
 			}
 			{
@@ -346,7 +345,7 @@ public class TimeManagement extends MindMapHookAdapter implements
 				gb2.gridy = 0;
 				gb2.fill = GridBagConstraints.HORIZONTAL;
 				minuteField = new JTextField(2);
-				String minuteString = new Integer(getCalendar().get(
+				String minuteString = new Integer(Calendar.getInstance().get(
 						Calendar.MINUTE)).toString();
 				// padding with "0"
 				if (minuteString.length() < 2) {
