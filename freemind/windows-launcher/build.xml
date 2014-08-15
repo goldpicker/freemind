@@ -7,6 +7,13 @@
 			classname="net.sf.launch4j.ant.Launch4jTask" 
 			classpath="launch4j.jar:xstream.jar" />
 		<launch4j configFile="launch4j.xml" />
+		<exec executable="bash">
+			<arg file="/usr/bin/wine"/>
+			<arg file="RCEDIT.exe"/>
+			<arg value="/A"/>
+			<arg file="FreeMind.exe"/>
+			<arg file="FreeMind-document.ico"/>
+		</exec>
 	</target>
 
 
