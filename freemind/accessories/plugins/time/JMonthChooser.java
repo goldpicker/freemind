@@ -163,6 +163,12 @@ public class JMonthChooser extends JPanel implements ItemListener,
 		boolean increase = (value > oldSpinnerValue) ? true : false;
 		oldSpinnerValue = value;
 
+//		changeMonth(increase);
+		firePropertyChange(MONTH_PROPERTY, 0, value);
+
+	}
+
+	public void changeMonth(boolean increase) {
 		int month = getMonth();
 
 		if (increase) {

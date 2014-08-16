@@ -469,7 +469,6 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 			d = maxDaysInMonth;
 		}
 
-		int oldDay = day;
 		day = d;
 
 		if (selectedDay != null) {
@@ -484,12 +483,8 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 				break;
 			}
 		}
-		
-		if (alwaysFireDayProperty) {
-			firePropertyChange(DAY_PROPERTY, 0, day);
-		} else {
-			firePropertyChange(DAY_PROPERTY, oldDay, day);
-		}
+		setFocus();
+
 	}
 
 	/**
@@ -614,7 +609,7 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 		JButton button = (JButton) e.getSource();
 		String buttonText = button.getText();
 		int day = new Integer(buttonText).intValue();
-		setDay(day);
+		fire(day);
 	}
 
 	/**
@@ -679,29 +674,22 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 		case KeyEvent.VK_PAGE_UP:
 			newDay = diffMonth(-1);
 			break;
-		case KeyEvent.VK_HOME:
-			newDay = 1;
-			break;
 		case KeyEvent.VK_END:
 			newDay = getDaysInMonth();
 			break;
+		default:
+			return;
 		}
-
-		if ((newDay >= 1) && (newDay <= getDaysInMonth())) {
-			setDay(newDay);
-		} else if (monthChooser != null && yearChooser != null) {
-			GregorianCalendar tempCalendar = getTemporaryCalendar();
-			tempCalendar.set(Calendar.DAY_OF_MONTH, newDay);
-			int month = tempCalendar.get(Calendar.MONTH);
-			int year = tempCalendar.get(Calendar.YEAR);
-			int day = tempCalendar.get(Calendar.DAY_OF_MONTH);
-			setMonthAndYear(month, year, tempCalendar);
-			this.setDay(day);
-		}
-		setFocus();
+		fire(newDay);
 	}
 
-	protected void setMonthAndYear(int month, int year, GregorianCalendar pCalendar) {
+	public void fire(int newDay) {
+		GregorianCalendar tempCalendar = getTemporaryCalendar();
+		tempCalendar.set(Calendar.DAY_OF_MONTH, newDay);
+		firePropertyChange(DAY_PROPERTY, null, tempCalendar);
+	}
+
+	protected void setMonthAndYear(int month, int year) {
 		yearChooser.setYear(year);
 		monthChooser.setMonth(month);
 	}

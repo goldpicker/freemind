@@ -46,6 +46,8 @@ public class JCalendar extends JPanel implements PropertyChangeListener {
 
 	private static final long serialVersionUID = 8913369762644440133L;
 
+	public static final String CALENDAR_PROPERTY = "calendar";
+
 	private Calendar calendar;
 
 	/** the day chooser */
@@ -310,24 +312,23 @@ public class JCalendar extends JPanel implements PropertyChangeListener {
 		}
 		doingPropertyChanges = true;
 		try {
-			//		System.out.println("Property change in " +this.getClass().getSimpleName() + " of type " + evt.getPropertyName());
+//			System.out.println("Property change in " +this.getClass().getSimpleName() + " of type " + evt.getPropertyName());
 			if (calendar != null) {
 				Calendar c = (Calendar) calendar.clone();
 
 				if (evt.getPropertyName().equals(JDayChooser.DAY_PROPERTY)) {
-					c.set(Calendar.DAY_OF_MONTH,
-							((Integer) evt.getNewValue()).intValue());
-					setCalendar(c, false);
+					c = (Calendar) evt.getNewValue();
+					firePropertyChange(CALENDAR_PROPERTY, 0, c);
 				} else if (evt.getPropertyName().equals(
 						JMonthChooser.MONTH_PROPERTY)) {
 					c.set(Calendar.MONTH, ((Integer) evt.getNewValue()).intValue());
-					setCalendar(c, false);
+					firePropertyChange(CALENDAR_PROPERTY, 0, c);
 				} else if (evt.getPropertyName().equals(JYearChooser.YEAR_PROPERTY)) {
 					c.set(Calendar.YEAR, ((Integer) evt.getNewValue()).intValue());
-					setCalendar(c, false);
+					firePropertyChange(CALENDAR_PROPERTY, 0, c);
 				} else if (evt.getPropertyName().equals(DATE_PROPERTY)) {
 					c.setTime((Date) evt.getNewValue());
-					setCalendar(c, true);
+					firePropertyChange(CALENDAR_PROPERTY, 0, c);
 				}
 			}
 		} finally {
@@ -376,9 +377,6 @@ public class JCalendar extends JPanel implements PropertyChangeListener {
 		if (c == null) {
 			setDate(null);
 		}
-		Calendar oldCalendar = calendar;
-		calendar = c;
-
 		if (update) {
 			// Thanks to Jeff Ulmer for correcting a bug in the sequence :)
 			yearChooser.setYear(c.get(Calendar.YEAR));
@@ -386,6 +384,7 @@ public class JCalendar extends JPanel implements PropertyChangeListener {
 			dayChooser.setDay(c.get(Calendar.DATE));
 		}
 
+		calendar = c;
 		// fc, 25.6.2014: always fire the change event (formerly, there was oldCalendar, but sometimes, 
 		// they are equal.
 		firePropertyChange("calendar", null, calendar);
