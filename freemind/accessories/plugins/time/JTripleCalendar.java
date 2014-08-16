@@ -232,11 +232,11 @@ public class JTripleCalendar extends JPanel implements PropertyChangeListener {
 			Object source = evt.getSource();
 			if (Tools.safeEquals(evt.getPropertyName(), JCalendar.CALENDAR_PROPERTY) ) {
 				Calendar calendar = (Calendar) evt.getNewValue();
-				System.out.println("Property change to " + calendar.getTime());
+//				System.out.println("Property change to " + calendar.getTime());
 //				Tools.printStackTrace();
 				if (source == mCurrentlyActivePanel) {
 					// on the calendar itself, there was probably only a different day clicked
-					setCalendar(calendar);
+					setCalendarInternally(calendar);
 				} else {
 					for(JSwitchableCalendar infoPanel : mInfoPanels.keySet()) {
 						if (source == infoPanel) {
@@ -250,8 +250,17 @@ public class JTripleCalendar extends JPanel implements PropertyChangeListener {
 			mIgnoreChangeEvent = false;
 		}
 	}
-
 	public void setCalendar(Calendar gregorianCalendar) {
+		try {
+			mIgnoreChangeEvent = true;
+			setCalendarInternally(gregorianCalendar);
+		} finally {
+			mIgnoreChangeEvent = false;
+		}
+		
+	}
+
+	protected void setCalendarInternally(Calendar gregorianCalendar) {
 		// test for the same month/year as before:
 //		System.out.println("Comparing new date " + gregorianCalendar.getTime() + " with active panel time " + mCurrentDate.getTime());
 		int dist = mCurrentDate.get(Calendar.MONTH)- gregorianCalendar

@@ -677,6 +677,9 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 		case KeyEvent.VK_END:
 			newDay = getDaysInMonth();
 			break;
+//		case KeyEvent.VK_HOME:
+//			firePropertyChange(DAY_PROPERTY, null, GregorianCalendar.getInstance());
+//			break;
 		default:
 			return;
 		}
