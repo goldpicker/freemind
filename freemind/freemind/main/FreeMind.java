@@ -794,6 +794,8 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 			}
 			System.setProperty("http.proxyHost", props.getProperty(PROXY_HOST));
 			System.setProperty("http.proxyPort", props.getProperty(PROXY_PORT));
+			System.setProperty("https.proxyHost", props.getProperty(PROXY_HOST));
+			System.setProperty("https.proxyPort", props.getProperty(PROXY_PORT));
 		}
 	}
 
