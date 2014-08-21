@@ -291,8 +291,6 @@ public class NodeNoteRegistration implements HookRegistration,
 
 	private NoteDocumentListener mNoteDocumentListener;
 
-	static Integer sPositionToRecover = null;
-
 	private JSplitPane mSplitPane = null;
 
 	public NodeNoteRegistration(ModeController controller, MindMap map) {
@@ -323,19 +321,20 @@ public class NodeNoteRegistration implements HookRegistration,
 		}
 	}
 
-	public boolean shouldUseSplitPane() {
-		return "true".equals(controller.getFrame().getProperty(
-				FreeMind.RESOURCES_USE_SPLIT_PANE));
+	/**
+	 * @return true, if the split pane is to be shown. 
+	 * E.g. when freemind was closed before, the state of the split pane was stored and
+	 * is restored at the next start.
+	 */
+	public boolean shouldShowSplitPane() {
+		return "true".equals(controller.getProperty(
+				FreeMind.RESOURCES_SHOW_SPLIT_PANE));
 	}
 
 	class JumpToMapAction extends AbstractAction {
 		private static final long serialVersionUID = -531070508254258791L;
 
 		public void actionPerformed(ActionEvent e) {
-			if (sPositionToRecover != null) {
-				mSplitPane.setDividerLocation(sPositionToRecover.intValue());
-				sPositionToRecover = null;
-			}
 			logger.info("Jumping back to map!");
 			controller.getController().obtainFocusForSelected();
 		}
@@ -358,7 +357,7 @@ public class NodeNoteRegistration implements HookRegistration,
 		noteViewerComponent.getActionMap().put("jumpToMapAction",
 				jumpToMapAction);
 
-		if (shouldUseSplitPane()) {
+		if (shouldShowSplitPane()) {
 			showNotesPanel();
 		}
 		mNotesManager = new NotesManager();
@@ -371,18 +370,18 @@ public class NodeNoteRegistration implements HookRegistration,
 		controller.deregisterNodeSelectionListener(mNotesManager);
 		controller.deregisterNodeLifetimeListener(mNotesManager);
 
-		if (noteViewerComponent != null && shouldUseSplitPane()) {
+		if (noteViewerComponent != null && shouldShowSplitPane()) {
 			noteViewerComponent.getActionMap().remove("jumpToMapAction");
 			hideNotesPanel();
 			noteViewerComponent = null;
 		}
 	}
 
-	public void showNotesPanel() {
+	public JSplitPane showNotesPanel() {
 		SouthPanel southPanel = new SouthPanel();
 		southPanel.add(noteViewerComponent, BorderLayout.CENTER);
 		noteViewerComponent.setVisible(true);
-		if ("true".equals(controller.getFrame().getProperty(
+		if ("true".equals(controller.getProperty(
 				FreeMind.RESOURCES_USE_DEFAULT_FONT_FOR_NOTES_TOO))) {
 			// set default font for notes:
 			Font defaultFont = controller.getController().getDefaultFont();
@@ -402,7 +401,7 @@ public class NodeNoteRegistration implements HookRegistration,
 			rule += "font-family: " + defaultFont.getFamily() + ";";
 			rule += "font-size: " + defaultFont.getSize() + "pt;";
 			rule += "}\n";
-			if ("true".equals(controller.getFrame().getProperty(
+			if ("true".equals(controller.getProperty(
 					FreeMind.RESOURCES_USE_MARGIN_TOP_ZERO_FOR_NOTES))) {
 				/*
 				 * this is used for paragraph spacing. I put it here, too, as
@@ -430,6 +429,7 @@ public class NodeNoteRegistration implements HookRegistration,
 		mSplitPane = controller.getFrame().insertComponentIntoSplitPane(
 				southPanel);
 		southPanel.revalidate();
+		return mSplitPane;
 	}
 
 	public void hideNotesPanel() {

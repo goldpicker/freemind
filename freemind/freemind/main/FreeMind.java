@@ -145,7 +145,7 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 
 	public static final String RESOURCES_USE_TABBED_PANE = "use_tabbed_pane";
 
-	public static final String RESOURCES_USE_SPLIT_PANE = "use_split_pane";
+	public static final String RESOURCES_SHOW_SPLIT_PANE = "use_split_pane";
 
 	public static final String RESOURCES_DELETE_NODES_WITHOUT_QUESTION = "delete_nodes_without_question";
 
@@ -257,6 +257,9 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 	private static FileHandler mFileHandler;
 	private static boolean mFileHandlerError = false;
 
+	/**
+	 * The main map's scroll pane.
+	 */
 	private JScrollPane mScrollPane = null;
 
 	private JSplitPane mSplitPane;

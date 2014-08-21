@@ -19,6 +19,7 @@
 
 package accessories.plugins;
 
+import java.awt.EventQueue;
 import java.awt.KeyboardFocusManager;
 
 import javax.swing.JSplitPane;
@@ -43,44 +44,39 @@ public class NodeNote extends MindMapNodeHookAdapter {
 		super.startupMapHook();
 		String foldingType = getResourceString("command");
 		// get registration:
-		NodeNoteRegistration registration = (NodeNoteRegistration) this
-				.getPluginBaseClass();
-		JSplitPane splitPane = null;
+		logger.info("processing command " + foldingType);
 		if (foldingType.equals("jump")) {
 			// jump to the notes:
-			splitPane = getSplitPaneToScreen(registration);
-			int oldSize = splitPane.getDividerLocation();
-			NodeNoteRegistration.sPositionToRecover = new Integer(oldSize);
-			// int maximumDividerLocation =
-			// splitPane.getMaximumDividerLocation();
-			// if (maximumDividerLocation < oldSize) {
-			// openSplitPane(splitPane, maximumDividerLocation);
-			// } else {
-			// NodeNoteRegistration.sPositionToRecover = null;
-			// }
+			getSplitPaneToScreen();
 			KeyboardFocusManager.getCurrentKeyboardFocusManager()
 					.clearGlobalFocusOwner();
 			requestFocusForNotePanel();
 		} else {
+			NodeNoteRegistration registration = getRegistration();
 			// show hidden window:
 			if (registration.getSplitPane() == null) {
 				// the window is currently hidden. show it:
-				splitPane = getSplitPaneToScreen(registration);
-				// openSplitPane(splitPane, maximumDividerLocation);
+				getSplitPaneToScreen();
 				requestFocusForNotePanel();
 			} else {
 				// it is shown, hide it:
-				// int newLoc = splitPane.getHeight() -
-				// splitPane.getDividerSize();
-				// int currentLoc = splitPane.getDividerLocation();
-				// splitPane.setDividerLocation(newLoc);
-				// splitPane.setLastDividerLocation(currentLoc);
 				registration.hideNotesPanel();
-				getMindMapController().getFrame().setProperty(
-						FreeMind.RESOURCES_USE_SPLIT_PANE, "false");
+				setShowSplitPaneProperty(false);
+				KeyboardFocusManager.getCurrentKeyboardFocusManager()
+						.clearGlobalFocusOwner();
+				getMindMapController().obtainFocusForSelected();
 			}
 
 		}
+	}
+
+	/**
+	 * @return
+	 */
+	private NodeNoteRegistration getRegistration() {
+		NodeNoteRegistration registration = (NodeNoteRegistration) this
+				.getPluginBaseClass();
+		return registration;
 	}
 
 	protected void requestFocusForNotePanel() {
@@ -88,28 +84,20 @@ public class NodeNote extends MindMapNodeHookAdapter {
 				.getMostRecentFocusOwner().requestFocus();
 	}
 
-	private JSplitPane getSplitPaneToScreen(NodeNoteRegistration registration) {
+	private JSplitPane getSplitPaneToScreen() {
+		NodeNoteRegistration registration = getRegistration();
 		JSplitPane splitPane;
 		splitPane = registration.getSplitPane();
 		if (splitPane == null) {
-			// no split panes are used.
-			// jump to the notes:
-			registration.showNotesPanel();
-			splitPane = registration.getSplitPane();
-			getMindMapController().getFrame().setProperty(
-					FreeMind.RESOURCES_USE_SPLIT_PANE, "true");
+			// the split pane isn't visible. show it.
+			splitPane = registration.showNotesPanel();
+			setShowSplitPaneProperty(true);
 		}
 		return splitPane;
 	}
-
-	private void openSplitPane(JSplitPane splitPane, int maximumDividerLocation) {
-		int newLoc = splitPane.getLastDividerLocation();
-		int currentLoc = splitPane.getDividerLocation();
-		if (newLoc > maximumDividerLocation) {
-			newLoc = maximumDividerLocation;
-		}
-		splitPane.setDividerLocation(newLoc);
-		splitPane.setLastDividerLocation(currentLoc);
+	
+	private void setShowSplitPaneProperty(boolean pValue){
+		getMindMapController().setProperty(
+				FreeMind.RESOURCES_SHOW_SPLIT_PANE, pValue?"true":"false");		
 	}
-
 }
