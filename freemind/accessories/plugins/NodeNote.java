@@ -48,22 +48,16 @@ public class NodeNote extends MindMapNodeHookAdapter {
 		if (foldingType.equals("jump")) {
 			// jump to the notes:
 			getSplitPaneToScreen();
-			KeyboardFocusManager.getCurrentKeyboardFocusManager()
-					.clearGlobalFocusOwner();
-			requestFocusForNotePanel();
 		} else {
 			NodeNoteRegistration registration = getRegistration();
 			// show hidden window:
 			if (registration.getSplitPane() == null) {
 				// the window is currently hidden. show it:
 				getSplitPaneToScreen();
-				requestFocusForNotePanel();
 			} else {
 				// it is shown, hide it:
 				registration.hideNotesPanel();
 				setShowSplitPaneProperty(false);
-				KeyboardFocusManager.getCurrentKeyboardFocusManager()
-						.clearGlobalFocusOwner();
 				getMindMapController().obtainFocusForSelected();
 			}
 
@@ -79,12 +73,7 @@ public class NodeNote extends MindMapNodeHookAdapter {
 		return registration;
 	}
 
-	protected void requestFocusForNotePanel() {
-		NodeNoteRegistration.getHtmlEditorPanel()
-				.getMostRecentFocusOwner().requestFocus();
-	}
-
-	private JSplitPane getSplitPaneToScreen() {
+	private void getSplitPaneToScreen() {
 		NodeNoteRegistration registration = getRegistration();
 		JSplitPane splitPane;
 		splitPane = registration.getSplitPane();
@@ -93,11 +82,14 @@ public class NodeNote extends MindMapNodeHookAdapter {
 			splitPane = registration.showNotesPanel();
 			setShowSplitPaneProperty(true);
 		}
-		return splitPane;
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+				.clearGlobalFocusOwner();
+		NodeNoteRegistration.getHtmlEditorPanel().getMostRecentFocusOwner()
+				.requestFocus();
 	}
-	
-	private void setShowSplitPaneProperty(boolean pValue){
-		getMindMapController().setProperty(
-				FreeMind.RESOURCES_SHOW_SPLIT_PANE, pValue?"true":"false");		
+
+	private void setShowSplitPaneProperty(boolean pValue) {
+		getMindMapController().setProperty(FreeMind.RESOURCES_SHOW_SPLIT_PANE,
+				pValue ? "true" : "false");
 	}
 }

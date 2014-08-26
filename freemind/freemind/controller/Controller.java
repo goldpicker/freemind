@@ -76,6 +76,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
@@ -199,6 +200,7 @@ public class Controller implements MapModuleChangeObserver {
 	private Vector mTabbedPaneMapModules;
 	private JTabbedPane mTabbedPane;
 	private boolean mTabbedPaneSelectionUpdate = true;
+	private Map<SplitComponentType,JComponent> mSouthComponents = new HashMap<Controller.SplitComponentType, JComponent>();
 
 	//
 	// Constructors
@@ -798,6 +800,8 @@ public class Controller implements MapModuleChangeObserver {
 	}
 
 	public void obtainFocusForSelected() {
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+				.clearGlobalFocusOwner();
 		// logger.finest("obtainFocusForSelected");
 		if (getView() != null) { // is null if the last map was closed.
 			logger.fine("Requesting Focus for " + getView() + " in model "
@@ -1934,5 +1938,35 @@ public class Controller implements MapModuleChangeObserver {
 		setProperty(PAGE_FORMAT_PROPERTY,
 				Tools.getPageFormatAsString(pageFormat.getPaper()));
 	}
+
+	public enum SplitComponentType {
+		NOTE_PANEL,
+		ATTRIBUTE_PANEL
+	};
+	
+	/**
+	 * Inserts a (south) component into the split pane. If the screen isn't
+	 * split yet, a split pane should be created on the fly.
+	 * 
+	 * @param pMindMapComponent
+	 *            south panel to be inserted
+	 * @return the split pane in order to move the dividers.
+	 */
+	public JSplitPane insertComponentIntoSplitPane(JComponent pMindMapComponent, SplitComponentType pSplitComponentType) {
+		// TODO: decide whether or not an additional split pane (horizontally) is needed. If yes, create and add, add directly otherwise.
+		mSouthComponents .put(pSplitComponentType, pMindMapComponent);
+		if(mSouthComponents.size() > 1 ) {
+			// split pane is needed.
+		}
+		return getFrame().insertComponentIntoSplitPane(pMindMapComponent);
+	}
+
+	/**
+	 * Indicates that the south panel should be made invisible.
+	 */
+	public void removeSplitPane(SplitComponentType pSplitComponentType) {
+		getFrame().removeSplitPane();
+	}
+
 
 }

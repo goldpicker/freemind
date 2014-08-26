@@ -49,6 +49,8 @@ import com.inet.jortho.SpellChecker;
 import com.lightdev.app.shtm.SHTMLPanel;
 import com.lightdev.app.shtm.TextResources;
 
+import freemind.controller.Controller;
+import freemind.controller.Controller.SplitComponentType;
 import freemind.controller.MenuItemSelectedListener;
 import freemind.extensions.HookRegistration;
 import freemind.main.FreeMind;
@@ -155,19 +157,14 @@ public class NodeNoteRegistration implements HookRegistration,
 		}
 
 		public void onLostFocusNode(NodeView node) {
-			// logger.info("onDeselectHook for node " + node +
-			// " and noteViewerComponent=" + noteViewerComponent);
 			getDocument().removeDocumentListener(
 					mNoteDocumentListener);
 			// store its content:
 			onSaveNode(node.getModel());
 			this.node = null;
-			// getHtmlEditorPanel().setCurrentDocumentContent("Note", "");
 		}
 
 		public void onFocusNode(NodeView nodeView) {
-			// logger.info("onSelectHook for node " + node +
-			// " and noteViewerComponent=" + noteViewerComponent);
 			this.node = nodeView.getModel();
 			final HTMLDocument document = getDocument();
 			// remove listener to avoid unnecessary dirty events.
@@ -183,7 +180,6 @@ public class NodeNoteRegistration implements HookRegistration,
 			} catch (Exception e) {
 			}
 
-			// logger.info("onReceiveFocuse for node " + node.toString());
 			String note = node.getNoteText();
 			if (note != null) {
 				noteViewerComponent.setCurrentDocumentContent(note);
@@ -217,11 +213,7 @@ public class NodeNoteRegistration implements HookRegistration,
 							.equals(NodeNote.EMPTY_EDITOR_STRING_ALTERNATIVE)
 					|| documentText
 							.equals(NodeNote.EMPTY_EDITOR_STRING_ALTERNATIVE2);
-			// String noteText = node.getNoteText();
-			// logger.info("Old doc =\n'" +
-			// ((noteText==null)?noteText:noteText.replaceAll("\n", "\\\\n")) +
-			// "', Current document: \n'" + documentText.replaceAll("\n",
-			// "\\\\n") + "', empty="+editorContentEmpty);
+
 			if (noteViewerComponent.needsSaving()) {
 				if (editorContentEmpty) {
 					controller.setNoteText(node, (String) null);
@@ -266,9 +258,6 @@ public class NodeNoteRegistration implements HookRegistration,
 		public void onPostDeleteNode(MindMapNode pNode, MindMapNode pParent) {
 		}
 
-		/* (non-Javadoc)
-		 * @see freemind.modes.ModeController.NodeSelectionListener#onSelectionChange(freemind.modes.MindMapNode, boolean)
-		 */
 		public void onSelectionChange(NodeView pNode, boolean pIsSelected) {
 		}
 	}
@@ -426,8 +415,8 @@ public class NodeNoteRegistration implements HookRegistration,
 				}
 			}
 		});
-		mSplitPane = controller.getFrame().insertComponentIntoSplitPane(
-				southPanel);
+		mSplitPane = controller.getController().insertComponentIntoSplitPane(
+				southPanel, SplitComponentType.NOTE_PANEL);
 		southPanel.revalidate();
 		return mSplitPane;
 	}
@@ -435,7 +424,7 @@ public class NodeNoteRegistration implements HookRegistration,
 	public void hideNotesPanel() {
 		// shut down the display:
 		noteViewerComponent.setVisible(false);
-		controller.getFrame().removeSplitPane();
+		controller.getController().removeSplitPane(SplitComponentType.NOTE_PANEL);
 		mSplitPane = null;
 	}
 

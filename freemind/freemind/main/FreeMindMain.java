@@ -234,9 +234,8 @@ public interface FreeMindMain {
 	/**
 	 * Inserts a (south) component into the split pane. If the screen isn't
 	 * split yet, a split pane should be created on the fly.
+	 * @param pMindMapComponent 
 	 * 
-	 * @param pMindMapComponent
-	 *            south panel to be inserted
 	 * @return the split pane in order to move the dividers.
 	 */
 	public JSplitPane insertComponentIntoSplitPane(JComponent pMindMapComponent);

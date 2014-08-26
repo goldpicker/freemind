@@ -27,6 +27,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
+import freemind.controller.Controller.SplitComponentType;
 import freemind.modes.ControllerAdapter;
 import freemind.modes.MindMapNode;
 import freemind.modes.ModeController.NodeSelectionListener;
@@ -64,15 +65,15 @@ public class NodeNoteViewer extends NodeNoteBase implements
 	}
 
 	public void onLostFocusNode(NodeView pNode) {
-		mBrowseController.getFrame().removeSplitPane();
+		mBrowseController.getController().removeSplitPane(SplitComponentType.NOTE_PANEL);
 	}
 
 	public void onFocusNode(NodeView pNode) {
 		String noteText = pNode.getModel().getNoteText();
 		if (noteText != null && !noteText.equals("")) {
 			// logger.info("Panel added");
-			mBrowseController.getFrame().insertComponentIntoSplitPane(
-					getNoteViewerComponent(noteText));
+			mBrowseController.getController().insertComponentIntoSplitPane(
+					getNoteViewerComponent(noteText), SplitComponentType.NOTE_PANEL);
 			noteViewer.setText(noteText != null ? noteText : "");
 		}
 	}

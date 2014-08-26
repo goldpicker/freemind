@@ -209,7 +209,7 @@ public class FreeMindMainMock implements FreeMindMain {
 
 	}
 
-	public JSplitPane insertComponentIntoSplitPane(JComponent pMindMapComponent) {
+	public JSplitPane insertComponentIntoSplitPane(JComponent pParameter) {
 		// TODO Auto-generated method stub
 		return null;
 	}
