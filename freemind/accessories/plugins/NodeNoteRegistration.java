@@ -280,7 +280,7 @@ public class NodeNoteRegistration implements HookRegistration,
 
 	private NoteDocumentListener mNoteDocumentListener;
 
-	private JSplitPane mSplitPane = null;
+	private boolean mSplitPaneVisible = false;
 
 	public NodeNoteRegistration(ModeController controller, MindMap map) {
 		this.controller = (MindMapController) controller;
@@ -366,7 +366,7 @@ public class NodeNoteRegistration implements HookRegistration,
 		}
 	}
 
-	public JSplitPane showNotesPanel() {
+	public void showNotesPanel() {
 		SouthPanel southPanel = new SouthPanel();
 		southPanel.add(noteViewerComponent, BorderLayout.CENTER);
 		noteViewerComponent.setVisible(true);
@@ -415,17 +415,17 @@ public class NodeNoteRegistration implements HookRegistration,
 				}
 			}
 		});
-		mSplitPane = controller.getController().insertComponentIntoSplitPane(
+		controller.getController().insertComponentIntoSplitPane(
 				southPanel, SplitComponentType.NOTE_PANEL);
+		mSplitPaneVisible  = true;
 		southPanel.revalidate();
-		return mSplitPane;
 	}
 
 	public void hideNotesPanel() {
 		// shut down the display:
 		noteViewerComponent.setVisible(false);
 		controller.getController().removeSplitPane(SplitComponentType.NOTE_PANEL);
-		mSplitPane = null;
+		mSplitPaneVisible = false;
 	}
 
 	private MindMapController getMindMapController() {
@@ -451,12 +451,12 @@ public class NodeNoteRegistration implements HookRegistration,
 		return htmlEditorPanel;
 	}
 
-	public JSplitPane getSplitPane() {
-		return mSplitPane;
+	public boolean getSplitPaneVisible() {
+		return mSplitPaneVisible;
 	}
 
 	public boolean isSelected(JMenuItem pCheckItem, Action pAction) {
-		return getSplitPane() != null;
+		return getSplitPaneVisible();
 	}
 
 	private String getDocumentText() {

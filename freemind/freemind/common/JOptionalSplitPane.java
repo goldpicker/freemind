@@ -54,6 +54,10 @@ public class JOptionalSplitPane extends JPanel {
 	public JOptionalSplitPane() {
 		setLayout(new BorderLayout());
 	}
+	
+	public int getAmountOfComponents() {
+		return mComponentHash.size();
+	}
 
 	public void setComponent(JComponent pComponent, int index) {
 		checkIndex(index);

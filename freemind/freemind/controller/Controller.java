@@ -24,13 +24,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
-import java.awt.RenderingHints;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -86,6 +84,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import freemind.common.BooleanProperty;
+import freemind.common.JOptionalSplitPane;
 import freemind.controller.MapModuleManager.MapModuleChangeObserver;
 import freemind.controller.actions.generated.instance.MindmapLastStateStorage;
 import freemind.controller.filter.FilterController;
@@ -1940,9 +1939,22 @@ public class Controller implements MapModuleChangeObserver {
 	}
 
 	public enum SplitComponentType {
-		NOTE_PANEL,
-		ATTRIBUTE_PANEL
+		NOTE_PANEL(0),
+		ATTRIBUTE_PANEL(1);
+		
+		private int mIndex;
+
+		private SplitComponentType(int index) {
+			mIndex = index;
+		}
+		
+		public int getIndex() {
+			return mIndex;
+		}
+		
 	};
+
+	private JOptionalSplitPane mOptionalSplitPane = null;
 	
 	/**
 	 * Inserts a (south) component into the split pane. If the screen isn't
@@ -1952,20 +1964,25 @@ public class Controller implements MapModuleChangeObserver {
 	 *            south panel to be inserted
 	 * @return the split pane in order to move the dividers.
 	 */
-	public JSplitPane insertComponentIntoSplitPane(JComponent pMindMapComponent, SplitComponentType pSplitComponentType) {
-		// TODO: decide whether or not an additional split pane (horizontally) is needed. If yes, create and add, add directly otherwise.
-		mSouthComponents .put(pSplitComponentType, pMindMapComponent);
-		if(mSouthComponents.size() > 1 ) {
-			// split pane is needed.
+	public void insertComponentIntoSplitPane(JComponent pMindMapComponent, SplitComponentType pSplitComponentType) {
+		if(mOptionalSplitPane == null) {
+			mOptionalSplitPane = new JOptionalSplitPane();
+			getFrame().insertComponentIntoSplitPane(mOptionalSplitPane);
 		}
-		return getFrame().insertComponentIntoSplitPane(pMindMapComponent);
+		mOptionalSplitPane.setComponent(pMindMapComponent, pSplitComponentType.getIndex());
 	}
 
 	/**
 	 * Indicates that the south panel should be made invisible.
 	 */
 	public void removeSplitPane(SplitComponentType pSplitComponentType) {
-		getFrame().removeSplitPane();
+		if(mOptionalSplitPane != null) {
+			mOptionalSplitPane.removeComponent(pSplitComponentType.getIndex());
+			if(mOptionalSplitPane.getAmountOfComponents() == 0) {
+				getFrame().removeSplitPane();
+				mOptionalSplitPane = null;
+			}
+		}
 	}
 
 

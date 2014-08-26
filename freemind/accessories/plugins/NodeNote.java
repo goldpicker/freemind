@@ -51,7 +51,7 @@ public class NodeNote extends MindMapNodeHookAdapter {
 		} else {
 			NodeNoteRegistration registration = getRegistration();
 			// show hidden window:
-			if (registration.getSplitPane() == null) {
+			if (!registration.getSplitPaneVisible()) {
 				// the window is currently hidden. show it:
 				getSplitPaneToScreen();
 			} else {
@@ -75,11 +75,9 @@ public class NodeNote extends MindMapNodeHookAdapter {
 
 	private void getSplitPaneToScreen() {
 		NodeNoteRegistration registration = getRegistration();
-		JSplitPane splitPane;
-		splitPane = registration.getSplitPane();
-		if (splitPane == null) {
+		if (!registration.getSplitPaneVisible()) {
 			// the split pane isn't visible. show it.
-			splitPane = registration.showNotesPanel();
+			registration.showNotesPanel();
 			setShowSplitPaneProperty(true);
 		}
 		KeyboardFocusManager.getCurrentKeyboardFocusManager()
