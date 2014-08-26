@@ -22,8 +22,12 @@ package freemind.common;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import java.util.HashMap;
 
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -122,8 +126,11 @@ public class JOptionalSplitPane extends JPanel {
 		mComponentHash.remove(index);
 		switch(mComponentHash.size()) {
 		case 0:
-			remove(mBasicComponent);
-			mBasicComponent = null;
+			if (mBasicComponent != null) {
+				remove(mBasicComponent);
+			}
+			mBasicComponent = new JLabel();
+			add(mBasicComponent);
 			revalidate();
 			break;
 		case 1:
@@ -148,9 +155,9 @@ public class JOptionalSplitPane extends JPanel {
 		Resources.createInstance(new FreeMindMainMock());
 		final JFrame frame = new JFrame("JOptionalSplitPane");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		JOptionalSplitPane panel = new JOptionalSplitPane();
+		final JOptionalSplitPane panel = new JOptionalSplitPane();
 		Container contentPane = frame.getContentPane();
-		contentPane.add(new JScrollPane(panel));
+		contentPane.setLayout(new GridLayout(5, 1));
 		frame.pack();
 		frame.setSize(800, 400);
 //		// focus fix after startup.
@@ -161,8 +168,36 @@ public class JOptionalSplitPane extends JPanel {
 //				jcalendar.getDayChooser().getSelectedDay().requestFocus();
 //			}
 //		});
-		panel.setComponent(new JLabel("rechts"),1);
-		panel.setComponent(new JLabel("links"),0);
+		contentPane.add(new JButton(new AbstractAction("Add 0") {
+			private int index = 0;
+			@Override
+			public void actionPerformed(ActionEvent pE) {
+				panel.setComponent(new JLabel("links " + index++),0);
+				
+			}}));
+		contentPane.add(new JButton(new AbstractAction("Add 1") {
+			private int index = 0;
+			
+			@Override
+			public void actionPerformed(ActionEvent pE) {
+				panel.setComponent(new JLabel("rechts " + index++),1);
+				
+			}}));
+		contentPane.add(new JButton(new AbstractAction("Remove 0") {
+			
+			@Override
+			public void actionPerformed(ActionEvent pE) {
+				panel.removeComponent(0);
+				
+			}}));
+		contentPane.add(new JButton(new AbstractAction("Remove 1") {
+			
+			@Override
+			public void actionPerformed(ActionEvent pE) {
+				panel.removeComponent(1);
+				
+			}}));
+		contentPane.add(panel);
 		frame.setVisible(true);
 
 	}
