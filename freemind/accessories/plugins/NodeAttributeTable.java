@@ -28,14 +28,7 @@ import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
  * @author foltin
  * 
  */
-public class NodeNote extends MindMapNodeHookAdapter {
-
-	public final static String NODE_NOTE_PLUGIN = "accessories/plugins/NodeNote.properties";
-
-	public final static String EMPTY_EDITOR_STRING = "<html>\n  <head>\n\n  </head>\n  <body>\n    <p>\n      \n    </p>\n  </body>\n</html>\n";
-
-	public final static String EMPTY_EDITOR_STRING_ALTERNATIVE = "<html>\n  <head>\n    \n  </head>\n  <body>\n    <p>\n      \n    </p>\n  </body>\n</html>\n";
-	public final static String EMPTY_EDITOR_STRING_ALTERNATIVE2 = "<html>\n  <head>\n    \n    \n  </head>\n  <body>\n    <p>\n      \n    </p>\n  </body>\n</html>\n";
+public class NodeAttributeTable extends MindMapNodeHookAdapter {
 
 	public void startupMapHook() {
 		super.startupMapHook();
@@ -46,45 +39,43 @@ public class NodeNote extends MindMapNodeHookAdapter {
 			// jump to the notes:
 			getSplitPaneToScreen();
 		} else {
-			NodeNoteRegistration registration = getRegistration();
+			NodeAttributeTableRegistration registration = getRegistration();
 			// show hidden window:
 			if (!registration.getSplitPaneVisible()) {
 				// the window is currently hidden. show it:
 				getSplitPaneToScreen();
 			} else {
 				// it is shown, hide it:
-				registration.hideNotesPanel();
+				registration.hideAttributeTablePanel();
 				setShowSplitPaneProperty(false);
 				getMindMapController().obtainFocusForSelected();
 			}
-
 		}
 	}
 
 	/**
 	 * @return
 	 */
-	private NodeNoteRegistration getRegistration() {
-		NodeNoteRegistration registration = (NodeNoteRegistration) this
+	private NodeAttributeTableRegistration getRegistration() {
+		NodeAttributeTableRegistration registration = (NodeAttributeTableRegistration) this
 				.getPluginBaseClass();
 		return registration;
 	}
 
 	private void getSplitPaneToScreen() {
-		NodeNoteRegistration registration = getRegistration();
+		NodeAttributeTableRegistration registration = getRegistration();
 		if (!registration.getSplitPaneVisible()) {
 			// the split pane isn't visible. show it.
-			registration.showNotesPanel();
+			registration.showAttributeTablePanel();
 			setShowSplitPaneProperty(true);
 		}
 		KeyboardFocusManager.getCurrentKeyboardFocusManager()
 				.clearGlobalFocusOwner();
-		NodeNoteRegistration.getHtmlEditorPanel().getMostRecentFocusOwner()
-				.requestFocus();
+		// focus table.
 	}
 
 	private void setShowSplitPaneProperty(boolean pValue) {
-		getMindMapController().setProperty(FreeMind.RESOURCES_SHOW_NOTE_PANE,
+		getMindMapController().setProperty(FreeMind.RESOURCES_SHOW_ATTRIBUTE_PANE,
 				pValue ? "true" : "false");
 	}
 }

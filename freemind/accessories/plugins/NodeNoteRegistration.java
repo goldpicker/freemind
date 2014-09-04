@@ -39,7 +39,6 @@ import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -49,7 +48,6 @@ import com.inet.jortho.SpellChecker;
 import com.lightdev.app.shtm.SHTMLPanel;
 import com.lightdev.app.shtm.TextResources;
 
-import freemind.controller.Controller;
 import freemind.controller.Controller.SplitComponentType;
 import freemind.controller.MenuItemSelectedListener;
 import freemind.extensions.HookRegistration;
@@ -317,7 +315,7 @@ public class NodeNoteRegistration implements HookRegistration,
 	 */
 	public boolean shouldShowSplitPane() {
 		return "true".equals(controller.getProperty(
-				FreeMind.RESOURCES_SHOW_SPLIT_PANE));
+				FreeMind.RESOURCES_SHOW_NOTE_PANE));
 	}
 
 	class JumpToMapAction extends AbstractAction {

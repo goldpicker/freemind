@@ -145,7 +145,9 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 
 	public static final String RESOURCES_USE_TABBED_PANE = "use_tabbed_pane";
 
-	public static final String RESOURCES_SHOW_SPLIT_PANE = "use_split_pane";
+	public static final String RESOURCES_SHOW_NOTE_PANE = "use_split_pane";
+	
+	public static final String RESOURCES_SHOW_ATTRIBUTE_PANE = "show_attribute_pane";
 
 	public static final String RESOURCES_DELETE_NODES_WITHOUT_QUESTION = "delete_nodes_without_question";
 
