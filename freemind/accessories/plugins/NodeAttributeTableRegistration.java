@@ -23,6 +23,7 @@
 
 package accessories.plugins;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.util.Iterator;
 import java.util.Vector;
@@ -213,12 +214,36 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 			return null;
 		}
 
+		/* (non-Javadoc)
+		 * @see javax.swing.table.AbstractTableModel#isCellEditable(int, int)
+		 */
+		@Override
+		public boolean isCellEditable(int pRowIndex, int pColumnIndex) {
+			return true;
+		}
+		
 		/**
 		 * 
 		 */
 		public void clear() {
 			mData.clear();
 			fireTableDataChanged();
+		}
+		
+		/* (non-Javadoc)
+		 * @see javax.swing.table.AbstractTableModel#setValueAt(java.lang.Object, int, int)
+		 */
+		@Override
+		public void setValueAt(Object pAValue, int pRowIndex, int pColumnIndex) {
+			AttributeHolder holder = getAttributeHolder(pRowIndex);
+			switch(pColumnIndex) {
+			case KEY_COLUMN:
+				holder.mKey = (String) pAValue;
+				break;
+			case VALUE_COLUMN:
+				holder.mValue = (String) pAValue;
+				break;
+			}
 		}
 
 	}
@@ -265,6 +290,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 
 	public void register() {
 		mAttributeViewerComponent = new JPanel();
+		mAttributeViewerComponent.setLayout(new BorderLayout());
 		mAttributeTable = new JTable();
 		mAttributeTable
 				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -278,7 +304,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 		// Sort by default by date.
 		mAttributeTableSorter.setSortingStatus(KEY_COLUMN,
 				TableSorter.ASCENDING);
-		mAttributeViewerComponent.add(new JScrollPane(mAttributeTable));
+		mAttributeViewerComponent.add(new JScrollPane(mAttributeTable), BorderLayout.CENTER);
 		// register "leave note" action:
 		if (shouldShowSplitPane()) {
 			showAttributeTablePanel();
