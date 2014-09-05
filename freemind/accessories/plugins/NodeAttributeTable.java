@@ -30,6 +30,9 @@ import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
  */
 public class NodeAttributeTable extends MindMapNodeHookAdapter {
 
+	
+	
+	
 	public void startupMapHook() {
 		super.startupMapHook();
 		String foldingType = getResourceString("command");

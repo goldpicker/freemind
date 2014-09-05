@@ -24,6 +24,7 @@
 package accessories.plugins;
 
 import java.awt.event.ActionEvent;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -43,17 +44,66 @@ import freemind.extensions.HookRegistration;
 import freemind.main.FreeMind;
 import freemind.main.Resources;
 import freemind.modes.MindMap;
+import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
+import freemind.modes.ModeController.NodeLifetimeListener;
+import freemind.modes.ModeController.NodeSelectionListener;
+import freemind.modes.attributes.Attribute;
 import freemind.modes.mindmapmode.MindMapController;
+import freemind.view.mindmapview.NodeView;
 
-public class NodeAttributeTableRegistration implements HookRegistration, 
+public class NodeAttributeTableRegistration implements HookRegistration,
 		MenuItemSelectedListener {
+	private final class AttributeManager implements NodeSelectionListener,
+			NodeLifetimeListener {
+
+		@Override
+		public void onCreateNodeHook(MindMapNode pNode) {
+		}
+
+		@Override
+		public void onPreDeleteNode(MindMapNode pNode) {
+		}
+
+		@Override
+		public void onPostDeleteNode(MindMapNode pNode, MindMapNode pParent) {
+		}
+
+		@Override
+		public void onUpdateNodeHook(MindMapNode pNode) {
+		}
+
+		@Override
+		public void onFocusNode(NodeView pNode) {
+			mAttributeTableModel.clear();
+			MindMapNode node = pNode.getModel();
+			for (int position = 0; position < node.getAttributeTableLength(); position++) {
+				Attribute attribute = node.getAttribute(position);
+				mAttributeTableModel.addAttributeHolder(attribute);
+			}
+		}
+
+		@Override
+		public void onLostFocusNode(NodeView pNode) {
+			// store its content:
+			onSaveNode(pNode.getModel());
+		}
+
+		@Override
+		public void onSaveNode(MindMapNode pNode) {
+		}
+
+		@Override
+		public void onSelectionChange(NodeView pNode, boolean pIsSelected) {
+		}
+
+	}
 
 	public final class AttributeHolder {
 		public String mKey;
 		public String mValue;
 	}
-	
+
 	private static final int KEY_COLUMN = 0;
 
 	public static final int VALUE_COLUMN = 1;
@@ -66,12 +116,12 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 	 * @author foltin
 	 * @date 4.09.2014
 	 */
-	public final class AttributeTableModel extends AbstractTableModel  {
+	public final class AttributeTableModel extends AbstractTableModel {
 		/**
 		 * 
 		 */
-		private final String[] COLUMNS = new String[] {
-				KEY_COLUMN_TEXT, VALUE_COLUMN_TEXT };
+		private final String[] COLUMNS = new String[] { KEY_COLUMN_TEXT,
+				VALUE_COLUMN_TEXT };
 		Vector<AttributeHolder> mData = new Vector<AttributeHolder>();
 		private final TextTranslator mTextTranslator;
 
@@ -85,12 +135,22 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 		/**
 		 * @param pAttribute
 		 */
+		public void addAttributeHolder(Attribute pAttribute) {
+			AttributeHolder holder = new AttributeHolder();
+			holder.mKey = pAttribute.getName();
+			holder.mValue = pAttribute.getValue();
+			addAttributeHolder(holder);
+		}
+
+		/**
+		 * @param pAttribute
+		 */
 		public void addAttributeHolder(AttributeHolder pAttribute) {
 			mData.add(pAttribute);
 			final int row = mData.size() - 1;
 			fireTableRowsInserted(row, row);
 		}
-		
+
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -162,13 +222,13 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 		}
 
 	}
-	
+
 	private final MindMapController controller;
 
 	private final java.util.logging.Logger logger;
 
 	private boolean mSplitPaneVisible = false;
-	
+
 	private JPanel mAttributeViewerComponent = null;
 
 	private JTable mAttributeTable;
@@ -177,19 +237,21 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 
 	private TableSorter mAttributeTableSorter;
 
+	private AttributeManager mAttributeManager;
+
 	public NodeAttributeTableRegistration(ModeController controller, MindMap map) {
 		this.controller = (MindMapController) controller;
 		logger = Resources.getInstance().getLogger(this.getClass().getName());
 	}
 
 	/**
-	 * @return true, if the split pane is to be shown. 
-	 * E.g. when freemind was closed before, the state of the split pane was stored and
-	 * is restored at the next start.
+	 * @return true, if the split pane is to be shown. E.g. when freemind was
+	 *         closed before, the state of the split pane was stored and is
+	 *         restored at the next start.
 	 */
 	public boolean shouldShowSplitPane() {
-		return "true".equals(controller.getProperty(
-				FreeMind.RESOURCES_SHOW_ATTRIBUTE_PANE));
+		return "true".equals(controller
+				.getProperty(FreeMind.RESOURCES_SHOW_ATTRIBUTE_PANE));
 	}
 
 	class JumpToMapAction extends AbstractAction {
@@ -204,7 +266,8 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 	public void register() {
 		mAttributeViewerComponent = new JPanel();
 		mAttributeTable = new JTable();
-		mAttributeTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		mAttributeTable
+				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		mAttributeTable.getTableHeader().setReorderingAllowed(false);
 		mAttributeTableModel = new AttributeTableModel(controller);
 		mAttributeTableSorter = new TableSorter(mAttributeTableModel);
@@ -220,9 +283,14 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 		if (shouldShowSplitPane()) {
 			showAttributeTablePanel();
 		}
+		mAttributeManager = new AttributeManager();
+		controller.registerNodeSelectionListener(mAttributeManager, false);
+		controller.registerNodeLifetimeListener(mAttributeManager, true);
 	}
 
 	public void deRegister() {
+		controller.deregisterNodeSelectionListener(mAttributeManager);
+		controller.deregisterNodeLifetimeListener(mAttributeManager);
 		if (mAttributeViewerComponent != null && shouldShowSplitPane()) {
 			hideAttributeTablePanel();
 			mAttributeViewerComponent = null;
@@ -233,13 +301,14 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 		mAttributeViewerComponent.setVisible(true);
 		controller.getController().insertComponentIntoSplitPane(
 				mAttributeViewerComponent, SplitComponentType.ATTRIBUTE_PANEL);
-		mSplitPaneVisible  = true;
+		mSplitPaneVisible = true;
 	}
 
 	public void hideAttributeTablePanel() {
 		// shut down the display:
 		mAttributeViewerComponent.setVisible(false);
-		controller.getController().removeSplitPane(SplitComponentType.ATTRIBUTE_PANEL);
+		controller.getController().removeSplitPane(
+				SplitComponentType.ATTRIBUTE_PANEL);
 		mSplitPaneVisible = false;
 	}
 

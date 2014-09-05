@@ -5,7 +5,7 @@
 	</plugin_registration>
 	<plugin_action documentation="%accessories/plugins/NodeAttributeTable_jumpto.properties_documentation" 
 		name="%accessories/plugins/NodeAttributeTable_jumpto.properties_name" 
-		key_stroke="%keystroke_accessories/plugins/NodeAttributeTable_jumpto.keystroke.alt_N" 
+		key_stroke="%keystroke_edit_attributes" 
 		base="freemind.extensions.NodeHookAdapter" 
 		label="accessories/plugins/NodeAttributeTable_jumpto.properties" 
 		class_name="accessories.plugins.NodeAttributeTable" 
