@@ -44,6 +44,7 @@ import freemind.controller.MenuItemSelectedListener;
 import freemind.extensions.HookRegistration;
 import freemind.main.FreeMind;
 import freemind.main.Resources;
+import freemind.main.Tools;
 import freemind.modes.MindMap;
 import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
@@ -58,6 +59,8 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 	private final class AttributeManager implements NodeSelectionListener,
 			NodeLifetimeListener {
 
+		private boolean mDontUpdateModel = false;
+		
 		@Override
 		public void onCreateNodeHook(MindMapNode pNode) {
 		}
@@ -72,12 +75,27 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 
 		@Override
 		public void onUpdateNodeHook(MindMapNode pNode) {
+			if(mDontUpdateModel) {
+				return;
+			}
+			if (pNode == controller.getSelected()) {
+				if(!areModelAndNodeAttributesEqual(pNode)) {
+					setModelFromNode(pNode);
+				}
+			}
 		}
 
 		@Override
 		public void onFocusNode(NodeView pNode) {
-			mAttributeTableModel.clear();
 			MindMapNode node = pNode.getModel();
+			setModelFromNode(node);
+		}
+
+		/**
+		 * @param node
+		 */
+		private void setModelFromNode(MindMapNode node) {
+			mAttributeTableModel.clear();
 			for (int position = 0; position < node.getAttributeTableLength(); position++) {
 				Attribute attribute = node.getAttribute(position);
 				mAttributeTableModel.addAttributeHolder(attribute);
@@ -92,6 +110,49 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 
 		@Override
 		public void onSaveNode(MindMapNode pNode) {
+			try {
+				mDontUpdateModel = true;
+				// first check for changes:
+				if(areModelAndNodeAttributesEqual(pNode)) {
+					return;
+				}
+				// delete all attributes
+				while(pNode.getAttributeTableLength()>0) {
+					controller.removeAttribute(pNode, 0);
+				}
+				// write it from new.
+				for (Iterator it = mAttributeTableModel.mData.iterator(); it.hasNext();) {
+					AttributeHolder holder = (AttributeHolder) it.next();
+					// add at end
+					controller.addAttribute(pNode, new Attribute(holder.mKey, holder.mValue));
+				}
+			} finally {
+				mDontUpdateModel = false;
+			}
+		}
+
+		/**
+		 * @param pNode
+		 * @return
+		 */
+		private boolean areModelAndNodeAttributesEqual(MindMapNode pNode) {
+			boolean equal = false;
+			if(pNode.getAttributeTableLength() == mAttributeTableModel.mData.size()) {
+				int index = 0;
+				equal = true;
+				for (Iterator it = mAttributeTableModel.mData.iterator(); it.hasNext();) {
+					AttributeHolder holder = (AttributeHolder) it.next();
+					Attribute attribute = pNode.getAttribute(index);
+					if(Tools.safeEquals(holder.mKey, attribute.getName()) && Tools.safeEquals(holder.mValue, attribute.getValue())) {
+						// ok
+					} else {
+						equal = false;
+						break;
+					}
+					index++;
+				}
+			}
+			return equal;
 		}
 
 		@Override
