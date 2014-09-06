@@ -28,6 +28,7 @@ package accessories.plugins.util.xslt;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -47,27 +48,31 @@ public class XmlExporter {
 	}
 
 	public void transForm(File xmlFile, File xsltFile, File resultFile) throws FileNotFoundException {
-		// System.out.println("set source");
-		Source xmlSource = new StreamSource(xmlFile);
-		// System.out.println("set xsl");
-		Source xsltSource = new StreamSource(xsltFile);
-		// System.out.println("set result");
-		Result result = new StreamResult(new FileOutputStream(resultFile));
+	    Source xmlSource = new StreamSource(xmlFile);
+	    // System.out.println("set xsl");
+	    Source xsltSource = new StreamSource(xsltFile);
+	    // System.out.println("set result");
+	    FileOutputStream resultOutputStream = new FileOutputStream(resultFile);
+	    Result result = new StreamResult(resultOutputStream);
 
-		// create an instance of TransformerFactory
-		try {
-			// System.out.println("make transform instance");
-			TransformerFactory transFact = TransformerFactory.newInstance();
+	    // create an instance of TransformerFactory
+	    try {
+	        // System.out.println("make transform instance");
+	        TransformerFactory transFact = TransformerFactory.newInstance();
 
-			Transformer trans = transFact.newTransformer(xsltSource);
+	        Transformer trans = transFact.newTransformer(xsltSource);
 
-			trans.transform(xmlSource, result);
-		} catch (Exception e) {
-			// System.err.println("error applying the xslt file "+e);
-			freemind.main.Resources.getInstance().logException(e);
-		}
-		;
-		return;
+	        trans.transform(xmlSource, result);
+	    } catch (Exception e) {
+	        // System.err.println("error applying the xslt file "+e);
+	        freemind.main.Resources.getInstance().logException(e);
+	    } finally {
+	        try {
+	            resultOutputStream.close();
+	        } catch (IOException e) {
+	            freemind.main.Resources.getInstance().logException(e);
+	        }
+	    }
 	}
 
 }
