@@ -25,6 +25,7 @@ package accessories.plugins;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
+import java.util.EventListener;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -35,6 +36,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
 import accessories.plugins.time.TableSorter;
@@ -174,6 +177,191 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 
 	private static final String VALUE_COLUMN_TEXT = "plugins/map/MapDialog.Distance";
 
+	public static interface InserValueInterface {
+		void addValue(Object pAValue, int pColumnIndex);
+	}
+	
+	public final class AdditionalEmptyCellModell extends AbstractTableModel {
+
+		
+		private AbstractTableModel mParentModel;
+		private InserValueInterface mInsertValueInterface;
+
+		/**
+		 * 
+		 */
+		public AdditionalEmptyCellModell(AbstractTableModel parentModel, InserValueInterface insertValueInterface) {
+			mParentModel = parentModel;
+			mInsertValueInterface = insertValueInterface;
+		}
+		
+		@Override
+		public int getRowCount() {
+			return mParentModel.getRowCount() +1;
+		}
+
+		@Override
+		public int getColumnCount() {
+			return mParentModel.getColumnCount();
+		}
+
+		@Override
+		public Object getValueAt(int pRowIndex, int pColumnIndex) {
+			if(pRowIndex == mParentModel.getRowCount()) {
+				return "";
+			}
+			return mParentModel.getValueAt(pRowIndex, pColumnIndex);
+		}
+
+		/* (non-Javadoc)
+		 * @see javax.swing.table.AbstractTableModel#setValueAt(java.lang.Object, int, int)
+		 */
+		@Override
+		public void setValueAt(Object pAValue, int pRowIndex, int pColumnIndex) {
+			if(pRowIndex == mParentModel.getRowCount()) {
+				// add new value.
+				mInsertValueInterface.addValue(pAValue, pColumnIndex);
+			} else {
+				mParentModel.setValueAt(pAValue, pRowIndex, pColumnIndex);
+			}
+		}
+		
+		/**
+		 * @param pColumn
+		 * @return
+		 * @see javax.swing.table.AbstractTableModel#getColumnName(int)
+		 */
+		public String getColumnName(int pColumn) {
+			return mParentModel.getColumnName(pColumn);
+		}
+
+		/**
+		 * @param pColumnIndex
+		 * @return
+		 * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
+		 */
+		public Class<?> getColumnClass(int pColumnIndex) {
+			return mParentModel.getColumnClass(pColumnIndex);
+		}
+
+		/**
+		 * @param pRowIndex
+		 * @param pColumnIndex
+		 * @return
+		 * @see javax.swing.table.AbstractTableModel#isCellEditable(int, int)
+		 */
+		public boolean isCellEditable(int pRowIndex, int pColumnIndex) {
+			if(pRowIndex == mParentModel.getRowCount()) {
+				// only the key is editable, because it has to be there, first.
+				return pColumnIndex == KEY_COLUMN;
+			}
+			return mParentModel.isCellEditable(pRowIndex, pColumnIndex);
+		}
+
+		/**
+		 * @param pColumnName
+		 * @return
+		 * @see javax.swing.table.AbstractTableModel#findColumn(java.lang.String)
+		 */
+		public int findColumn(String pColumnName) {
+			return mParentModel.findColumn(pColumnName);
+		}
+
+		/**
+		 * @param pL
+		 * @see javax.swing.table.AbstractTableModel#addTableModelListener(javax.swing.event.TableModelListener)
+		 */
+		public void addTableModelListener(TableModelListener pL) {
+			mParentModel.addTableModelListener(pL);
+		}
+
+		/**
+		 * @param pL
+		 * @see javax.swing.table.AbstractTableModel#removeTableModelListener(javax.swing.event.TableModelListener)
+		 */
+		public void removeTableModelListener(TableModelListener pL) {
+			mParentModel.removeTableModelListener(pL);
+		}
+
+		/**
+		 * @return
+		 * @see javax.swing.table.AbstractTableModel#getTableModelListeners()
+		 */
+		public TableModelListener[] getTableModelListeners() {
+			return mParentModel.getTableModelListeners();
+		}
+
+		/**
+		 * 
+		 * @see javax.swing.table.AbstractTableModel#fireTableDataChanged()
+		 */
+		public void fireTableDataChanged() {
+			mParentModel.fireTableDataChanged();
+		}
+
+		/**
+		 * 
+		 * @see javax.swing.table.AbstractTableModel#fireTableStructureChanged()
+		 */
+		public void fireTableStructureChanged() {
+			mParentModel.fireTableStructureChanged();
+		}
+
+		/**
+		 * @param pFirstRow
+		 * @param pLastRow
+		 * @see javax.swing.table.AbstractTableModel#fireTableRowsInserted(int, int)
+		 */
+		public void fireTableRowsInserted(int pFirstRow, int pLastRow) {
+			mParentModel.fireTableRowsInserted(pFirstRow, pLastRow);
+		}
+
+		/**
+		 * @param pFirstRow
+		 * @param pLastRow
+		 * @see javax.swing.table.AbstractTableModel#fireTableRowsUpdated(int, int)
+		 */
+		public void fireTableRowsUpdated(int pFirstRow, int pLastRow) {
+			mParentModel.fireTableRowsUpdated(pFirstRow, pLastRow);
+		}
+
+		/**
+		 * @param pFirstRow
+		 * @param pLastRow
+		 * @see javax.swing.table.AbstractTableModel#fireTableRowsDeleted(int, int)
+		 */
+		public void fireTableRowsDeleted(int pFirstRow, int pLastRow) {
+			mParentModel.fireTableRowsDeleted(pFirstRow, pLastRow);
+		}
+
+		/**
+		 * @param pRow
+		 * @param pColumn
+		 * @see javax.swing.table.AbstractTableModel#fireTableCellUpdated(int, int)
+		 */
+		public void fireTableCellUpdated(int pRow, int pColumn) {
+			mParentModel.fireTableCellUpdated(pRow, pColumn);
+		}
+
+		/**
+		 * @param pE
+		 * @see javax.swing.table.AbstractTableModel#fireTableChanged(javax.swing.event.TableModelEvent)
+		 */
+		public void fireTableChanged(TableModelEvent pE) {
+			mParentModel.fireTableChanged(pE);
+		}
+
+		/**
+		 * @param pListenerType
+		 * @return
+		 * @see javax.swing.table.AbstractTableModel#getListeners(java.lang.Class)
+		 */
+		public <T extends EventListener> T[] getListeners(Class<T> pListenerType) {
+			return mParentModel.getListeners(pListenerType);
+		}
+		
+	}
+	
 	/**
 	 * @author foltin
 	 * @date 4.09.2014
@@ -296,7 +484,8 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 		 */
 		@Override
 		public void setValueAt(Object pAValue, int pRowIndex, int pColumnIndex) {
-			AttributeHolder holder = getAttributeHolder(pRowIndex);
+			AttributeHolder holder;
+			holder = getAttributeHolder(pRowIndex);
 			switch(pColumnIndex) {
 			case KEY_COLUMN:
 				holder.mKey = (String) pAValue;
@@ -305,6 +494,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 				holder.mValue = (String) pAValue;
 				break;
 			}
+			fireTableCellUpdated(pRowIndex, pColumnIndex);
 		}
 
 	}
@@ -358,7 +548,24 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 		mAttributeTable.getTableHeader().setReorderingAllowed(false);
 		mAttributeTableModel = new AttributeTableModel(controller);
 		mAttributeTableSorter = new TableSorter(mAttributeTableModel);
-		mAttributeTable.setModel(mAttributeTableSorter);
+		mAttributeTable.setModel(new AdditionalEmptyCellModell(mAttributeTableSorter, new InserValueInterface() {
+			
+			@Override
+			public void addValue(Object pAValue, int pColumnIndex) {
+				AttributeHolder attribute = new AttributeHolder();
+				switch (pColumnIndex) {
+				case KEY_COLUMN:
+					attribute.mKey = (String) pAValue;
+					attribute.mValue = "";
+					break;
+				case VALUE_COLUMN:
+					attribute.mValue = (String) pAValue;
+					break;
+				}
+				mAttributeTableModel.addAttributeHolder(attribute);
+			}
+		}));
+//		mAttributeTable.setModel(mAttributeTableSorter);
 		mAttributeTableSorter.setTableHeader(mAttributeTable.getTableHeader());
 		mAttributeTableSorter.setColumnComparator(String.class,
 				TableSorter.LEXICAL_COMPARATOR);
