@@ -100,6 +100,7 @@ public class TimeManagement extends MindMapHookAdapter implements
 				sel.add(element);
 			}
 			getMindMapController().select(lastElement, sel);
+			requestFocusForDay();
 		}
 
 	}
@@ -298,7 +299,7 @@ public class TimeManagement extends MindMapHookAdapter implements
 		dialog.addWindowFocusListener(new WindowAdapter() {
 
 			public void windowGainedFocus(WindowEvent e) {
-				calendar.getDayChooser().getSelectedDay().requestFocus();
+				requestFocusForDay();
 				dialog.removeWindowFocusListener(this);
 			}
 		});
@@ -484,5 +485,12 @@ public class TimeManagement extends MindMapHookAdapter implements
 	 */
 	public MindMapController getMindMapController() {
 		return mController;
+	}
+
+	/**
+	 * 
+	 */
+	private void requestFocusForDay() {
+		calendar.getDayChooser().getSelectedDay().requestFocus();
 	}
 }
