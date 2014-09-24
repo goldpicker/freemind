@@ -203,7 +203,7 @@ public class TimeManagement extends MindMapHookAdapter implements
 
 	private static Calendar lastDate = null;
 
-	private static int lastActivePosition = 5;
+	private static int lastActivePosition = 4;
 
 	private JTripleCalendar calendar;
 
