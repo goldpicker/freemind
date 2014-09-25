@@ -32,7 +32,6 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 import tests.freemind.FreeMindMainMock;
@@ -49,6 +48,7 @@ public class JOptionalSplitPane extends JPanel {
 
 	private HashMap<Integer, JComponent> mComponentHash = new HashMap<Integer, JComponent>();
 	private JComponent mBasicComponent = null;
+	private int mLastDividerPosition = -1; 
 	
 	
 	public JOptionalSplitPane() {
@@ -90,15 +90,20 @@ public class JOptionalSplitPane extends JPanel {
 					mBasicComponent = splitPane;
 					splitPane.setLeftComponent(mComponentHash.get(0));
 					splitPane.setRightComponent(mComponentHash.get(1));
-					// TODO: Restore divider location
+					if (getLastDividerPosition() >= 0) {
+						// Restore divider location
+						splitPane.setDividerLocation(getLastDividerPosition());
+					}
 					add(mBasicComponent, BorderLayout.CENTER);
 					revalidate();
 				} else {
 					// some component has changed:
 					JSplitPane splitPane = (JSplitPane) mBasicComponent;
+					setLastDividerPosition(splitPane.getDividerLocation());
 					splitPane.remove(formerComponent);
 					splitPane.setLeftComponent(mComponentHash.get(0));
 					splitPane.setRightComponent(mComponentHash.get(1));
+					splitPane.setDividerLocation(getLastDividerPosition());
 					revalidate();
 				}
 				break;
@@ -112,6 +117,9 @@ public class JOptionalSplitPane extends JPanel {
 	 */
 	private void setSingleJPanel(JComponent pComponent) {
 		if (mBasicComponent != null) {
+			if(mBasicComponent instanceof JSplitPane) {
+				setLastDividerPosition(((JSplitPane) mBasicComponent).getDividerLocation());
+			}
 			remove(mBasicComponent);
 		}
 		mBasicComponent = new JPanel();
@@ -154,6 +162,7 @@ public class JOptionalSplitPane extends JPanel {
 			throw new IllegalArgumentException("Wrong index: " + index);
 		}
 	}
+
 
 	public static void main(String[] args) {
 		Resources.createInstance(new FreeMindMainMock());
@@ -204,6 +213,20 @@ public class JOptionalSplitPane extends JPanel {
 		contentPane.add(panel);
 		frame.setVisible(true);
 
+	}
+
+	/**
+	 * @return the lastDividerPosition
+	 */
+	public int getLastDividerPosition() {
+		return mLastDividerPosition;
+	}
+
+	/**
+	 * @param pLastDividerPosition the lastDividerPosition to set
+	 */
+	public void setLastDividerPosition(int pLastDividerPosition) {
+		mLastDividerPosition = pLastDividerPosition;
 	}
 
 }

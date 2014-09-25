@@ -1018,6 +1018,7 @@ public class Controller implements MapModuleChangeObserver {
 			}
 			setProperty("appwindow_state", String.valueOf(winState));
 		}
+		storeOptionSplitPanePosition();
 		// Stop edit server!
 		getFrame().saveProperties(true);
 		// save to properties
@@ -1967,6 +1968,7 @@ public class Controller implements MapModuleChangeObserver {
 	public void insertComponentIntoSplitPane(JComponent pMindMapComponent, SplitComponentType pSplitComponentType) {
 		if(mOptionalSplitPane == null) {
 			mOptionalSplitPane = new JOptionalSplitPane();
+			mOptionalSplitPane.setLastDividerPosition(getIntProperty(FreeMind.RESOURCES_OPTIONAL_SPLIT_DIVIDER_POSITION, -1));
 			getFrame().insertComponentIntoSplitPane(mOptionalSplitPane);
 		}
 		mOptionalSplitPane.setComponent(pMindMapComponent, pSplitComponentType.getIndex());
@@ -1979,9 +1981,20 @@ public class Controller implements MapModuleChangeObserver {
 		if(mOptionalSplitPane != null) {
 			mOptionalSplitPane.removeComponent(pSplitComponentType.getIndex());
 			if(mOptionalSplitPane.getAmountOfComponents() == 0) {
+				storeOptionSplitPanePosition();
 				getFrame().removeSplitPane();
 				mOptionalSplitPane = null;
 			}
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void storeOptionSplitPanePosition() {
+		if (mOptionalSplitPane != null) {
+			setProperty(FreeMind.RESOURCES_OPTIONAL_SPLIT_DIVIDER_POSITION, ""
+					+ mOptionalSplitPane.getLastDividerPosition());
 		}
 	}
 
