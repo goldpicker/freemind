@@ -172,9 +172,9 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 
 	public static final int VALUE_COLUMN = 1;
 
-	private static final String KEY_COLUMN_TEXT = "plugins/map/MapDialog.Description";
+	private static final String KEY_COLUMN_TEXT = "accessories/plugins/NodeAttributeTable_key";
 
-	private static final String VALUE_COLUMN_TEXT = "plugins/map/MapDialog.Distance";
+	private static final String VALUE_COLUMN_TEXT = "accessories/plugins/NodeAttributeTable_value";
 
 	public static interface InserValueInterface {
 		void addValue(Object pAValue, int pColumnIndex);
