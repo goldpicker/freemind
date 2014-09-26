@@ -33,7 +33,7 @@
 	                        <xsl:call-template name="ul">
 	                            <xsl:with-param name="count" 
 	                            select="$depth - 2"/>
-	                        </xsl:call-template>
+	                        </xsl:call-template><xsl:text> </xsl:text>
 				<xsl:apply-templates select="." mode="nodeoutput"/>
                         </xsl:otherwise>
 		</xsl:choose>
