@@ -48,8 +48,8 @@ public class BrowseMapModel extends MapAdapter {
 		if (root != null)
 			setRoot(root);
 		else
-			setRoot(new BrowseNodeModel(getMapFeedback().getResourceString(
-					"new_mindmap"), modeController.getMap()));
+			setRoot(new BrowseNodeModel(modeController.getResourceString(
+					"new_mindmap"), this));
 		// register new LinkRegistryAdapter
 		linkRegistry = new MindMapLinkRegistry();
 	}

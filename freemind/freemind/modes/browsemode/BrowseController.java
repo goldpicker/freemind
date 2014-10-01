@@ -169,9 +169,9 @@ public class BrowseController extends ViewControllerAdapter {
 		// intentionally do nothing.
 	}
 
-	public MapAdapter newModel(ModeController modeController) {
-		BrowseMapModel model = new BrowseMapModel(null, modeController);
-		modeController.setModel(model);
+	public MapAdapter newModel(ModeController newModeController) {
+		BrowseMapModel model = new BrowseMapModel(null, newModeController);
+		newModeController.setModel(model);
 		return model;
 	}
 
