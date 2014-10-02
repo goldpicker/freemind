@@ -75,6 +75,7 @@ public class NodeAttributeTable extends MindMapNodeHookAdapter {
 		KeyboardFocusManager.getCurrentKeyboardFocusManager()
 				.clearGlobalFocusOwner();
 		// focus table.
+		registration.focusAttributeTable();
 	}
 
 	private void setShowSplitPaneProperty(boolean pValue) {

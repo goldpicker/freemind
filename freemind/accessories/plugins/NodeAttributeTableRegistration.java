@@ -445,4 +445,9 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 	public boolean isSelected(JMenuItem pCheckItem, Action pAction) {
 		return getSplitPaneVisible();
 	}
+	
+	public void focusAttributeTable() {
+		mAttributeTable.requestFocus();
+		mAttributeTable.getSelectionModel().setSelectionInterval(0, 0);
+	}
 }

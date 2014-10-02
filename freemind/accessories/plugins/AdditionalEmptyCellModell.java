@@ -54,7 +54,7 @@ public final class AdditionalEmptyCellModell extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int pRowIndex, int pColumnIndex) {
-		if(pRowIndex == mParentModel.getRowCount()) {
+		if(pRowIndex >= mParentModel.getRowCount()) {
 			return "";
 		}
 		return mParentModel.getValueAt(pRowIndex, pColumnIndex);
@@ -65,7 +65,7 @@ public final class AdditionalEmptyCellModell extends AbstractTableModel {
 	 */
 	@Override
 	public void setValueAt(Object pAValue, int pRowIndex, int pColumnIndex) {
-		if(pRowIndex == mParentModel.getRowCount()) {
+		if(pRowIndex >= mParentModel.getRowCount()) {
 			if (pAValue != null && !((String)pAValue).isEmpty()) {
 				// add new value.
 				mInsertValueInterface.addValue(pAValue, pColumnIndex);
@@ -100,7 +100,7 @@ public final class AdditionalEmptyCellModell extends AbstractTableModel {
 	 * @see javax.swing.table.AbstractTableModel#isCellEditable(int, int)
 	 */
 	public boolean isCellEditable(int pRowIndex, int pColumnIndex) {
-		if(pRowIndex == mParentModel.getRowCount()) {
+		if(pRowIndex >= mParentModel.getRowCount()) {
 			// only the key is editable, because it has to be there, first.
 			return pColumnIndex == NodeAttributeTableRegistration.KEY_COLUMN;
 		}
