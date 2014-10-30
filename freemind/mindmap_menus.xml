@@ -53,6 +53,7 @@
 				<menu_action name="copySingle" field="copySingle" key_ref="keystroke_copy_single"/>
 				<menu_action name="paste" field="paste" key_ref="keystroke_paste"/>
 				<menu_action name="pasteAsPlainText" field="pasteAsPlainText" key_ref="keystroke_pasteAsPlainText"/>
+				<menu_action field="addArrowLinkAction" key_ref="keystroke_add_arrow_link_action"/>
 			</menu_category>
 			<menu_category name="find">
 				<menu_action field="find" key_ref="keystroke_find"/>
@@ -75,7 +76,6 @@
 			<menu_category name="links">
 				<menu_action field="setLinkByFileChooser" key_ref="keystroke_set_link_by_filechooser"/>
 				<menu_action field="setLinkByTextField" key_ref="keystroke_set_link_by_textfield"/>
-				<menu_action field="addArrowLinkAction" key_ref="keystroke_add_arrow_link_action"/>
 				<menu_action field="addLocalLinkAction" key_ref="keystroke_add_local_link_action"/>
 			</menu_category>
 			<menu_separator/>

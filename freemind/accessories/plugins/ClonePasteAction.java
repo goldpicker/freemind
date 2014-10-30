@@ -142,7 +142,7 @@ public class ClonePasteAction extends MindMapNodeHookAdapter {
 	}
 
 	public Vector getMindMapNodes() {
-		return getRegistration().getMindMapNodes();
+		return Tools.getMindMapNodesFromClipboard(getMindMapController());
 	}
 
 	protected Registration getRegistration() {
@@ -261,7 +261,7 @@ public class ClonePasteAction extends MindMapNodeHookAdapter {
 			String hookName = ((NodeHookAction) pAction).getHookName();
 			if (PLUGIN_NAME.equals(hookName)) {
 				// only enabled, if nodes have been copied before.
-				Vector mindMapNodes = getMindMapNodes();
+				Vector mindMapNodes = Tools.getMindMapNodesFromClipboard(controller);
 				// logger.warning("Nodes " + Tools.listToString(mindMapNodes));
 				return !mindMapNodes.isEmpty();
 			}
@@ -273,26 +273,6 @@ public class ClonePasteAction extends MindMapNodeHookAdapter {
 				}
 			}
 			return false;
-		}
-
-		public Vector getMindMapNodes() {
-			Vector mindMapNodes = new Vector();
-			Transferable clipboardContents = controller.getClipboardContents();
-			if (clipboardContents != null) {
-				try {
-					List transferData = (List) clipboardContents
-							.getTransferData(MindMapNodesSelection.copyNodeIdsFlavor);
-					for (Iterator it = transferData.iterator(); it.hasNext();) {
-						String nodeId = (String) it.next();
-						MindMapNode node = controller.getNodeFromID(nodeId);
-						mindMapNodes.add(node);
-					}
-				} catch (Exception e) {
-					// e.printStackTrace();
-					// freemind.main.Resources.getInstance().logException(e);
-				}
-			}
-			return mindMapNodes;
 		}
 
 		public String generateNewCloneId(String pProposedID) {

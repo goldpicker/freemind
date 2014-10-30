@@ -110,6 +110,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import freemind.common.UnicodeReader;
 import freemind.common.XmlBindingTools;
+import freemind.controller.MindMapNodesSelection;
 import freemind.controller.actions.generated.instance.CompoundAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.modes.EdgeAdapter;
@@ -1838,6 +1839,32 @@ public class Tools {
 		return Toolkit.getDefaultToolkit().getSystemClipboard();
 	}
 
+	
+	/**
+	 * @return a list of MindMapNode s if they are currently contained in the clipboard. An empty list otherwise.
+	 */
+	public static Vector<MindMapNode> getMindMapNodesFromClipboard(MindMapController pMindMapController) {
+		Vector<MindMapNode> mindMapNodes = new Vector<MindMapNode>();
+		Transferable clipboardContents = pMindMapController.getClipboardContents();
+		if (clipboardContents != null) {
+			try {
+				List<String> transferData = (List<String>) clipboardContents
+						.getTransferData(MindMapNodesSelection.copyNodeIdsFlavor);
+				for (Iterator<String> it = transferData.iterator(); it.hasNext();) {
+					String nodeId = (String) it.next();
+					MindMapNode node = pMindMapController.getNodeFromID(nodeId);
+					mindMapNodes.add(node);
+				}
+			} catch (Exception e) {
+				// e.printStackTrace();
+				// freemind.main.Resources.getInstance().logException(e);
+			}
+		}
+		return mindMapNodes;
+	}
+
+
+	
 	public static void addFocusPrintTimer() {
 		Timer timer = new Timer(1000, new ActionListener() {
 

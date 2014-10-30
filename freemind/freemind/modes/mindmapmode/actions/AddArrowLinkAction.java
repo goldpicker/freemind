@@ -20,12 +20,15 @@
  * Created on 07.10.2004
  */
 
-
 package freemind.modes.mindmapmode.actions;
 
 import java.awt.event.ActionEvent;
-import java.util.List;
+import java.util.Vector;
 
+import javax.swing.Action;
+import javax.swing.JMenuItem;
+
+import freemind.main.Tools;
 import freemind.modes.MindMapNode;
 import freemind.modes.mindmapmode.MindMapController;
 
@@ -40,24 +43,40 @@ public class AddArrowLinkAction extends MindmapAction {
 	/**
      */
 	public AddArrowLinkAction(MindMapController modeController) {
-		super("add_link", "images/designer.png", modeController);
+		super("paste_as_link", "images/designer.png", modeController);
 		this.modeController = modeController;
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		// assert that at least two nodes are selected. draw an arrow link in
-		// between.
-		List selecteds = modeController.getSelecteds();
-		if (selecteds.size() < 2) {
+		MindMapNode selected = modeController.getSelected();
+		Vector<MindMapNode> nodesFromClipboard = Tools
+				.getMindMapNodesFromClipboard(modeController);
+		if (nodesFromClipboard.size() == 0) {
 			modeController.getController().errorMessage(
-					modeController.getText("less_than_two_selected_nodes"));
+					modeController.getText("no_copied_nodes"));
 			return;
 		}
-		for (int i = 1; i < selecteds.size(); i++) {
-			getMindMapController().addLink((MindMapNode) selecteds.get(i),
-					(MindMapNode) selecteds.get(0));
+		for (MindMapNode destination : nodesFromClipboard) {
+			if(selected != destination) {
+				getMindMapController().addLink(selected, destination);				
+			} else {
+				// hmm, give an error?
+				logger.warning("Can't paste the node '"+selected+"'onto itself. Skipped.");
+			}
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see freemind.modes.FreemindAction#isEnabled(javax.swing.JMenuItem,
+	 * javax.swing.Action)
+	 */
+	@Override
+	public boolean isEnabled(JMenuItem pItem, Action pAction) {
+		return super.isEnabled(pItem, pAction)
+				&& (modeController != null)
+				&& !Tools.getMindMapNodesFromClipboard(modeController).isEmpty();
+	}
 
 }
