@@ -20,12 +20,16 @@
  * Created on 07.10.2004
  */
 
-
 package freemind.modes.mindmapmode.actions;
 
 import java.awt.event.ActionEvent;
 import java.util.List;
+import java.util.Vector;
 
+import javax.swing.Action;
+import javax.swing.JMenuItem;
+
+import freemind.main.Tools;
 import freemind.modes.MindMapNode;
 import freemind.modes.mindmapmode.MindMapController;
 
@@ -40,25 +44,45 @@ public class AddLocalLinkAction extends MindmapAction {
 	/**
      */
 	public AddLocalLinkAction(MindMapController modeController) {
-		super("add_local_link", "images/LinkLocal.png", modeController);
+		super("paste_as_local_link", "images/stock_right.png", modeController);
 		this.modeController = modeController;
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		// assert that at least two nodes are selected. draw an arrow link in
-		// between.
-		List selecteds = modeController.getSelecteds();
-		if (selecteds.size() < 2) {
+		MindMapNode source = modeController.getSelected();
+		Vector<MindMapNode> nodesFromClipboard = Tools
+				.getMindMapNodesFromClipboard(modeController);
+		if (nodesFromClipboard.size() == 0) {
 			modeController.getController().errorMessage(
-					modeController.getText("less_than_two_selected_nodes"));
+					modeController.getText("no_copied_nodes"));
 			return;
 		}
-		MindMapNode target = (MindMapNode) selecteds.get(0);
-		String targetId = (target).getObjectId(modeController);
-		for (int i = 1; i < selecteds.size(); i++) {
-			MindMapNode source = (MindMapNode) selecteds.get(i);
-			modeController.setLink(source, "#" + targetId);
+		boolean first = true;
+		for (MindMapNode destination : nodesFromClipboard) {
+			if(!first) {
+				logger.warning("Can't link the node '"+source+"' to more than one destination. Only the last is used.");
+			}
+			if(source != destination) {
+				modeController.setLink(source, "#" + modeController.getNodeID(destination));
+			} else {
+				// hmm, give an error?
+				logger.warning("Can't link the node '"+source+"' onto itself. Skipped.");
+			}
+			first = false;
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see freemind.modes.FreemindAction#isEnabled(javax.swing.JMenuItem,
+	 * javax.swing.Action)
+	 */
+	@Override
+	public boolean isEnabled(JMenuItem pItem, Action pAction) {
+		return super.isEnabled(pItem, pAction)
+				&& (modeController != null)
+				&& Tools.getMindMapNodesFromClipboard(modeController).size() == 1;
 	}
 
 }

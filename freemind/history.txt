@@ -13,7 +13,7 @@ Changes made in FreeMind 1.1.0 Alpha 2
 * new feature: icon toolbar can have multiple columns (see properties->appearance).
 * fix for "Encrypted nodes can't be saved".
 * Update to JMapViewer 1.03
-* New method to create graphical links: copy nodes and then paste them as graphical links.
+* New method to create graphical and local links: copy nodes and then paste them as graphical or local links.
 
 ===============================
 Changes made in FreeMind 1.1.0 Alpha 1
