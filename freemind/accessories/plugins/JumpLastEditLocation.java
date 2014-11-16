@@ -109,6 +109,8 @@ public class JumpLastEditLocation extends MindMapNodeHookAdapter {
 				try {
 					pCurrentNode = controller.getNodeFromID(id);
 					return pCurrentNode;
+				} catch (IllegalArgumentException e) {
+					// node not found, retry...
 				} catch (Exception e) {
 					freemind.main.Resources.getInstance().logException(e);
 				}

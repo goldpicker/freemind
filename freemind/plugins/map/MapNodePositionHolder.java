@@ -347,7 +347,7 @@ public class MapNodePositionHolder extends MapNodePositionHolderBase {
 					if(i==posx && j==posy) {
 						imageHtml += "<p style='margin-left:" + (dx % tileSize)
 								+ "pt; margin-top:" + (dy % tileSize)
-								+ "pt; color:red'>x</p>";
+								+ "pt; color:red'><strong>X</strong></p>";
 					}
 					imageHtml += "</td>";
 				} catch (IOException e) {
@@ -357,7 +357,7 @@ public class MapNodePositionHolder extends MapNodePositionHolderBase {
 			imageHtml+="</tr>";
 		}
 		imageHtml+="</table></body></html>";
-		logger.fine("Tooltipp HTML: " + imageHtml);
+//		logger.fine("Tooltipp HTML: " + imageHtml);
 		return imageHtml;
 	}
 
