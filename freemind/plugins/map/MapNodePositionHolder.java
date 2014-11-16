@@ -20,18 +20,14 @@
 
 package plugins.map;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
-import java.net.MalformedURLException;
 import java.util.HashMap;
 
-import javax.imageio.ImageIO;
-
 import org.openstreetmap.gui.jmapviewer.Coordinate;
+import org.openstreetmap.gui.jmapviewer.OsmMercator;
+import org.openstreetmap.gui.jmapviewer.interfaces.TileSource;
 
-import freemind.main.Resources;
-import freemind.main.Tools;
 import freemind.main.XMLElement;
 import freemind.modes.MindMapNode;
 import freemind.modes.common.plugins.MapNodePositionHolderBase;
@@ -70,18 +66,7 @@ public class MapNodePositionHolder extends MapNodePositionHolderBase {
 
 	public void showTooltip() {
 		if (isTooltipDesired()) {
-			if (mTooltipLocation != null) {
-				/* We only need the tooltip on disk. */
-				File tooltipFile = getTooltipFile(false);
-				if (tooltipFile.exists()) {
-					addTooltip();
-				} else {
-					// something went wrong. Again.
-					createToolTip(false);
-				}
-			} else {
-				createToolTip(false);
-			}
+			setTooltip();
 		}
 	}
 
@@ -198,7 +183,6 @@ public class MapNodePositionHolder extends MapNodePositionHolderBase {
 			int pZoom, String pTileSource) {
 		getRegistration().changePosition(this, pPosition, pMapCenter, pZoom,
 				pTileSource);
-		// the changePosition recreates the tooltip...
 	}
 
 	public static interface MapNodePositionListener {
@@ -253,89 +237,6 @@ public class MapNodePositionHolder extends MapNodePositionHolderBase {
 		return super.getNode();
 	}
 
-	/**
-	 */
-	public String getImageHtml() {
-		String imageTag = getImageTag();
-		String imageHtml = "<html><body>" + imageTag + "</body></html>";
-		logger.fine("Tooltip at " + imageTag);
-		return imageHtml;
-	}
-
-	protected String getImageTag() {
-		String imageTag = "ERROR";
-		try {
-			imageTag = "<img src=\"" + Tools.fileToUrl(getTooltipFile(false))
-					+ "\"/>";
-		} catch (MalformedURLException e) {
-			freemind.main.Resources.getInstance().logException(e);
-
-		}
-		return imageTag;
-	}
-
-	public File getTooltipFile(boolean pForce) {
-		if (mTooltipFile != null) {
-			return mTooltipFile;
-		}
-		File mapFile = getMap().getFile();
-		boolean storeProperty = Resources.getInstance().getBoolProperty(
-				NODE_MAP_STORE_TOOLTIP)
-				|| pForce;
-		if (mapFile == null || !storeProperty) {
-			try {
-				if (mapFile == null) {
-					// Houston, we have a problem
-					logger.warning("Creating tooltip in .freemind directory, "
-							+ "as we don't know, where the map will be stored.");
-				}
-				mTooltipFile = File.createTempFile("node_map_tooltip_"
-						+ getNodeId(), ".png", new File(getController()
-						.getFrame().getFreemindDirectory()));
-				// not persistent.
-				if (!pForce) {
-					mTooltipFile.deleteOnExit();
-				}
-			} catch (IOException e) {
-				freemind.main.Resources.getInstance().logException(e);
-			}
-		} else {
-			String createdFileName = mapFile.getAbsolutePath() + "_map_"
-					+ getNodeId() + ".png";
-			mTooltipFile = new File(createdFileName);
-			if (!pForce) {
-				// only store location, if not forced from outside.
-				mTooltipLocation = mTooltipFile.getName();
-			}
-		}
-		return mTooltipFile;
-	}
-
-	public boolean createToolTip(boolean pForce) {
-		boolean success = true;
-		// order tooltip to be created.
-		TileImage tileImage;
-		tileImage = getRegistration().getImageForTooltip(mPosition, mZoom,
-				mTileSource);
-		if (!tileImage.hasErrors()) {
-			logger.fine("Creating tooltip for " + getNode());
-			// save image to disk:
-			try {
-				File tooltipFile = getTooltipFile(pForce);
-				ImageIO.write(tileImage.getImage(), "png", tooltipFile);
-				addTooltip();
-			} catch (IOException e) {
-				freemind.main.Resources.getInstance().logException(e);
-			}
-		} else {
-			tileImage = null;
-			logger.warning("Tooltip for node '" + getNode()
-					+ "' has errors on creation.");
-			success = false;
-		}
-		return success;
-	}
-
 	public String getNodeId() {
 		return getMindMapController().getNodeID(getNode());
 	}
@@ -345,16 +246,6 @@ public class MapNodePositionHolder extends MapNodePositionHolderBase {
 	 */
 	private MindMapController getMindMapController() {
 		return (MindMapController) getController();
-	}
-
-	/**
-	 * 
-	 */
-	public void recreateTooltip() {
-		// remove file from disk.
-		getTooltipFile(false).delete();
-		mTooltipLocation = null;
-		showTooltip();
 	}
 
 	/**
@@ -416,4 +307,60 @@ public class MapNodePositionHolder extends MapNodePositionHolderBase {
 				+ sMapLocationGif + "\"/></a>");
 	}
 
+	/**
+	 * @return
+	 */
+	public String getImageHtml() {
+		TileSource tileSource = FreeMindMapController.getTileSourceByName(mTileSource).mTileSource;
+		int tileSize = tileSource.getTileSize();
+		int exactx = (int) OsmMercator.LonToX(mPosition.getLon(), mZoom);
+		int exacty = (int) OsmMercator.LatToY(mPosition.getLat(), mZoom);
+		int x = exactx / tileSize;
+		int y = exacty / tileSize;
+		// determine other surrounding tiles that are close to the exact
+		// point.
+		int dx = exactx % tileSize;
+		int dy = exacty % tileSize;
+		// determine quadrant of cursor in tile:
+		int posx = 0;
+		int posy = 0;
+		if (dx < tileSize / 2) {
+			x -= 1;
+			posx++;
+			dx += tileSize;
+		}
+		if (dy < tileSize / 2) {
+			y -= 1;
+			posy++;
+			dy += tileSize;
+		}
+		String imageHtml = "<html><body><table cellspacing='0' cellpadding='0'>";
+		for (int j = 0; j < 2; ++j) {
+			imageHtml+="<tr>";
+			for (int i = 0; i < 2; ++i) {
+				try {
+					// getUrl:
+					imageHtml += "<td valign='top' align='top' width='" + tileSize + "' height='"
+							+ tileSize + "' BACKGROUND=\""
+							+ tileSource.getTileUrl(mZoom, x + i, y + j)
+							+ "\" style='background-repeat:no-repeat;'/>";
+					if(i==posx && j==posy) {
+						imageHtml += "<p style='margin-left:" + (dx % tileSize)
+								+ "pt; margin-top:" + (dy % tileSize)
+								+ "pt; color:red'>x</p>";
+					}
+					imageHtml += "</td>";
+				} catch (IOException e) {
+					freemind.main.Resources.getInstance().logException(e);
+				}
+			}
+			imageHtml+="</tr>";
+		}
+		imageHtml+="</table></body></html>";
+		logger.fine("Tooltipp HTML: " + imageHtml);
+		return imageHtml;
+	}
+
+
+	
 }

@@ -37,7 +37,6 @@ import javax.swing.JMenuItem;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.MemoryTileCache;
 import org.openstreetmap.gui.jmapviewer.OsmFileCacheTileLoader;
-import org.openstreetmap.gui.jmapviewer.OsmMercator;
 import org.openstreetmap.gui.jmapviewer.OsmTileLoader;
 import org.openstreetmap.gui.jmapviewer.Tile;
 import org.openstreetmap.gui.jmapviewer.TileController;
@@ -65,8 +64,8 @@ import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.NodeHookAction;
-import freemind.modes.mindmapmode.actions.xml.ActionRegistry;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
+import freemind.modes.mindmapmode.actions.xml.ActionRegistry;
 import freemind.modes.mindmapmode.actions.xml.ActorXml;
 import freemind.preferences.FreemindPropertyContributor;
 import freemind.preferences.layout.OptionPanel;
@@ -249,53 +248,6 @@ public class Registration implements HookRegistration, ActorXml,
 
 	}
 
-	/**
-	 * @param pPosition
-	 * @param pTileSource
-	 */
-	public TileImage getImageForTooltip(Coordinate pPosition, int pZoom,
-			String pTileSource) {
-		TileSource tileSource = FreeMindMapController.changeTileSource(
-				pTileSource, null);
-		if (tileSource != null) {
-			mTileSource = tileSource;
-			mTileController.setTileSource(tileSource);
-		}
-		int tileSize = mTileSource.getTileSize();
-		int exactx = (int) OsmMercator.LonToX(pPosition.getLon(), pZoom);
-		int exacty = (int) OsmMercator.LatToY(pPosition.getLat(), pZoom);
-		int x = exactx / tileSize;
-		int y = exacty / tileSize;
-		// determine other surrounding tiles that are close to the exact
-		// point.
-		int dx = exactx % tileSize;
-		int dy = exacty % tileSize;
-		// determine quadrant of cursor in tile:
-		if (dx < tileSize / 2) {
-			x -= 1;
-			dx += tileSize;
-		}
-		if (dy < tileSize / 2) {
-			y -= 1;
-			dy += tileSize;
-		}
-		TileImage tileImage = new TileImage();
-		tileImage.setTiles(2, x, y, pZoom, mTileController, logger, dx, dy);
-		// wait for tiles:
-		int timeout = 60;
-		while (timeout-- > 0) {
-			try {
-				if (tileImage.isLoaded() || tileImage.hasErrors()) {
-					break;
-				}
-				Thread.sleep(100);
-			} catch (Exception e) {
-				freemind.main.Resources.getInstance().logException(e);
-			}
-		}
-		return tileImage;
-	}
-
 	public void deRegister() {
 		OptionPanel.removeContributor(mOptionContributor);
 		controller.getActionRegistry().deregisterActor(getDoActionClass());
@@ -458,7 +410,7 @@ public class Registration implements HookRegistration, ActorXml,
 								.getCursorLongitude()));
 				hook.setZoom(placeAction.getZoom());
 				hook.setTileSource(placeAction.getTileSource());
-				hook.recreateTooltip();
+				hook.setTooltip();
 				// TODO: Only, if values really changed.
 				controller.nodeChanged(node);
 			} else {
@@ -496,8 +448,6 @@ public class Registration implements HookRegistration, ActorXml,
 	 * tileLoadingFinished(org.openstreetmap.gui.jmapviewer.Tile, boolean)
 	 */
 	public void tileLoadingFinished(Tile pTile, boolean pSuccess) {
-		// TODO Auto-generated method stub
-
 	}
 
 	/*

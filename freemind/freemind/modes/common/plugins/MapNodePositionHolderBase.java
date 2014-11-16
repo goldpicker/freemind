@@ -34,6 +34,9 @@ import freemind.main.XMLElement;
 import freemind.modes.MindMapNode;
 
 /**
+ * This base class is free of openstreetmap and similar classes.
+ * Thus, it doesn't know much about its position.
+ * 
  * @author foltin
  * @date 16.08.2012
  */
@@ -48,7 +51,6 @@ public class MapNodePositionHolderBase extends PermanentNodeHookAdapter {
 	protected static final String XML_STORAGE_ZOOM = "XML_STORAGE_ZOOM";
 	protected static final String XML_STORAGE_TILE_SOURCE = "XML_STORAGE_TILE_SOURCE";
 	protected static final String XML_STORAGE_MAP_TOOLTIP_LOCATION = "XML_STORAGE_MAP_TOOLTIP_LOCATION";
-	protected static final String NODE_MAP_STORE_TOOLTIP = "node_map_store_tooltip";
 	protected static final String NODE_MAP_SHOW_TOOLTIP = "node_map_show_tooltip";
 	public static final String TILE_SOURCE_MAP_QUEST_OPEN_MAP = "plugins.map.FreeMindMapController.MapQuestOpenMap";
 	public static final String TILE_SOURCE_TRANSPORT_MAP = "plugins.map.FreeMindMapController.TransportMap";
@@ -59,6 +61,7 @@ public class MapNodePositionHolderBase extends PermanentNodeHookAdapter {
 	public static final String SHORT_CYCLE_MAP = "C";
 	public static final String SHORT_MAPNIK = "M";
 	public static ImageIcon sMapLocationIcon;
+	
 	protected String mTooltipLocation = null;
 	protected File mTooltipFile = null;
 	private HashMap mValues;
@@ -110,7 +113,7 @@ public class MapNodePositionHolderBase extends PermanentNodeHookAdapter {
 	public void showTooltip() {
 		if (isTooltipDesired()) {
 			if (mTooltipLocation != null) {
-				addTooltip();
+				setTooltip();
 			}
 		}
 	}
@@ -129,7 +132,7 @@ public class MapNodePositionHolderBase extends PermanentNodeHookAdapter {
 				.get(XML_STORAGE_MAP_TOOLTIP_LOCATION);
 	}
 
-	public void addTooltip() {
+	public void setTooltip() {
 		String imageHtml = getImageHtml();
 		setToolTip(NODE_MAP_HOOK_NAME, imageHtml);
 	}

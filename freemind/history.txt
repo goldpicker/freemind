@@ -14,6 +14,7 @@ Changes made in FreeMind 1.1.0 Alpha 2
 * fix for "Encrypted nodes can't be saved".
 * Update to JMapViewer 1.03
 * New method to create graphical and local links: copy nodes and then paste them as graphical or local links.
+* Geographical maps don't need local png files anymore. They are created using HTML code.
 
 ===============================
 Changes made in FreeMind 1.1.0 Alpha 1

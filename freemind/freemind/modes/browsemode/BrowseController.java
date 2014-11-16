@@ -20,7 +20,6 @@
 
 package freemind.modes.browsemode;
 
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -48,7 +47,6 @@ import freemind.controller.MenuItemEnabledListener;
 import freemind.controller.StructuredMenuHolder;
 import freemind.extensions.HookFactory;
 import freemind.main.Tools;
-import freemind.main.XMLElement;
 import freemind.main.XMLParseException;
 import freemind.modes.MapAdapter;
 import freemind.modes.MindMap;
@@ -56,11 +54,9 @@ import freemind.modes.MindMapNode;
 import freemind.modes.Mode;
 import freemind.modes.ModeController;
 import freemind.modes.NodeAdapter;
-import freemind.modes.XMLElementAdapter;
 import freemind.modes.common.GotoLinkNodeAction;
 import freemind.modes.common.plugins.MapNodePositionHolderBase;
 import freemind.modes.common.plugins.NodeNoteBase;
-import freemind.modes.mindmapmode.actions.xml.ActionRegistry;
 import freemind.modes.viewmodes.ViewControllerAdapter;
 import freemind.view.mindmapview.MainView;
 

@@ -177,6 +177,7 @@ public class TileImage implements ImageObserver {
 						+ ", y=" + (pY + j) + ", zoom=" + pZoom);
 				mTiles[i][j] = mTileController.getTile(pX + i, pY + j,
 						pZoom);
+				// getUrl!
 			}
 		}
 		mTilesPresent = true;
