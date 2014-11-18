@@ -55,6 +55,45 @@ import freemind.main.Tools;
  */
 public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 		FocusListener {
+	
+	public static class ChangeAwareButton extends JButton {
+		/**
+		 * @param pString
+		 */
+		public ChangeAwareButton(String pString) {
+			super(pString);
+		}
+
+		/* (non-Javadoc)
+		 * @see javax.swing.AbstractButton#setText(java.lang.String)
+		 */
+		@Override
+		public void setText(String pText) {
+			if(getText().equals(pText))
+				return;
+			super.setText(pText);
+		}
+		
+		/* (non-Javadoc)
+		 * @see javax.swing.JComponent#setForeground(java.awt.Color)
+		 */
+		@Override
+		public void setForeground(Color pFg) {
+			if(!Tools.safeEquals(getForeground(), pFg))
+				super.setForeground(pFg);
+		}
+		
+		/* (non-Javadoc)
+		 * @see javax.swing.JComponent#setBackground(java.awt.Color)
+		 */
+		@Override
+		public void setBackground(Color pBg) {
+			if(!Tools.safeEquals(getBackground(), pBg))
+				super.setBackground(pBg);
+		}
+		
+	}
+	
 	public static final String DAY_PROPERTY = "day";
 
 	private static final long serialVersionUID = 5876398337018781820L;
@@ -167,7 +206,7 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 					// Thanks to Thomas Schaefer for the focus hint :)
 					days[index] = new DecoratorButton();
 				} else {
-					days[index] = new JButton("x") {
+					days[index] = new ChangeAwareButton("x") {
 						private static final long serialVersionUID = -7433645992591669725L;
 
 						public void paint(Graphics g) {
@@ -316,11 +355,12 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 			if (week < 10) {
 				buttonText = "0" + buttonText;
 			}
-
-			weeks[i].setText(buttonText);
+			JButton currentWeek = weeks[i];
+			if(!currentWeek.getText().equals(buttonText))
+				currentWeek.setText(buttonText);
 
 			if ((i == 5) || (i == 6)) {
-				weeks[i].setVisible(days[i * 7].isVisible());
+				currentWeek.setVisible(days[i * 7].isVisible());
 			}
 		}
 	}
@@ -361,8 +401,9 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 		int i;
 
 		for (i = 0; i < firstDay; i++) {
-			days[i + 7].setVisible(false);
-			days[i + 7].setText("");
+			JButton currentDay = days[i + 7];
+			currentDay.setVisible(false);
+			currentDay.setText("");
 		}
 
 		tmpCalendar.add(Calendar.MONTH, 1);
@@ -375,29 +416,32 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 		Color foregroundColor = getForeground();
 
 		while (day.before(firstDayInNextMonth)) {
-			days[i + n + 7].setText(Integer.toString(n + 1));
-			days[i + n + 7].setVisible(true);
+			int index = i + n + 7;
+			JButton currentDay = days[index];
+			String currentText = Integer.toString(n + 1);
+			currentDay.setText(currentText);
+			currentDay.setVisible(true);
 
 			if ((tmpCalendar.get(Calendar.DAY_OF_YEAR) == today
 					.get(Calendar.DAY_OF_YEAR))
 					&& (tmpCalendar.get(Calendar.YEAR) == today
 							.get(Calendar.YEAR))) {
-				days[i + n + 7].setForeground(sundayForeground);
+				currentDay.setForeground(sundayForeground);
 			} else {
-				days[i + n + 7].setForeground(foregroundColor);
+				currentDay.setForeground(foregroundColor);
 			}
 
 			if ((n + 1) == this.day) {
-				days[i + n + 7].setBackground(selectedColor);
-				selectedDay = days[i + n + 7];
+				currentDay.setBackground(selectedColor);
+				selectedDay = currentDay;
 			} else {
-				days[i + n + 7].setBackground(oldDayBackgroundColor);
+				currentDay.setBackground(oldDayBackgroundColor);
 			}
 
 			if (tmpCalendar.before(minCal) || tmpCalendar.after(maxCal)) {
-				days[i + n + 7].setEnabled(false);
+				currentDay.setEnabled(false);
 			} else {
-				days[i + n + 7].setEnabled(true);
+				currentDay.setEnabled(true);
 			}
 
 			n++;
@@ -406,8 +450,9 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 		}
 
 		for (int k = n + i + 7; k < 49; k++) {
-			days[k].setVisible(false);
-			days[k].setText("");
+			JButton currentDay = days[k];
+			currentDay.setVisible(false);
+			currentDay.setText("");
 			/* this was a try to display the days of the adjacent months, too,
 			 * but some points are missing: 
 			 * - only the last week should be filled
@@ -548,6 +593,13 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 	public void setYear(int year) {
 		calendar.set(Calendar.YEAR, year);
 		drawDays();
+	}
+	
+	public int getYear() {
+		return calendar.get(Calendar.YEAR);
+	}
+	public int getMonth() {
+		return calendar.get(Calendar.MONTH);
 	}
 
 	/**
@@ -690,11 +742,6 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 		GregorianCalendar tempCalendar = getTemporaryCalendar();
 		tempCalendar.set(Calendar.DAY_OF_MONTH, newDay);
 		firePropertyChange(DAY_PROPERTY, null, tempCalendar);
-	}
-
-	protected void setMonthAndYear(int month, int year) {
-		yearChooser.setYear(year);
-		monthChooser.setMonth(month);
 	}
 
 	private int diffMonth(int pMonthDiff) {

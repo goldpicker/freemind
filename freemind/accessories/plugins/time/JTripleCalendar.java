@@ -118,11 +118,18 @@ public class JTripleCalendar extends JPanel implements PropertyChangeListener {
 		public void setDate(Calendar calendar) {
 			int year = calendar.get(Calendar.YEAR);
 			int month = calendar.get(Calendar.MONTH);
-			monthChooser.setMonth(month);
-			yearChooser.setYear(year);
-			// monthYearLabel.setText(toMonthYearLabelString(calendar));
-			dayChooser.setYear(year);
-			dayChooser.setMonth(month);
+			if(monthChooser.getMonth() != month) {
+				monthChooser.setMonth(month);
+			}
+			if(yearChooser.getYear() != year) {
+				yearChooser.setYear(year);
+			}
+			if(dayChooser.getYear() != year) {
+				dayChooser.setYear(year);
+			}
+			if(dayChooser.getMonth() != month) {
+				dayChooser.setMonth(month);
+			}
 			dayChooser.setDay(calendar.get(Calendar.DAY_OF_MONTH));
 		}
 
@@ -169,15 +176,6 @@ public class JTripleCalendar extends JPanel implements PropertyChangeListener {
 					super.setEnabled(true);
 				}
 
-				/* (non-Javadoc)
-				 * @see accessories.plugins.time.JDayChooser#setMonthAndYear(int, int, java.util.GregorianCalendar)
-				 */
-				@Override
-				protected void setMonthAndYear(int pMonth, int pYear) {
-					mIgnoreChangeEvent = true;
-					super.setMonthAndYear(pMonth, pYear);
-					mIgnoreChangeEvent = false;
-				}
 			};
 		};
 	
