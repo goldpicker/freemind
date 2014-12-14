@@ -133,6 +133,53 @@ output_debug_info() {
 	fi
 }
 
+findFreeMindJar() {
+	if [ -L "$1" ] && [ -x $(which readlink) ]
+	then # if the script is a link and we have 'readlink' to follow it
+		# -m should be faster and link does always resolve, else this script
+		# wouldn't be called, would it?
+		freefile=$(readlink -mn "$1")
+		_debug "Link '$1' resolved to '${freefile}'."
+	else
+		freefile="$1"
+	fi
+	freepath=$(dirname "${freefile}")
+	freepath="${freepath%/bin}" # nothing happens if freemind is not installed
+	                            # under something/bin
+	
+	# we try different possibilities to find freemind.jar
+	for jar in "${FREEMIND_BASE_DIR}" \
+		"${freepath}" "${freepath}/share/freemind" "${freepath}/freemind"
+	do
+		if [ -f "${jar}/lib/freemind.jar" ]
+		then
+			freedir="${jar}"
+			_debug "Freemind Directory is '${jar}'."
+			break
+		fi
+	done
+
+}
+
+fillClassPath() {
+# The CLASSPATH also lets one specify additional jars, which is good, if
+# you want to add a new Look&Feel jar (the motif one is so ugly...).
+# 
+CLASSPATH="${ADD_JARS}:${CLASSPATH}:${freedir}/lib/freemind.jar:\
+${freedir}/lib/jibx/jibx-run.jar:\
+${freedir}/lib/jibx/xpp3.jar:\
+${freedir}/lib/bindings.jar:\
+${freedir}/lib/commons-lang-2.0.jar:\
+${freedir}/lib/jgoodies-forms.jar:\
+${freedir}/lib/jgoodies-common.jar:\
+${freedir}/lib/jortho.jar:\
+${freedir}/lib/xalan.jar:\
+${freedir}/lib/serializer.jar:\
+${freedir}/lib/xml-apis.jar:\
+${freedir}/lib/xercesImpl.jar:\
+${freedir}"
+}
+
 ########## START MAIN PART #############################################
 
 #--------- Put the environment together --------------------------------
@@ -148,30 +195,7 @@ fi
 
 output_debug_info
 
-if [ -L "$0" ] && [ -x $(which readlink) ]
-then # if the script is a link and we have 'readlink' to follow it
-	# -m should be faster and link does always resolve, else this script
-	# wouldn't be called, would it?
-	freefile=$(readlink -mn "$0")
-	_debug "Link '$0' resolved to '${freefile}'."
-else
-	freefile="$0"
-fi
-freepath=$(dirname "${freefile}")
-freepath="${freepath%/bin}" # nothing happens if freemind is not installed
-                            # under something/bin
-
-# we try different possibilities to find freemind.jar
-for jar in "${FREEMIND_BASE_DIR}" \
-	"${freepath}" "${freepath}/share/freemind" "${freepath}/freemind"
-do
-	if [ -f "${jar}/lib/freemind.jar" ]
-	then
-		freedir="${jar}"
-		_debug "Freemind Directory is '${jar}'."
-		break
-	fi
-done
+findFreeMindJar "$0"
 
 if [ -z "${freedir}" ]
 then
@@ -192,22 +216,13 @@ fi
 
 #--------- Call (at last) FreeMind -------------------------------------
 
-# The CLASSPATH also lets one specify additional jars, which is good, if
-# you want to add a new Look&Feel jar (the motif one is so ugly...).
-# 
-CLASSPATH="${ADD_JARS}:${CLASSPATH}:${freedir}/lib/freemind.jar:\
-${freedir}/lib/jibx/jibx-run.jar:\
-${freedir}/lib/jibx/xpp3.jar:\
-${freedir}/lib/bindings.jar:\
-${freedir}/lib/commons-lang-2.0.jar:\
-${freedir}/lib/jgoodies-forms.jar:\
-${freedir}/lib/jgoodies-common.jar:\
-${freedir}/lib/jortho.jar:\
-${freedir}/lib/xalan.jar:\
-${freedir}/lib/serializer.jar:\
-${freedir}/lib/xml-apis.jar:\
-${freedir}/lib/xercesImpl.jar:\
-${freedir}"
+fillClassPath
+
+if [ "${FREEMIND_RUN_TYPE}" = "server" ]
+then
+	exit 0
+fi
+
 if [ "${JAVA_TYPE}" = "sun" ]
 then
 	_debug "Calling: '${JAVACMD} -Dfreemind.base.dir=${freedir} -cp ${CLASSPATH} freemind.main.FreeMindStarter  $@'."
