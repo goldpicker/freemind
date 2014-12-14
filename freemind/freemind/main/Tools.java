@@ -600,7 +600,7 @@ public class Tools {
 	}
 
 	public static class IntHolder {
-		private int value;
+		private int value=0;
 
 		public IntHolder() {
 		}
@@ -619,6 +619,10 @@ public class Tools {
 
 		public String toString() {
 			return new String("IntHolder(") + value + ")";
+		}
+		
+		public void increase() {
+			value++;
 		}
 	}
 

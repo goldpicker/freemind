@@ -34,6 +34,7 @@
 	<classpathentry kind="lib" path="lib/xalan.jar"/>
 	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/xml-apis.jar"/>
+	<classpathentry kind="lib" path="/home/foltin/java/freemind/0_9_0/freemind/lib/jsoup.jar" sourcepath="/home/foltin/programming/java/jsoup-1.8.1-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/jgoodies-forms.jar" sourcepath="lib/jgoodies-forms-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jgoodies-common.jar"/>

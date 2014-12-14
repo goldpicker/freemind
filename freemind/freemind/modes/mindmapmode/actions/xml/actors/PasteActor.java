@@ -319,22 +319,31 @@ public class PasteActor extends XmlActorAdapter {
 			// why.
 			// { Alternative pasting of HTML
 			setWaitingCursor(true);
+			System.err.println("directHtmlFlavor (original): " + textFromClipboard);
 			textFromClipboard = textFromClipboard
-					.replaceFirst("(?i)(?s)<head>.*</head>", "")
-					.replaceFirst("(?i)(?s)^.*<html[^>]*>", "<html>")
-					.replaceFirst("(?i)(?s)<body [^>]*>", "<body>")
+					.replaceAll("(?i)(?s)<meta[^>]*>", "")
+					.replaceAll("(?i)(?s)<head>.*?</head>", "")
+					.replaceAll("(?i)(?s)</?html[^>]*>", "")
+					.replaceAll("(?i)(?s)</?body[^>]*>", "")
 					.replaceAll("(?i)(?s)<script.*?>.*?</script>", "")
-					.replaceAll("(?i)(?s)</?tbody.*?>", ""). // Java HTML Editor
+					// Java HTML Editor
 					// does not like
 					// the tag.
-					replaceAll("(?i)(?s)<!--.*?-->", ""). // Java HTML Editor
+					.replaceAll("(?i)(?s)</?tbody.*?>", ""). 
+					// Java HTML Editor
 					// shows comments in
 					// not very nice
 					// manner.
-					replaceAll("(?i)(?s)</?o[^>]*>", ""); // Java HTML Editor
-			// does not like
-			// Microsoft Word's
-			// <o> tag.
+					replaceAll("(?i)(?s)<!--.*?-->", ""). 
+					// Java HTML Editor
+					// does not like
+					// Microsoft Word's
+					// <o> tag.
+					replaceAll("(?i)(?s)</?o[^>]*>", "");
+			textFromClipboard = "<html><body>"+textFromClipboard + "</body></html>"; 
+			// now, try to identify indentations of the form <ul><li>..</li>...</ul> or <p ...> with styles 
+			
+			System.err.println("directHtmlFlavor: " + textFromClipboard);
 
 			if (Tools.safeEquals(
 					getExMapFeedback().getProperty(
@@ -373,7 +382,7 @@ public class PasteActor extends XmlActorAdapter {
 		public void paste(Object TransferData, MindMapNode target,
 				boolean asSibling, boolean isLeft, Transferable t)
 				throws UnsupportedFlavorException, IOException {
-			// System.err.println("htmlFlavor");
+			System.err.println("htmlFlavor");
 			String textFromClipboard = (String) TransferData;
 			// ^ This outputs transfer data to standard output. I don't know
 			// why.
@@ -462,7 +471,7 @@ public class PasteActor extends XmlActorAdapter {
 		public void paste(Object TransferData, MindMapNode target,
 				boolean asSibling, boolean isLeft, Transferable t)
 				throws UnsupportedFlavorException, IOException {
-			// System.err.println("stringFlavor");
+			 System.err.println("stringFlavor");
 			pasteStringWithoutRedisplay(t, target, asSibling, isLeft);
 		}
 
@@ -642,6 +651,7 @@ public class PasteActor extends XmlActorAdapter {
 
 		for (int i = 0; i < textLines.length; ++i) {
 			String text = textLines[i];
+//			System.out.println("Text to paste: "+text);
 			text = text.replaceAll("\t", "        ");
 			if (text.matches(" *")) {
 				continue;

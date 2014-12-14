@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.event.EventListenerList;
@@ -53,8 +54,10 @@ import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
 import freemind.modes.attributes.Attribute;
 
-final class TestMindMapNode implements MindMapNode {
+public final class TestMindMapNode implements MindMapNode {
 	private String text = "";
+	private Vector<TestMindMapNode> children = new Vector<TestMindMapNode>();
+	private TestMindMapNode mNewParent;
 
 	public String getText() {
 		return text;
@@ -78,15 +81,15 @@ final class TestMindMapNode implements MindMapNode {
 	}
 
 	public ListIterator childrenFolded() {
-		return null;
+		return children.listIterator();
 	}
 
 	public ListIterator childrenUnfolded() {
-		return null;
+		return children.listIterator();
 	}
 
 	public boolean hasChildren() {
-		return false;
+		return !children.isEmpty();
 	}
 
 	public FilterInfo getFilterInfo() {
@@ -94,7 +97,7 @@ final class TestMindMapNode implements MindMapNode {
 	}
 
 	public int getChildPosition(MindMapNode childNode) {
-		return 0;
+		return children.indexOf(childNode);
 	}
 
 	public MindMapNode getPreferredChild() {
@@ -136,7 +139,7 @@ final class TestMindMapNode implements MindMapNode {
 	}
 
 	public MindMapNode getParentNode() {
-		return null;
+		return mNewParent;
 	}
 
 	public boolean isBold() {
@@ -337,12 +340,15 @@ final class TestMindMapNode implements MindMapNode {
 	}
 
 	public void insert(MutableTreeNode child, int index) {
+		children.insertElementAt((TestMindMapNode) child, index);
 	}
 
 	public void remove(int index) {
+		children.remove(index);
 	}
 
 	public void remove(MutableTreeNode node) {
+		children.remove(node);
 	}
 
 	public void setUserObject(Object object) {
@@ -352,18 +358,19 @@ final class TestMindMapNode implements MindMapNode {
 	}
 
 	public void setParent(MutableTreeNode newParent) {
+		mNewParent = (TestMindMapNode) newParent;
 	}
 
 	public TreeNode getChildAt(int childIndex) {
-		return null;
+		return children.get(childIndex);
 	}
 
 	public int getChildCount() {
-		return 0;
+		return children.size();
 	}
 
 	public TreeNode getParent() {
-		return null;
+		return mNewParent;
 	}
 
 	public int getIndex(TreeNode node) {
@@ -379,7 +386,7 @@ final class TestMindMapNode implements MindMapNode {
 	}
 
 	public Enumeration children() {
-		return null;
+		return children.elements();
 	}
 
 	public String getXmlText() {
@@ -400,7 +407,7 @@ final class TestMindMapNode implements MindMapNode {
 	}
 
 	public List getChildren() {
-		return null;
+		return children;
 	}
 
 	public String getNoteText() {

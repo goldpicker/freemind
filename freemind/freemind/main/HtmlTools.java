@@ -34,9 +34,17 @@ import java.util.regex.Pattern;
 import javax.swing.text.BadLocationException;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.select.NodeTraversor;
+import org.jsoup.select.NodeVisitor;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import freemind.modes.MindMapNode;
 
 /** */
 public class HtmlTools {
@@ -55,7 +63,7 @@ public class HtmlTools {
 			+ "br|area|base|basefont|" + "bgsound|button|col|colgroup|embed|hr"
 			+ "|img|input|isindex|keygen|link|meta"
 			+ "|object|plaintext|spacer|wbr" + ")(\\s[^>]*)?)/>");
-
+	
 	private static final Pattern TAGS_PATTERN = Pattern.compile("(?s)<[^><]*>");
 
 	public static final String SP = "&#160;";
@@ -736,4 +744,108 @@ public class HtmlTools {
 		return result.toString();
 	}
 
+	public interface NodeCreator {
+		MindMapNode createChild(MindMapNode pParent);
+	}
+
+	/**
+	 * @author foltin
+	 * @date 10.12.2014
+	 */
+	private final class HtmlNodeVisitor implements NodeVisitor {
+		boolean isNewline = true;
+		private MindMapNode mParentNode;
+		private MindMapNode mCurrentNode = null;
+		private NodeCreator mCreator;
+		private boolean mFirstUl;
+
+		/**
+		 * @param pParentNode
+		 * @param pCreator
+		 */
+		public HtmlNodeVisitor(MindMapNode pParentNode, NodeCreator pCreator) {
+			mParentNode = pParentNode;
+			mCreator = pCreator;
+			mFirstUl = true;
+		}
+
+		@Override
+		public void head(Node node, int depth) {
+			try {
+				if (node instanceof TextNode) {
+					TextNode textNode = (TextNode) node;
+					String text = textNode.text().replace('\u00A0', ' ').trim();
+					if (!text.isEmpty()) {
+						if (mCurrentNode == null) {
+							// create a new sibling:
+							mCurrentNode = mCreator.createChild(mParentNode);
+						}
+//						System.out.println("TEXT+: " + text);
+						mCurrentNode.setText(mCurrentNode.getText() + text);
+						isNewline = false;
+					}
+				} else if (node instanceof Element) {
+					Element element = (Element) node;
+//					System.out.println("ELEMENT:" + element.tagName()
+//							+ ", STYLE:" + element.attr("style"));
+					if (element.tagName().equals("ul")) {
+						if(mFirstUl) {
+							// the first ul is ignored.
+							mFirstUl = false;
+ 						} else {
+							if (mCurrentNode == null) {
+								// create one:
+								mCurrentNode = mCreator.createChild(mParentNode);
+							}
+							mParentNode = mCurrentNode;
+							mCurrentNode = null;
+ 						}
+					} else {
+						if (!isNewline) {
+							if ((element.isBlock()
+									|| element.tagName().equals("br") || element
+									.tagName().equals("li"))) {
+								isNewline = true;
+								if (mCurrentNode == null || !mCurrentNode.getText().isEmpty()) {
+									// next sibling, same parent, only if already content present.
+									mCurrentNode = null;
+								}
+							}
+						}
+					}
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				freemind.main.Resources.getInstance().logException(e);
+			}
+		}
+
+		@Override
+		public void tail(Node node, int depth) {
+			try {
+				// System.out.println("/NODE:"+node.getClass() + ", '" + node +
+				// "'");
+				if (node instanceof Element) {
+					Element element = (Element) node;
+//					System.out.println("/ELEMENT:" + element.tagName()
+//							+ ", STYLE:" + element.attr("style"));
+					if (element.tagName().equals("ul")) {
+						mParentNode = mParentNode.getParentNode();
+					}
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				freemind.main.Resources.getInstance().logException(e);
+			}
+		}
+	}
+
+
+	
+	/**
+	 * Uses JSoup to parse HTML
+	 */
+	public void insertHtmlIntoNodes(String pText, MindMapNode pParentNode, NodeCreator pCreator) {
+		new NodeTraversor(new HtmlNodeVisitor(pParentNode, pCreator)).traverse(Jsoup.parse(pText));
+	}
 }

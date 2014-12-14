@@ -58,8 +58,9 @@
 	<property name="xsltLib2" location="lib/serializer.jar"/>
 	<property name="xsltLib3" location="lib/xml-apis.jar"/>
 	<property name="xsltLib4" location="lib/xercesImpl.jar"/>
+	<property name="jsoup" location="lib/jsoup.jar"/>
 
-	<property name="classpath" value="${jibxruntimelibs}:${jibxjar}:${formsLib}:${simplyHtml}:${spellLib}:${xsltLib}:${xsltLib2}:${xsltLib3}:${xsltLib4}"/>
+	<property name="classpath" value="${jibxruntimelibs}:${jibxjar}:${formsLib}:${simplyHtml}:${spellLib}:${xsltLib}:${xsltLib2}:${xsltLib3}:${xsltLib4}:${jsoup}"/>
 	<path id="jars.path">
 		<fileset dir="${src}">
 			<include name="**/*.jar" />
@@ -255,6 +256,7 @@
 		<mkdir dir="${dist.lib}" />
 		<copy todir="${dist.lib}">
 			<fileset dir="${src}/lib">
+				<include name="jsoup.jar"/>
 				<include name="jortho.jar"/>
 				<include name="xalan.jar"/>
 				<include name="serializer.jar"/>
@@ -473,7 +475,7 @@
 			<attribute name="Built-Number" value="${build.number}" />
 			<attribute name="Created-By" value="Joerg Mueller, Daniel Polansky, Christian Foltin, Dimitry Polivaev, and others." />
 			<attribute name="Main-Class" value="freemind.main.FreeMindStarter" />
-			<attribute name="Class-Path" value="freemind.jar .. commons-lang-2.0.jar jgoodies-forms.jar jgoodies-common.jar jibx/jibx-run.jar jibx/xpp3.jar jibx-run.jar xpp3.jar bindings.jar jortho.jar xalan.jar serializer.jar xml-apis.jar xercesImpl.jar SimplyHTML/gnu-regexp-1.1.4.jar gnu-regexp-1.1.4.jar SimplyHTML/SimplyHTML.jar SimplyHTML.jar"/>
+			<attribute name="Class-Path" value="freemind.jar .. commons-lang-2.0.jar jgoodies-forms.jar jgoodies-common.jar jibx/jibx-run.jar jibx/xpp3.jar jibx-run.jar xpp3.jar bindings.jar jortho.jar xalan.jar serializer.jar xml-apis.jar xercesImpl.jar SimplyHTML/gnu-regexp-1.1.4.jar gnu-regexp-1.1.4.jar SimplyHTML/SimplyHTML.jar SimplyHTML.jar jsoup.jar"/>
 		</manifest>
 		<jar jarfile="${FM.jar}"
 		     manifest="${temp.manifest.file}"
@@ -598,6 +600,7 @@
 				<pathelement location="${jibxjar}"/>
 				<pathelement location="${spellLib}"/>
 				<pathelement path="${jibxruntimelibs}"/>
+				<pathelement path="${jsoup}"/>
 			</classpath>
 		</java>
 	</target>
