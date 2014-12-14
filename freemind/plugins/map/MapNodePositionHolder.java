@@ -311,6 +311,9 @@ public class MapNodePositionHolder extends MapNodePositionHolderBase {
 	 * @return
 	 */
 	public String getImageHtml() {
+		if(mTileSource == null) {
+			return super.getImageHtml();
+		}
 		TileSource tileSource = FreeMindMapController.getTileSourceByName(mTileSource).mTileSource;
 		int tileSize = tileSource.getTileSize();
 		int exactx = (int) OsmMercator.LonToX(mPosition.getLon(), mZoom);

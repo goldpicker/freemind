@@ -2416,7 +2416,7 @@ public class FreeMindMapController extends JMapController implements
 			results = (Searchresults) XmlBindingTools.getInstance().unMarshall(
 					result);
 			if (results == null) {
-				logger.warning(result + " can't be parsed");
+				logger.warning("URL: "  +b + ", result:" + result + " can't be parsed");
 			}
 		} catch (Exception e) {
 			logger.fine("Searching for " + b.toString() + " gave an error");
@@ -2442,6 +2442,16 @@ public class FreeMindMapController extends JMapController implements
 	}
 
 	public String wget(StringBuilder b) throws MalformedURLException,
+	IOException, UnsupportedEncodingException {
+		String result = wgetInternal(b);
+		if(result.matches("\\s*<html>\\s*<script language=\"Javascript\">\\s*document.location.reload()\\s*</script>\\s*</html>\\s*")) {
+			// again
+			logger.info("Received: " + result + " and therefore reload.");
+			result = wgetInternal(b);
+		}
+		return result;
+	}
+	public String wgetInternal(StringBuilder b) throws MalformedURLException,
 			IOException, UnsupportedEncodingException {
 		String result;
 		mMindMapController.getFrame().setWaitingCursor(true);
