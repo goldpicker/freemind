@@ -538,6 +538,14 @@ public class HtmlConversionTests extends FreeMindTestBase {
 		
 		assertEquals(5, created.getValue());
 		assertEquals("Only two in the first level", 2, rootNode.getChildCount());
+
+		created.setValue(0);
+		rootNode = new TestMindMapNode();
+		rootNode.setText("myRoot3");
+		instance.insertHtmlIntoNodes(testHtml3, rootNode, creator);
+		
+		assertEquals(13, created.getValue());
+		assertEquals("first level nodes", 10, rootNode.getChildCount());
 	}
 	
 }

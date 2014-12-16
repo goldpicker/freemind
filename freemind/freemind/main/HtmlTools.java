@@ -66,6 +66,8 @@ public class HtmlTools {
 	
 	private static final Pattern TAGS_PATTERN = Pattern.compile("(?s)<[^><]*>");
 
+	private static final Pattern LEVEL_PATTERN = Pattern.compile("level([0-9]+)");
+
 	public static final String SP = "&#160;";
 
 	/**
@@ -754,6 +756,7 @@ public class HtmlTools {
 	 */
 	private final class HtmlNodeVisitor implements NodeVisitor {
 		boolean isNewline = true;
+		int	mLevel = 0;
 		private MindMapNode mParentNode;
 		private MindMapNode mCurrentNode = null;
 		private NodeCreator mCreator;
@@ -780,27 +783,32 @@ public class HtmlTools {
 							// create a new sibling:
 							mCurrentNode = mCreator.createChild(mParentNode);
 						}
-//						System.out.println("TEXT+: " + text);
+						System.out.println("TEXT+: " + text);
 						mCurrentNode.setText(mCurrentNode.getText() + text);
 						isNewline = false;
 					}
 				} else if (node instanceof Element) {
 					Element element = (Element) node;
-//					System.out.println("ELEMENT:" + element.tagName()
-//							+ ", STYLE:" + element.attr("style"));
 					if (element.tagName().equals("ul")) {
-						if(mFirstUl) {
-							// the first ul is ignored.
-							mFirstUl = false;
- 						} else {
-							if (mCurrentNode == null) {
-								// create one:
-								mCurrentNode = mCreator.createChild(mParentNode);
-							}
-							mParentNode = mCurrentNode;
-							mCurrentNode = null;
- 						}
+						createChild();
 					} else {
+						Matcher matcher = LEVEL_PATTERN.matcher(element.attr("style"));
+						if(element.tagName().equals("p") && matcher.find()) {
+							// special handling for outlook 
+							int newLevel = Integer.valueOf(matcher.group(1));
+							while(newLevel>mLevel) {
+								System.out.println("Level increase from: " + mLevel + " to " + newLevel);
+								createChild();
+								mLevel++;
+							}
+							// test for other direction
+							while(newLevel < mLevel) {
+								System.out.println("Level decrease from: " + mLevel + " to " + newLevel);
+								backToParent();
+								mLevel--;
+							}
+							isNewline = false;
+						}
 						if (!isNewline) {
 							if ((element.isBlock()
 									|| element.tagName().equals("br") || element
@@ -815,7 +823,6 @@ public class HtmlTools {
 					}
 				}
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				freemind.main.Resources.getInstance().logException(e);
 			}
 		}
@@ -823,20 +830,33 @@ public class HtmlTools {
 		@Override
 		public void tail(Node node, int depth) {
 			try {
-				// System.out.println("/NODE:"+node.getClass() + ", '" + node +
-				// "'");
 				if (node instanceof Element) {
 					Element element = (Element) node;
-//					System.out.println("/ELEMENT:" + element.tagName()
-//							+ ", STYLE:" + element.attr("style"));
 					if (element.tagName().equals("ul")) {
-						mParentNode = mParentNode.getParentNode();
+						backToParent();
 					}
 				}
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				freemind.main.Resources.getInstance().logException(e);
 			}
+		}
+
+		private void createChild() {
+			if(mFirstUl) {
+				// the first ul is ignored.
+				mFirstUl = false;
+			} else {
+				if (mCurrentNode == null) {
+					// create one:
+					mCurrentNode = mCreator.createChild(mParentNode);
+				}
+				mParentNode = mCurrentNode;
+				mCurrentNode = null;
+			}
+		}
+		
+		private void backToParent() {
+			mParentNode = mParentNode.getParentNode();
 		}
 	}
 
