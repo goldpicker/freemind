@@ -748,6 +748,7 @@ public class HtmlTools {
 
 	public interface NodeCreator {
 		MindMapNode createChild(MindMapNode pParent);
+		void setText(String pText, MindMapNode pNode);
 	}
 
 	/**
@@ -783,8 +784,8 @@ public class HtmlTools {
 							// create a new sibling:
 							mCurrentNode = mCreator.createChild(mParentNode);
 						}
-						System.out.println("TEXT+: " + text);
-						mCurrentNode.setText(mCurrentNode.getText() + text);
+//						System.out.println("TEXT+: " + text);
+						mCreator.setText(mCurrentNode.getText() + text, mCurrentNode);
 						isNewline = false;
 					}
 				} else if (node instanceof Element) {
@@ -797,13 +798,13 @@ public class HtmlTools {
 							// special handling for outlook 
 							int newLevel = Integer.valueOf(matcher.group(1));
 							while(newLevel>mLevel) {
-								System.out.println("Level increase from: " + mLevel + " to " + newLevel);
+//								System.out.println("Level increase from: " + mLevel + " to " + newLevel);
 								createChild();
 								mLevel++;
 							}
 							// test for other direction
 							while(newLevel < mLevel) {
-								System.out.println("Level decrease from: " + mLevel + " to " + newLevel);
+//								System.out.println("Level decrease from: " + mLevel + " to " + newLevel);
 								backToParent();
 								mLevel--;
 							}

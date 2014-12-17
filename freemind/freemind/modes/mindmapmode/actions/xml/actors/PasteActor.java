@@ -352,6 +352,11 @@ public class PasteActor extends XmlActorAdapter {
 							getExMapFeedback().getMap());
 					insertNodeInto(node, pParent);
 					return node;
+				}
+
+				@Override
+				public void setText(String pText, MindMapNode pNode) {
+					getExMapFeedback().setNodeText(pNode, pText);
 				}});
 			setWaitingCursor(false);
 			return;
