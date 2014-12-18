@@ -1175,6 +1175,9 @@ public class OptionPanel implements TextTranslator {
 		controls.add(new BooleanProperty("unfold_on_paste.tooltip",
 				"unfold_on_paste")); // true
 
+		controls.add(new BooleanProperty(FreeMind.RESOUCES_PASTE_HTML_STRUCTURE+TOOLTIP_EXT,
+				FreeMind.RESOUCES_PASTE_HTML_STRUCTURE)); // true
+		
 		controls.add(new BooleanProperty("disable_cursor_move_paper.tooltip",
 				"disable_cursor_move_paper")); // false
 

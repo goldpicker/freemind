@@ -233,6 +233,7 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 
 	public static final String RESOURCES_OPTIONAL_SPLIT_DIVIDER_POSITION = "resources_optional_split_divider_position";
 
+	public static final String RESOUCES_PASTE_HTML_STRUCTURE = "paste_html_structure";
 
 	// public static final String defaultPropsURL = "freemind.properties";
 	// public static Properties defaultProps;

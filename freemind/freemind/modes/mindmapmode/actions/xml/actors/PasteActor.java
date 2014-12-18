@@ -320,7 +320,7 @@ public class PasteActor extends XmlActorAdapter {
 			// why.
 			// { Alternative pasting of HTML
 			setWaitingCursor(true);
-			System.err.println("directHtmlFlavor (original): " + textFromClipboard);
+			logger.finer("directHtmlFlavor (original): " + textFromClipboard);
 			textFromClipboard = textFromClipboard
 					.replaceAll("(?i)(?s)<meta[^>]*>", "")
 					.replaceAll("(?i)(?s)<head>.*?</head>", "")
@@ -342,49 +342,51 @@ public class PasteActor extends XmlActorAdapter {
 					// <o> tag.
 					replaceAll("(?i)(?s)</?o[^>]*>", "");
 			textFromClipboard = "<html><body>"+textFromClipboard + "</body></html>"; 
-			// now, try to identify indentations of the form <ul><li>..</li>...</ul> or <p ...> with styles 
-			System.err.println("directHtmlFlavor: " + textFromClipboard);
-			HtmlTools.getInstance().insertHtmlIntoNodes(textFromClipboard, target, new NodeCreator() {
-
-				@Override
-				public MindMapNode createChild(MindMapNode pParent) {
-					MindMapNode node = getExMapFeedback().newNode("",
+			logger.finer("directHtmlFlavor: " + textFromClipboard);
+			if(Resources.getInstance().getBoolProperty(
+				FreeMind.RESOUCES_PASTE_HTML_STRUCTURE)){
+				// now, try to identify indentations of the form <ul><li>..</li>...</ul> or <p ...> with styles 
+				HtmlTools.getInstance().insertHtmlIntoNodes(textFromClipboard, target, new NodeCreator() {
+	
+					@Override
+					public MindMapNode createChild(MindMapNode pParent) {
+						MindMapNode node = getExMapFeedback().newNode("",
+								getExMapFeedback().getMap());
+						insertNodeInto(node, pParent);
+						return node;
+					}
+	
+					@Override
+					public void setText(String pText, MindMapNode pNode) {
+						getExMapFeedback().setNodeText(pNode, pText);
+					}});
+				} else {
+					if (Tools.safeEquals(
+							getExMapFeedback().getProperty(
+									"cut_out_pictures_when_pasting_html"), "true")) {
+						textFromClipboard = textFromClipboard.replaceAll(
+								"(?i)(?s)<img[^>]*>", "");
+					} // Cut out images.
+		
+					textFromClipboard = HtmlTools
+							.unescapeHTMLUnicodeEntity(textFromClipboard);
+		
+					MindMapNode node = getExMapFeedback().newNode(textFromClipboard,
 							getExMapFeedback().getMap());
-					insertNodeInto(node, pParent);
-					return node;
-				}
-
-				@Override
-				public void setText(String pText, MindMapNode pNode) {
-					getExMapFeedback().setNodeText(pNode, pText);
-				}});
+					// if only one <a>...</a> element found, set link
+					Matcher m = HREF_PATTERN.matcher(textFromClipboard);
+					if (m.matches()) {
+						final String body = m.group(2);
+						if (!body.matches(".*<\\s*a.*")) {
+							final String href = m.group(1);
+							node.setLink(href);
+						}
+					}
+		
+					insertNodeInto(node, target);
+					// addUndoAction(node);
+			}
 			setWaitingCursor(false);
-			return;
-//			if (Tools.safeEquals(
-//					getExMapFeedback().getProperty(
-//							"cut_out_pictures_when_pasting_html"), "true")) {
-//				textFromClipboard = textFromClipboard.replaceAll(
-//						"(?i)(?s)<img[^>]*>", "");
-//			} // Cut out images.
-//
-//			textFromClipboard = HtmlTools
-//					.unescapeHTMLUnicodeEntity(textFromClipboard);
-//
-//			MindMapNode node = getExMapFeedback().newNode(textFromClipboard,
-//					getExMapFeedback().getMap());
-//			// if only one <a>...</a> element found, set link
-//			Matcher m = HREF_PATTERN.matcher(textFromClipboard);
-//			if (m.matches()) {
-//				final String body = m.group(2);
-//				if (!body.matches(".*<\\s*a.*")) {
-//					final String href = m.group(1);
-//					node.setLink(href);
-//				}
-//			}
-//
-//			insertNodeInto(node, target);
-//			// addUndoAction(node);
-//			setWaitingCursor(false);
 		}
 
 		public DataFlavor getDataFlavor() {
@@ -617,7 +619,7 @@ public class PasteActor extends XmlActorAdapter {
 	static final Pattern nonLinkCharacter = Pattern.compile("[ \n()'\",;]");
 
 	/**
-	 * Paste String (as opposed to other flavours)
+	 * Paste String (as opposed to other flavors)
 	 * 
 	 * Split the text into lines; determine the new tree structure by the number
 	 * of leading spaces in lines. In case that trimmed line starts with
@@ -821,6 +823,7 @@ public class PasteActor extends XmlActorAdapter {
 					// Thus, we count its lines.
 					final int childCount;
 					try {
+						// FIXME: count correctly
 						childCount = determineAmountOfNewNodes(t);
 						pUndoAction.setNodeAmount(childCount);
 					} catch (Exception e) {
