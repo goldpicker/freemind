@@ -530,6 +530,10 @@ public class HtmlConversionTests extends FreeMindTestBase {
 			public void setText(String pText, MindMapNode pNode) {
 				pNode.setText(pText);
 			}
+
+			@Override
+			public void setLink(String pLink, MindMapNode pNode) {
+			}
 			
 		};
 		instance.insertHtmlIntoNodes(testHtml1, rootNode, creator);

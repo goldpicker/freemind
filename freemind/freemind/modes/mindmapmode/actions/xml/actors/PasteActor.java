@@ -312,10 +312,11 @@ public class PasteActor extends XmlActorAdapter {
 			String textFromClipboard = (String) transferData;
 			// workaround for java decoding bug
 			// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6740877
-			if (textFromClipboard.charAt(0) == 65533) {
-				throw new UnsupportedFlavorException(
-						MindMapNodesSelection.htmlFlavor);
-			}
+			textFromClipboard = textFromClipboard.replace((char) 65533, ' ');
+//			if (textFromClipboard.charAt(0) == 65533) {
+//				throw new UnsupportedFlavorException(
+//						MindMapNodesSelection.htmlFlavor);
+//			}
 			// ^ This outputs transfer data to standard output. I don't know
 			// why.
 			// { Alternative pasting of HTML
@@ -359,6 +360,12 @@ public class PasteActor extends XmlActorAdapter {
 					@Override
 					public void setText(String pText, MindMapNode pNode) {
 						getExMapFeedback().setNodeText(pNode, pText);
+					}
+
+					@Override
+					public void setLink(String pLink, MindMapNode pNode) {
+						getExMapFeedback().setLink(pNode, pLink);
+						
 					}});
 				} else {
 					if (Tools.safeEquals(

@@ -56,7 +56,7 @@ public class HtmlTools {
 	private static HtmlTools sInstance = new HtmlTools();
 
 	private static final Pattern HTML_PATTERN = Pattern
-			.compile("(?s)^\\s*<\\s*html.*?>.*");
+			.compile("(?s).*<\\s*html.*?>.*");
 	private static final Pattern FIND_TAGS_PATTERN = Pattern
 			.compile("([^<]*)(<[^>]+>)");
 	private static final Pattern SLASHED_TAGS_PATTERN = Pattern.compile("<(("
@@ -305,17 +305,9 @@ public class HtmlTools {
 	}
 
 	/**
+	 * Searches for <html> tag in text.
      */
 	public static boolean isHtmlNode(String text) {
-		for (int i = 0; i < text.length(); i++) {
-			final char ch = text.charAt(i);
-			if (ch == '<') {
-				break;
-			}
-			if (!Character.isWhitespace(ch) || i == text.length()) {
-				return false;
-			}
-		}
 		return HTML_PATTERN.matcher(text.toLowerCase(Locale.ENGLISH)).matches();
 	}
 
@@ -749,6 +741,7 @@ public class HtmlTools {
 	public interface NodeCreator {
 		MindMapNode createChild(MindMapNode pParent);
 		void setText(String pText, MindMapNode pNode);
+		void setLink(String pLink, MindMapNode pNode);
 	}
 
 	/**
@@ -762,6 +755,7 @@ public class HtmlTools {
 		private MindMapNode mCurrentNode = null;
 		private NodeCreator mCreator;
 		private boolean mFirstUl;
+		private String mLink;
 
 		/**
 		 * @param pParentNode
@@ -786,10 +780,17 @@ public class HtmlTools {
 						}
 //						System.out.println("TEXT+: " + text);
 						mCreator.setText(mCurrentNode.getText() + text, mCurrentNode);
+						if(mLink != null) {
+							mCreator.setLink(mLink, mCurrentNode);
+							mLink = null;
+						}
 						isNewline = false;
 					}
 				} else if (node instanceof Element) {
 					Element element = (Element) node;
+					if("a".equals(element.tagName())) {
+						mLink = element.attr("href");
+					}
 					if (element.tagName().equals("ul")) {
 						createChild();
 					} else {
