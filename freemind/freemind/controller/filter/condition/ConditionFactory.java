@@ -34,21 +34,25 @@ import freemind.main.XMLElement;
  * @author dimitri 17.05.2005
  */
 public class ConditionFactory {
+	
+	static final NamedObject FILTER_NODE= Resources.getInstance().createTranslatedString("filter_node");
+	static final NamedObject FILTER_ICON = Resources.getInstance().createTranslatedString("filter_icon");
 
-	static final String FILTER_ICON = "filter_icon";
-	static final String FILTER_NODE = "filter_node";
-
-	static final String FILTER_DOES_NOT_EXIST = "filter_does_not_exist";
-	static final String FILTER_EXIST = "filter_exist";
-	static final String FILTER_CONTAINS = "filter_contains";
-	static final String FILTER_NOT_CONTAINS = "filter_not_contains";
-	static final String FILTER_IS_NOT_EQUAL_TO = "filter_is_not_equal_to";
-	static final String FILTER_IS_EQUAL_TO = "filter_is_equal_to";
-	static final String FILTER_LE = "<=";
-	static final String FILTER_LT = "<";
-	static final String FILTER_GE = ">=";
-	static final String FILTER_GT = ">";
+	static final NamedObject FILTER_CONTAINS = Resources.getInstance().createTranslatedString("filter_contains");
+	static final NamedObject FILTER_NOT_CONTAINS = Resources.getInstance().createTranslatedString("filter_not_contains") ;
+	static final NamedObject FILTER_IS_NOT_EQUAL_TO = Resources.getInstance().createTranslatedString("filter_is_not_equal_to") ;
+	static final NamedObject FILTER_IS_EQUAL_TO =Resources.getInstance().createTranslatedString("filter_is_equal_to") ;
+	static final NamedObject FILTER_LE = NamedObject.literal("<=");
+	static final NamedObject FILTER_LT = NamedObject.literal("<");
+	static final NamedObject FILTER_GE = NamedObject.literal(">=");
+	static final NamedObject FILTER_GT = NamedObject.literal(">");
+	
 	static final String FILTER_IGNORE_CASE = "filter_ignore_case";
+	
+	
+	
+	
+
 
 	/**
      *
@@ -109,38 +113,18 @@ public class ConditionFactory {
 
 	public NamedObject[] getNodeConditionNames() {
 		return new NamedObject[] {
-				// TranslatedString.create("filter_exist"),
-				// TranslatedString.create("filter_does_not_exist"),
-				Resources.getInstance().createTranslatedString(FILTER_CONTAINS),
-				Resources.getInstance().createTranslatedString(
-						FILTER_IS_EQUAL_TO),
-				Resources.getInstance().createTranslatedString(
-						FILTER_IS_NOT_EQUAL_TO),
-				NamedObject.literal(FILTER_GT), NamedObject.literal(FILTER_GE),
-				NamedObject.literal(FILTER_LE), NamedObject.literal(FILTER_LT), };
+				FILTER_CONTAINS, FILTER_IS_EQUAL_TO, FILTER_IS_NOT_EQUAL_TO,
+				FILTER_GT, FILTER_GE, FILTER_LE, FILTER_LT };
 	}
 
 	public Object[] getIconConditionNames() {
-		return new NamedObject[] { Resources.getInstance()
-				.createTranslatedString(FILTER_CONTAINS),                 
-			Resources.getInstance().createTranslatedString(FILTER_NOT_CONTAINS),
-		};
+		return new NamedObject[] { FILTER_CONTAINS, FILTER_NOT_CONTAINS};
 	}
 
 	public NamedObject[] getAttributeConditionNames() {
 		return new NamedObject[] {
-				Resources.getInstance().createTranslatedString(FILTER_EXIST),
-				Resources.getInstance().createTranslatedString(
-						FILTER_DOES_NOT_EXIST),
-				// TranslatedString.create("filter_contains"),
-				Resources.getInstance().createTranslatedString(
-						FILTER_IS_EQUAL_TO),
-				Resources.getInstance().createTranslatedString(
-						FILTER_IS_NOT_EQUAL_TO),
-				NamedObject.literal(FILTER_GT), NamedObject.literal(FILTER_GE),
-				NamedObject.literal(FILTER_LE), NamedObject.literal(FILTER_LT), };
+				FILTER_NODE, FILTER_ICON };
 	}
-
 	protected Condition createNodeCondition(NamedObject simpleCondition,
 			String value, boolean ignoreCase) {
 		if (ignoreCase) {
