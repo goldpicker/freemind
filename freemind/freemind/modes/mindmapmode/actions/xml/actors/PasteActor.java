@@ -60,6 +60,7 @@ import freemind.main.XMLParseException;
 import freemind.modes.ControllerAdapter;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MapAdapter;
+import freemind.modes.MindMap;
 import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
 import freemind.modes.NodeAdapter;
@@ -73,6 +74,7 @@ import freemind.modes.mindmapmode.actions.xml.ActionPair;
 public class PasteActor extends XmlActorAdapter {
 
 	protected static java.util.logging.Logger logger = null;
+
 	/**
 	 * @param pMapFeedback
 	 */
@@ -306,6 +308,41 @@ public class PasteActor extends XmlActorAdapter {
 
 	private class DirectHtmlFlavorHandler implements DataFlavorHandler {
 
+		private NodeCreator mNodeCreator;
+
+		/**
+		 * @param pNodeCreator the nodeCreator to set
+		 */
+		public void setNodeCreator(NodeCreator pNodeCreator) {
+			mNodeCreator = pNodeCreator;
+		}
+
+		/**
+		 * 
+		 */
+		private DirectHtmlFlavorHandler() {
+			mNodeCreator = new NodeCreator() {
+
+					@Override
+					public MindMapNode createChild(MindMapNode pParent) {
+						MindMapNode node = getExMapFeedback().newNode("",
+								getExMapFeedback().getMap());
+						insertNodeInto(node, pParent);
+						return node;
+					}
+
+					@Override
+					public void setText(String pText, MindMapNode pNode) {
+						getExMapFeedback().setNodeText(pNode, pText);
+					}
+
+					@Override
+					public void setLink(String pLink, MindMapNode pNode) {
+						getExMapFeedback().setLink(pNode, pLink);
+						
+					}};
+		}
+
 		public void paste(Object transferData, MindMapNode target,
 				boolean asSibling, boolean isLeft, Transferable t)
 				throws UnsupportedFlavorException, IOException {
@@ -344,54 +381,35 @@ public class PasteActor extends XmlActorAdapter {
 					replaceAll("(?i)(?s)</?o[^>]*>", "");
 			textFromClipboard = "<html><body>"+textFromClipboard + "</body></html>"; 
 			logger.finer("directHtmlFlavor: " + textFromClipboard);
-			if(Resources.getInstance().getBoolProperty(
-				FreeMind.RESOUCES_PASTE_HTML_STRUCTURE)){
-				// now, try to identify indentations of the form <ul><li>..</li>...</ul> or <p ...> with styles 
-				HtmlTools.getInstance().insertHtmlIntoNodes(textFromClipboard, target, new NodeCreator() {
+			if (Resources.getInstance().getBoolProperty(
+					FreeMind.RESOUCES_PASTE_HTML_STRUCTURE)) {
+				HtmlTools.getInstance().insertHtmlIntoNodes(textFromClipboard,
+						target, mNodeCreator);
+			} else {
+				if (Tools.safeEquals(
+						getExMapFeedback().getProperty(
+								"cut_out_pictures_when_pasting_html"), "true")) {
+					textFromClipboard = textFromClipboard.replaceAll(
+							"(?i)(?s)<img[^>]*>", "");
+				} // Cut out images.
 	
-					@Override
-					public MindMapNode createChild(MindMapNode pParent) {
-						MindMapNode node = getExMapFeedback().newNode("",
-								getExMapFeedback().getMap());
-						insertNodeInto(node, pParent);
-						return node;
-					}
+				textFromClipboard = HtmlTools
+						.unescapeHTMLUnicodeEntity(textFromClipboard);
 	
-					@Override
-					public void setText(String pText, MindMapNode pNode) {
-						getExMapFeedback().setNodeText(pNode, pText);
+				MindMapNode node = getExMapFeedback().newNode(textFromClipboard,
+						getExMapFeedback().getMap());
+				// if only one <a>...</a> element found, set link
+				Matcher m = HREF_PATTERN.matcher(textFromClipboard);
+				if (m.matches()) {
+					final String body = m.group(2);
+					if (!body.matches(".*<\\s*a.*")) {
+						final String href = m.group(1);
+						node.setLink(href);
 					}
-
-					@Override
-					public void setLink(String pLink, MindMapNode pNode) {
-						getExMapFeedback().setLink(pNode, pLink);
-						
-					}});
-				} else {
-					if (Tools.safeEquals(
-							getExMapFeedback().getProperty(
-									"cut_out_pictures_when_pasting_html"), "true")) {
-						textFromClipboard = textFromClipboard.replaceAll(
-								"(?i)(?s)<img[^>]*>", "");
-					} // Cut out images.
-		
-					textFromClipboard = HtmlTools
-							.unescapeHTMLUnicodeEntity(textFromClipboard);
-		
-					MindMapNode node = getExMapFeedback().newNode(textFromClipboard,
-							getExMapFeedback().getMap());
-					// if only one <a>...</a> element found, set link
-					Matcher m = HREF_PATTERN.matcher(textFromClipboard);
-					if (m.matches()) {
-						final String body = m.group(2);
-						if (!body.matches(".*<\\s*a.*")) {
-							final String href = m.group(1);
-							node.setLink(href);
-						}
-					}
-		
-					insertNodeInto(node, target);
-					// addUndoAction(node);
+				}
+	
+				insertNodeInto(node, target);
+				// addUndoAction(node);
 			}
 			setWaitingCursor(false);
 		}
@@ -801,24 +819,6 @@ public class PasteActor extends XmlActorAdapter {
 					amountAlreadySet = true;
 				}
 			}
-			if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-				String textFromClipboard;
-				textFromClipboard = (String) t
-						.getTransferData(DataFlavor.stringFlavor);
-				trans.setTransferableAsPlainText(HtmlTools
-						.makeValidXml(textFromClipboard));
-				if (pUndoAction != null && !amountAlreadySet) {
-					// determine amount of new nodes using the algorithm:
-					final int childCount = determineAmountOfNewNodes(t);
-					pUndoAction.setNodeAmount(childCount);
-					amountAlreadySet = true;
-				}
-			}
-			if (t.isDataFlavorSupported(MindMapNodesSelection.rtfFlavor)) {
-				// byte[] textFromClipboard = (byte[])
-				// t.getTransferData(MindMapNodesSelection.rtfFlavor);
-				// trans.setTransferableAsRTF(textFromClipboard.toString());
-			}
 			if (t.isDataFlavorSupported(MindMapNodesSelection.htmlFlavor)) {
 				String textFromClipboard;
 				textFromClipboard = (String) t
@@ -840,6 +840,24 @@ public class PasteActor extends XmlActorAdapter {
 					}
 					amountAlreadySet = true;
 				}
+			}
+			if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+				String textFromClipboard;
+				textFromClipboard = (String) t
+						.getTransferData(DataFlavor.stringFlavor);
+				trans.setTransferableAsPlainText(HtmlTools
+						.makeValidXml(textFromClipboard));
+				if (pUndoAction != null && !amountAlreadySet) {
+					// determine amount of new nodes using the algorithm:
+					final int childCount = determineAmountOfNewNodes(t);
+					pUndoAction.setNodeAmount(childCount);
+					amountAlreadySet = true;
+				}
+			}
+			if (t.isDataFlavorSupported(MindMapNodesSelection.rtfFlavor)) {
+				// byte[] textFromClipboard = (byte[])
+				// t.getTransferData(MindMapNodesSelection.rtfFlavor);
+				// trans.setTransferableAsRTF(textFromClipboard.toString());
 			}
 			if (t.isDataFlavorSupported(MindMapNodesSelection.fileListFlavor)) {
 				/*
@@ -928,12 +946,42 @@ public class PasteActor extends XmlActorAdapter {
 	 * TODO: This is a bit dirty here. Better would be to separate the algorithm
 	 * from the node creation and use the pure algo.
 	 */
-	protected int determineAmountOfNewNodes(Transferable t)
+	public int determineAmountOfNewNodes(Transferable t)
 			throws UnsupportedFlavorException, IOException {
 		// create a new node for testing purposes.
 		MindMapNodeModel parent = new MindMapNodeModel(
 				getExMapFeedback().getMap());
-		pasteStringWithoutRedisplay(t, parent, false, false);
+		parent.setText("ROOT");
+		DirectHtmlFlavorHandler handler = new DirectHtmlFlavorHandler();
+		// creator, that only creates dummy nodes.
+		handler.setNodeCreator(new NodeCreator() {
+
+			@Override
+			public MindMapNode createChild(MindMapNode pParent) {
+				try {
+					System.out.println("Create new node as son of "
+							+ pParent.getText());
+					MindMapNodeModel newNode = new MindMapNodeModel("",
+							getExMapFeedback().getMap());
+					pParent.insert(newNode, pParent.getChildCount());
+					newNode.setParent(pParent);
+					return newNode;
+				} catch (Exception e) {
+					freemind.main.Resources.getInstance().logException(e);
+				}
+				return null;
+			}
+
+			@Override
+			public void setText(String pText, MindMapNode pNode) {
+				System.out.println("Text: " + pText);
+				pNode.setText(pText);
+			}
+
+			@Override
+			public void setLink(String pLink, MindMapNode pNode) {
+			}});
+		handler.paste(t.getTransferData(handler.getDataFlavor()), parent, false, true, t);
 		final int childCount = parent.getChildCount();
 		return childCount;
 	}
