@@ -79,6 +79,7 @@ import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.preferences.FreemindPropertyContributor;
+import freemind.preferences.layout.GrabKeyDialog.KeyBinding;
 
 /**
  * @author foltin
@@ -93,7 +94,18 @@ public class OptionPanel implements TextTranslator {
 
 	private static final Color MARKED_BUTTON_COLOR = Color.BLUE;
 
-	private Vector controls;
+	private Vector<PropertyControl> controls;
+	
+	private KeyProperty findControlByKB(KeyBinding binding){
+		for(PropertyControl control: controls){
+			if(control instanceof KeyProperty){
+				KeyProperty k= (KeyProperty)control;
+				if(k.kb.equals(binding))
+					return k;	
+			}
+		}
+		return null;
+	}
 
 	private final JDialog frame;
 
@@ -109,6 +121,8 @@ public class OptionPanel implements TextTranslator {
 
 	private static final String PREFERENCE_STORAGE_PROPERTY = "OptionPanel_Window_Properties";
 	private static final String DEFAULT_LAYOUT_FORMAT = "right:max(40dlu;p), 4dlu, 120dlu, 7dlu";
+	
+	private Vector<KeyBinding> allBindings;
 
 	/**
 	 * @throws IOException
@@ -130,6 +144,7 @@ public class OptionPanel implements TextTranslator {
 			OptionPanelWindowConfigurationStorage oWindowSettings = (OptionPanelWindowConfigurationStorage) storage;
 			selectedPanel = oWindowSettings.getPanel();
 		}
+		allBindings = new Vector<KeyBinding>();
 	}
 
 	public interface OptionPanelFeedback {
@@ -141,8 +156,8 @@ public class OptionPanel implements TextTranslator {
 	/**
 	 */
 	public void setProperties() {
-		for (Iterator i = controls.iterator(); i.hasNext();) {
-			PropertyControl control = (PropertyControl) i.next();
+		for (Iterator<PropertyControl> i = controls.iterator(); i.hasNext();) {
+			PropertyControl control = i.next();
 			if (control instanceof PropertyBean) {
 				PropertyBean bean = (PropertyBean) control;
 				// System.out.println("grep -n -e \""+bean.getLabel()+"\" -r * |
@@ -158,8 +173,8 @@ public class OptionPanel implements TextTranslator {
 
 	private Properties getOptionProperties() {
 		Properties p = new Properties();
-		for (Iterator i = controls.iterator(); i.hasNext();) {
-			PropertyControl control = (PropertyControl) i.next();
+		for (Iterator<PropertyControl> i = controls.iterator(); i.hasNext();) {
+			PropertyControl control = i.next();
 			if (control instanceof PropertyBean) {
 				PropertyBean bean = (PropertyBean) control;
 				final String value = bean.getValue();
@@ -183,8 +198,8 @@ public class OptionPanel implements TextTranslator {
 		String lastTabName = null;
 
 		controls = getControls();
-		for (Iterator i = controls.iterator(); i.hasNext();) {
-			PropertyControl control = (PropertyControl) i.next();
+		for (Iterator<PropertyControl> i = controls.iterator(); i.hasNext();) {
+			PropertyControl control = i.next();
 			// System.out.println("layouting : " + control.getLabel());
 
 			if (control instanceof NewTabProperty) {
@@ -341,7 +356,7 @@ public class OptionPanel implements TextTranslator {
 
 	}
 
-	private static class KeyProperty extends PropertyBean implements
+	private class KeyProperty extends PropertyBean implements
 			PropertyControl {
 		private int modifierMask = 0;
 		String description;
@@ -352,7 +367,8 @@ public class OptionPanel implements TextTranslator {
 		private String labelText;
 		private ImageIcon icon;
 
-		private static RowSpec rowSpec;
+		private RowSpec rowSpec;
+		GrabKeyDialog.KeyBinding kb;
 
 		/**
 		 */
@@ -360,16 +376,21 @@ public class OptionPanel implements TextTranslator {
 			super();
 			this.description = description;
 			this.label = label;
+			kb=createBinding(getText(label), label, fmMain.getAdjustableProperty(label), this);
 			mButton.addActionListener(new ActionListener() {
 
 				public void actionPerformed(ActionEvent arg0) {
-					// FIXME: Determine bindings.
-					Vector allKeybindings = new Vector();
+
 					GrabKeyDialog dialog = new GrabKeyDialog(fmMain, frame,
-							new GrabKeyDialog.KeyBinding(getLabel(),
-									getLabel(), getValue(), false),
-							allKeybindings, null, modifierMask);
+							new GrabKeyDialog.KeyBinding(getLabel(), getLabel(), getValue(), false),
+							allBindings, null, modifierMask);
 					if (dialog.isOK()) {
+						if(dialog.bindingReset!=null){
+							KeyProperty k=findControlByKB(dialog.bindingReset);
+							if(k!=null){
+								k.setValue("");
+							}
+						}
 						setValue(dialog.getShortcut());
 						firePropertyChangeEvent();
 					}
@@ -435,8 +456,8 @@ public class OptionPanel implements TextTranslator {
 	}
 
 	//
-	private Vector getControls() {
-		Vector controls = new Vector();
+	private Vector<PropertyControl> getControls() {
+		Vector<PropertyControl> controls = new Vector<PropertyControl>();
 		/***********************************************************************
 		 * Language
 		 * ****************************************************************
@@ -883,11 +904,9 @@ public class OptionPanel implements TextTranslator {
 		controls.add(new KeyProperty(frame, null, "keystroke_select_branch")); // control
 		// shift A
 
-		controls.add(new KeyProperty(frame, null, "keystroke_zoom_out")); // alt
-		// UP
+		controls.add(new KeyProperty(frame, null, "keystroke_zoom_out")); // alt UP
 
-		controls.add(new KeyProperty(frame, null, "keystroke_zoom_in")); // alt
-		// DOWN
+		controls.add(new KeyProperty(frame, null, "keystroke_zoom_in")); // alt DOWN
 
 		// Node editing commands
 		controls.add(new NextLineProperty());
@@ -1302,9 +1321,8 @@ public class OptionPanel implements TextTranslator {
 		controls.add(new BooleanProperty("export_icons_in_html.tooltip",
 				"export_icons_in_html")); // false
 
-		for (Iterator iter = sContributors.iterator(); iter.hasNext();) {
-			FreemindPropertyContributor contributor = (FreemindPropertyContributor) iter
-					.next();
+		for (Iterator<FreemindPropertyContributor> iter = sContributors.iterator(); iter.hasNext();) {
+			FreemindPropertyContributor contributor = iter.next();
 			controls.addAll(contributor.getControls(this));
 		}
 		return controls;
@@ -1320,7 +1338,7 @@ public class OptionPanel implements TextTranslator {
 		frame.dispose();
 	}
 
-	private static Set sContributors = new HashSet();
+	private static Set<FreemindPropertyContributor> sContributors = new HashSet<FreemindPropertyContributor>();
 
 	public static void addContributor(FreemindPropertyContributor contributor) {
 		sContributors.add(contributor);
@@ -1329,5 +1347,17 @@ public class OptionPanel implements TextTranslator {
 	public static void removeContributor(FreemindPropertyContributor contributor) {
 		sContributors.remove(contributor);
 	}
+	
+	//{{{ createBinding() method
+	private KeyBinding createBinding(String name, String label, String shortcut, KeyProperty keyProperty)
+	{
+		if(shortcut != null && shortcut.isEmpty())
+			shortcut = null;
+
+		KeyBinding binding = new KeyBinding(name,label,shortcut,false);
+
+		allBindings.add(binding);
+		return binding;
+	} //}}}
 
 }
