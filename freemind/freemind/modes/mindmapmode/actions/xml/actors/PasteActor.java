@@ -328,18 +328,21 @@ public class PasteActor extends XmlActorAdapter {
 						MindMapNode node = getExMapFeedback().newNode("",
 								getExMapFeedback().getMap());
 						insertNodeInto(node, pParent);
+						node.setParent(pParent);
+						getExMapFeedback().nodeChanged(pParent);
 						return node;
 					}
 
 					@Override
 					public void setText(String pText, MindMapNode pNode) {
-						getExMapFeedback().setNodeText(pNode, pText);
+						pNode.setText(pText);
+						getExMapFeedback().nodeChanged(pNode);
 					}
 
 					@Override
 					public void setLink(String pLink, MindMapNode pNode) {
-						getExMapFeedback().setLink(pNode, pLink);
-						
+						pNode.setLink(pLink);
+						getExMapFeedback().nodeChanged(pNode);
 					}};
 		}
 
@@ -424,7 +427,6 @@ public class PasteActor extends XmlActorAdapter {
 		public void paste(Object TransferData, MindMapNode target,
 				boolean asSibling, boolean isLeft, Transferable t)
 				throws UnsupportedFlavorException, IOException {
-			System.err.println("htmlFlavor");
 			String textFromClipboard = (String) TransferData;
 			// ^ This outputs transfer data to standard output. I don't know
 			// why.
@@ -513,7 +515,6 @@ public class PasteActor extends XmlActorAdapter {
 		public void paste(Object TransferData, MindMapNode target,
 				boolean asSibling, boolean isLeft, Transferable t)
 				throws UnsupportedFlavorException, IOException {
-			 System.err.println("stringFlavor");
 			pasteStringWithoutRedisplay(t, target, asSibling, isLeft);
 		}
 
@@ -806,6 +807,25 @@ public class PasteActor extends XmlActorAdapter {
 		boolean amountAlreadySet = false;
 		try {
 			TransferableContent trans = new TransferableContent();
+			if (t.isDataFlavorSupported(MindMapNodesSelection.fileListFlavor)) {
+				/*
+				 * Since the JAXB-generated interface TransferableContent
+				 * doesn't supply a setTranserableAsFileList method, we have to
+				 * get the fileList, clear it, and then set it to the new value.
+				 */
+				List fileList = (List) t
+						.getTransferData(MindMapNodesSelection.fileListFlavor);
+				for (Iterator iter = fileList.iterator(); iter.hasNext();) {
+					File fileName = (File) iter.next();
+					TransferableFile transferableFile = new TransferableFile();
+					transferableFile.setFileName(fileName.getAbsolutePath());
+					trans.addTransferableFile(transferableFile);
+				}
+				if (pUndoAction != null && !amountAlreadySet) {
+					pUndoAction.setNodeAmount(fileList.size());
+					amountAlreadySet = true;
+				}
+			}
 			if (t.isDataFlavorSupported(MindMapNodesSelection.mindMapNodesFlavor)) {
 				String textFromClipboard;
 				textFromClipboard = (String) t
@@ -828,17 +848,14 @@ public class PasteActor extends XmlActorAdapter {
 				if (pUndoAction != null && !amountAlreadySet) {
 					// on html paste, the string text is taken and "improved".
 					// Thus, we count its lines.
-					final int childCount;
 					try {
-						// FIXME: count correctly
-						childCount = determineAmountOfNewNodes(t);
-						pUndoAction.setNodeAmount(childCount);
+						pUndoAction.setNodeAmount(determineAmountOfNewNodes(t));
+						amountAlreadySet = true;
 					} catch (Exception e) {
 						freemind.main.Resources.getInstance().logException(e);
 						// ok, something went wrong, but this breaks undo, only.
 						pUndoAction.setNodeAmount(1);
 					}
-					amountAlreadySet = true;
 				}
 			}
 			if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
@@ -858,25 +875,6 @@ public class PasteActor extends XmlActorAdapter {
 				// byte[] textFromClipboard = (byte[])
 				// t.getTransferData(MindMapNodesSelection.rtfFlavor);
 				// trans.setTransferableAsRTF(textFromClipboard.toString());
-			}
-			if (t.isDataFlavorSupported(MindMapNodesSelection.fileListFlavor)) {
-				/*
-				 * Since the JAXB-generated interface TransferableContent
-				 * doesn't supply a setTranserableAsFileList method, we have to
-				 * get the fileList, clear it, and then set it to the new value.
-				 */
-				List fileList = (List) t
-						.getTransferData(MindMapNodesSelection.fileListFlavor);
-				for (Iterator iter = fileList.iterator(); iter.hasNext();) {
-					File fileName = (File) iter.next();
-					TransferableFile transferableFile = new TransferableFile();
-					transferableFile.setFileName(fileName.getAbsolutePath());
-					trans.addTransferableFile(transferableFile);
-				}
-				if (pUndoAction != null && !amountAlreadySet) {
-					pUndoAction.setNodeAmount(fileList.size());
-					amountAlreadySet = true;
-				}
 			}
 			if (t.isDataFlavorSupported(DataFlavor.imageFlavor)) {
 				logger.info("image...");
@@ -959,8 +957,6 @@ public class PasteActor extends XmlActorAdapter {
 			@Override
 			public MindMapNode createChild(MindMapNode pParent) {
 				try {
-					System.out.println("Create new node as son of "
-							+ pParent.getText());
 					MindMapNodeModel newNode = new MindMapNodeModel("",
 							getExMapFeedback().getMap());
 					pParent.insert(newNode, pParent.getChildCount());
@@ -974,7 +970,6 @@ public class PasteActor extends XmlActorAdapter {
 
 			@Override
 			public void setText(String pText, MindMapNode pNode) {
-				System.out.println("Text: " + pText);
 				pNode.setText(pText);
 			}
 
