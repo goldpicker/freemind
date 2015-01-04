@@ -410,10 +410,7 @@ public class FilterComposerDialog extends JDialog {
 	private class SimpleConditionChangeListener implements ItemListener {
 		public void itemStateChanged(ItemEvent e) {
 			if (e.getStateChange() == ItemEvent.SELECTED) {
-				boolean considerValue = !simpleCondition.getSelectedItem()
-						.equals("filter_exist")
-						&& !simpleCondition.getSelectedItem().equals(
-								"filter_does_not_exist");
+				boolean considerValue = true;
 				caseInsensitive.setEnabled(considerValue);
 				values.setEnabled(considerValue);
 			}
@@ -433,22 +430,26 @@ public class FilterComposerDialog extends JDialog {
 				if (attributes.getSelectedIndex() == NODE_POSITION) {
 					simpleCondition.setModel(simpleNodeConditionComboBoxModel);
 					simpleCondition.setEnabled(true);
+					
 					values.setEditable(true);
 					values.setEnabled(true);
 					nodes.setExtensionList(null);
 					values.setModel(nodes);
+					
 					caseInsensitive.setEnabled(true);
 					return;
 				}
 				if (attributes.getSelectedIndex() == ICON_POSITION) {
 					simpleCondition.setModel(simpleIconConditionComboBoxModel);
                     simpleCondition.setEnabled(true);
-					values.setEditable(false);
+					
+                    values.setEditable(false);
 					values.setEnabled(true);
 					values.setModel(icons);
 					if (icons.getSize() >= 1) {
 						values.setSelectedIndex(0);
 					}
+					
 					caseInsensitive.setEnabled(false);
 					return;
 				}
@@ -456,12 +457,11 @@ public class FilterComposerDialog extends JDialog {
 		}
 	}
 
-	private Controller controller;
 	private FilterController mFilterController;
 	private JList conditionList;
-	private JComboBox simpleCondition;
+	private JComboBox<NamedObject> simpleCondition;
 	private JComboBox values;
-	private JComboBox attributes;
+	private JComboBox<NamedObject> attributes;
 	private FilterToolbar mFilterToolbar;
 	private JButton btnAdd;
 	private JButton btnNot;
@@ -471,7 +471,7 @@ public class FilterComposerDialog extends JDialog {
 	private JCheckBox caseInsensitive;
 	private ExtendedComboBoxModel icons;
 	private ExtendedComboBoxModel nodes;
-	private DefaultComboBoxModel simpleNodeConditionComboBoxModel;
+	private DefaultComboBoxModel<NamedObject> simpleNodeConditionComboBoxModel;
 	private DefaultComboBoxModel simpleIconConditionComboBoxModel;
 	private ExtendedComboBoxModel filteredAttributeComboBoxModel;
 	private DefaultComboBoxModel internalConditionsModel;
@@ -485,7 +485,7 @@ public class FilterComposerDialog extends JDialog {
 
 	public FilterComposerDialog(Controller controller, final FilterToolbar pFilterToolbar) {
 		super(controller.getJFrame(), controller.getResourceString("filter_dialog"));
-		this.controller = controller;
+
 		this.mFilterController = controller.getFilterController();
 		this.mFilterToolbar = pFilterToolbar;
 
@@ -493,13 +493,9 @@ public class FilterComposerDialog extends JDialog {
 		simpleConditionBox.setBorder(new EmptyBorder(5, 0, 5, 0));
 		getContentPane().add(simpleConditionBox, BorderLayout.NORTH);
 
-		attributes = new JComboBox();
-		filteredAttributeComboBoxModel = new ExtendedComboBoxModel(
-				new NamedObject[] {
-						Resources.getInstance().createTranslatedString(
-								"filter_node"),
-						Resources.getInstance().createTranslatedString(
-								"filter_icon") });
+		attributes = new JComboBox<NamedObject>();
+		filteredAttributeComboBoxModel = new ExtendedComboBoxModel(mFilterController
+				.getConditionFactory().getAttributeConditionNames());
 		filteredAttributeComboBoxModel.setExtensionList(null);
 		attributes.setModel(filteredAttributeComboBoxModel);
 		attributes.addItemListener(new SelectedAttributeChangeListener());
@@ -507,12 +503,12 @@ public class FilterComposerDialog extends JDialog {
 		simpleConditionBox.add(attributes);
 		attributes.setRenderer(mFilterController.getConditionRenderer());
 
-		simpleNodeConditionComboBoxModel = new DefaultComboBoxModel(mFilterController
+		simpleNodeConditionComboBoxModel = new DefaultComboBoxModel<NamedObject>(mFilterController
 				.getConditionFactory().getNodeConditionNames());
 		simpleIconConditionComboBoxModel = new DefaultComboBoxModel(mFilterController
 				.getConditionFactory().getIconConditionNames());
 
-		simpleCondition = new JComboBox();
+		simpleCondition = new JComboBox<NamedObject>();
 		simpleCondition.setModel(simpleNodeConditionComboBoxModel);
 		simpleCondition.addItemListener(new SimpleConditionChangeListener());
 		simpleConditionBox.add(Box.createHorizontalGlue());

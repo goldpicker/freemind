@@ -63,4 +63,10 @@ public class NamedObject {
 	public Object getObject() {
 		return object;
 	}
+
+	public String getName() {
+		return name;
+	}
+	
+	
 }

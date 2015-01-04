@@ -24,7 +24,6 @@
 package freemind.controller.filter.condition;
 
 import freemind.controller.Controller;
-import freemind.main.Resources;
 import freemind.main.XMLElement;
 import freemind.modes.MindMapNode;
 
@@ -57,10 +56,8 @@ class IgnoreCaseNodeContainsCondition extends NodeCondition {
 	}
 
 	protected String createDesctiption() {
-		final String nodeCondition = Resources.getInstance().getResourceString(
-				ConditionFactory.FILTER_NODE);
-		final String simpleCondition = Resources.getInstance()
-				.getResourceString(ConditionFactory.FILTER_CONTAINS);
+		final String nodeCondition = ConditionFactory.FILTER_NODE.getName();
+		final String simpleCondition = ConditionFactory.FILTER_CONTAINS.getName();
 		return ConditionFactory.createDescription(nodeCondition,
 				simpleCondition, value, true);
 	}

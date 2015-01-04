@@ -24,7 +24,6 @@
 package freemind.controller.filter.condition;
 
 import freemind.controller.Controller;
-import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
 import freemind.modes.MindMapNode;
@@ -71,8 +70,7 @@ class NodeCompareCondition extends CompareConditionAdapter {
 	}
 
 	protected String createDesctiption() {
-		final String nodeCondition = Resources.getInstance().getResourceString(
-				ConditionFactory.FILTER_NODE);
+		final String nodeCondition = ConditionFactory.FILTER_NODE.getName();
 		return super.createDescription(nodeCondition, comparationResult,
 				succeed);
 	}

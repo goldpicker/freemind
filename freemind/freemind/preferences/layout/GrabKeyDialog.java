@@ -128,12 +128,12 @@ public class GrabKeyDialog extends JDialog {
 	 * @since jEdit 4.1pre7
 	 */
 	public GrabKeyDialog(FreeMindMain fmMain, Dialog parent,
-			KeyBinding binding, Vector allBindings, Buffer debugBuffer) {
+			KeyBinding binding, Vector<KeyBinding> allBindings, Buffer debugBuffer) {
 		this(fmMain, parent, binding, allBindings, debugBuffer, 0);
 	}
 
 	public GrabKeyDialog(FreeMindMain fmMain, Dialog parent,
-			KeyBinding binding, Vector allBindings, Buffer debugBuffer,
+			KeyBinding binding, Vector<KeyBinding> allBindings, Buffer debugBuffer,
 			int modifierMask) {
 		super(parent, (/* FIXME: getText */("grab-key.title")), true);
 		this.fmMain = fmMain;
@@ -201,14 +201,15 @@ public class GrabKeyDialog extends JDialog {
 	private JButton clear;
 	private boolean isOK;
 	private KeyBinding binding;
-	private Vector allBindings;
+	KeyBinding bindingReset;
+	private Vector<KeyBinding> allBindings;
 	private Buffer debugBuffer;
 	private int modifierMask;
 	// }}}
 	public final static String MODIFIER_SEPARATOR = " ";
 
 	// {{{ init() method
-	private void init(KeyBinding binding, Vector allBindings, Buffer debugBuffer) {
+	private void init(KeyBinding binding, Vector<KeyBinding> allBindings, Buffer debugBuffer) {
 		this.binding = binding;
 		this.allBindings = allBindings;
 		this.debugBuffer = debugBuffer;
@@ -352,7 +353,7 @@ public class GrabKeyDialog extends JDialog {
 			return null;
 
 		String spacedShortcut = shortcut + " ";
-		Enumeration e = allBindings.elements();
+		Enumeration<KeyBinding> e = allBindings.elements();
 
 		while (e.hasMoreElements()) {
 			KeyBinding kb = (KeyBinding) e.nextElement();
@@ -518,14 +519,15 @@ public class GrabKeyDialog extends JDialog {
 			}
 
 			// check whether this shortcut already exists
-			KeyBinding other = getKeyBinding(shortcutString);
-			if (other == null || other == binding) {
+			bindingReset = getKeyBinding(shortcutString);
+			
+			if (bindingReset == null || bindingReset == binding) {
 				isOK = true;
 				return true;
 			}
 
 			// check whether the other shortcut is the alt. shortcut
-			if (other.name == binding.name) {
+			if (bindingReset.name == binding.name) {
 				// we don't need two identical shortcuts
 				JOptionPane.showMessageDialog(GrabKeyDialog.this,
 						getText("grab-key.duplicate-alt-shortcut"));
@@ -533,7 +535,7 @@ public class GrabKeyDialog extends JDialog {
 			}
 
 			// check whether shortcut is a prefix to others
-			if (other.isPrefix) {
+			if (bindingReset.isPrefix) {
 				// can't override prefix shortcuts
 				JOptionPane.showMessageDialog(GrabKeyDialog.this,
 						getText("grab-key.prefix-shortcut"));
@@ -542,13 +544,14 @@ public class GrabKeyDialog extends JDialog {
 
 			// ask whether to override that other shortcut
 			int answer = JOptionPane.showConfirmDialog(GrabKeyDialog.this,
-					getText("grab-key.duplicate-shortcut")
-							+ new Object[] { other.label }, null,
+					getText("grab-key.duplicate-shortcut1")+" ["+ bindingReset.name +"]. "+ getText("grab-key.duplicate-shortcut2")
+					, null,
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (answer == JOptionPane.YES_OPTION) {
-				if (other.shortcut != null
-						&& shortcutString.startsWith(other.shortcut)) {
-					other.shortcut = null;
+				if (bindingReset.shortcut != null
+						&& shortcutString.startsWith(bindingReset.shortcut)) {
+					bindingReset.shortcut = null;
+
 				}
 				isOK = true;
 				return true;
