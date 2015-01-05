@@ -90,8 +90,7 @@ public class LayoutTests extends FreeMindTestBase {
 				return null;
 			}
 
-			public void selectAsTheOnlyOneSelected(NodeView pNewSelected,
-					boolean pRequestFocus) {
+			public void selectAsTheOnlyOneSelected(NodeView pNewSelected) {
 			}
 
 		};
