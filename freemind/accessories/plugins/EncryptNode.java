@@ -59,14 +59,11 @@ public class EncryptNode extends MindMapNodeHookAdapter {
 			MenuItemEnabledListener {
 
 		private final ModeController controller;
-		private final MindMap mMap;
-		private final java.util.logging.Logger logger;
+
 		private boolean enabled = false;
 
 		public Registration(ModeController controller, MindMap map) {
 			this.controller = controller;
-			mMap = map;
-			logger = controller.getFrame().getLogger(this.getClass().getName());
 		}
 
 		public void register() {
@@ -184,7 +181,7 @@ public class EncryptNode extends MindMapNodeHookAdapter {
 			}
 		});
 		try {
-			MindMapNode newNode = getMindMapController().addNewNode(node, 0,
+			getMindMapController().addNewNode(node, 0,
 					node.isLeft());
 		} catch (Exception e) {
 		}
@@ -200,7 +197,7 @@ public class EncryptNode extends MindMapNodeHookAdapter {
 				(JFrame) getMindMapController().getFrame(),
 				getMindMapController(), true);
 		pwdDialog.setModal(true);
-		pwdDialog.show();
+		pwdDialog.setVisible(true);
 		if (pwdDialog.getResult() == EnterPasswordDialog.CANCEL) {
 			return null;
 		}
