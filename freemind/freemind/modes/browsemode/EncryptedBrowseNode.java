@@ -99,7 +99,7 @@ public class EncryptedBrowseNode extends BrowseNodeModel {
 						return mMapFeedback.getResourceString(pKey);
 					}}, false);
 		pwdDialog.setModal(true);
-		pwdDialog.show();
+		pwdDialog.setVisible(true);
 		if (pwdDialog.getResult() == EnterPasswordDialog.CANCEL) {
 			return;
 		}

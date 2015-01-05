@@ -56,8 +56,6 @@ public class EnterPasswordDialog extends JDialog {
 
 	private JPasswordField jPasswordField1 = null;
 
-	private JLabel jLabel2 = null;
-
 	private JButton jOKButton = null;
 
 	private JButton jCancelButton = null;
@@ -92,10 +90,15 @@ public class EnterPasswordDialog extends JDialog {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setTitle(mTranslator
+		if(enterTwoPasswords)
+			this.setTitle(mTranslator
 				.getText("accessories/plugins/EncryptNode.properties_0")); //$NON-NLS-1$
-		this.setSize(300, 200);
+		else
+			this.setTitle(mTranslator
+					.getText("accessories/plugins/EncryptNode.properties_8")); //$NON-NLS-1$
+		this.setSize(350, 200);
 		this.setContentPane(getJContentPane());
+		this.setLocationRelativeTo(getParent());
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we) {
@@ -167,14 +170,14 @@ public class EnterPasswordDialog extends JDialog {
 	 */
 	private javax.swing.JPanel getJContentPane() {
 		if (jContentPane == null) {
-			jLabel2 = new JLabel();
+
 			jLabel1 = new JLabel();
 			jLabel = new JLabel();
 			GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
 			GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
 			GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
 			GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
-			GridBagConstraints gridBagConstraints5 = new GridBagConstraints();
+
 			GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
 			GridBagConstraints gridBagConstraints7 = new GridBagConstraints();
 			jContentPane = new javax.swing.JPanel();
@@ -199,16 +202,7 @@ public class EnterPasswordDialog extends JDialog {
 			gridBagConstraints4.gridy = 2;
 			gridBagConstraints4.weightx = 1.0;
 			gridBagConstraints4.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			gridBagConstraints5.gridx = 0;
-			gridBagConstraints5.gridy = 0;
-			gridBagConstraints5.gridwidth = 2;
-			gridBagConstraints5.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			gridBagConstraints5.anchor = java.awt.GridBagConstraints.CENTER;
-			gridBagConstraints5.insets = new java.awt.Insets(0, 5, 20, 0);
-			jLabel2.setText(mTranslator
-					.getText("accessories/plugins/EncryptNode.properties_4")); //$NON-NLS-1$
-			jLabel2.setToolTipText(mTranslator
-					.getText("accessories/plugins/EncryptNode.properties_5")); //$NON-NLS-1$
+
 			gridBagConstraints6.gridx = 0;
 			gridBagConstraints6.gridy = 3;
 			gridBagConstraints6.insets = new java.awt.Insets(20, 0, 0, 0);
@@ -217,7 +211,7 @@ public class EnterPasswordDialog extends JDialog {
 			gridBagConstraints7.insets = new java.awt.Insets(20, 0, 0, 0);
 			jContentPane.add(jLabel, gridBagConstraints1);
 			jContentPane.add(getJPasswordField(), gridBagConstraints3);
-			jContentPane.add(jLabel2, gridBagConstraints5);
+
 			if (enterTwoPasswords) {
 				jContentPane.add(getJPasswordField1(), gridBagConstraints4);
 				jContentPane.add(jLabel1, gridBagConstraints2);
