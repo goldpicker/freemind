@@ -56,13 +56,20 @@ public class AddArrowLinkAction extends MindmapAction {
 					modeController.getText("no_copied_nodes"));
 			return;
 		}
+		boolean identicalError = false;
 		for (MindMapNode destination : nodesFromClipboard) {
 			if(selected != destination) {
 				getMindMapController().addLink(selected, destination);				
 			} else {
-				// hmm, give an error?
-				logger.warning("Can't paste the node '"+selected+"'onto itself. Skipped.");
+				// give an error afterwards?
+				identicalError = true;
+				logger.warning("Can't create a link from the node '"+selected+"' to itself. Skipped.");
 			}
+		}
+		if(identicalError) {
+			modeController.getController().errorMessage(
+					modeController
+							.getText("paste_as_link_identity_not_possible"));
 		}
 	}
 
