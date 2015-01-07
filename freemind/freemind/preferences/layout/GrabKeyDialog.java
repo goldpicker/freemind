@@ -43,6 +43,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import freemind.main.FreeMindMain;
+import freemind.main.Resources;
 
 /**
  * A dialog for getting shortcut keys.
@@ -544,7 +545,9 @@ public class GrabKeyDialog extends JDialog {
 
 			// ask whether to override that other shortcut
 			int answer = JOptionPane.showConfirmDialog(GrabKeyDialog.this,
-					getText("grab-key.duplicate-shortcut1")+" ["+ bindingReset.name +"]. "+ getText("grab-key.duplicate-shortcut2")
+					Resources.getInstance().format(
+							"GrabKeyDialog.grab-key.duplicate-shortcut",
+							new Object[] { bindingReset.name })
 					, null,
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (answer == JOptionPane.YES_OPTION) {
