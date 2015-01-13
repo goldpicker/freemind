@@ -44,7 +44,7 @@ public interface MindMapHook {
 	void setProperties(Properties properties);
 
 	/**
-	 * looks for a property in the plugin properties file, or from the localized ressources.
+	 * looks for a property in the plugin properties file, or from the localized resources.
 	 */
 	String getResourceString(String property);
 
@@ -77,6 +77,9 @@ public interface MindMapHook {
 	 * underdone on ModeController's startup method later.
 	 */
 	public interface PluginBaseClassSearcher {
+		/**
+		 * @return the plugin base object {@link HookRegistration}.
+		 */
 		Object getPluginBaseObject();
 	}
 
