@@ -24,6 +24,10 @@ import java.util.Properties;
 import freemind.modes.MapFeedback;
 
 /**
+ * This is the most general hook interface. It is a base class for all hooks.
+ * {@link ModeControllerHook} for hooks that implement actions independent of nodes
+ * {@link NodeHook} for hooks that implement actions belonging to nodes
+ * 
  * @author foltin
  * 
  */

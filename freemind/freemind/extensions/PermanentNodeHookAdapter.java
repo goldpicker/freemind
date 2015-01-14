@@ -37,10 +37,10 @@ import freemind.modes.mindmapmode.actions.xml.ActionPair;
 import freemind.view.mindmapview.NodeView;
 
 /**
- * @author foltin
+ * Simple, straight forward implementation of PermanentNodeHook 
+ * with some support for saving and loading
  * 
- *         To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @author foltin
  */
 public class PermanentNodeHookAdapter extends NodeHookAdapter implements
 		PermanentNodeHook {

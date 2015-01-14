@@ -33,10 +33,12 @@ import freemind.modes.MindMapNode;
 import freemind.view.mindmapview.NodeView;
 
 /**
- * @author foltin
+ * Basic interface for all node hooks that are permanent. 
+ * Thus, there are methods that inform the plugin about changes on the node, it is stick to.
+ * Moreover, methods for loading and saving the hook are present.  
  * 
- *         To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * 
+ * @author foltin
  */
 public interface PermanentNodeHook extends NodeHook {
 

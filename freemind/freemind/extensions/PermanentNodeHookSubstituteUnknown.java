@@ -26,7 +26,8 @@ import java.util.Iterator;
 import freemind.main.XMLElement;
 
 /**
- * Class saves xml data in case that the corresponding node hook is not present.
+ * If a hook can't be find at map loading, this substition is used.
+ * The class saves xml data such that it is preserved until the hook is back.
  */
 public class PermanentNodeHookSubstituteUnknown extends
 		PermanentNodeHookAdapter {

@@ -559,7 +559,8 @@
 		<mkdir dir="${dist}/doc/javadoc" />
 		<javadoc sourcepath="${src}"
 	         destdir="${dist}/doc/javadoc"
-			 breakiterator="yes"
+			 breakiterator="yes" 
+			linksource="true"
 			 classpath="${classpath}"
 		         packagenames="freemind.*" />
 	</target>

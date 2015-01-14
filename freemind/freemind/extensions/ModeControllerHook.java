@@ -27,10 +27,14 @@ package freemind.extensions;
 
 
 /**
- * @author foltin
  * 
- *         To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * Is a basic interface for all hooks that implement actions independent of nodes.
+ * Examples are: 
+ * <ul>
+ * <li> exports of maps to different formats
+ * <li> general dialogs (as the pattern or scripting dialog)  
+ * </ul>
+ * @author foltin
  */
 public interface ModeControllerHook extends MindMapHook {
 }

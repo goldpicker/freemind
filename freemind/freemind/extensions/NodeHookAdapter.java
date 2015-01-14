@@ -23,12 +23,12 @@ import freemind.modes.MindMap;
 import freemind.modes.MindMapNode;
 
 /**
- * @author christianfoltin
+ * Straight forward implementation with some helpers.
+ * 
+ * @author foltin
  * 
  * */
 public abstract class NodeHookAdapter extends HookAdapter implements NodeHook {
-
-	private boolean selfUpdateExpected;
 
 	private MindMap map;
 

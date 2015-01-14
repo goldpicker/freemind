@@ -25,6 +25,8 @@ import freemind.main.FreeMind;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
 
 /**
+ * Shows or hides the attribute table belonging to each node.
+ * 
  * @author foltin
  * 
  */
