@@ -459,9 +459,9 @@ public class FilterComposerDialog extends JDialog {
 
 	private FilterController mFilterController;
 	private JList conditionList;
-	private JComboBox<NamedObject> simpleCondition;
+	private JComboBox simpleCondition;
 	private JComboBox values;
-	private JComboBox<NamedObject> attributes;
+	private JComboBox attributes;
 	private FilterToolbar mFilterToolbar;
 	private JButton btnAdd;
 	private JButton btnNot;
@@ -471,7 +471,7 @@ public class FilterComposerDialog extends JDialog {
 	private JCheckBox caseInsensitive;
 	private ExtendedComboBoxModel icons;
 	private ExtendedComboBoxModel nodes;
-	private DefaultComboBoxModel<NamedObject> simpleNodeConditionComboBoxModel;
+	private DefaultComboBoxModel simpleNodeConditionComboBoxModel;
 	private DefaultComboBoxModel simpleIconConditionComboBoxModel;
 	private ExtendedComboBoxModel filteredAttributeComboBoxModel;
 	private DefaultComboBoxModel internalConditionsModel;
@@ -493,7 +493,7 @@ public class FilterComposerDialog extends JDialog {
 		simpleConditionBox.setBorder(new EmptyBorder(5, 0, 5, 0));
 		getContentPane().add(simpleConditionBox, BorderLayout.NORTH);
 
-		attributes = new JComboBox<NamedObject>();
+		attributes = new JComboBox();
 		filteredAttributeComboBoxModel = new ExtendedComboBoxModel(mFilterController
 				.getConditionFactory().getAttributeConditionNames());
 		filteredAttributeComboBoxModel.setExtensionList(null);
@@ -503,12 +503,12 @@ public class FilterComposerDialog extends JDialog {
 		simpleConditionBox.add(attributes);
 		attributes.setRenderer(mFilterController.getConditionRenderer());
 
-		simpleNodeConditionComboBoxModel = new DefaultComboBoxModel<NamedObject>(mFilterController
+		simpleNodeConditionComboBoxModel = new DefaultComboBoxModel(mFilterController
 				.getConditionFactory().getNodeConditionNames());
 		simpleIconConditionComboBoxModel = new DefaultComboBoxModel(mFilterController
 				.getConditionFactory().getIconConditionNames());
 
-		simpleCondition = new JComboBox<NamedObject>();
+		simpleCondition = new JComboBox();
 		simpleCondition.setModel(simpleNodeConditionComboBoxModel);
 		simpleCondition.addItemListener(new SimpleConditionChangeListener());
 		simpleConditionBox.add(Box.createHorizontalGlue());
