@@ -866,7 +866,7 @@ public class PasteActor extends XmlActorAdapter {
 						.makeValidXml(textFromClipboard));
 				if (pUndoAction != null && !amountAlreadySet) {
 					// determine amount of new nodes using the algorithm:
-					final int childCount = determineAmountOfNewNodes(t);
+					final int childCount = determineAmountOfNewTextNodes(t);
 					pUndoAction.setNodeAmount(childCount);
 					amountAlreadySet = true;
 				}
@@ -943,6 +943,24 @@ public class PasteActor extends XmlActorAdapter {
 	/*
 	 * TODO: This is a bit dirty here. Better would be to separate the algorithm
 	 * from the node creation and use the pure algo.
+	 */
+	protected int determineAmountOfNewTextNodes(Transferable t)
+			throws UnsupportedFlavorException, IOException {
+		// create a new node for testing purposes.
+		MindMapNodeModel parent = new MindMapNodeModel(
+				getExMapFeedback().getMap());
+		pasteStringWithoutRedisplay(t, parent, false, false);
+		final int childCount = parent.getChildCount();
+		return childCount;
+	}
+
+	
+	/**
+	 * Only for HTML nodes.
+	 * @param t
+	 * @return
+	 * @throws UnsupportedFlavorException
+	 * @throws IOException
 	 */
 	public int determineAmountOfNewNodes(Transferable t)
 			throws UnsupportedFlavorException, IOException {
