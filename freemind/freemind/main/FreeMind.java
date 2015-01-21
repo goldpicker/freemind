@@ -235,6 +235,8 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 
 	public static final String RESOUCES_PASTE_HTML_STRUCTURE = "paste_html_structure";
 
+	public static final String PROXY_EXCEPTION = "proxy.exception";
+
 	// public static final String defaultPropsURL = "freemind.properties";
 	// public static Properties defaultProps;
 	public static Properties props;
@@ -804,6 +806,7 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 			System.setProperty("http.proxyPort", props.getProperty(PROXY_PORT));
 			System.setProperty("https.proxyHost", props.getProperty(PROXY_HOST));
 			System.setProperty("https.proxyPort", props.getProperty(PROXY_PORT));
+			System.setProperty("http.nonProxyHosts", props.getProperty(PROXY_EXCEPTION));
 		}
 	}
 

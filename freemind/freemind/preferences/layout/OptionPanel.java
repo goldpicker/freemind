@@ -524,6 +524,8 @@ public class OptionPanel implements TextTranslator {
 				FreeMind.PROXY_USER));
 		controls.add(new PasswordProperty(
 				FreeMind.PROXY_PASSWORD + TOOLTIP_EXT, FreeMind.PROXY_PASSWORD));
+		controls.add(new StringProperty(FreeMind.PROXY_EXCEPTION + TOOLTIP_EXT,
+				FreeMind.PROXY_EXCEPTION));
 
 		controls.add(new NextLineProperty());
 		controls.add(new SeparatorProperty("files"));
