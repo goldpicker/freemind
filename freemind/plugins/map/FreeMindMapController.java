@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -80,6 +81,7 @@ import org.openstreetmap.gui.jmapviewer.OsmMercator;
 import org.openstreetmap.gui.jmapviewer.interfaces.TileSource;
 import org.openstreetmap.gui.jmapviewer.tilesources.AbstractOsmTileSource;
 import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
+import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource.Mapnik;
 
 import freemind.common.FreeMindTask;
 import freemind.common.XmlBindingTools;
@@ -286,9 +288,17 @@ public class FreeMindMapController extends JMapController implements
 			return TileUpdate.LastModified;
 		}
 	}
+	
+	private static class HttpMapnik extends Mapnik {
+		public HttpMapnik() {
+			this.baseUrl=this.baseUrl.replace("^https", "http");
+		}
+	}
 
 	private static TileSourceStore[] sTileSources = new TileSourceStore[] {
 			new TileSourceStore(new OsmTileSource.Mapnik(),
+					MapNodePositionHolderBase.SHORT_MAPNIK),
+			new TileSourceStore(new HttpMapnik(),
 					MapNodePositionHolderBase.SHORT_MAPNIK),
 			new TileSourceStore(new OsmTileSource.CycleMap(),
 					MapNodePositionHolderBase.SHORT_CYCLE_MAP),
@@ -1573,6 +1583,7 @@ public class FreeMindMapController extends JMapController implements
 				return source;
 			}
 		}
+		logger.info("Tile source " + sourceName + " not found!");
 		return null;
 	}
 
@@ -2201,7 +2212,7 @@ public class FreeMindMapController extends JMapController implements
 		b.append("&zoom=");
 		b.append(pZoom);
 		try {
-			String result = wget(b);
+			String result = wget(b.toString());
 			Reversegeocode reversegeocode = (Reversegeocode) XmlBindingTools
 					.getInstance().unMarshall(result);
 			return reversegeocode;
@@ -2279,7 +2290,7 @@ public class FreeMindMapController extends JMapController implements
 					b.append(bottomRightCorner.getLat());
 					b.append("&bounded=1");
 				}
-				result = wget(b);
+				result = wget(b.toString());
 			} else {
 				// only for offline testing:
 				result = XML_VERSION_1_0_ENCODING_UTF_8
@@ -2441,7 +2452,7 @@ public class FreeMindMapController extends JMapController implements
 		return results;
 	}
 
-	public String wget(StringBuilder b) throws MalformedURLException,
+	public String wget(String b) throws MalformedURLException,
 	IOException, UnsupportedEncodingException {
 		String result = wgetInternal(b);
 		if(result.matches("\\s*<html>\\s*<script language=\"Javascript\">\\s*document.location.reload()\\s*</script>\\s*</html>\\s*")) {
@@ -2451,7 +2462,7 @@ public class FreeMindMapController extends JMapController implements
 		}
 		return result;
 	}
-	public String wgetInternal(StringBuilder b) throws MalformedURLException,
+	public String wgetInternal(String b) throws MalformedURLException,
 			IOException, UnsupportedEncodingException {
 		String result;
 		mMindMapController.getFrame().setWaitingCursor(true);
@@ -2467,6 +2478,30 @@ public class FreeMindMapController extends JMapController implements
 						.setReadTimeout(Resources.getInstance().getIntProperty(
 								OSM_NOMINATIM_READ_TIMEOUT_IN_MS, 30000));
 			}
+			// set user agent
+//			urlConnection.setRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 6.1; WOW64; rv:17.0) Gecko/20100101 Firefox/17.0");
+//			urlConnection.setRequestProperty("Accept","*/*");
+			int status=200;
+			if(urlConnection instanceof HttpURLConnection) {
+				status = ((HttpURLConnection) urlConnection).getResponseCode();
+			}
+
+			InputStream in;
+			if(status >= 400)
+			    in = ((HttpURLConnection) urlConnection).getErrorStream();
+			else
+			    in = urlConnection.getInputStream();
+			result = Tools.getFile(new InputStreamReader(in));
+			result = new String(result.getBytes(), "UTF-8");
+			// some proxies are using the Location field to reload the correct document via the proxy
+			if(status >= 400 && result.contains("document.location.reload")) {
+				HttpURLConnection huc = (HttpURLConnection) urlConnection;
+				String newUrl = huc.getHeaderField("Location");
+				// again
+				logger.info("Received: " + result + " and therefore reload of '" + newUrl + "'.");
+				return wgetInternal(newUrl);
+			}
+			logger.info(result + " was received for search " + b  + " with status " + status);
 			InputStream urlStream = urlConnection.getInputStream();
 			result = Tools.getFile(new InputStreamReader(urlStream));
 			result = new String(result.getBytes(), "UTF-8");
