@@ -291,7 +291,7 @@ public class FreeMindMapController extends JMapController implements
 	
 	private static class HttpMapnik extends Mapnik {
 		public HttpMapnik() {
-			this.baseUrl=this.baseUrl.replace("^https", "http");
+			this.baseUrl=this.baseUrl.replaceFirst("^https", "http");
 		}
 	}
 
