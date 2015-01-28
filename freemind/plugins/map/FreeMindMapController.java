@@ -2502,10 +2502,6 @@ public class FreeMindMapController extends JMapController implements
 				return wgetInternal(newUrl);
 			}
 			logger.info(result + " was received for search " + b  + " with status " + status);
-			InputStream urlStream = urlConnection.getInputStream();
-			result = Tools.getFile(new InputStreamReader(urlStream));
-			result = new String(result.getBytes(), "UTF-8");
-			logger.fine(result + " was received for search " + b);
 		} finally {
 			mMindMapController.getFrame().setWaitingCursor(false);
 		}
