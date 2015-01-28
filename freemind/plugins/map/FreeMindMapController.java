@@ -2453,16 +2453,6 @@ public class FreeMindMapController extends JMapController implements
 	}
 
 	public String wget(String b) throws MalformedURLException,
-	IOException, UnsupportedEncodingException {
-		String result = wgetInternal(b);
-		if(result.matches("\\s*<html>\\s*<script language=\"Javascript\">\\s*document.location.reload()\\s*</script>\\s*</html>\\s*")) {
-			// again
-			logger.info("Received: " + result + " and therefore reload.");
-			result = wgetInternal(b);
-		}
-		return result;
-	}
-	public String wgetInternal(String b) throws MalformedURLException,
 			IOException, UnsupportedEncodingException {
 		String result;
 		mMindMapController.getFrame().setWaitingCursor(true);
@@ -2499,7 +2489,7 @@ public class FreeMindMapController extends JMapController implements
 				String newUrl = huc.getHeaderField("Location");
 				// again
 				logger.info("Received: " + result + " and therefore reload of '" + newUrl + "'.");
-				return wgetInternal(newUrl);
+				return wget(newUrl);
 			}
 			logger.info(result + " was received for search " + b  + " with status " + status);
 		} finally {
