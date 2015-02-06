@@ -24,7 +24,9 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -46,7 +48,6 @@ import freemind.controller.MindMapNodesSelection;
 import freemind.controller.actions.generated.instance.PasteNodeAction;
 import freemind.controller.actions.generated.instance.TransferableContent;
 import freemind.controller.actions.generated.instance.TransferableFile;
-import freemind.controller.actions.generated.instance.TransferableImage;
 import freemind.controller.actions.generated.instance.UndoPasteNodeAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.extensions.PermanentNodeHook;
@@ -60,7 +61,6 @@ import freemind.main.XMLParseException;
 import freemind.modes.ControllerAdapter;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MapAdapter;
-import freemind.modes.MindMap;
 import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
 import freemind.modes.NodeAdapter;
@@ -532,12 +532,27 @@ public class PasteActor extends XmlActorAdapter {
 
 			setWaitingCursor(true);
 
-			/*
-			 * BufferedImage img = null; try { img = ImageIO.read(new
-			 * File("image.jpg")); } catch (IOException e) { }
-			 */
+			File mindmapFile = getExMapFeedback().getMap().getFile();
+			String imgfile;
+			if (mindmapFile == null) {
+				JOptionPane.showMessageDialog(
+						getExMapFeedback().getViewAbstraction().getSelected(),
+						getExMapFeedback().getResourceString("map_not_saved"),
+						"FreeMind", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			File parentFile= mindmapFile.getParentFile();
+			String filePrefix= mindmapFile.getName().replace(
+					FreeMindCommon.FREEMIND_FILE_EXTENSION, "_");
+			File tempFile = File
+					.createTempFile(filePrefix, ".jpeg", parentFile);
+			FileOutputStream fos = new FileOutputStream(tempFile);
+			fos.write(Tools.fromBase64(transferData.toString()));
+			fos.close();
 
-			String imgfile = "" + transferData;
+			// Absolute, if not in the correct directory!
+			imgfile = tempFile.getName();
+			logger.info("Writing image to " + imgfile);
 
 			String strText = "<html><body><img src=\"" + imgfile
 					+ "\"/></body></html>";
@@ -886,38 +901,12 @@ public class PasteActor extends XmlActorAdapter {
 					BufferedImage image = (BufferedImage) t
 							.getTransferData(DataFlavor.imageFlavor);
 
-					TransferableImage timg = new TransferableImage();
+					logger.info("Starting to write clipboard image " + image);
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					ImageIO.write(image, "jpg", baos);
+					String base64String = Tools.toBase64(baos.toByteArray());
+					trans.setTransferableAsImage(base64String);
 
-					File mindmapFile = getExMapFeedback().getMap().getFile();
-					if (mindmapFile == null) {
-						JOptionPane.showMessageDialog(
-								getExMapFeedback().getViewAbstraction().getSelected(),
-								getExMapFeedback().getResourceString("map_not_saved"),
-								"FreeMind", JOptionPane.ERROR_MESSAGE);
-						return null;
-					}
-					File tempFile = File
-							.createTempFile(
-									mindmapFile
-											.getName()
-											.replace(
-													FreeMindCommon.FREEMIND_FILE_EXTENSION,
-													"_"), ".jpeg", mindmapFile
-											.getParentFile());
-
-					String imgfilepath = tempFile.getName();
-					timg.setImage(imgfilepath);
-
-					trans.addTransferableImage(timg);
-
-					// class to write image to disk. You specify the image to be
-					// saved, its type,
-					// and then the file in which to write the image data.
-					logger.info("Starting to write clipboard image " + image
-							+ " to " + tempFile);
-					ImageIO.write(image, "jpg", tempFile);
-
-					trans.setTransferableAsImage(imgfilepath);
 
 					if (pUndoAction != null && !amountAlreadySet) {
 						pUndoAction.setNodeAmount(1);
