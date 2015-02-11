@@ -273,9 +273,9 @@ public class MindMapMapModel extends MapAdapter {
 			BufferedWriter fileout = new BufferedWriter(new OutputStreamWriter(
 					new FileOutputStream(file)));
 			getXml(fileout);
-
+			
 			if (!isInternal) {
-				setFile(file);
+				setFile(file);				
 			}
 		} finally {
 			scheduleTimerForAutomaticSaving();

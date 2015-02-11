@@ -92,6 +92,7 @@ import freemind.main.XMLParseException;
 import freemind.modes.FreeMindFileDialog.DirectoryResultListener;
 import freemind.modes.common.listeners.MindMapMouseWheelEventHandler;
 import freemind.view.MapModule;
+import freemind.view.mindmapview.IndependantMapViewCreator;
 import freemind.view.mindmapview.MapView;
 import freemind.view.mindmapview.NodeView;
 import freemind.view.mindmapview.ViewFeedback;
@@ -673,7 +674,16 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		boolean result = false;
 		try {
 			result = getModel().save(file);
+			// create thumbnail if desired.
+			if ("true"
+					.equals(getProperty(FreeMindCommon.CREATE_THUMBNAIL_ON_SAVE))) {
+				File baseFileName = getModel().getFile();
+				String fileName = Resources.getInstance().createThumbnailFileName(baseFileName);
+				IndependantMapViewCreator.printToFile(getView(), fileName, true);
+				Tools.makeFileHidden(new File(fileName));
+			}
 		} catch (FileNotFoundException e) {
+			freemind.main.Resources.getInstance().logException(e);
 			String message = Tools.expandPlaceholders(getText("save_failed"),
 					file.getName());
 			getController().errorMessage(message);

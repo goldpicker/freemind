@@ -21,8 +21,11 @@
 package freemind.view.mindmapview;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -113,9 +116,23 @@ public class IndependantMapViewCreator extends MapFeedbackAdapter {
 		parent.doLayout();
 		parent.validate(); // this might not be necessary
 		mapView.preparePrinting();
-		Rectangle dim = mapView.getBounds();
+		parent.setBounds(mapView.getBounds());
+		printToFile(mapView, outputFileName, false, 0);
+	}
+
+	/**
+	 * @param parent
+	 * @param mapView
+	 * @param outputFileName
+	 * @param scale 
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public static void printToFile(MapView mapView,
+			String outputFileName, boolean scale, int destSize) throws FileNotFoundException, IOException {
+		Container parent = mapView.getParent();
 		Rectangle dimI = mapView.getInnerBounds();
-		parent.setBounds(dim);
+		Rectangle dim = mapView.getBounds();
 		// do print
 		BufferedImage backBuffer = new BufferedImage(dim.width, dim.height,
 				BufferedImage.TYPE_INT_ARGB);
@@ -125,10 +142,21 @@ public class IndependantMapViewCreator extends MapFeedbackAdapter {
 		parent.print(g); // this might not be necessary
 		backBuffer = backBuffer.getSubimage(dimI.x, dimI.y, dimI.width,
 				dimI.height);
-
+		if(scale) {
+			double maxDim = Math.max(dimI.getHeight(), dimI.getWidth());
+			int newWidth = (int) (dimI.getWidth()*destSize/maxDim);
+			int newHeight = (int) (dimI.getHeight()*destSize/maxDim);
+			BufferedImage resized = new BufferedImage(newWidth, newHeight, backBuffer.getType());
+		    Graphics2D g2 = resized.createGraphics();
+		    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		    g2.drawImage(backBuffer, 0, 0, newWidth, newHeight, 0, 0, backBuffer.getWidth(), backBuffer.getHeight(), null);
+		    g2.dispose();
+		    backBuffer = resized;
+		}
 		FileOutputStream out1 = new FileOutputStream(outputFileName);
 		ImageIO.write(backBuffer, "png", out1);
 		out1.close();
+		g.dispose();
 	}
 
 

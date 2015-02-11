@@ -23,6 +23,7 @@
  */
 package freemind.main;
 
+import java.io.File;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -191,6 +192,20 @@ public class Resources implements TextTranslator {
 			chooser.addChoosableFileFilterAsDefault(filter);
 		}
 		return chooser;
+	}
+
+	/**
+	 * @param baseFileName
+	 * @return
+	 */
+	public String createThumbnailFileName(File baseFileName) {
+		String fileName = baseFileName.getParent()
+				+ File.separatorChar
+				+ "." // hidden
+				+ baseFileName.getName().replaceFirst(
+						FreeMindCommon.FREEMIND_FILE_EXTENSION + "$",
+						".png");
+		return fileName;
 	}
 
 

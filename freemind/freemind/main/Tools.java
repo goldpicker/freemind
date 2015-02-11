@@ -51,7 +51,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
@@ -66,6 +65,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.DosFileAttributes;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
@@ -2162,5 +2164,17 @@ public class Tools {
 		PrintWriter pw = new PrintWriter(sw);
 		e.printStackTrace(pw);
 		return sw.toString(); 
+	}
+	
+	public static void makeFileHidden(File file) {
+	    try {
+			Path path = file.toPath();
+			DosFileAttributes attrs = Files.readAttributes(path, DosFileAttributes.class);
+			if(!attrs.isHidden()) {
+				Files.setAttribute(path, "dos:hidden", true);
+			}
+		} catch (IOException e) {
+			freemind.main.Resources.getInstance().logException(e);
+		}
 	}
 }

@@ -213,6 +213,8 @@ public class FreeMindCommon {
 
 	public static final String MINDMAP_LAST_STATE_MAP_STORAGE = "mindmap_last_state_map_storage";
 
+	public static final String CREATE_THUMBNAIL_ON_SAVE = "create_thumbnail_on_save";
+
 	private static Logger logger = null;
 
 	/**

@@ -35,7 +35,9 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,6 +55,7 @@ import javax.swing.tree.TreeNode;
 
 import freemind.controller.Controller;
 import freemind.main.FreeMind;
+import freemind.main.FreeMindCommon;
 import freemind.main.FreeMindMain;
 import freemind.main.HtmlTools;
 import freemind.main.Resources;
@@ -1047,12 +1050,25 @@ public class NodeView extends JComponent implements TreeModelListener {
 	 */
 	public void updateToolTip() {
 		Map tooltips = getModel().getToolTip();
-		/*
-		 * if(tooltips.size() == 1) { String toolTipText = (String)
-		 * tooltips.values().iterator().next();
-		 * logger.finest("setting tooltip to "+toolTipText);
-		 * mainView.setToolTipText(toolTipText); } else
-		 */if (tooltips.size() == 0) {
+		// add preview to other map, if appropriate:
+		String link = getModel().getLink();
+		if(link != null && link.endsWith(FreeMindCommon.FREEMIND_FILE_EXTENSION)) {
+			try {
+				File mmFile = Tools.urlToFile(new URL(getMap().getModel().getURL(), link));
+				String thumbnailFileName = Resources.getInstance()
+						.createThumbnailFileName(mmFile);
+				if (new File(thumbnailFileName).exists()) {
+					URL thumbUrl = Tools.fileToUrl(new File(thumbnailFileName));
+					String imgHtml = "<img src=\"" + thumbUrl + "\"/>";
+					logger.info("Adding new tooltip: " + imgHtml);
+					tooltips.put("preview",
+							imgHtml);
+				}
+			} catch (Exception e) {
+				freemind.main.Resources.getInstance().logException(e);
+			}
+		}
+		if (tooltips.size() == 0) {
 			mainView.setToolTipText(null);
 		} else {
 			// html table

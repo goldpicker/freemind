@@ -324,4 +324,9 @@ public class ToolsTests extends FreeMindTestBase {
 		assertFalse("-".matches(MindMapController.REGEXP_FOR_NUMBERS_IN_STRINGS));
 		
 	}
+	
+	public void testMakeFileHidden() throws Exception {
+		File tempFile = File.createTempFile("hidden", "now");
+		Tools.makeFileHidden(tempFile);
+	}
 }
