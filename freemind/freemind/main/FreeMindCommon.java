@@ -181,6 +181,8 @@ public class FreeMindCommon {
 
 	private FreeMindResourceBundle resources;
 
+	public static final String THUMBNAIL_SIZE = "thumbnail_size";
+
 	/**
 	 * Holds the last opened map.
 	 */

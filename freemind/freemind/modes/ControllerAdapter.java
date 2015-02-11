@@ -107,8 +107,6 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		DirectoryResultListener {
 
 
-	private static final int THUMBNAIL_SIZE = 400;
-
 	private Mode mode;
 
 	private Color selectionColor = new Color(200, 220, 200);
@@ -680,8 +678,11 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 			if ("true"
 					.equals(getProperty(FreeMindCommon.CREATE_THUMBNAIL_ON_SAVE))) {
 				File baseFileName = getModel().getFile();
-				String fileName = Resources.getInstance().createThumbnailFileName(baseFileName);
-				IndependantMapViewCreator.printToFile(getView(), fileName, true, THUMBNAIL_SIZE);
+				String fileName = Resources.getInstance()
+						.createThumbnailFileName(baseFileName);
+				IndependantMapViewCreator.printToFile(getView(), fileName,
+						true,
+						getIntProperty(FreeMindCommon.THUMBNAIL_SIZE, 400));
 				Tools.makeFileHidden(new File(fileName));
 			}
 		} catch (FileNotFoundException e) {

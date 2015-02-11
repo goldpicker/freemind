@@ -1052,6 +1052,7 @@ public class NodeView extends JComponent implements TreeModelListener {
 		Map tooltips = getModel().getToolTip();
 		// add preview to other map, if appropriate:
 		String link = getModel().getLink();
+//		if(link != null && link.matches(".*\\"+FreeMindCommon.FREEMIND_FILE_EXTENSION+"(#.*)?")) {
 		if(link != null && link.endsWith(FreeMindCommon.FREEMIND_FILE_EXTENSION)) {
 			try {
 				File mmFile = Tools.urlToFile(new URL(getMap().getModel().getURL(), link));

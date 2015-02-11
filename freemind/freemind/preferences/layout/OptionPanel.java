@@ -714,6 +714,8 @@ public class OptionPanel implements TextTranslator {
 
 		controls.add(new BooleanProperty(FreeMind.RESOURCES_DISPLAY_FOLDING_BUTTONS+TOOLTIP_EXT,
 				FreeMind.RESOURCES_DISPLAY_FOLDING_BUTTONS)); // true
+		controls.add(new BooleanProperty(null, "el__show_icon_for_attributes")); // true
+
 		// controls.add(new BooleanProperty(
 		//
 		// "use_split_pane.tooltip", FreeMind.RESOURCES_USE_SPLIT_PANE)); //
@@ -765,6 +767,11 @@ public class OptionPanel implements TextTranslator {
 		controls.add(new SeparatorProperty("hyperlink_types"));
 		controls.add(new ComboProperty("links.tooltip", "links", new String[] {
 				"relative", "absolute" }, this)); // relative
+		controls.add(new BooleanProperty(
+				FreeMindCommon.CREATE_THUMBNAIL_ON_SAVE + TOOLTIP_EXT,
+				FreeMindCommon.CREATE_THUMBNAIL_ON_SAVE)); // true
+		controls.add(new NumberProperty(FreeMindCommon.THUMBNAIL_SIZE
+				+ TOOLTIP_EXT, FreeMindCommon.THUMBNAIL_SIZE, 1, 10000, 1));		
 
 		/* ***************************************************************** */
 		controls.add(new NextLineProperty());
@@ -783,8 +790,6 @@ public class OptionPanel implements TextTranslator {
 		controls.add(new StringProperty(null, "el__max_default_window_width")); // 600
 
 		controls.add(new BooleanProperty(null, "el__enter_confirms_by_default")); // true
-
-		controls.add(new BooleanProperty(null, "el__show_icon_for_attributes")); // true
 
 		controls.add(new SeparatorProperty("note_properties"));
 		controls.add(new BooleanProperty(null,
