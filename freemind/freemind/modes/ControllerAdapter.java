@@ -680,10 +680,11 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 				File baseFileName = getModel().getFile();
 				String fileName = Resources.getInstance()
 						.createThumbnailFileName(baseFileName);
+				Tools.makeFileHidden(new File(fileName), false);
 				IndependantMapViewCreator.printToFile(getView(), fileName,
 						true,
 						getIntProperty(FreeMindCommon.THUMBNAIL_SIZE, 400));
-				Tools.makeFileHidden(new File(fileName));
+				Tools.makeFileHidden(new File(fileName), true);
 			}
 		} catch (FileNotFoundException e) {
 			freemind.main.Resources.getInstance().logException(e);

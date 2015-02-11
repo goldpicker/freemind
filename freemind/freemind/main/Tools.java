@@ -2166,12 +2166,15 @@ public class Tools {
 		return sw.toString(); 
 	}
 	
-	public static void makeFileHidden(File file) {
+	public static void makeFileHidden(File file, boolean setHidden) {
+		if(!file.exists()) {
+			return;
+		}
 	    try {
 			Path path = file.toPath();
 			DosFileAttributes attrs = Files.readAttributes(path, DosFileAttributes.class);
-			if(!attrs.isHidden()) {
-				Files.setAttribute(path, "dos:hidden", true);
+			if(setHidden != attrs.isHidden()) {
+				Files.setAttribute(path, "dos:hidden", setHidden);
 			}
 		} catch (IOException e) {
 			freemind.main.Resources.getInstance().logException(e);

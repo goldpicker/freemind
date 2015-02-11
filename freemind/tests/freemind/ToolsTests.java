@@ -327,6 +327,13 @@ public class ToolsTests extends FreeMindTestBase {
 	
 	public void testMakeFileHidden() throws Exception {
 		File tempFile = File.createTempFile("hidden", "now");
-		Tools.makeFileHidden(tempFile);
+		Tools.makeFileHidden(tempFile, true);
+	}
+	
+	public void testHiddenNonExistingFile() throws Exception {
+		File tempFile = File.createTempFile("hidden", "now");
+		File nonExisting = new File(tempFile.getAbsolutePath()+".notexisting");
+		Tools.makeFileHidden(nonExisting, true);
+		
 	}
 }

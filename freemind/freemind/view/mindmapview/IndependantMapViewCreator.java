@@ -140,23 +140,26 @@ public class IndependantMapViewCreator extends MapFeedbackAdapter {
 		g.translate(-dim.x, -dim.y);
 		g.clipRect(dim.x, dim.y, dim.width, dim.height);
 		parent.print(g); // this might not be necessary
+		g.dispose();
 		backBuffer = backBuffer.getSubimage(dimI.x, dimI.y, dimI.width,
 				dimI.height);
 		if(scale) {
 			double maxDim = Math.max(dimI.getHeight(), dimI.getWidth());
-			int newWidth = (int) (dimI.getWidth()*destSize/maxDim);
-			int newHeight = (int) (dimI.getHeight()*destSize/maxDim);
-			BufferedImage resized = new BufferedImage(newWidth, newHeight, backBuffer.getType());
-		    Graphics2D g2 = resized.createGraphics();
-		    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-		    g2.drawImage(backBuffer, 0, 0, newWidth, newHeight, 0, 0, backBuffer.getWidth(), backBuffer.getHeight(), null);
-		    g2.dispose();
-		    backBuffer = resized;
+			int newWidth = (int) (dimI.getWidth() * destSize / maxDim);
+			int newHeight = (int) (dimI.getHeight() * destSize / maxDim);
+			BufferedImage resized = new BufferedImage(newWidth, newHeight,
+					backBuffer.getType());
+			Graphics2D g2 = resized.createGraphics();
+			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+					RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+			g2.drawImage(backBuffer, 0, 0, newWidth, newHeight, 0, 0,
+					backBuffer.getWidth(), backBuffer.getHeight(), null);
+			g2.dispose();
+			backBuffer = resized;
 		}
 		FileOutputStream out1 = new FileOutputStream(outputFileName);
 		ImageIO.write(backBuffer, "png", out1);
 		out1.close();
-		g.dispose();
 	}
 
 
