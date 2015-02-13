@@ -593,7 +593,7 @@
 		     make runWithoutPreferences safe. -->
 		<java classname="freemind.main.FreeMindStarter"
           fork="yes"
-          dir="${dist}" spawn="${spawn}" failonerror="false">
+          dir="${dist}" spawn="${spawn}" failonerror="false" maxmemory="256M">
 			<!--    <jvmarg value="-Djava.util.logging.config.file=logging.properties" /> -->
 			<classpath>
 				<!--<pathelement location="${dist}"/>-->
