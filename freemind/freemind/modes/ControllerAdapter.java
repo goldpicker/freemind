@@ -675,11 +675,12 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		try {
 			result = getModel().save(file);
 			// create thumbnail if desired.
-			if ("true"
+			if (result && "true"
 					.equals(getProperty(FreeMindCommon.CREATE_THUMBNAIL_ON_SAVE))) {
 				File baseFileName = getModel().getFile();
 				String fileName = Resources.getInstance()
 						.createThumbnailFileName(baseFileName);
+				// due to a windows bug, the file must not be hidden before writing it.
 				Tools.makeFileHidden(new File(fileName), false);
 				IndependantMapViewCreator.printToFile(getView(), fileName,
 						true,

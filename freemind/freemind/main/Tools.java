@@ -2167,10 +2167,10 @@ public class Tools {
 	}
 	
 	public static void makeFileHidden(File file, boolean setHidden) {
-		if(!file.exists()) {
-			return;
-		}
-	    try {
+		try {
+			if(!file.exists() && !isWindows()) {
+				return;
+			}
 			Path path = file.toPath();
 			DosFileAttributes attrs = Files.readAttributes(path, DosFileAttributes.class);
 			if(setHidden != attrs.isHidden()) {

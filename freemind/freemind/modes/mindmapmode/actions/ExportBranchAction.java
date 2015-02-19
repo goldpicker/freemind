@@ -20,6 +20,7 @@
 
 package freemind.modes.mindmapmode.actions;
 
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -60,7 +61,9 @@ public class ExportBranchAction extends MindmapAction {
 		if (mMindMapController.getMap().getFile() == null) {
 			mMindMapController.getFrame().out(
 					"You must save the current map first!");
-			mMindMapController.save();
+			if(!mMindMapController.save()) {
+				return;
+			}
 		}
 
 		// Open FileChooser to choose in which file the exported
@@ -118,14 +121,14 @@ public class ExportBranchAction extends MindmapAction {
 			// unfold node
 			node.setFolded(false);
 			// construct new controller:
-			ModeController newModeController = mMindMapController.getMode()
+			final ModeController newModeController = mMindMapController.getMode()
 					.createModeController();
-			MindMapMapModel map = new MindMapMapModel(node,
+			MindMapMapModel newMap = new MindMapMapModel(node,
 					newModeController);
-			newModeController.setModel(map);
+			newModeController.setModel(newMap);
 			try {
-				map.save(chosenFile);
-			} catch (IOException e1) {
+				newMap.save(chosenFile);
+			} catch (Exception e1) {
 				freemind.main.Resources.getInstance().logException(e1);
 				// roll back:
 				mMindMapController.insertNodeInto(node, parent);
@@ -136,15 +139,28 @@ public class ExportBranchAction extends MindmapAction {
 				return;
 			}
 			// new node instead:
-			MindMapNode newNode = mMindMapController.addNewNode(parent,
+			final MindMapNode newNode = mMindMapController.addNewNode(parent,
 					nodePosition, node.isLeft());
 			// TODO: Keep formatting of node.
 			mMindMapController.setNodeText(newNode, node.getText());
 
-			String linkString = Tools.fileToRelativeUrlString(chosenFile, mMindMapController.getModel().getFile());
+			final String linkString = Tools.fileToRelativeUrlString(chosenFile, mMindMapController.getModel().getFile());
 			mMindMapController.setLink(newNode, linkString);
-			mMindMapController.newMap(map, newModeController);
+			mMindMapController.newMap(newMap, newModeController);
 			// old map should not be saved automatically!!
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					try {
+						// save new map again to create thumbnail...
+						newModeController.setSaved(false);
+						newModeController.save();
+						// set link again to refresh thumbnail
+						mMindMapController.setLink(newNode, linkString);
+					} catch (Exception e2) {
+						freemind.main.Resources.getInstance().logException(e2);
+					}
+				}
+			});
 		}
 	}
 
