@@ -1214,7 +1214,7 @@ public abstract class NodeAdapter implements MindMapNode {
 			for (int i = 0; i < mAttributeVector.size(); i++) {
 				XMLElement attributeElement = new XMLElement();
 				attributeElement.setName(XMLElementAdapter.XML_NODE_ATTRIBUTE);
-				Attribute attr = (Attribute) mAttributeVector.get(i);
+				Attribute attr = mAttributeVector.get(i);
 				attributeElement.setAttribute("NAME", attr.getName());
 				attributeElement.setAttribute("VALUE", attr.getValue());
 				node.addChild(attributeElement);

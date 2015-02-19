@@ -96,15 +96,15 @@ public class ScriptEditor extends MindMapHookAdapter {
 		}
 
 		public void setScript(int pIndex, ScriptHolder pScript) {
-			AttributeHolder oldHolder = (AttributeHolder) mScripts.get(pIndex);
-			if (!pScript.mScriptName.equals(oldHolder.mAttribute.getName())) {
+			AttributeHolder holder = (AttributeHolder) mScripts.get(pIndex);
+			if (!pScript.mScriptName.equals(holder.mAttribute.getName())) {
 				isDirty = true;
 			}
-			if (!pScript.mScript.equals(oldHolder.mAttribute.getValue())) {
+			if (!pScript.mScript.equals(holder.mAttribute.getValue())) {
 				isDirty = true;
 			}
-			oldHolder.mAttribute.setName(pScript.mScriptName);
-			oldHolder.mAttribute.setValue(pScript.mScript);
+			holder.mAttribute.setName(pScript.mScriptName);
+			holder.mAttribute.setValue(pScript.mScript);
 		}
 
 		public void storeDialogPositions(ScriptEditorPanel pPanel,

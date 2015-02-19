@@ -63,6 +63,8 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 
 		private boolean mDontUpdateModel = false;
 		
+		private MindMapNode mCurrentNode = null;
+		
 		@Override
 		public void onCreateNodeHook(MindMapNode pNode) {
 		}
@@ -102,6 +104,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 				Attribute attribute = node.getAttribute(position);
 				mAttributeTableModel.addAttributeHolder(attribute);
 			}
+			mCurrentNode = node;
 		}
 
 		@Override
@@ -114,6 +117,10 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 		public void onSaveNode(MindMapNode pNode) {
 			try {
 				mDontUpdateModel = true;
+				// check correct node:
+				if(pNode != mCurrentNode) {
+					return;
+				}
 				// first check for changes:
 				if(areModelAndNodeAttributesEqual(pNode)) {
 					return;

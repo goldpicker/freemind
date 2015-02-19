@@ -361,7 +361,6 @@ public class MindMapController extends ControllerAdapter implements
 	}
 
 	private static final String RESOURCE_UNFOLD_ON_PASTE = "unfold_on_paste";
-	private static Logger logger;
 	// for MouseEventHandlers
 	private HashSet mRegisteredMouseWheelEventHandler = new HashSet();
 
@@ -492,9 +491,6 @@ public class MindMapController extends ControllerAdapter implements
 
 	public MindMapController(Mode mode) {
 		super(mode);
-		if (logger == null) {
-			logger = getFrame().getLogger(this.getClass().getName());
-		}
 		// create action factory:
 		actionFactory = new ActionRegistry();
 		// create node information timer and actions. They don't fire, until
