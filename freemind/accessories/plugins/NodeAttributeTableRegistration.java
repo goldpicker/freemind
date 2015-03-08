@@ -24,18 +24,21 @@
 package accessories.plugins;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.DefaultCellEditor;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
 
@@ -183,8 +186,11 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 
 	private static final String VALUE_COLUMN_TEXT = "accessories/plugins/NodeAttributeTable_value";
 
-	public static interface InserValueInterface {
+	private static final String DELETE_ROW_TEXT_ID = "accessories/plugins/NodeAttributeTable_delete_row_text_id";
+
+	public static interface ChangeValueInterface {
 		void addValue(Object pAValue, int pColumnIndex);
+		void removeValue(int pRowIndex);
 	}
 	
 	/**
@@ -226,6 +232,11 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 			fireTableRowsInserted(row, row);
 		}
 
+		public void removeAttributeHolder(int pIndex) {
+			mData.remove(pIndex);
+			fireTableRowsDeleted(pIndex, pIndex);
+		}
+		
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -340,6 +351,10 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 
 	private AttributeManager mAttributeManager;
 
+	private JPopupMenu mPopupMenu;
+
+	private AdditionalEmptyCellModel mAdditionalEmptyCellModel;
+
 	public NodeAttributeTableRegistration(ModeController controller, MindMap map) {
 		this.controller = (MindMapController) controller;
 		logger = Resources.getInstance().getLogger(this.getClass().getName());
@@ -373,7 +388,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 		mAttributeTable.getTableHeader().setReorderingAllowed(false);
 		mAttributeTableModel = new AttributeTableModel(controller);
 		mAttributeTableSorter = new TableSorter(mAttributeTableModel);
-		mAttributeTable.setModel(new AdditionalEmptyCellModell(mAttributeTableSorter, new InserValueInterface() {
+		mAdditionalEmptyCellModel = new AdditionalEmptyCellModel(mAttributeTableSorter, new ChangeValueInterface() {
 			
 			@Override
 			public void addValue(Object pAValue, int pColumnIndex) {
@@ -391,7 +406,16 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 				}
 				mAttributeTableModel.addAttributeHolder(attribute);
 			}
-		}));
+			
+			/* (non-Javadoc)
+			 * @see accessories.plugins.NodeAttributeTableRegistration.ChangeValueInterface#removeValue(int)
+			 */
+			@Override
+			public void removeValue(int pRowIndex) {
+				mAttributeTableModel.removeAttributeHolder(pRowIndex);
+			}
+		});
+		mAttributeTable.setModel(mAdditionalEmptyCellModel);
 //		final JTextField mTableTextField = new JTextField();
 //		mAttributeTable.setCellEditor(new DefaultCellEditor(mTableTextField) {
 //			/* (non-Javadoc)
@@ -419,7 +443,54 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 		mAttributeManager = new AttributeManager();
 		controller.registerNodeSelectionListener(mAttributeManager, false);
 		controller.registerNodeLifetimeListener(mAttributeManager, true);
+		mPopupMenu = new JPopupMenu();
+		JMenuItem menuItem = new JMenuItem(controller.getText(DELETE_ROW_TEXT_ID));
+		mPopupMenu.add(menuItem);
+		menuItem.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				Component c = (Component) e.getSource();
+				JPopupMenu popup = (JPopupMenu) c.getParent();
+				JTable table = (JTable) popup.getInvoker();
+				mAdditionalEmptyCellModel.removeRow(table.getSelectedRow());
+			}
+		});
+        mAttributeTable.addMouseListener( new MouseAdapter()
+        {
+            public void mousePressed(MouseEvent e)
+            {
+            	logger.fine("pressed");
+            	showPopup(e);
+            }
+
+            public void mouseReleased(MouseEvent e)
+            {
+            	logger.fine("released");
+                showPopup(e);
+            }
+
+			/**
+			 * @param e
+			 */
+			private void showPopup(MouseEvent e) {
+				if (e.isPopupTrigger())
+                {
+                    JTable source = (JTable)e.getSource();
+                    int row = source.rowAtPoint( e.getPoint() );
+                    int column = source.columnAtPoint( e.getPoint() );
+
+                    if (! source.isRowSelected(row))
+                        source.changeSelection(row, column, false, false);
+
+                    mPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+                    e.consume();
+                }
+			}
+        });
+		
 	}
+	
+	
 
 	public void deRegister() {
 		controller.deregisterNodeSelectionListener(mAttributeManager);

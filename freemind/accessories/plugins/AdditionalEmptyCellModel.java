@@ -26,20 +26,30 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
-import accessories.plugins.NodeAttributeTableRegistration.InserValueInterface;
+import accessories.plugins.NodeAttributeTableRegistration.ChangeValueInterface;
 
-public final class AdditionalEmptyCellModell extends AbstractTableModel {
+public final class AdditionalEmptyCellModel extends AbstractTableModel {
 
 	
 	private AbstractTableModel mParentModel;
-	private InserValueInterface mInsertValueInterface;
+	private ChangeValueInterface mChangeValueInterface;
 
 	/**
 	 * 
 	 */
-	public AdditionalEmptyCellModell(AbstractTableModel parentModel, InserValueInterface insertValueInterface) {
+	public AdditionalEmptyCellModel(AbstractTableModel parentModel, ChangeValueInterface changeValueInterface) {
 		mParentModel = parentModel;
-		mInsertValueInterface = insertValueInterface;
+		mChangeValueInterface = changeValueInterface;
+	}
+	
+	public void removeRow(int pRowIndex) {
+		if(pRowIndex >= mParentModel.getRowCount()+1) {
+			throw new IllegalArgumentException(pRowIndex+" is out of range.");
+		}
+		if(pRowIndex == mParentModel.getRowCount()) {
+			return;
+		}
+		mChangeValueInterface.removeValue(pRowIndex);
 	}
 	
 	@Override
@@ -68,7 +78,7 @@ public final class AdditionalEmptyCellModell extends AbstractTableModel {
 		if(pRowIndex >= mParentModel.getRowCount()) {
 			if (pAValue != null && !((String)pAValue).isEmpty()) {
 				// add new value.
-				mInsertValueInterface.addValue(pAValue, pColumnIndex);
+				mChangeValueInterface.addValue(pAValue, pColumnIndex);
 			}
 		} else {
 			mParentModel.setValueAt(pAValue, pRowIndex, pColumnIndex);
