@@ -40,9 +40,11 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.RowSorter;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
-import accessories.plugins.time.TableSorter;
 import freemind.common.TextTranslator;
 import freemind.controller.Controller.SplitComponentType;
 import freemind.controller.MenuItemSelectedListener;
@@ -173,12 +175,12 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 
 	}
 
-	public final class AttributeHolder {
+	public static final class AttributeHolder {
 		public String mKey;
 		public String mValue;
 	}
 
-	static final int KEY_COLUMN = 0;
+	public static final int KEY_COLUMN = 0;
 
 	public static final int VALUE_COLUMN = 1;
 
@@ -225,11 +227,13 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 
 		/**
 		 * @param pAttribute
+		 * @return 
 		 */
-		public void addAttributeHolder(AttributeHolder pAttribute) {
+		public int addAttributeHolder(AttributeHolder pAttribute) {
 			mData.add(pAttribute);
 			final int row = mData.size() - 1;
 			fireTableRowsInserted(row, row);
+			return row;
 		}
 
 		public void removeAttributeHolder(int pIndex) {
@@ -347,13 +351,9 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 
 	private AttributeTableModel mAttributeTableModel;
 
-	private TableSorter mAttributeTableSorter;
-
 	private AttributeManager mAttributeManager;
 
 	private JPopupMenu mPopupMenu;
-
-	private AdditionalEmptyCellModel mAdditionalEmptyCellModel;
 
 	public NodeAttributeTableRegistration(ModeController controller, MindMap map) {
 		this.controller = (MindMapController) controller;
@@ -382,59 +382,15 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 	public void register() {
 		mAttributeViewerComponent = new JPanel();
 		mAttributeViewerComponent.setLayout(new BorderLayout());
-		mAttributeTable = new JTable();
+		mAttributeTable = new NewLineTable();
 		mAttributeTable
 				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		mAttributeTable.getTableHeader().setReorderingAllowed(false);
 		mAttributeTableModel = new AttributeTableModel(controller);
-		mAttributeTableSorter = new TableSorter(mAttributeTableModel);
-		mAdditionalEmptyCellModel = new AdditionalEmptyCellModel(mAttributeTableSorter, new ChangeValueInterface() {
-			
-			@Override
-			public void addValue(Object pAValue, int pColumnIndex) {
-				AttributeHolder attribute = new AttributeHolder();
-				switch (pColumnIndex) {
-				case KEY_COLUMN:
-					attribute.mKey = (String) pAValue;
-					attribute.mValue = "";
-					break;
-				case VALUE_COLUMN:
-					// this couldn't be happen, as the new-value-field is write protected.
-					attribute.mKey = "";
-					attribute.mValue = (String) pAValue;
-					break;
-				}
-				mAttributeTableModel.addAttributeHolder(attribute);
-			}
-			
-			/* (non-Javadoc)
-			 * @see accessories.plugins.NodeAttributeTableRegistration.ChangeValueInterface#removeValue(int)
-			 */
-			@Override
-			public void removeValue(int pRowIndex) {
-				mAttributeTableModel.removeAttributeHolder(pRowIndex);
-			}
-		});
-		mAttributeTable.setModel(mAdditionalEmptyCellModel);
-//		final JTextField mTableTextField = new JTextField();
-//		mAttributeTable.setCellEditor(new DefaultCellEditor(mTableTextField) {
-//			/* (non-Javadoc)
-//			 * @see javax.swing.DefaultCellEditor#stopCellEditing()
-//			 */
-//			@Override
-//			public boolean stopCellEditing() {
-////				if(mTableTextField.getText().length() < 5) {
-////					return false;
-////				}
-//				return super.stopCellEditing();
-//			}
-//		});
-		mAttributeTableSorter.setTableHeader(mAttributeTable.getTableHeader());
-		mAttributeTableSorter.setColumnComparator(String.class,
-				TableSorter.LEXICAL_COMPARATOR);
-		// Sort by default by date.
-		mAttributeTableSorter.setSortingStatus(KEY_COLUMN,
-				TableSorter.ASCENDING);
+		mAttributeTable.setModel(mAttributeTableModel);
+		RowSorter<TableModel> sorter =
+	             new TableRowSorter<TableModel>(mAttributeTableModel);
+		mAttributeTable.setRowSorter(sorter);
 		mAttributeViewerComponent.add(new JScrollPane(mAttributeTable), BorderLayout.CENTER);
 		// register "leave note" action:
 		if (shouldShowSplitPane()) {
@@ -452,7 +408,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 				Component c = (Component) e.getSource();
 				JPopupMenu popup = (JPopupMenu) c.getParent();
 				JTable table = (JTable) popup.getInvoker();
-				mAdditionalEmptyCellModel.removeRow(table.getSelectedRow());
+				mAttributeTableModel.removeAttributeHolder(table.convertRowIndexToModel(table.getSelectedRow()));
 			}
 		});
         mAttributeTable.addMouseListener( new MouseAdapter()
