@@ -233,11 +233,20 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 			mData.add(pAttribute);
 			final int row = mData.size() - 1;
 			fireTableRowsInserted(row, row);
+			makeMapDirty();
 			return row;
+		}
+
+		/**
+		 * 
+		 */
+		private void makeMapDirty() {
+			controller.setSaved(false);
 		}
 
 		public void removeAttributeHolder(int pIndex) {
 			mData.remove(pIndex);
+			makeMapDirty();
 			fireTableRowsDeleted(pIndex, pIndex);
 		}
 		
@@ -334,6 +343,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 				holder.mValue = (String) pAValue;
 				break;
 			}
+			makeMapDirty();
 			fireTableCellUpdated(pRowIndex, pColumnIndex);
 		}
 
