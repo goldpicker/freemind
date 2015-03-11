@@ -684,7 +684,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 				Tools.makeFileHidden(new File(fileName), false);
 				IndependantMapViewCreator.printToFile(getView(), fileName,
 						true,
-						getIntProperty(FreeMindCommon.THUMBNAIL_SIZE, 400));
+						getIntProperty(FreeMindCommon.THUMBNAIL_SIZE, 800));
 				Tools.makeFileHidden(new File(fileName), true);
 			}
 		} catch (FileNotFoundException e) {

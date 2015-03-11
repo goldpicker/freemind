@@ -134,15 +134,15 @@ public class IndependantMapViewCreator extends MapFeedbackAdapter {
 		Rectangle dimI = mapView.getInnerBounds();
 		Rectangle dim = mapView.getBounds();
 		// do print
-		BufferedImage backBuffer = new BufferedImage(dim.width, dim.height,
+		BufferedImage backBuffer = new BufferedImage(dimI.width, dimI.height,
 				BufferedImage.TYPE_INT_ARGB);
 		Graphics g = backBuffer.createGraphics();
-		g.translate(-dim.x, -dim.y);
-		g.clipRect(dim.x, dim.y, dim.width, dim.height);
-		parent.print(g); // this might not be necessary
+		int newX = -dim.x-dimI.x;
+		int newY = -dim.y-dimI.y;
+		g.translate(newX, newY);
+		g.clipRect(-newX, -newY, dimI.width, dimI.height);
+		parent.print(g); 
 		g.dispose();
-		backBuffer = backBuffer.getSubimage(dimI.x, dimI.y, dimI.width,
-				dimI.height);
 		if(scale) {
 			double maxDim = Math.max(dimI.getHeight(), dimI.getWidth());
 			int newWidth = (int) (dimI.getWidth() * destSize / maxDim);
