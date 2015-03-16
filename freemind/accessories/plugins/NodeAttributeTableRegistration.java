@@ -107,7 +107,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 			mAttributeTableModel.clear();
 			for (int position = 0; position < node.getAttributeTableLength(); position++) {
 				Attribute attribute = node.getAttribute(position);
-				mAttributeTableModel.addAttributeHolder(attribute);
+				mAttributeTableModel.addAttributeHolder(attribute, false);
 			}
 			mCurrentNode = node;
 		}
@@ -217,23 +217,27 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 
 		/**
 		 * @param pAttribute
+		 * @param pMakeMapDirty TODO
 		 */
-		public void addAttributeHolder(Attribute pAttribute) {
+		public void addAttributeHolder(Attribute pAttribute, boolean pMakeMapDirty) {
 			AttributeHolder holder = new AttributeHolder();
 			holder.mKey = pAttribute.getName();
 			holder.mValue = pAttribute.getValue();
-			addAttributeHolder(holder);
+			addAttributeHolder(holder, pMakeMapDirty);
 		}
 
 		/**
 		 * @param pAttribute
+		 * @param pMakeMapDirty if true, the map is made dirty to reflect the change.
 		 * @return 
 		 */
-		public int addAttributeHolder(AttributeHolder pAttribute) {
+		public int addAttributeHolder(AttributeHolder pAttribute, boolean pMakeMapDirty) {
 			mData.add(pAttribute);
 			final int row = mData.size() - 1;
 			fireTableRowsInserted(row, row);
-			makeMapDirty();
+			if(pMakeMapDirty) {
+				makeMapDirty();
+			}
 			return row;
 		}
 

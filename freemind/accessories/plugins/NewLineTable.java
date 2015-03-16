@@ -56,7 +56,7 @@ public class NewLineTable extends JTable {
     }
 
     @Override
-    public void setValueAt(Object aValue, final int row, int column) {
+    public void setValueAt(Object aValue, int row, int column) {
         if(row < super.getRowCount()) {
             super.setValueAt(aValue, row, column);
         }
@@ -73,14 +73,14 @@ public class NewLineTable extends JTable {
 				attribute.mValue = (String) aValue;
 				break;
 			}
-            int position = ((AttributeTableModel)getModel()).addAttributeHolder(attribute);
+            final int position = ((AttributeTableModel)getModel()).addAttributeHolder(attribute, true);
             // fix selection after sorting
             EventQueue.invokeLater(new Runnable() {
 
 				@Override
 				public void run() {
 					NewLineTable table = NewLineTable.this;
-					int selRow = table.convertRowIndexToView(row);
+					int selRow = table.convertRowIndexToView(position);
 					table.getSelectionModel().setSelectionInterval(selRow, selRow);
 				}});
         }
