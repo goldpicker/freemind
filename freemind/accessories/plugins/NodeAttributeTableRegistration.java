@@ -120,6 +120,10 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 
 		@Override
 		public void onSaveNode(MindMapNode pNode) {
+			if(mAttributeTable.isEditing()) {
+	            // This will dispose editor and call setValueAt() of your model as normally happens
+	            mAttributeTable.getCellEditor().stopCellEditing();
+			}
 			try {
 				mDontUpdateModel = true;
 				// check correct node:
@@ -399,6 +403,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 		mAttributeTable = new NewLineTable();
 		mAttributeTable
 				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+//		mAttributeTable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 		mAttributeTable.getTableHeader().setReorderingAllowed(false);
 		mAttributeTableModel = new AttributeTableModel(controller);
 		mAttributeTable.setModel(mAttributeTableModel);
