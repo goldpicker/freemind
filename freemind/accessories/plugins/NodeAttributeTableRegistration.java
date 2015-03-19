@@ -41,13 +41,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter;
+import javax.swing.RowSorter.SortKey;
+import javax.swing.SortOrder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import freemind.common.TextTranslator;
+import freemind.common.XmlBindingTools;
 import freemind.controller.Controller.SplitComponentType;
 import freemind.controller.MenuItemSelectedListener;
+import freemind.controller.actions.generated.instance.AttributeTableProperties;
+import freemind.controller.actions.generated.instance.TableColumnOrder;
 import freemind.extensions.HookRegistration;
 import freemind.main.FreeMind;
 import freemind.main.Resources;
@@ -193,6 +198,8 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 	private static final String VALUE_COLUMN_TEXT = "accessories/plugins/NodeAttributeTable_value";
 
 	private static final String DELETE_ROW_TEXT_ID = "accessories/plugins/NodeAttributeTable_delete_row_text_id";
+
+	private static final String ATTRIBUTE_TABLE_PROPERTIES = "attribute_table_properties";
 
 	public static interface ChangeValueInterface {
 		void addValue(Object pAValue, int pColumnIndex);
@@ -409,6 +416,17 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 		mAttributeTable.setModel(mAttributeTableModel);
 		RowSorter<TableModel> sorter =
 	             new TableRowSorter<TableModel>(mAttributeTableModel);
+		String marshalled = controller.getProperty(ATTRIBUTE_TABLE_PROPERTIES);
+		AttributeTableProperties props = (AttributeTableProperties) XmlBindingTools
+				.getInstance().unMarshall(marshalled);
+		Vector<SortKey> keys = new Vector<RowSorter.SortKey>();
+		for (Iterator it = props.getListTableColumnOrderList().iterator(); it
+				.hasNext();) {
+			TableColumnOrder setting = (TableColumnOrder) it.next();
+			keys.add(new SortKey(setting.getColumnIndex(), SortOrder
+					.valueOf(setting.getColumnSorting())));
+		}
+		sorter.setSortKeys(keys);
 		mAttributeTable.setRowSorter(sorter);
 		mAttributeViewerComponent.add(new JScrollPane(mAttributeTable), BorderLayout.CENTER);
 		// register "leave note" action:
@@ -468,6 +486,17 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 	
 
 	public void deRegister() {
+		// store sortings:
+		AttributeTableProperties props = new AttributeTableProperties();
+		for (Iterator it = mAttributeTable.getRowSorter().getSortKeys().iterator(); it.hasNext();) {
+			SortKey key = (SortKey) it.next();
+			TableColumnOrder order = new TableColumnOrder();
+			order.setColumnIndex(key.getColumn());
+			order.setColumnSorting(key.getSortOrder().name());
+			props.addTableColumnOrder(order);
+		}
+		String marshallResult = XmlBindingTools.getInstance().marshall(props);
+		controller.setProperty(ATTRIBUTE_TABLE_PROPERTIES, marshallResult);
 		controller.deregisterNodeSelectionListener(mAttributeManager);
 		controller.deregisterNodeLifetimeListener(mAttributeManager);
 		if (mAttributeViewerComponent != null && shouldShowSplitPane()) {

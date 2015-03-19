@@ -1968,8 +1968,9 @@ public class Controller implements MapModuleChangeObserver {
 	public void insertComponentIntoSplitPane(JComponent pMindMapComponent, SplitComponentType pSplitComponentType) {
 		if(mOptionalSplitPane == null) {
 			mOptionalSplitPane = new JOptionalSplitPane();
-			mOptionalSplitPane.setLastDividerPosition(getIntProperty(FreeMind.RESOURCES_OPTIONAL_SPLIT_DIVIDER_POSITION, -1));
 			getFrame().insertComponentIntoSplitPane(mOptionalSplitPane);
+			mOptionalSplitPane.setLastDividerPosition(getIntProperty(
+					FreeMind.RESOURCES_OPTIONAL_SPLIT_DIVIDER_POSITION, -1));
 		}
 		mOptionalSplitPane.setComponent(pMindMapComponent, pSplitComponentType.getIndex());
 	}
