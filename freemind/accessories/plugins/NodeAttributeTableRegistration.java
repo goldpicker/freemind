@@ -133,6 +133,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 				mDontUpdateModel = true;
 				// check correct node:
 				if(pNode != mCurrentNode) {
+					logger.warning("onSaveNode for wrong node called. Current="+mCurrentNode+" and called for " + pNode);
 					return;
 				}
 				// first check for changes:

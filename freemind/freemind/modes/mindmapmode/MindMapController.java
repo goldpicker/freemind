@@ -2478,14 +2478,6 @@ public class MindMapController extends ControllerAdapter implements
 	}
 
 	/* (non-Javadoc)
-	 * @see freemind.modes.ExtendedMapFeedback#setWaitingCursor(boolean)
-	 */
-	@Override
-	public void setWaitingCursor(boolean pWaiting) {
-		getFrame().setWaitingCursor(pWaiting);
-	}
-
-	/* (non-Javadoc)
 	 * @see freemind.modes.ExtendedMapFeedback#close(boolean)
 	 */
 	@Override

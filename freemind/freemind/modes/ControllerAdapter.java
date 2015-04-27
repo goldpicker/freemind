@@ -574,7 +574,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 				String mapExtensionKey = mapModuleManager
 						.checkIfFileIsAlreadyOpened(absolute);
 				if (mapExtensionKey == null) {
-					getFrame().setWaitingCursor(true);
+					setWaitingCursor(true);
 					load(absolute);
 				} else {
 					mapModuleManager.tryToChangeToMapModule(mapExtensionKey);
@@ -605,10 +605,18 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		} catch (Exception e) {
 			freemind.main.Resources.getInstance().logException(e);
 		} finally {
-			getFrame().setWaitingCursor(false);
+			setWaitingCursor(false);
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see freemind.modes.ExtendedMapFeedback#setWaitingCursor(boolean)
+	 */
+	public void setWaitingCursor(boolean pWaiting) {
+		getFrame().setWaitingCursor(pWaiting);
+	}
+
+	
 	/**
 	 * fc, 24.1.2004: having two methods getSelecteds with different return
 	 * values (linkedlists of models resp. views) is asking for trouble. @see
@@ -673,6 +681,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	public boolean save(File file) {
 		boolean result = false;
 		try {
+			setWaitingCursor(true);
 			result = getModel().save(file);
 			// create thumbnail if desired.
 			if (result && "true"
@@ -695,6 +704,8 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		} catch (Exception e) {
 			logger.severe("Error in MindMapMapModel.save(): ");
 			freemind.main.Resources.getInstance().logException(e);
+		} finally {
+			setWaitingCursor(false);
 		}
 		if(result) {
 			setSaved(true);
