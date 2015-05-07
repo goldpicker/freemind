@@ -2168,7 +2168,7 @@ public class Tools {
 	
 	public static void makeFileHidden(File file, boolean setHidden) {
 		try {
-			if(!file.exists() && !isWindows()) {
+			if(!file.exists() || !isWindows()) {
 				return;
 			}
 			Path path = file.toPath();

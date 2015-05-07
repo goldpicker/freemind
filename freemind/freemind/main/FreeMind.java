@@ -49,6 +49,7 @@ import java.net.Authenticator;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -592,7 +593,9 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 		Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
 		if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
 			try {
-				desktop.browse(url.toURI());
+				// fix for https://sourceforge.net/p/freemind/discussion/22102/thread/cf032151/?limit=25#c631
+				URI uri = new URI(url.toString().replaceAll("^file:////", "file://"));
+				desktop.browse(uri);
 			} catch (Exception e) {
 				logger.severe("Caught: " + e);
 			}
