@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
+import java.beans.Transient;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
@@ -13,6 +14,8 @@ public class ScalableImageIcon extends ImageIcon {
 	private static final long serialVersionUID = 1110980781217268145L;
 
 	private float mScale = 2.0f;
+
+	private Image mScaledImage;
 
 	public ScalableImageIcon(URL pURL) {
 		super(pURL);
@@ -43,7 +46,7 @@ public class ScalableImageIcon extends ImageIcon {
 			observer = c;
 		}
 
-		Image image = getImage();
+		Image image = super.getImage();
 		int width = image.getWidth(observer);
 		int height = image.getHeight(observer);
 		final Graphics2D g2d = (Graphics2D) g.create(x, y,
@@ -53,5 +56,14 @@ public class ScalableImageIcon extends ImageIcon {
 		g2d.drawImage(image, 0, 0, observer);
 		g2d.scale(1, 1);
 		g2d.dispose();
+	}
+	
+	@Override
+	public Image getImage() {
+		if(mScaledImage !=  null){
+			return mScaledImage;
+		}
+		mScaledImage = super.getImage().getScaledInstance(getIconWidth(), getIconHeight(),  java.awt.Image.SCALE_SMOOTH); 
+		return mScaledImage;
 	}
 }
