@@ -2205,4 +2205,19 @@ public class Tools {
 		return false;
 	}
 
+	public static void scaleAllFonts(float pScale) {
+		for (Iterator i = UIManager.getLookAndFeelDefaults().keySet()
+				.iterator(); i.hasNext();) {
+			Object next = i.next();
+			if (next instanceof String) {
+				String key = (String) next;
+				if (key.endsWith(".font")) {
+					Font font = UIManager.getFont(key);
+					Font biggerFont = font.deriveFont(pScale * font.getSize2D());
+					// change ui default to bigger font
+					UIManager.put(key, biggerFont);
+				}				
+			}
+		}
+	}	
 }

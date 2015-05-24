@@ -24,23 +24,27 @@ import java.net.URL;
 
 import javax.swing.ImageIcon;
 
+import freemind.main.Tools;
+
 /**
  * @author foltin
  * @date 24.05.2015
  */
 public class ImageFactory {
+	private static final float SCALING_FACTOR = 2.0f;
 	private static ImageFactory mInstance = null;
 
 	public static ImageFactory getInstance() {
 		if (mInstance == null) {
 			mInstance = new ImageFactory();
+			Tools.scaleAllFonts(SCALING_FACTOR);
 		}
 		return mInstance;
 	}
 
 	public ImageIcon createIcon(URL pURL){
 		ScalableImageIcon icon = new ScalableImageIcon(pURL);
-		icon.setScale(2.0f);
+		icon.setScale(SCALING_FACTOR);
 		return icon;
 	}
 }
