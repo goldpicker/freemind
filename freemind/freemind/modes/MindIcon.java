@@ -137,7 +137,7 @@ public class MindIcon implements Comparable, IconInformation {
 	public ImageIcon getIcon() {
 		// We need the frame to be able to obtain the resource URL of the icon.
 		if (iconNotFound == null) {
-			iconNotFound = new ImageIcon(Resources.getInstance().getResource(
+			iconNotFound = freemind.view.ImageFactory.getInstance().createIcon(Resources.getInstance().getResource(
 					"images/IconNotFound.png"));
 		}
 
@@ -157,7 +157,7 @@ public class MindIcon implements Comparable, IconInformation {
 				} catch (Exception e) {
 				}
 			}
-			ImageIcon icon = imageURL == null ? iconNotFound : new ImageIcon(
+			ImageIcon icon = imageURL == null ? iconNotFound : freemind.view.ImageFactory.getInstance().createIcon(
 					imageURL);
 			setIcon(icon);
 			return icon;

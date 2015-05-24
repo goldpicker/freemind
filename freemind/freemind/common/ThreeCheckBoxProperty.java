@@ -56,10 +56,10 @@ public class ThreeCheckBoxProperty extends PropertyBean implements
 
 	protected static final int FALSE_VALUE_INT = 1;
 
-	private static final ImageIcon PLUS_IMAGE = new ImageIcon(Resources
+	private static final ImageIcon PLUS_IMAGE = freemind.view.ImageFactory.getInstance().createIcon(Resources
 			.getInstance().getResource("images/edit_add.png"));
 
-	private static final ImageIcon MINUS_IMAGE = new ImageIcon(Resources
+	private static final ImageIcon MINUS_IMAGE = freemind.view.ImageFactory.getInstance().createIcon(Resources
 			.getInstance().getResource("images/edit_remove.png"));
 
 	private static final Icon NO_IMAGE = new BlindIcon(15);

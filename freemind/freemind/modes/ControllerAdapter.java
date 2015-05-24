@@ -1201,7 +1201,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		ControllerAdapter mc;
 
 		public OpenAction(ControllerAdapter modeController) {
-			super(getText("open"), new ImageIcon(
+			super(getText("open"), freemind.view.ImageFactory.getInstance().createIcon(
 					getResource("images/fileopen.png")));
 			mc = modeController;
 		}
@@ -1215,7 +1215,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	public class SaveAction extends FreemindAction {
 
 		public SaveAction() {
-			super(Tools.removeMnemonic(getText("save")), new ImageIcon(
+			super(Tools.removeMnemonic(getText("save")), freemind.view.ImageFactory.getInstance().createIcon(
 					getResource("images/filesave.png")), ControllerAdapter.this);
 		}
 
@@ -1236,7 +1236,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	public class SaveAsAction extends FreemindAction {
 
 		public SaveAsAction() {
-			super(getText("save_as"), new ImageIcon(
+			super(getText("save_as"), freemind.view.ImageFactory.getInstance().createIcon(
 					getResource("images/filesaveas.png")), ControllerAdapter.this);
 		}
 

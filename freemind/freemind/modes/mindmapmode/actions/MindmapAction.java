@@ -72,7 +72,7 @@ public abstract class MindmapAction extends FreemindAction  {
 	public MindmapAction(String title, String iconPath,
 			final MindMapController mindMapController) {
 		this(mindMapController.getText(title), (iconPath == null) ? null
-				: new ImageIcon(mindMapController.getResource(iconPath)),
+				: freemind.view.ImageFactory.getInstance().createIcon(mindMapController.getResource(iconPath)),
 				mindMapController);
 	}
 

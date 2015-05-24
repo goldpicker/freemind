@@ -731,7 +731,7 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 					public void setMaximumValue(int max) {
 					}
 				};
-				frame.mWindowIcon = new ImageIcon(
+				frame.mWindowIcon = freemind.view.ImageFactory.getInstance().createIcon(
 						frame.getResource("images/FreeMindWindowIcon.png"));
 			}
 			feedBack.setMaximumValue(10 + frame.getMaximumNumberOfMapsToLoad(args));

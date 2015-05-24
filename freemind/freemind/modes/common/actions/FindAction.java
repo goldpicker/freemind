@@ -175,7 +175,7 @@ public class FindAction extends FreemindAction {
 		contentPane.add(mSearchField, new GridBagConstraints(2, 0, 10, 1, 1.0,
 				1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH,
 				new Insets(5, 5, 0, 0), 0, 0));
-		ImageIcon findImage = new ImageIcon(Resources.getInstance()
+		ImageIcon findImage = freemind.view.ImageFactory.getInstance().createIcon(Resources.getInstance()
 				.getResource("images/filefind_big.png"));
 		contentPane.add(new JLabel(findImage), new GridBagConstraints(0, 0, 1,
 				2, 1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.BOTH,

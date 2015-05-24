@@ -78,7 +78,7 @@ public class StructuredMenuHolder {
 		Vector order = new Vector();
 		menuMap.put(ORDER_NAME, order);
 		if (sSelectedIcon == null) {
-			sSelectedIcon = new ImageIcon(Resources.getInstance().getResource(
+			sSelectedIcon = freemind.view.ImageFactory.getInstance().createIcon(Resources.getInstance().getResource(
 					SELECTED_ICON_PATH));
 		}
 

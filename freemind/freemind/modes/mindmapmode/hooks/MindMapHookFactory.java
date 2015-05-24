@@ -272,7 +272,7 @@ public class MindMapHookFactory extends HookFactoryAdapter {
 		}
 		String icon = descriptor.getIconPath();
 		if (icon != null) {
-			ImageIcon imageIcon = new ImageIcon(descriptor
+			ImageIcon imageIcon = freemind.view.ImageFactory.getInstance().createIcon(descriptor
 					.getPluginClassLoader().getResource(icon));
 			action.putValue(AbstractAction.SMALL_ICON, imageIcon);
 		}

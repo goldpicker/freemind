@@ -57,7 +57,7 @@ public class NodeGeneralAction extends AbstractXmlAction {
 	 */
 	protected NodeGeneralAction(MindMapController modeController,
 			final String textID, String iconPath) {
-		super(null, iconPath != null ? new ImageIcon(
+		super(null, iconPath != null ? freemind.view.ImageFactory.getInstance().createIcon(
 				modeController.getResource(iconPath)) : null, modeController);
 		this.modeController = modeController;
 		if (textID != null) {

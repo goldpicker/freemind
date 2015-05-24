@@ -973,7 +973,7 @@ public class NodeView extends JComponent implements TreeModelListener {
 		
 		if (SHOW_ATTRIBUTE_ICON && (getModel().getAttributeTableLength()>0)) {
 			if (sAttributeIcon == null) {
-				sAttributeIcon = new ImageIcon(Resources.getInstance().getResource(
+				sAttributeIcon = freemind.view.ImageFactory.getInstance().createIcon(Resources.getInstance().getResource(
 						"images/showAttributes.gif"));
 			}
 			iconImages.addImage(sAttributeIcon);
@@ -999,7 +999,7 @@ public class NodeView extends JComponent implements TreeModelListener {
 			} else if (Tools.executableByExtension(link)) {
 				iconPath = "images/Executable.png";
 			}
-			ImageIcon icon = new ImageIcon(Resources.getInstance().getResource(iconPath));
+			ImageIcon icon = freemind.view.ImageFactory.getInstance().createIcon(Resources.getInstance().getResource(iconPath));
 			iconImages.addImage(icon);
 		}
 		// /* Folded icon by Matthias Schade (mascha2), fc, 20.12.2003*/

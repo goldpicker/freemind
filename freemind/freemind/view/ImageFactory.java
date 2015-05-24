@@ -1,5 +1,5 @@
 /*FreeMind - A Program for creating and viewing Mindmaps
- *Copyright (C) 2000-2004  Joerg Mueller, Daniel Polansky, Christian Foltin and others.
+ *Copyright (C) 2000-2015 Christian Foltin, Joerg Mueller, Daniel Polansky, Dimitri Polivaev and others.
  *
  *See COPYING for Details
  *
@@ -16,32 +16,31 @@
  *You should have received a copy of the GNU General Public License
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
- * Created on 20.09.2004
  */
 
+package freemind.view;
 
-package freemind.modes.mindmapmode.actions;
+import java.net.URL;
 
 import javax.swing.ImageIcon;
 
-import freemind.modes.mindmapmode.MindMapController;
-import freemind.modes.mindmapmode.actions.xml.ActionPair;
+/**
+ * @author foltin
+ * @date 24.05.2015
+ */
+public class ImageFactory {
+	private static ImageFactory mInstance = null;
 
-public class RedoAction extends UndoAction {
-	private MindMapController controller;
-
-	public RedoAction(MindMapController controller) {
-		super(controller, controller.getText("redo"), freemind.view.ImageFactory.getInstance().createIcon(
-				controller.getResource("images/redo.png")), controller);
-		this.controller = controller;
+	public static ImageFactory getInstance() {
+		if (mInstance == null) {
+			mInstance = new ImageFactory();
+		}
+		return mInstance;
 	}
 
-	/**
-     */
-	protected void informUndoPartner(ActionPair pair) {
-		this.controller.undo.add(pair.reverse());
-		this.controller.undo.setEnabled(true);
+	public ImageIcon createIcon(URL pURL){
+		ScalableImageIcon icon = new ScalableImageIcon(pURL);
+		icon.setScale(2.0f);
+		return icon;
 	}
-
 }

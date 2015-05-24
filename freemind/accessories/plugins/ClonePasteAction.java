@@ -239,9 +239,9 @@ public class ClonePasteAction extends MindMapNodeHookAdapter {
 
 		public void register() {
 			if (sCloneIcon == null) {
-				sCloneIcon = new ImageIcon(
+				sCloneIcon = freemind.view.ImageFactory.getInstance().createIcon(
 						controller.getResource("images/clone.png"));
-				sOriginalIcon = new ImageIcon(
+				sOriginalIcon = freemind.view.ImageFactory.getInstance().createIcon(
 						controller.getResource("images/clone_original.png"));
 				sShowIcon = Resources.getInstance().getBoolProperty(
 						FreeMind.RESOURCES_DON_T_SHOW_CLONE_ICONS);

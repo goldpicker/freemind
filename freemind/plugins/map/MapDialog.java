@@ -367,7 +367,7 @@ public class MapDialog extends MindMapHookAdapter implements
 		});
 		mSearchFieldPanel = new JPanel();
 		mSearchFieldPanel.setLayout(new BorderLayout(10, 0));
-		JButton clearButton = new JButton(new ImageIcon(Resources.getInstance()
+		JButton clearButton = new JButton(freemind.view.ImageFactory.getInstance().createIcon(Resources.getInstance()
 				.getResource("images/clear_box.png")));
 		clearButton.setFocusable(false);
 		mSearchFieldPanel.add(mSearchStringLabel, BorderLayout.WEST);

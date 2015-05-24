@@ -29,6 +29,7 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
@@ -2180,4 +2181,28 @@ public class Tools {
 			freemind.main.Resources.getInstance().logException(e);
 		}
 	}
+	
+	
+	public static boolean isRetina() {
+		GraphicsEnvironment env = GraphicsEnvironment
+				.getLocalGraphicsEnvironment();
+		final GraphicsDevice device = env.getDefaultScreenDevice();
+
+		try {
+			Field field = device.getClass().getDeclaredField("scale");
+
+			if (field != null) {
+				field.setAccessible(true);
+				Object scale = field.get(device);
+
+				if (scale instanceof Integer
+						&& ((Integer) scale).intValue() == 2) {
+					return true;
+				}
+			}
+		} catch (Exception ignore) {
+		}
+		return false;
+	}
+
 }

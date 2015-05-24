@@ -40,7 +40,7 @@ public class CutAction extends AbstractAction {
 	private static java.util.logging.Logger logger = null;
 
 	public CutAction(MindMapController c) {
-		super(c.getText("cut"), new ImageIcon(
+		super(c.getText("cut"), freemind.view.ImageFactory.getInstance().createIcon(
 				c.getResource("images/editcut.png")));
 		if (logger == null) {
 			logger = freemind.main.Resources.getInstance().getLogger(

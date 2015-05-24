@@ -69,7 +69,7 @@ public class MapNodePositionHolderBase extends PermanentNodeHookAdapter {
 	public static ImageIcon getMapLocationIcon() {
 		// icon
 		if (sMapLocationIcon == null) {
-			sMapLocationIcon = new ImageIcon(Resources.getInstance()
+			sMapLocationIcon = freemind.view.ImageFactory.getInstance().createIcon(Resources.getInstance()
 					.getResource("images/map_location.png"));
 		}
 		return sMapLocationIcon;

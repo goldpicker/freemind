@@ -83,9 +83,9 @@ public class FilterController implements MapModuleChangeObserver {
 			// FIXME state icons should be created on order to make possible
 			// their use in the filter component.
 			// It should not happen here.
-			MindIcon.factory("AttributeExist", new ImageIcon(Resources
+			MindIcon.factory("AttributeExist", freemind.view.ImageFactory.getInstance().createIcon(Resources
 					.getInstance().getResource("images/showAttributes.gif")));
-			MindIcon.factory(NodeNoteBase.NODE_NOTE_ICON, new ImageIcon(
+			MindIcon.factory(NodeNoteBase.NODE_NOTE_ICON, freemind.view.ImageFactory.getInstance().createIcon(
 					Resources.getInstance().getResource("images/knotes.png")));
 			MindIcon.factory("encrypted");
 			MindIcon.factory("decrypted");

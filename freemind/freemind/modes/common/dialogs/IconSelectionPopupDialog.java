@@ -61,7 +61,7 @@ public class IconSelectionPopupDialog extends JDialog implements KeyListener,
 	private FreeMindMain freeMindMain;
 	private int mModifiers;
 
-	public IconSelectionPopupDialog(JFrame caller, Vector icons,
+	public IconSelectionPopupDialog(JFrame caller, Vector<IconInformation> icons,
 			FreeMindMain freeMindMain) {
 
 		super(caller, freeMindMain.getResourceString("select_icon"));
@@ -99,6 +99,10 @@ public class IconSelectionPopupDialog extends JDialog implements KeyListener,
 		}
 
 		int perIconSize = 27;
+		if(icons.size()>0){
+			// assume, that all icons are of the same size
+			perIconSize = (int) (icons.get(0).getIcon().getIconWidth()*1.7f);
+		}
 		iconPanel.setPreferredSize(new Dimension(xDimension * perIconSize,
 				yDimension * perIconSize));
 		iconPanel.setMinimumSize(new Dimension(xDimension * perIconSize,

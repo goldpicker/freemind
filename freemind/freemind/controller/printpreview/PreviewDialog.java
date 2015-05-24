@@ -94,11 +94,11 @@ public class PreviewDialog extends JDialog implements ActionListener {
 		URL imageURL = getClass().getClassLoader().getResource(
 				"images/" + iconName);
 		if (imageURL != null)
-			icon = new ImageIcon(imageURL);
+			icon = freemind.view.ImageFactory.getInstance().createIcon(imageURL);
 
 		if (action != null) {
 			if (icon != null)
-				action.putValue(Action.SMALL_ICON, new ImageIcon(imageURL));
+				action.putValue(Action.SMALL_ICON, freemind.view.ImageFactory.getInstance().createIcon(imageURL));
 			if (name != null)
 				action.putValue(Action.NAME, name);
 			result = new JButton(action);

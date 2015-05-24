@@ -126,7 +126,7 @@ public class FreeMindSplashModern extends JFrame implements IFreeMindSplash {
 
 		// http://www.kde-look.org/content/show.php?content=76812
 		// License GPLV2+
-		mIcon = new ImageIcon(
+		mIcon = freemind.view.ImageFactory.getInstance().createIcon(
 				frame.getResource("images/76812-freemind_v0.4.png"));
 		setIconImage(mIcon.getImage()); // Set the icon
 		setDefaultLookAndFeelDecorated(false);
@@ -134,7 +134,7 @@ public class FreeMindSplashModern extends JFrame implements IFreeMindSplash {
 		getRootPane().setWindowDecorationStyle(JRootPane.NONE); // Set no border
 		// lamentablemente since 1.5: setAlwaysOnTop(true);
 
-		ImageIcon splashImage = new ImageIcon(
+		ImageIcon splashImage = freemind.view.ImageFactory.getInstance().createIcon(
 				frame.getResource("images/Freemind_Splash_Butterfly_Modern.png"));
 		JLabel splashImageLabel = new JLabel(splashImage) {
 			private Integer mWidth = null;

@@ -41,7 +41,7 @@ public class PasteAction extends AbstractAction {
 	private UndoPasteActor mUndoPasteHandler;
 
 	public PasteAction(MindMapController pMindMapController) {
-		super(pMindMapController.getText("paste"), new ImageIcon(
+		super(pMindMapController.getText("paste"), freemind.view.ImageFactory.getInstance().createIcon(
 				pMindMapController.getResource("images/editpaste.png")));
 		this.mMindMapController = pMindMapController;
 		if (logger == null) {

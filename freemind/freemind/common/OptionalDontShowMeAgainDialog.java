@@ -165,7 +165,7 @@ public class OptionalDontShowMeAgainDialog {
 						GridBagConstraints.WEST, GridBagConstraints.BOTH,
 						new Insets(5, 5, 0, 0), 0, 10));
 		// TODO: Replace by usual java question mark.
-		ImageIcon questionMark = new ImageIcon(Resources.getInstance()
+		ImageIcon questionMark = freemind.view.ImageFactory.getInstance().createIcon(Resources.getInstance()
 				.getResource("images/icons/help.png"));
 		mDialog.getContentPane().add(
 				new JLabel(questionMark),

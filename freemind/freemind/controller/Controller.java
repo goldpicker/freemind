@@ -1100,7 +1100,7 @@ public class Controller implements MapModuleChangeObserver {
 
 		PrintAction(Controller controller, boolean isDlg) {
 			super(isDlg ? controller.getResourceString("print_dialog")
-					: controller.getResourceString("print"), new ImageIcon(
+					: controller.getResourceString("print"), freemind.view.ImageFactory.getInstance().createIcon(
 					getResource("images/fileprint.png")));
 			this.controller = controller;
 			setEnabled(false);
@@ -1374,7 +1374,7 @@ public class Controller implements MapModuleChangeObserver {
 
 	private class NavigationPreviousMapAction extends AbstractAction {
 		NavigationPreviousMapAction(Controller controller) {
-			super(controller.getResourceString("previous_map"), new ImageIcon(
+			super(controller.getResourceString("previous_map"), freemind.view.ImageFactory.getInstance().createIcon(
 					getResource("images/1leftarrow.png")));
 			setEnabled(false);
 		}
@@ -1386,7 +1386,7 @@ public class Controller implements MapModuleChangeObserver {
 
 	private class ShowFilterToolbarAction extends AbstractAction {
 		ShowFilterToolbarAction(Controller controller) {
-			super(getResourceString("filter_toolbar"), new ImageIcon(
+			super(getResourceString("filter_toolbar"), freemind.view.ImageFactory.getInstance().createIcon(
 					getResource("images/filter.gif")));
 		}
 
@@ -1401,7 +1401,7 @@ public class Controller implements MapModuleChangeObserver {
 
 	private class NavigationNextMapAction extends AbstractAction {
 		NavigationNextMapAction(Controller controller) {
-			super(controller.getResourceString("next_map"), new ImageIcon(
+			super(controller.getResourceString("next_map"), freemind.view.ImageFactory.getInstance().createIcon(
 					getResource("images/1rightarrow.png")));
 			setEnabled(false);
 		}
@@ -1413,7 +1413,7 @@ public class Controller implements MapModuleChangeObserver {
 
 	private class NavigationMoveMapLeftAction extends AbstractAction {
 		NavigationMoveMapLeftAction(Controller controller) {
-			super(controller.getResourceString("move_map_left"), new ImageIcon(
+			super(controller.getResourceString("move_map_left"), freemind.view.ImageFactory.getInstance().createIcon(
 					getResource("images/draw-arrow-back.png")));
 			setEnabled(false);
 		}
@@ -1431,7 +1431,7 @@ public class Controller implements MapModuleChangeObserver {
 	private class NavigationMoveMapRightAction extends AbstractAction {
 		NavigationMoveMapRightAction(Controller controller) {
 			super(controller.getResourceString("move_map_right"),
-					new ImageIcon(getResource("images/draw-arrow-forward.png")));
+					freemind.view.ImageFactory.getInstance().createIcon(getResource("images/draw-arrow-forward.png")));
 			setEnabled(false);
 		}
 
@@ -1800,7 +1800,7 @@ public class Controller implements MapModuleChangeObserver {
 		private final String url;
 
 		OpenURLAction(Controller controller, String description, String url) {
-			super(description, new ImageIcon(
+			super(description, freemind.view.ImageFactory.getInstance().createIcon(
 					controller.getResource("images/Link.png")));
 			c = controller;
 			this.url = url;
