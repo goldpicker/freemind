@@ -2219,5 +2219,9 @@ public class Tools {
 				}				
 			}
 		}
+	}
+
+	public static float getScalingFactor() {
+		return Resources.getInstance().getIntProperty(FreeMind.SCALING_FACTOR_PROPERTY, 100)/100.0f;
 	}	
 }

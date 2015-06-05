@@ -238,6 +238,8 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 
 	public static final String PROXY_EXCEPTION = "proxy.exception";
 
+	public static final String SCALING_FACTOR_PROPERTY = "scaling_factor_property";
+
 	// public static final String defaultPropsURL = "freemind.properties";
 	// public static Properties defaultProps;
 	public static Properties props;
@@ -285,6 +287,7 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 	private EditServer mEditServer = null;
 
 	private Vector mLoggerList = new Vector();
+
 
 	private static LogFileLogHandler sLogFileHandler;
 
@@ -699,6 +702,8 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 		try {
 			final FreeMind frame = new FreeMind(pDefaultPreferences,
 					pUserPreferences, pAutoPropertiesFile);
+			Tools.scaleAllFonts(frame.getIntProperty(SCALING_FACTOR_PROPERTY, 100)/100f);
+
 			IFreeMindSplash splash = null;
 			frame.checkForAnotherInstance(args);
 			frame.initServer();

@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
-import java.beans.Transient;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
