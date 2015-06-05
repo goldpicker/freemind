@@ -20,6 +20,7 @@
 
 package freemind.modes;
 
+import java.awt.Image;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
@@ -33,6 +34,7 @@ import javax.swing.KeyStroke;
 
 import freemind.main.Resources;
 import freemind.main.Tools;
+import freemind.view.ScalableImageIcon;
 
 /**
  * This class represents a MindIcon than can be applied to a node or a whole
@@ -177,6 +179,14 @@ public class MindIcon implements Comparable, IconInformation {
 		this.associatedIcon = _associatedIcon;
 	}
 
+	public ImageIcon getUnscaledIcon(){
+		if (associatedIcon instanceof ScalableImageIcon) {
+			ScalableImageIcon scalableIcon = (ScalableImageIcon) associatedIcon;
+			return scalableIcon.getUnscaledIcon();
+		}
+		return associatedIcon;
+	}
+	
 	public static Vector getAllIconNames() {
 		if (mAllIconNames != null)
 			return mAllIconNames;

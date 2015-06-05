@@ -290,7 +290,7 @@ public class NodeNoteRegistration implements HookRegistration,
 	protected void setStateIcon(MindMapNode node, boolean enabled) {
 		// icon
 		if (noteIcon == null) {
-			noteIcon = freemind.view.ImageFactory.getInstance().createIcon(
+			noteIcon = freemind.view.ImageFactory.getInstance().createUnscaledIcon(
 					Resources.getInstance().getResource("images/knotes.png"));
 		}
 		boolean showIcon = enabled;

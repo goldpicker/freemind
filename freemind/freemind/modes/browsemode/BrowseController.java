@@ -361,7 +361,7 @@ public class BrowseController extends ViewControllerAdapter {
 		if (noteText != null && !noteText.equals("")) {
 			// icon
 			if (noteIcon == null) {
-				noteIcon = freemind.view.ImageFactory.getInstance().createIcon(getController().getResource(
+				noteIcon = freemind.view.ImageFactory.getInstance().createUnscaledIcon(getController().getResource(
 						"images/knotes.png"));
 			}
 			node.setStateIcon(NodeNoteBase.NODE_NOTE_ICON, noteIcon);

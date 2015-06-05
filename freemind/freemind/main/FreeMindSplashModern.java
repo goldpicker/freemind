@@ -38,12 +38,18 @@ import javax.swing.JProgressBar;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 
+import freemind.view.ImageFactory;
+
 /**
  * Class to put a splash during launching the application.
  */
 
 public class FreeMindSplashModern extends JFrame implements IFreeMindSplash {
 
+	private static final String FREEMIND_SPLASH = "images/Freemind_Splash_Butterfly_Modern.png";
+	
+	private static final int SPLASH_HEIGHT = 200;
+	private static final int SPLASH_WIDTH = 300;
 	private static final int SPLASH_FONT_SIZE = 16;
 
 	private class FeedBackImpl implements FeedBack {
@@ -126,7 +132,8 @@ public class FreeMindSplashModern extends JFrame implements IFreeMindSplash {
 
 		// http://www.kde-look.org/content/show.php?content=76812
 		// License GPLV2+
-		mIcon = freemind.view.ImageFactory.getInstance().createIcon(
+		ImageFactory imageFactory = ImageFactory.getInstance();
+		mIcon = imageFactory.createIcon(
 				frame.getResource("images/76812-freemind_v0.4.png"));
 		setIconImage(mIcon.getImage()); // Set the icon
 		setDefaultLookAndFeelDecorated(false);
@@ -134,8 +141,8 @@ public class FreeMindSplashModern extends JFrame implements IFreeMindSplash {
 		getRootPane().setWindowDecorationStyle(JRootPane.NONE); // Set no border
 		// lamentablemente since 1.5: setAlwaysOnTop(true);
 
-		ImageIcon splashImage = freemind.view.ImageFactory.getInstance().createIcon(
-				frame.getResource("images/Freemind_Splash_Butterfly_Modern.png"));
+		final ImageIcon splashImage = imageFactory.createIcon(
+				frame.getResource(FREEMIND_SPLASH));
 		JLabel splashImageLabel = new JLabel(splashImage) {
 			private Integer mWidth = null;
 			private final Font progressFont = new Font("SansSerif", Font.PLAIN,
@@ -150,6 +157,14 @@ public class FreeMindSplashModern extends JFrame implements IFreeMindSplash {
 						Font.BOLD, 12);
 			}
 
+			private int calcYRelative(int y){
+				return (int) (((float)y)/SPLASH_HEIGHT*splashImage.getIconHeight());
+			}
+			
+			private int calcXRelative(int x){
+				return (int) (((float)x)/SPLASH_WIDTH*splashImage.getIconWidth());
+			}
+			
 			public void paint(Graphics g) {
 				super.paint(g);
 				Graphics2D g2 = (Graphics2D) g;
@@ -162,7 +177,7 @@ public class FreeMindSplashModern extends JFrame implements IFreeMindSplash {
 					mWidth = new Integer(g2.getFontMetrics().stringWidth(
 							freemindVersion));
 				}
-				int yCoordinate = 58;
+				int yCoordinate = calcYRelative(58);
 				int xCoordinate = (int) (getSize().getWidth() / 2 - mWidth
 						.intValue() / 2);
 				g2.setColor(new Color(0x4d, 0x63, 0xb4));
@@ -171,25 +186,25 @@ public class FreeMindSplashModern extends JFrame implements IFreeMindSplash {
 				String progressString = (String) getClientProperty("progressString");
 				if (progressString != null) {
 					Double percent = (Double) getClientProperty("progressPercent");
-					int xBase = 7;
-					int yBase = 185;
-					int width = 281;
+					int xBase = calcXRelative(7);
+					int yBase = calcYRelative(185);
+					int width = calcXRelative(281);
 					g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
 							RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 					g2.setFont(progressFont);
 					// g2.setColor(new Color(0x80,0x80,0x80));
 					g2.setColor(new Color(0xff, 0xff, 0xff));
-					g2.drawString(progressString, xBase + 1, yBase - 4);
+					g2.drawString(progressString, xBase + calcXRelative(1), yBase - calcYRelative(4));
 					g2.setColor(new Color(0xc8, 0xdf, 0x8b));
-					g2.draw(new Rectangle(xBase + 2, yBase, width, 3));
+					g2.draw(new Rectangle(xBase + calcXRelative(2), yBase, width, calcYRelative(3)));
 					// g2.setColor(new Color(0xd0,0xd0,0xd0));
 					// g2.draw(new Rectangle(xBase+1, yBase+1, width, 2));
 					// g2.setColor(new Color(0xf4,0xf4,0xf4));
 					// g2.fill(new Rectangle(xBase+1, yBase+1, width-1, 2));
 					// g2.setColor(new Color(0x4d,0x63,0xb4));
 					g2.setColor(new Color(0xff, 0xff, 0xff));
-					g2.fill(new Rectangle(xBase + 1, yBase + 1,
-							(int) (width * percent.doubleValue()), 2));
+					g2.fill(new Rectangle(xBase + calcXRelative(1), yBase + calcYRelative(1),
+							(int) (width * percent.doubleValue()), calcYRelative(2)));
 				}
 			}
 		};

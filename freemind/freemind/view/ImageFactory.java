@@ -47,4 +47,11 @@ public class ImageFactory {
 		icon.setScale(SCALING_FACTOR);
 		return icon;
 	}
+
+	/**
+	 * All icons directly displayed in the mindmap view are scaled by the zoom.
+	 */
+	public ImageIcon createUnscaledIcon(URL pResource) {
+		return new ImageIcon(pResource);
+	}
 }

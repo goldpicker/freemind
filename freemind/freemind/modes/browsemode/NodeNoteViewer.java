@@ -89,7 +89,7 @@ public class NodeNoteViewer extends NodeNoteBase implements
 	protected void setStateIcon(MindMapNode node, boolean enabled) {
 		// icon
 		if (noteIcon == null) {
-			noteIcon = freemind.view.ImageFactory.getInstance().createIcon(
+			noteIcon = freemind.view.ImageFactory.getInstance().createUnscaledIcon(
 					mBrowseController.getResource("images/knotes.png"));
 		}
 		node.setStateIcon(NODE_NOTE_ICON, (enabled) ? noteIcon : null);

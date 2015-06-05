@@ -66,4 +66,9 @@ public class ScalableImageIcon extends ImageIcon {
 		mScaledImage = super.getImage().getScaledInstance(getIconWidth(), getIconHeight(),  java.awt.Image.SCALE_SMOOTH); 
 		return mScaledImage;
 	}
+
+	public ImageIcon getUnscaledIcon() {
+		Image image = super.getImage();
+		return new ImageIcon(image);
+	}
 }
