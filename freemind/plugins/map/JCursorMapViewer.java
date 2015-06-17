@@ -24,10 +24,14 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.event.ActionEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -36,8 +40,10 @@ import javax.swing.Timer;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
+import org.openstreetmap.gui.jmapviewer.Tile;
 import org.openstreetmap.gui.jmapviewer.TileController;
 import org.openstreetmap.gui.jmapviewer.interfaces.TileCache;
+import org.openstreetmap.gui.jmapviewer.interfaces.TileSource;
 
 import freemind.modes.mindmapmode.MindMapController;
 
@@ -46,6 +52,41 @@ import freemind.modes.mindmapmode.MindMapController;
  * @date 24.10.2011
  */
 final class JCursorMapViewer extends JMapViewer {
+
+	private static final class ScaledTile extends Tile {
+		private BufferedImage scaledImage = null;
+		private TileController tileController;
+
+		private ScaledTile(TileController pTileController, TileSource pSource, int pXtile, int pYtile, int pZoom) {
+			super(pSource, pXtile, pYtile, pZoom);
+			tileController = pTileController;
+		}
+
+		@Override
+		public void paint(Graphics pG, int pX, int pY) {
+			if(scaledImage == null){
+				int xtile_low = xtile >> 1;
+				int ytile_low = ytile >> 1;
+				Tile tile = tileController.getTile(xtile_low, ytile_low, zoom-1);
+				if (tile != null && tile.isLoaded()) {
+					int tileSize = source.getTileSize();
+					int translate_x = (xtile % 2) * tileSize/2;
+					int translate_y = (ytile % 2) * tileSize/2;
+		    		BufferedImage image2 = tile.getImage();
+		    		scaledImage = new BufferedImage(tileSize, tileSize, image2.getType());
+		    	    Graphics2D g = scaledImage.createGraphics();
+		    	    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		    	    g.drawImage(image2, 0, 0, scaledImage.getWidth(), scaledImage.getHeight(), translate_x, translate_y, translate_x+tileSize/2, translate_y+tileSize/2, null);
+		    	    g.dispose();
+		        }
+			}
+			if(scaledImage != null){
+				pG.drawImage(scaledImage, pX, pY, null);
+			} else {
+				pG.drawImage(getImage(), pX, pY, null);
+			}
+		}
+	}
 
 	boolean mShowCursor;
 	boolean mUseCursor;
@@ -69,6 +110,21 @@ final class JCursorMapViewer extends JMapViewer {
 	public JCursorMapViewer(MindMapController pMindMapController,
 			JDialog pMapDialog, TileCache pTileCache, MapDialog pMapHook) {
 		super(pTileCache, 8);
+		tileController = new TileController(tileSource, pTileCache, this) {
+			@Override
+			public Tile getTile(int tilex, int tiley, int zoom) {
+			       int max = (1 << zoom);
+			        if (tilex < 0 || tilex >= max || tiley < 0 || tiley >= max)
+			            return null;
+			        Tile tile = tileCache.getTile(tileSource, tilex, tiley, zoom);
+			        if (tile == null) {
+			            tile = new ScaledTile(tileController, tileSource, tilex, tiley, zoom);
+			            tileCache.addTile(tile);
+			            tile.loadPlaceholderFromCache(tileCache);
+			        }
+			        return super.getTile(tilex, tiley, zoom);
+			}
+		};
 		mMapHook = pMapHook;
 		mFreeMindMapController = new FreeMindMapController(this,
 				pMindMapController, pMapDialog, pMapHook);

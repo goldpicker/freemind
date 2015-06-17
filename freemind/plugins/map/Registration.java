@@ -186,8 +186,6 @@ public class Registration implements HookRegistration, ActorXml,
 
 	private TileSource mTileSource;
 
-	private TileController mTileController;
-
 	private MemoryTileCache mTileCache;
 
 	private MapDialog mMapDialog = null;
@@ -230,8 +228,6 @@ public class Registration implements HookRegistration, ActorXml,
 		logger = controller.getFrame().getLogger(this.getClass().getName());
 		mTileSource = new OsmTileSource.Mapnik();
 		mTileCache = new MemoryTileCache();
-		mTileController = new TileController(mTileSource, mTileCache, this);
-		mTileController.setTileLoader(createTileLoader(this));
 		mOptionContributor = new MapDialogPropertyContributor(this.controller);
 
 		synchronized (sTimerSemaphore) {
