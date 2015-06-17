@@ -43,8 +43,11 @@ import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.Tile;
 import org.openstreetmap.gui.jmapviewer.TileController;
 import org.openstreetmap.gui.jmapviewer.interfaces.TileCache;
+import org.openstreetmap.gui.jmapviewer.interfaces.TileLoaderListener;
 import org.openstreetmap.gui.jmapviewer.interfaces.TileSource;
 
+import freemind.main.FreeMind;
+import freemind.main.Resources;
 import freemind.modes.mindmapmode.MindMapController;
 
 /**
@@ -52,6 +55,32 @@ import freemind.modes.mindmapmode.MindMapController;
  * @date 24.10.2011
  */
 final class JCursorMapViewer extends JMapViewer {
+
+	private static final class ScalableTileController extends TileController {
+		private ScalableTileController(TileSource pSource,
+				TileCache pTileCache, TileLoaderListener pListener) {
+			super(pSource, pTileCache, pListener);
+		}
+
+		@Override
+		public Tile getTile(int tilex, int tiley, int zoom) {
+		       int max = (1 << zoom);
+		        if (tilex < 0 || tilex >= max || tiley < 0 || tiley >= max)
+		            return null;
+		        Tile tile = tileCache.getTile(tileSource, tilex, tiley, zoom);
+		        if (tile == null) {
+		        	int scale = Resources.getInstance().getIntProperty(FreeMind.SCALING_FACTOR_PROPERTY, 100);
+		        	if(scale >= 200){
+		        		tile = new ScaledTile(this, tileSource, tilex, tiley, zoom);
+		        	} else {
+		        		tile = new Tile(tileSource, tilex, tiley, zoom);
+		        	}
+		            tileCache.addTile(tile);
+		            tile.loadPlaceholderFromCache(tileCache);
+		        }
+		        return super.getTile(tilex, tiley, zoom);
+		}
+	}
 
 	private static final class ScaledTile extends Tile {
 		private BufferedImage scaledImage = null;
@@ -91,7 +120,7 @@ final class JCursorMapViewer extends JMapViewer {
 	boolean mShowCursor;
 	boolean mUseCursor;
 	Coordinate mCursorPosition;
-	Stroke mStroke = new BasicStroke(2);
+	Stroke mStroke;
 	Stroke mRectangularStroke = new BasicStroke(1, BasicStroke.CAP_SQUARE,
 			BasicStroke.JOIN_MITER, 10.0f, new float[] { 10.0f, 10.0f }, 0.0f);
 	private FreeMindMapController mFreeMindMapController;
@@ -100,6 +129,7 @@ final class JCursorMapViewer extends JMapViewer {
 	private Coordinate mRectangularStart;
 	private Coordinate mRectangularEnd;
 	private boolean mDrawRectangular = false;
+	private int mCursorLength;
 
 	/**
 	 * @param pMindMapController
@@ -110,21 +140,10 @@ final class JCursorMapViewer extends JMapViewer {
 	public JCursorMapViewer(MindMapController pMindMapController,
 			JDialog pMapDialog, TileCache pTileCache, MapDialog pMapHook) {
 		super(pTileCache, 8);
-		tileController = new TileController(tileSource, pTileCache, this) {
-			@Override
-			public Tile getTile(int tilex, int tiley, int zoom) {
-			       int max = (1 << zoom);
-			        if (tilex < 0 || tilex >= max || tiley < 0 || tiley >= max)
-			            return null;
-			        Tile tile = tileCache.getTile(tileSource, tilex, tiley, zoom);
-			        if (tile == null) {
-			            tile = new ScaledTile(tileController, tileSource, tilex, tiley, zoom);
-			            tileCache.addTile(tile);
-			            tile.loadPlaceholderFromCache(tileCache);
-			        }
-			        return super.getTile(tilex, tiley, zoom);
-			}
-		};
+		tileController = new ScalableTileController(tileSource, pTileCache, this);
+		int scaleProperty = Resources.getInstance().getIntProperty(FreeMind.SCALING_FACTOR_PROPERTY, 100);
+		mCursorLength = 15 * scaleProperty/100;
+		mStroke = new BasicStroke(2 * scaleProperty / 100);
 		mMapHook = pMapHook;
 		mFreeMindMapController = new FreeMindMapController(this,
 				pMindMapController, pMapDialog, pMapHook);
@@ -178,7 +197,7 @@ final class JCursorMapViewer extends JMapViewer {
 			if (mUseCursor && mShowCursor) {
 				Point position = getMapPosition(mCursorPosition);
 				if (position != null) {
-					int size_h = 15;
+					int size_h = mCursorLength;
 					g2d.setStroke(mStroke);
 					g2d.setColor(Color.RED);
 					g2d.drawLine(position.x - size_h, position.y, position.x
