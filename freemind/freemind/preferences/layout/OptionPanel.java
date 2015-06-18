@@ -700,6 +700,11 @@ public class OptionPanel implements TextTranslator {
 		controls.add(new ComboProperty("lookandfeel.tooltip",
 				FreeMind.RESOURCE_LOOKANDFEEL, lafNames, translatedLafNames)); // default
 
+		controls.add(new NumberProperty(
+				FreeMind.SCALING_FACTOR_PROPERTY + TOOLTIP_EXT,
+				FreeMind.SCALING_FACTOR_PROPERTY, 100,
+				Integer.MAX_VALUE, 1));
+		
 		controls.add(new BooleanProperty("use_tabbed_pane.tooltip",
 				FreeMind.RESOURCES_USE_TABBED_PANE)); // true
 		controls.add(new ComboProperty(FreeMind.J_SPLIT_PANE_SPLIT_TYPE

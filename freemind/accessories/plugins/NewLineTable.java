@@ -22,16 +22,15 @@ package accessories.plugins;
 
 import java.awt.EventQueue;
 
-import javax.swing.JTable;
-
 import accessories.plugins.NodeAttributeTableRegistration.AttributeHolder;
 import accessories.plugins.NodeAttributeTableRegistration.AttributeTableModel;
+import freemind.common.ScalableJTable;
 
 /**
  * Taken from http://stackoverflow.com/questions/2316563/how-can-i-sort-java-jtable-with-an-empty-row-and-force-the-empty-row-always-be-l
  * @date 11.03.2015
  */
-public class NewLineTable extends JTable {
+public class NewLineTable extends ScalableJTable {
 
     @Override
     public int getRowCount() {

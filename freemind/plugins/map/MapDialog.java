@@ -5,10 +5,7 @@ package plugins.map;
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -54,6 +51,7 @@ import plugins.map.FreeMindMapController.CursorPositionListener;
 import plugins.map.MapNodePositionHolder.MapNodePositionListener;
 import plugins.map.Registration.NodeVisibilityListener;
 import accessories.plugins.time.TableSorter;
+import freemind.common.ScalableJTable;
 import freemind.common.TextTranslator;
 import freemind.controller.MapModuleManager.MapModuleChangeObserver;
 import freemind.controller.actions.generated.instance.MapLocationStorage;
@@ -375,7 +373,7 @@ public class MapDialog extends MindMapHookAdapter implements
 		mSearchFieldPanel.add(mSearchStringLabel, BorderLayout.WEST);
 		mSearchFieldPanel.add(mSearchTerm, BorderLayout.CENTER);
 		mSearchFieldPanel.add(clearButton, BorderLayout.EAST);
-		mResultTable = new JTable();
+		mResultTable = new ScalableJTable();
 		mTableOriginalBackgroundColor = mResultTable.getBackground();
 
 		mResultTable

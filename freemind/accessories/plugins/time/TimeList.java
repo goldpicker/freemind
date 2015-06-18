@@ -70,6 +70,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
+import freemind.common.ScalableJTable;
 import freemind.controller.MapModuleManager.MapModuleChangeObserver;
 import freemind.controller.MenuItemSelectedListener;
 import freemind.controller.StructuredMenuHolder;
@@ -836,7 +837,7 @@ public class TimeList extends MindMapHookAdapter implements
 		}
 	}
 
-	private final class FlatNodeTable extends JTable {
+	private final class FlatNodeTable extends ScalableJTable {
 		public TableCellRenderer getCellRenderer(int row, int column) {
 			Object object = getModel().getValueAt(row, column);
 			if (object instanceof Date)
