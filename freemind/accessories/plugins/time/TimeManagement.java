@@ -52,6 +52,8 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 import freemind.controller.MapModuleManager.MapModuleChangeObserver;
+import freemind.controller.actions.generated.instance.TimeWindowConfigurationStorage;
+import freemind.controller.actions.generated.instance.WindowConfigurationStorage;
 import freemind.controller.StructuredMenuHolder;
 import freemind.main.Tools;
 import freemind.modes.MindMapNode;
@@ -70,6 +72,10 @@ import freemind.view.MapModule;
 public class TimeManagement extends MindMapHookAdapter implements
 		PropertyChangeListener, ActionListener, MapModuleChangeObserver {
 
+	private static final String WINDOW_PREFERENCE_STORAGE_PROPERTY = TimeManagement.class
+			.getName() + "_properties";
+
+	
 	private interface NodeFactory {
 		MindMapNode getNode(MindMapNode pNode);
 	}
@@ -207,7 +213,7 @@ public class TimeManagement extends MindMapHookAdapter implements
 
 	private JTripleCalendar calendar;
 
-	private JDialog dialog;
+	private JDialog mDialog;
 
 	private JPanel timePanel;
 
@@ -222,7 +228,7 @@ public class TimeManagement extends MindMapHookAdapter implements
 	public void startupMapHook() {
 		super.startupMapHook();
 		if (sCurrentlyOpenTimeManagement != null) {
-			sCurrentlyOpenTimeManagement.dialog.getContentPane().setVisible(
+			sCurrentlyOpenTimeManagement.mDialog.getContentPane().setVisible(
 					true);
 			return;
 		}
@@ -230,19 +236,19 @@ public class TimeManagement extends MindMapHookAdapter implements
 		this.mController = super.getMindMapController();
 		getMindMapController().getController().getMapModuleManager()
 				.addListener(this);
-		dialog = new JDialog(getMindMapController().getFrame().getJFrame(),
+		mDialog = new JDialog(getMindMapController().getFrame().getJFrame(),
 				false /*
 					 * not modal
 					 */);
-		dialog.setTitle(getResourceString("plugins/TimeManagement.xml_WindowTitle"));
-		dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		dialog.addWindowListener(new WindowAdapter() {
+		mDialog.setTitle(getResourceString("plugins/TimeManagement.xml_WindowTitle"));
+		mDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		mDialog.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent event) {
 				disposeDialog();
 			}
 		});
 		Action closeAction = new CloseAction();
-		Tools.addEscapeActionToDialog(dialog, closeAction);
+		Tools.addEscapeActionToDialog(mDialog, closeAction);
 		/** Menu **/
 		StructuredMenuHolder menuHolder = new StructuredMenuHolder();
 		JMenuBar menu = new JMenuBar();
@@ -274,16 +280,18 @@ public class TimeManagement extends MindMapHookAdapter implements
 				"keystroke_plugins/TimeManagementToday");
 		menuHolder.addAction(new CloseAction(), "main/actions/close");
 		menuHolder.updateMenus(menu, "main/");
-		dialog.setJMenuBar(menu);
+		mDialog.setJMenuBar(menu);
 
 		calendar = new JTripleCalendar(lastActivePosition, lastDate);
-		Container contentPane = dialog.getContentPane();
+		Container contentPane = mDialog.getContentPane();
 		contentPane.setLayout(new GridBagLayout());
 		GridBagConstraints gb1 = new GridBagConstraints();
 		gb1.gridx = 0;
 		gb1.gridwidth = 4;
 		gb1.fill = GridBagConstraints.BOTH;
 		gb1.gridy = 0;
+		gb1.weightx = 1;
+		gb1.weighty = 1;
 		calendar.getDayChooser().addPropertyChangeListener(this);
 		contentPane.add(calendar, gb1);
 		{
@@ -291,19 +299,24 @@ public class TimeManagement extends MindMapHookAdapter implements
 			gb2.gridx = 0;
 			gb2.gridy = 1;
 			gb2.gridwidth = 4;
+			gb2.weightx = 0;
+			gb2.weighty = 0;
 			gb2.fill = GridBagConstraints.HORIZONTAL;
 			contentPane.add(getTimePanel(), gb2);
 		}
-		dialog.pack();
+		mDialog.pack();
 		// focus fix after startup.
-		dialog.addWindowFocusListener(new WindowAdapter() {
+		mDialog.addWindowFocusListener(new WindowAdapter() {
 
 			public void windowGainedFocus(WindowEvent e) {
 				requestFocusForDay();
-				dialog.removeWindowFocusListener(this);
+				mDialog.removeWindowFocusListener(this);
 			}
 		});
-		dialog.setVisible(true);
+		WindowConfigurationStorage storage = getMindMapController()
+				.decorateDialog(mDialog, WINDOW_PREFERENCE_STORAGE_PROPERTY);
+		mDialog.setVisible(true);
+
 	}
 
 	/**
@@ -427,8 +440,11 @@ public class TimeManagement extends MindMapHookAdapter implements
 	 *
 	 */
 	private void disposeDialog() {
-		dialog.setVisible(false);
-		dialog.dispose();
+		WindowConfigurationStorage storage = new WindowConfigurationStorage();
+		getMindMapController().storeDialogPositions(mDialog, storage,
+				WINDOW_PREFERENCE_STORAGE_PROPERTY);
+		mDialog.setVisible(false);
+		mDialog.dispose();
 		lastDate = getCalendar();
 		lastActivePosition = calendar.getCurrentMonthPosition();
 		sCurrentlyOpenTimeManagement = null;

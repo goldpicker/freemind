@@ -44,6 +44,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
+import freemind.common.ScalableJButton;
 import freemind.main.Tools;
 
 /**
@@ -56,7 +57,7 @@ import freemind.main.Tools;
 public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 		FocusListener {
 	
-	public static class ChangeAwareButton extends JButton {
+	public static class ChangeAwareButton extends ScalableJButton {
 		/**
 		 * @param pString
 		 */
@@ -179,7 +180,7 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 		setBackground(Color.blue);
 		this.weekOfYearVisible = weekOfYearVisible;
 		locale = Locale.getDefault();
-		days = new JButton[49];
+		days = new ScalableJButton[49];
 		selectedDay = null;
 		calendar = Calendar.getInstance(locale);
 		today = (Calendar) calendar.clone();
@@ -233,7 +234,7 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 
 		weekPanel = new JPanel();
 		weekPanel.setLayout(new GridLayout(7, 1));
-		weeks = new JButton[7];
+		weeks = new ScalableJButton[7];
 
 		for (int i = 0; i < 7; i++) {
 			weeks[i] = new DecoratorButton();
@@ -278,7 +279,7 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 	 * Initializes the locale specific names for the days of the week.
 	 */
 	protected void init() {
-		JButton testButton = new JButton();
+		JButton testButton = new ScalableJButton();
 		oldDayBackgroundColor = testButton.getBackground();
 		selectedColor = new Color(160, 160, 160);
 
@@ -1138,7 +1139,7 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 		frame.setVisible(true);
 	}
 
-	class DecoratorButton extends JButton {
+	class DecoratorButton extends ScalableJButton {
 		private static final long serialVersionUID = -5306477668406547496L;
 
 		public DecoratorButton() {
@@ -1177,5 +1178,5 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 	public JButton getSelectedDay() {
 		return selectedDay;
 	}
-
+	
 }

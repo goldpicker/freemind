@@ -77,7 +77,6 @@ public class JTripleCalendar extends JPanel implements PropertyChangeListener {
 					infoPanel.setCalendar(panelDate);
 					panelDate.add(Calendar.MONTH, 1);
 					infoPanel.addPropertyChangeListener(this);
-	//				infoPanel.getCalendarWidget().addPropertyChangeListener(this);
 					mInfoPanels.put(infoPanel, monthIndex);
 					GridBagConstraints constraints = getConstraints(row, column);
 					add(infoPanel, constraints);
@@ -91,7 +90,7 @@ public class JTripleCalendar extends JPanel implements PropertyChangeListener {
 				}
 				if(column < AMOUNT_OF_COLUMNS-1) {
 					GridBagConstraints constraints = new GridBagConstraints(2*column+1, 0, 1, AMOUNT_OF_ROWS, 
-							1, 1, GridBagConstraints.CENTER, GridBagConstraints.VERTICAL, 
+							0, 0, GridBagConstraints.CENTER, GridBagConstraints.VERTICAL, 
 							new Insets(0, 0, 0, 10), 0, 0);
 					JSeparator sep = new JSeparator();
 					sep.setPreferredSize(new Dimension(5,2));
@@ -106,7 +105,9 @@ public class JTripleCalendar extends JPanel implements PropertyChangeListener {
 	}
 
 	protected GridBagConstraints getConstraints(int row, int column) {
-		GridBagConstraints constraints = new GridBagConstraints(2*column, row, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 10), 50, 10);
+		GridBagConstraints constraints = new GridBagConstraints(2 * column,
+				row, 1, 1, 1, 1, GridBagConstraints.CENTER,
+				GridBagConstraints.BOTH, new Insets(0, 0, 0, 10), 50, 10);
 		return constraints;
 	}
 
