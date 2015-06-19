@@ -1,5 +1,6 @@
 package freemind.common;
 
+import java.awt.Font;
 import java.awt.Graphics;
 
 import javax.swing.JButton;
@@ -10,25 +11,36 @@ import javax.swing.JButton;
  * @see http://stackoverflow.com/questions/8183949/swing-scale-a-text-font-of-component 
  */
 public class ScalableJButton extends JButton {
+	int mCurrentSize = 0;
+	Font mInitialFont = null;
+	int mInitialHeight;
+	
 	private static final long serialVersionUID = 1L;
 
 	public ScalableJButton(String pString) {
-		// TODO Auto-generated constructor stub
+		super(pString);
+		init();
 	}
 
 	public ScalableJButton() {
-		// TODO Auto-generated constructor stub
+		super();
+		init();
+	}
+
+	private void init() {
+		mInitialFont = getFont();
 	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
-		int h = this.getHeight();
-		final int DEFAULT_H = 26;
-		double resizal = ((double) h) / DEFAULT_H;
-
-		String t = getText();
-		setText("<html><span style='font-size:" + (resizal * 11) + "'>" + t);
+		if (mInitialHeight == 0) {
+			mInitialHeight = getHeight();
+		}
+		int resizal = this.getHeight() * mInitialFont.getSize() / mInitialHeight;
+		if(resizal != mCurrentSize){
+			setFont(mInitialFont.deriveFont((float) resizal));
+			mCurrentSize = resizal;
+		}
 		super.paintComponent(g);
-		setText(t);
 	}
 }

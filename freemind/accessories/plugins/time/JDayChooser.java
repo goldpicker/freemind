@@ -1134,7 +1134,9 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 	 */
 	public static void main(String[] s) {
 		JFrame frame = new JFrame("JDayChooser");
-		frame.getContentPane().add(new JDayChooser());
+		JDayChooser dayChooser = new JDayChooser();
+		frame.getContentPane().add(dayChooser);
+		dayChooser.setWeekOfYearVisible(true);
 		frame.pack();
 		frame.setVisible(true);
 	}
