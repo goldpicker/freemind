@@ -241,7 +241,7 @@ ShowUndisplayableLanguages=true
 
 [Languages]
 Name: english; MessagesFile: compiler:Default.isl
-Name: basque; MessagesFile: compiler:Languages\Basque.isl
+; old Name: basque; MessagesFile: compiler:Languages\Basque.isl
 Name: brazilianportuguese; MessagesFile: compiler:Languages\BrazilianPortuguese.isl
 Name: catalan; MessagesFile: compiler:Languages\Catalan.isl
 Name: croatian; MessagesFile: compiler:Languages\Croatian.isl
