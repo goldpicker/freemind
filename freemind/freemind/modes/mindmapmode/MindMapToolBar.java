@@ -30,6 +30,7 @@ import java.util.Vector;
 
 import javax.swing.Action;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JToolBar;
 
 import freemind.controller.Controller;
@@ -39,6 +40,7 @@ import freemind.controller.ZoomListener;
 import freemind.controller.color.ColorPair;
 import freemind.controller.color.JColorCombo;
 import freemind.main.FreeMind;
+import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.modes.MindMapNode;
 import freemind.view.mindmapview.MapView;
@@ -77,6 +79,7 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 	private JComboBox zoom;
 	private String userDefinedZoom;
 	private JColorCombo colorCombo;
+	private int userDefinedCounter = 1;
 
 	protected static java.util.logging.Logger logger = null;
 	
@@ -153,6 +156,7 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 				}
 			}
 		});
+		
 		colorCombo = new JColorCombo();
 		colorCombo.setFocusable(false);
 		colorCombo.addItemListener(new ItemListener(){
@@ -208,6 +212,7 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 //		size.setEditor(new BasicComboBoxEditor());
 //		size.setEditable(true);
 		add(size);
+		add(new JLabel(c.getText("mindmapmode_toolbar_font_color")));
 		add(colorCombo);
 		
 		// button tool bar.
@@ -296,6 +301,14 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 				return;
 			}
 		}
+		// new color. add it to the combo box:
+		ColorPair pair = new ColorPair(pColor, "user" + userDefinedCounter,
+				Resources.getInstance().format(
+						"mindmapmode_toolbar_font_color_user_defined",
+						new Object[] { userDefinedCounter }));
+		userDefinedCounter++;
+		colorCombo.addItem(pair);
+		colorCombo.setSelectedItem(pair);
 		color_IgnoreChangeEvent = false;
 	}
 

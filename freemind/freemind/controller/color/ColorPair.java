@@ -21,13 +21,23 @@
 package freemind.controller.color;
 import java.awt.Color;
 
+import freemind.main.Resources;
+
 
 public class ColorPair {
 	public ColorPair(Color pColor, String pString) {
 		color = pColor;
 		name = pString;
+		displayName = Resources.getInstance().getText("font_color_"+name);
+	}
+
+	public ColorPair(Color pColor, String pName, String pDisplayName) {
+		color = pColor;
+		name = pName;
+		displayName = pDisplayName;
 	}
 
 	public Color color;
 	public String name;
+	public String displayName;
 }
