@@ -244,7 +244,7 @@ Name: english; MessagesFile: compiler:Default.isl
 ; old Name: basque; MessagesFile: compiler:Languages\Basque.isl
 Name: brazilianportuguese; MessagesFile: compiler:Languages\BrazilianPortuguese.isl
 Name: catalan; MessagesFile: compiler:Languages\Catalan.isl
-Name: croatian; MessagesFile: compiler:Languages\Croatian.isl
+;Name: croatian; MessagesFile: compiler:Languages\Croatian.isl
 Name: czech; MessagesFile: compiler:Languages\Czech.isl
 Name: danish; MessagesFile: compiler:Languages\Danish.isl
 Name: dutch; MessagesFile: compiler:Languages\Dutch.isl
@@ -258,7 +258,7 @@ Name: norwegian; MessagesFile: compiler:Languages\Norwegian.isl
 Name: polish; MessagesFile: compiler:Languages\Polish.isl
 Name: portuguese; MessagesFile: compiler:Languages\Portuguese.isl
 Name: russian; MessagesFile: compiler:Languages\Russian.isl
-Name: slovak; MessagesFile: compiler:Languages\Slovak.isl
+; Name: slovak; MessagesFile: compiler:Languages\Slovak.isl
 Name: slovenian; MessagesFile: compiler:Languages\Slovenian.isl
 Name: spanish; MessagesFile: compiler:Languages\Spanish.isl
 
