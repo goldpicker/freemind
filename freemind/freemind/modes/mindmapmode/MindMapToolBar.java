@@ -20,10 +20,12 @@
 
 package freemind.modes.mindmapmode;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.Action;
@@ -34,9 +36,12 @@ import freemind.controller.Controller;
 import freemind.controller.FreeMindToolBar;
 import freemind.controller.StructuredMenuHolder;
 import freemind.controller.ZoomListener;
+import freemind.controller.color.ColorPair;
+import freemind.controller.color.JColorCombo;
 import freemind.main.FreeMind;
-import freemind.main.FreeMindMain;
 import freemind.main.Tools;
+import freemind.modes.MindMapNode;
+import freemind.view.mindmapview.MapView;
 
 public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 
@@ -66,10 +71,12 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 	private JToolBar iconToolBar;
 	private boolean fontSize_IgnoreChangeEvent = false;
 	private boolean fontFamily_IgnoreChangeEvent = false;
+	private boolean color_IgnoreChangeEvent = false;
 	private ItemListener fontsListener;
 	private ItemListener sizeListener;
 	private JComboBox zoom;
 	private String userDefinedZoom;
+	private JColorCombo colorCombo;
 
 	protected static java.util.logging.Logger logger = null;
 	
@@ -146,7 +153,23 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 				}
 			}
 		});
+		colorCombo = new JColorCombo();
+		colorCombo.setFocusable(false);
+		colorCombo.addItemListener(new ItemListener(){
 
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(color_IgnoreChangeEvent){
+					return;
+				}
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					color_IgnoreChangeEvent = true;
+					setFontColorByItem((ColorPair) e.getItem());
+					color_IgnoreChangeEvent = false;
+				}
+			}
+
+		});
 	}
 
 	private void setZoomByItem(Object item) {
@@ -160,6 +183,15 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 		getController().setZoom(zoomValue);
 	}
 
+	private void setFontColorByItem(ColorPair pItem) {
+		for (Iterator it = c.getSelecteds().iterator(); it.hasNext();) {
+			MindMapNode node = (MindMapNode) it.next();
+			c.setNodeColor(node, pItem.color);
+		}
+	}
+	
+
+	
 	protected Controller getController() {
 		return c.getController();
 	}
@@ -176,7 +208,8 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 //		size.setEditor(new BasicComboBoxEditor());
 //		size.setEditable(true);
 		add(size);
-
+		add(colorCombo);
+		
 		// button tool bar.
 		iconToolBar.removeAll();
 		iconToolBar.add(c.removeLastIconAction);
@@ -248,6 +281,22 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 		
 	public void shutdown() {
 		getController().deregisterZoomListener(this);
+	}
+
+	public void selectColor(Color pColor) {
+		if(pColor == null){
+			pColor = MapView.standardNodeTextColor;
+		}
+		color_IgnoreChangeEvent = true;
+		for (int i = 0; i < colorCombo.getModel().getSize(); i++) {
+			ColorPair pair = colorCombo.getModel().getElementAt(i);
+			if(pair.color.equals(pColor)){
+				colorCombo.setSelectedIndex(i);
+				color_IgnoreChangeEvent = false;
+				return;
+			}
+		}
+		color_IgnoreChangeEvent = false;
 	}
 
 }

@@ -1028,6 +1028,7 @@ public class MindMapController extends ControllerAdapter implements
 	protected void updateToolbar(MindMapNode n) {
 		toolbar.selectFontSize(n.getFontSize());
 		toolbar.selectFontName(n.getFontFamilyName());
+		toolbar.selectColor(n.getColor());
 	}
 
 	// fc, 14.12.2004: changes, such that different models can be used:
