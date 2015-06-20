@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.Action;
+import javax.swing.Box;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JToolBar;
@@ -43,6 +44,7 @@ import freemind.main.FreeMind;
 import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.modes.MindMapNode;
+import freemind.view.ImageFactory;
 import freemind.view.mindmapview.MapView;
 
 public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
@@ -203,17 +205,21 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 	public void update(StructuredMenuHolder holder) {
 		this.removeAll();
 		holder.updateMenus(this, "mindmapmode_toolbar/");
-
-		add(zoom);
-
+		
+		addIcon("images/list-add-font.png");
 		fonts.setMaximumRowCount(30);
 		add(fonts);
 
 //		size.setEditor(new BasicComboBoxEditor());
 //		size.setEditable(true);
+		addIcon("images/format-font-size-more.png");
 		add(size);
-		add(new JLabel(c.getText("mindmapmode_toolbar_font_color")));
+		JLabel label = addIcon("images/format-text-color.png");
+		label.setToolTipText(Resources.getInstance().getText("mindmapmode_toolbar_font_color"));
 		add(colorCombo);
+		add(Box.createHorizontalGlue());
+		addIcon("images/page-zoom.png");
+		add(zoom);
 		
 		// button tool bar.
 		iconToolBar.removeAll();
@@ -223,6 +229,14 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 		for (int i = 0; i < c.iconActions.size(); ++i) {
 			iconToolBar.add((Action) c.iconActions.get(i));
 		}
+	}
+
+	public JLabel addIcon(String iconPath) {
+		add(new JToolBar.Separator());
+		JLabel label = new JLabel(ImageFactory.getInstance().createIcon(iconPath));
+		add(label);
+		add(new JToolBar.Separator());
+		return label;
 	}
 
 	// Daniel Polansky: both the following methods trigger item listeners above.
