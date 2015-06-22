@@ -32,16 +32,16 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.WindowConstants;
 
-
-import freemind.main.Resources;
+import freemind.main.Tools;
 import freemind.modes.mindmapmode.MindMapToolBar;
 
 
 public class JColorCombo extends JComboBox<ColorPair> {
 
-	public class ColorIcon extends ImageIcon {
 
-		private static final int ICON_SIZE = 30;
+	public static class ColorIcon extends ImageIcon {
+
+		private static final int ICON_SIZE = (int) (Tools.getScalingFactor()*16);
 		private Color mColor;
 		private BufferedImage mImage;
 
