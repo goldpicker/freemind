@@ -20,8 +20,10 @@
 package freemind.modes;
 
 import java.awt.Font;
+import java.awt.font.TextAttribute;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 
 import freemind.extensions.PermanentNodeHook;
@@ -76,6 +78,8 @@ public class XMLElementAdapter extends XMLElement {
 	private String attributeValue;
 
 	protected final MapFeedback mMapFeedback;
+
+	private boolean fontStyleStrikethrough;
 
 	// Overhead methods
 
@@ -352,6 +356,8 @@ public class XMLElementAdapter extends XMLElement {
 					fontStyle += Font.BOLD;
 				} else if (name.equals("ITALIC")) {
 					fontStyle += Font.ITALIC;
+				} else if (name.equals("STRIKETHROUGH")){
+					fontStyleStrikethrough = true;
 				}
 			}
 		}
@@ -465,8 +471,13 @@ public class XMLElementAdapter extends XMLElement {
 			return;
 		}
 		if (getName().equals("font")) {
-			userObject = mMapFeedback.getFontThroughMap(
-					new Font(fontName, fontStyle, fontSize));
+			Font font = new Font(fontName, fontStyle, fontSize);
+			if(fontStyleStrikethrough){
+				Map attr = font.getAttributes();
+				attr.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
+				font = new Font(attr);
+			}
+			userObject = mMapFeedback.getFontThroughMap(font);
 			return;
 		}
 		/* icons */

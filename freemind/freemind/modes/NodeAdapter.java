@@ -21,6 +21,7 @@ package freemind.modes;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.font.TextAttribute;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -407,11 +408,26 @@ public abstract class NodeAdapter implements MindMapNode {
 		}
 	}
 
+	public void setStrikethrough(boolean strikethrough) {
+		if (strikethrough != isStrikethrough()) {
+			toggleStrikethrough();
+		}
+	}
+	
+	public void toggleStrikethrough() {
+		establishOwnFont();
+		Map  attributes = font.getAttributes();
+		if(attributes.containsKey(TextAttribute.STRIKETHROUGH) && attributes.get(TextAttribute.STRIKETHROUGH)==TextAttribute.STRIKETHROUGH_ON){
+			attributes.remove(TextAttribute.STRIKETHROUGH);
+		} else {
+			attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
+		}
+		setFont(new Font(attributes));
+	}
+
 	public void toggleBold() {
 		establishOwnFont();
-		setFont(getMapFeedback().getFontThroughMap(
-				new Font(font.getFamily(), font.getStyle() ^ Font.BOLD, font
-						.getSize())));
+		setFont(getMapFeedback().getFontThroughMap(font.deriveFont(font.getStyle() ^ Font.BOLD)));
 	}
 
 	public void setItalic(boolean italic) {
@@ -422,9 +438,7 @@ public abstract class NodeAdapter implements MindMapNode {
 
 	public void toggleItalic() {
 		establishOwnFont();
-		setFont(getMapFeedback().getFontThroughMap(
-				new Font(font.getFamily(), font.getStyle() ^ Font.ITALIC, font
-						.getSize())));
+		setFont(getMapFeedback().getFontThroughMap(font.deriveFont(font.getStyle() ^ Font.ITALIC)));
 	}
 
 	public void setUnderlined(boolean underlined) {
@@ -442,7 +456,7 @@ public abstract class NodeAdapter implements MindMapNode {
 	public void setFontSize(int fontSize) {
 		establishOwnFont();
 		setFont(getMapFeedback().getFontThroughMap(
-				new Font(font.getFamily(), font.getStyle(), fontSize)));
+				font.deriveFont((float)fontSize)));
 	}
 
 	public Font getFont() {
@@ -477,6 +491,16 @@ public abstract class NodeAdapter implements MindMapNode {
 		return underlined;
 	}
 
+	public boolean isStrikethrough() {
+		if (font != null) {
+			Map<TextAttribute, ?> attr = font.getAttributes();
+			if(attr.containsKey(TextAttribute.STRIKETHROUGH)){
+				return attr.get(TextAttribute.STRIKETHROUGH) == TextAttribute.STRIKETHROUGH_ON;
+			}
+		}
+		return false;
+	}
+	
 	public boolean isFolded() {
 		return folded;
 	}
@@ -1183,6 +1207,9 @@ public abstract class NodeAdapter implements MindMapNode {
 			}
 			if (isBold()) {
 				fontElement.setAttribute("BOLD", "true");
+			}
+			if (isStrikethrough()) {
+				fontElement.setAttribute("STRIKETHROUGH", "true");
 			}
 			if (isItalic()) {
 				fontElement.setAttribute("ITALIC", "true");

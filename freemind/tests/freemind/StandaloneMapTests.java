@@ -105,10 +105,19 @@ public class StandaloneMapTests extends FreeMindTestBase {
 		MindMapNode subChild1 = (MindMapNode) firstChild.getChildAt(0);
 		MindMapNode subChild2 = (MindMapNode) firstChild.getChildAt(1);
 		MindMapNode subChild3 = (MindMapNode) firstChild.getChildAt(2);
+		mapFeedback.setStrikethrough(root, true);
+		assertEquals(true, root.isStrikethrough());
 		mapFeedback.setBold(root, true);
 		assertEquals(true, root.isBold());
+		assertEquals(true, root.isStrikethrough());
 		mapFeedback.setItalic(root, true);
 		assertEquals(true, root.isItalic());
+		assertEquals(true, root.isStrikethrough());
+		mapFeedback.setFontSize(root, "24");
+		assertEquals("24", root.getFontSize());
+		assertEquals(true, root.isStrikethrough());
+		mapFeedback.setStrikethrough(root, false);
+		assertEquals(false, root.isStrikethrough());
 		int amount = root.getChildCount();
 		MindMapNode newNode = mapFeedback.addNewNode(root, 0,
 				true);

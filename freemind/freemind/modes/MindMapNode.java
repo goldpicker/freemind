@@ -170,6 +170,8 @@ public interface MindMapNode extends MutableTreeNode {
 
 	boolean isUnderlined();
 
+	boolean isStrikethrough();
+
 	Font getFont();
 
 	String getFontSize();

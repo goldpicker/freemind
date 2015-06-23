@@ -1,4 +1,9 @@
 ===============================
+Changes made in FreeMind 1.1.0 Beta 2
+===============================
+* New feature: Strikethrough
+
+===============================
 Changes made in FreeMind 1.1.0 Beta 1
 ===============================
 * Fixed https://sourceforge.net/p/freemind/discussion/22102/thread/cf032151/?limit=25#c631

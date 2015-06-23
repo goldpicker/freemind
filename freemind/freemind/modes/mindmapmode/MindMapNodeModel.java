@@ -170,6 +170,9 @@ public class MindMapNodeModel extends NodeAdapter {
 		if (isBold()) {
 			pre += "\\b ";
 		}
+		if (isStrikethrough()) {
+			pre += "\\strike ";
+		}
 		if (font != null && font.getSize() != 0) {
 			fontsize = "\\fs" + Math.round(1.5 * getFont().getSize());
 			pre += fontsize;

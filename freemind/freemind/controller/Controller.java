@@ -38,6 +38,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.font.TextAttribute;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterJob;
@@ -430,10 +431,14 @@ public class Controller implements MapModuleChangeObserver {
 	//
 
 	public Font getFontThroughMap(Font font) {
-		if (!fontMap.containsKey(font.toString())) {
-			fontMap.put(font.toString(), font);
+		if (!fontMap.containsKey(getFontStringCode(font))) {
+			fontMap.put(getFontStringCode(font), font);
 		}
-		return (Font) fontMap.get(font.toString());
+		return (Font) fontMap.get(getFontStringCode(font));
+	}
+
+	private String getFontStringCode(Font font) {
+		return font.toString() +"/"+ font.getAttributes().get(TextAttribute.STRIKETHROUGH);
 	}
 
 	//

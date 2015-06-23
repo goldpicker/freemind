@@ -519,8 +519,12 @@ public final class TestMindMapNode implements MindMapNode {
 	 */
 	@Override
 	public MindMap getMap() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean isStrikethrough() {
+		return false;
 	}
 
 }

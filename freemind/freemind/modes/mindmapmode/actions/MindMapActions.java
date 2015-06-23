@@ -108,6 +108,8 @@ public interface MindMapActions {
 
 	public void setBold(MindMapNode node, boolean bolded);
 
+	public void setStrikethrough(MindMapNode node, boolean strikethrough);
+	
 	public void setItalic(MindMapNode node, boolean isItalic);
 
 	public void setNodeColor(MindMapNode node, Color color);

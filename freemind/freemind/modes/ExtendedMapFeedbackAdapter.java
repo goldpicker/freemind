@@ -265,6 +265,11 @@ public abstract class ExtendedMapFeedbackAdapter extends MapFeedbackAdapter
 	}
 
 	@Override
+	public void setStrikethrough(MindMapNode pNode, boolean pStrikethroughed) {
+		mActorFactory.getStrikethroughActor().setStrikethrough(pNode, pStrikethroughed);
+	}
+	
+	@Override
 	public void setItalic(MindMapNode pNode, boolean pIsItalic) {
 		mActorFactory.getItalicActor().setItalic(pNode, pIsItalic);
 	}

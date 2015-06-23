@@ -33,6 +33,7 @@ public class XmlActorFactory {
 	private ExtendedMapFeedback mMapFeedback;
 	private ItalicNodeActor mActionActor;
 	private BoldNodeActor mBoldActor;
+	private StrikethroughNodeActor mStrikethroughActor;
 	private NewChildActor mNewChildActor;
 	private DeleteChildActor mDeleteChildActor;
 	private PasteActor mPasteActor;
@@ -75,6 +76,7 @@ public class XmlActorFactory {
 		mMapFeedback = pMapFeedback;
 		mActionActor = new ItalicNodeActor(mMapFeedback);
 		mBoldActor = new BoldNodeActor(mMapFeedback);
+		mStrikethroughActor = new StrikethroughNodeActor(mMapFeedback);
 		mNewChildActor = new NewChildActor(mMapFeedback);
 		mDeleteChildActor = new DeleteChildActor(mMapFeedback);
 		mPasteActor = new PasteActor(mMapFeedback);
@@ -120,6 +122,14 @@ public class XmlActorFactory {
 	
 	public BoldNodeActor getBoldActor() {
 		return mBoldActor;
+	}
+
+	public StrikethroughNodeActor getStrikethroughActor() {
+		return mStrikethroughActor;
+	}
+
+	public void setStrikethroughActor(StrikethroughNodeActor pStrikethroughActor) {
+		mStrikethroughActor = pStrikethroughActor;
 	}
 
 	public NewChildActor getNewChildActor() {

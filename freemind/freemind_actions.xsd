@@ -17,6 +17,7 @@
 					<xs:element ref="undo_paste_node_action"/>
 					<xs:element ref="revert_xml_action"/>
 					<xs:element ref="bold_node_action"/>
+					<xs:element ref="strikethrough_node_action"/>
 					<xs:element ref="italic_node_action"/>
 					<xs:element ref="underlined_node_action"/>
 					<xs:element ref="font_size_node_action"/>
@@ -345,6 +346,17 @@
 		<xs:complexContent>
 			<xs:extension base="format_node_action">
 		      <xs:attribute name="bold" use="required" type="xs:boolean"/>
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+	</xs:element>
+
+	<!-- Strikethrough Action -->
+	<xs:element name="strikethrough_node_action">
+	  <xs:complexType>
+		<xs:complexContent>
+			<xs:extension base="format_node_action">
+		      <xs:attribute name="strikethrough" use="required" type="xs:boolean"/>
 			</xs:extension>
 		</xs:complexContent>
 	  </xs:complexType>

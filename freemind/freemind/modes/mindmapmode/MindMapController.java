@@ -56,7 +56,6 @@ import java.util.ListIterator;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 import javax.swing.AbstractAction;
@@ -195,6 +194,7 @@ import freemind.modes.mindmapmode.actions.SelectAllAction;
 import freemind.modes.mindmapmode.actions.SelectBranchAction;
 import freemind.modes.mindmapmode.actions.SetLinkByTextFieldAction;
 import freemind.modes.mindmapmode.actions.SingleNodeOperation;
+import freemind.modes.mindmapmode.actions.StrikethroughAction;
 import freemind.modes.mindmapmode.actions.ToggleChildrenFoldedAction;
 import freemind.modes.mindmapmode.actions.ToggleFoldedAction;
 import freemind.modes.mindmapmode.actions.UnderlinedAction;
@@ -205,7 +205,6 @@ import freemind.modes.mindmapmode.actions.xml.ActionPair;
 import freemind.modes.mindmapmode.actions.xml.ActionRegistry;
 import freemind.modes.mindmapmode.actions.xml.DefaultActionHandler;
 import freemind.modes.mindmapmode.actions.xml.UndoActionHandler;
-import freemind.modes.mindmapmode.actions.xml.actors.CompoundActor;
 import freemind.modes.mindmapmode.actions.xml.actors.XmlActorFactory;
 import freemind.modes.mindmapmode.hooks.MindMapHookFactory;
 import freemind.modes.mindmapmode.listeners.MindMapMouseMotionManager;
@@ -422,6 +421,7 @@ public class MindMapController extends ControllerAdapter implements
 	public PasteAction paste = null;
 	public PasteAsPlainTextAction pasteAsPlainText = null;
 	public BoldAction bold = null;
+	public StrikethroughAction strikethrough = null;
 	public ItalicAction italic = null;
 	public UnderlinedAction underlined = null;
 	public FontSizeAction fontSize = null;
@@ -560,6 +560,7 @@ public class MindMapController extends ControllerAdapter implements
 		copy = new CopyAction(this);
 		copySingle = new CopySingleAction(this);
 		bold = new BoldAction(this);
+		strikethrough = new StrikethroughAction(this);
 		italic = new ItalicAction(this);
 		underlined = new UnderlinedAction(this);
 		fontSize = new FontSizeAction(this);
@@ -1345,6 +1346,7 @@ public class MindMapController extends ControllerAdapter implements
 		setLinkByTextField.setEnabled(enabled);
 		italic.setEnabled(enabled);
 		bold.setEnabled(enabled);
+		strikethrough.setEnabled(enabled);
 		find.setEnabled(enabled);
 		findNext.setEnabled(enabled);
 		addArrowLinkAction.setEnabled(enabled);
@@ -1597,6 +1599,10 @@ public class MindMapController extends ControllerAdapter implements
 		mActorFactory.getBoldActor().setBold(node, bolded);
 	}
 
+	public void setStrikethrough(MindMapNode node, boolean strikethrough) {
+		mActorFactory.getStrikethroughActor().setStrikethrough(node, strikethrough);
+	}
+	
 	public void setItalic(MindMapNode node, boolean isItalic) {
 		mActorFactory.getItalicActor().setItalic(node, isItalic);
 	}
