@@ -895,6 +895,9 @@ public class OptionPanel implements TextTranslator {
 		// B
 
 		controls.add(new KeyProperty(frame, null,
+				"keystroke_node_toggle_strikethrough")); 
+		
+		controls.add(new KeyProperty(frame, null,
 				"keystroke_node_toggle_underlined")); // control
 		// U
 
