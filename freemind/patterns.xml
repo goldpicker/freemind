@@ -10,6 +10,7 @@
 		<pattern_node_style/>
 		<pattern_node_font_name/>
 		<pattern_node_font_bold/>
+		<pattern_node_font_strikethrough/>
 		<pattern_node_font_italic/>
 		<pattern_node_font_size/>
 		<pattern_icon/>

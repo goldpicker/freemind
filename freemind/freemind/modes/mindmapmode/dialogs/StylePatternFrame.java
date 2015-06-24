@@ -63,6 +63,7 @@ import freemind.controller.actions.generated.instance.PatternNodeFontBold;
 import freemind.controller.actions.generated.instance.PatternNodeFontItalic;
 import freemind.controller.actions.generated.instance.PatternNodeFontName;
 import freemind.controller.actions.generated.instance.PatternNodeFontSize;
+import freemind.controller.actions.generated.instance.PatternNodeFontStrikethrough;
 import freemind.controller.actions.generated.instance.PatternNodeStyle;
 import freemind.controller.actions.generated.instance.PatternNodeText;
 import freemind.controller.actions.generated.instance.PatternPropertyBase;
@@ -127,6 +128,10 @@ public class StylePatternFrame extends JPanel implements TextTranslator,
 
 	private static final String SET_NODE_FONT_BOLD = SET_RESOURCE;
 
+	private static final String NODE_FONT_STRIKETHROUGH = "nodefontStrikethrough";
+	
+	private static final String SET_NODE_FONT_STRIKETHROUGH = SET_RESOURCE;
+	
 	private static final String NODE_FONT_ITALIC = "nodefontitalic";
 
 	private static final String SET_NODE_FONT_ITALIC = SET_RESOURCE;
@@ -187,6 +192,10 @@ public class StylePatternFrame extends JPanel implements TextTranslator,
 
 	private BooleanProperty mNodeFontBold;
 
+	private ThreeCheckBoxProperty mSetNodeFontStrikethrough;
+	
+	private BooleanProperty mNodeFontStrikethrough;
+	
 	private ThreeCheckBoxProperty mSetNodeFontItalic;
 
 	private BooleanProperty mNodeFontItalic;
@@ -380,6 +389,12 @@ public class StylePatternFrame extends JPanel implements TextTranslator,
 		mNodeFontBold = new BooleanProperty(NODE_FONT_BOLD + ".tooltip",
 				NODE_FONT_BOLD);
 		controls.add(mNodeFontBold);
+		mSetNodeFontStrikethrough = new ThreeCheckBoxProperty(SET_NODE_FONT_STRIKETHROUGH
+				+ ".tooltip", SET_NODE_FONT_STRIKETHROUGH);
+		controls.add(mSetNodeFontStrikethrough);
+		mNodeFontStrikethrough = new BooleanProperty(NODE_FONT_STRIKETHROUGH + ".tooltip",
+				NODE_FONT_STRIKETHROUGH);
+		controls.add(mNodeFontStrikethrough);
 		mSetNodeFontItalic = new ThreeCheckBoxProperty(SET_NODE_FONT_ITALIC
 				+ ".tooltip", SET_NODE_FONT_ITALIC);
 		controls.add(mSetNodeFontItalic);
@@ -430,6 +445,7 @@ public class StylePatternFrame extends JPanel implements TextTranslator,
 		mPropertyChangePropagation.put(mSetNodeFontName, mNodeFontName);
 		mPropertyChangePropagation.put(mSetNodeFontSize, mNodeFontSize);
 		mPropertyChangePropagation.put(mSetNodeFontBold, mNodeFontBold);
+		mPropertyChangePropagation.put(mSetNodeFontStrikethrough, mNodeFontStrikethrough);
 		mPropertyChangePropagation.put(mSetNodeFontItalic, mNodeFontItalic);
 		mPropertyChangePropagation.put(mSetNodeText, mNodeText);
 		mPropertyChangePropagation.put(mSetEdgeColor, mEdgeColor);
@@ -483,6 +499,8 @@ public class StylePatternFrame extends JPanel implements TextTranslator,
 				mNodeFontSize, sizes[0]);
 		setPatternControls(pattern.getPatternNodeFontBold(), mSetNodeFontBold,
 				mNodeFontBold, BooleanProperty.TRUE_VALUE);
+		setPatternControls(pattern.getPatternNodeFontStrikethrough(), mSetNodeFontStrikethrough,
+				mNodeFontStrikethrough, BooleanProperty.TRUE_VALUE);
 		setPatternControls(pattern.getPatternNodeFontItalic(),
 				mSetNodeFontItalic, mNodeFontItalic, BooleanProperty.TRUE_VALUE);
 		MindIcon firstInfo = (MindIcon) mIconInformationVector.get(0);
@@ -624,6 +642,8 @@ public class StylePatternFrame extends JPanel implements TextTranslator,
 				new PatternNodeFontSize(), mSetNodeFontSize, mNodeFontSize));
 		pattern.setPatternNodeFontBold((PatternNodeFontBold) getPatternResult(
 				new PatternNodeFontBold(), mSetNodeFontBold, mNodeFontBold));
+		pattern.setPatternNodeFontStrikethrough((PatternNodeFontStrikethrough) getPatternResult(
+				new PatternNodeFontStrikethrough(), mSetNodeFontStrikethrough, mNodeFontStrikethrough));
 		pattern.setPatternNodeFontItalic((PatternNodeFontItalic) getPatternResult(
 				new PatternNodeFontItalic(), mSetNodeFontItalic,
 				mNodeFontItalic));

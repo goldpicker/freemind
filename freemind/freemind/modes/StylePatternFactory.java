@@ -46,6 +46,7 @@ import freemind.controller.actions.generated.instance.PatternNodeFontBold;
 import freemind.controller.actions.generated.instance.PatternNodeFontItalic;
 import freemind.controller.actions.generated.instance.PatternNodeFontName;
 import freemind.controller.actions.generated.instance.PatternNodeFontSize;
+import freemind.controller.actions.generated.instance.PatternNodeFontStrikethrough;
 import freemind.controller.actions.generated.instance.PatternNodeStyle;
 import freemind.controller.actions.generated.instance.PatternPropertyBase;
 import freemind.controller.actions.generated.instance.Patterns;
@@ -165,6 +166,9 @@ public class StylePatternFactory {
 		PatternNodeFontBold nodeFontBold = new PatternNodeFontBold();
 		nodeFontBold.setValue(node.isBold() ? TRUE_VALUE : FALSE_VALUE);
 		pattern.setPatternNodeFontBold(nodeFontBold);
+		PatternNodeFontStrikethrough nodeFontStrikethrough = new PatternNodeFontStrikethrough();
+		nodeFontStrikethrough.setValue(node.isStrikethrough() ? TRUE_VALUE : FALSE_VALUE);
+		pattern.setPatternNodeFontStrikethrough(nodeFontStrikethrough);
 		PatternNodeFontItalic nodeFontItalic = new PatternNodeFontItalic();
 		nodeFontItalic.setValue(node.isItalic() ? TRUE_VALUE : FALSE_VALUE);
 		pattern.setPatternNodeFontItalic(nodeFontItalic);
@@ -230,6 +234,8 @@ public class StylePatternFactory {
 				pPattern.getPatternNodeFontName(), "PatternToString.FontName");
 		result = addSubPatternToString(translator, result,
 				pPattern.getPatternNodeFontBold(), "PatternToString.FontBold");
+		result = addSubPatternToString(translator, result,
+				pPattern.getPatternNodeFontStrikethrough(), "PatternToString.FontStrikethrough");
 		result = addSubPatternToString(translator, result,
 				pPattern.getPatternNodeFontItalic(),
 				"PatternToString.FontItalic");
@@ -319,6 +325,9 @@ public class StylePatternFactory {
 		result.setPatternNodeFontBold((PatternNodeFontBold) processPatternProperties(
 				p1.getPatternNodeFontBold(), p2.getPatternNodeFontBold(),
 				new PatternNodeFontBold()));
+		result.setPatternNodeFontStrikethrough((PatternNodeFontStrikethrough) processPatternProperties(
+				p1.getPatternNodeFontStrikethrough(), p2.getPatternNodeFontStrikethrough(),
+				new PatternNodeFontStrikethrough()));
 		result.setPatternNodeFontItalic((PatternNodeFontItalic) processPatternProperties(
 				p1.getPatternNodeFontItalic(), p2.getPatternNodeFontItalic(),
 				new PatternNodeFontItalic()));
@@ -371,6 +380,7 @@ public class StylePatternFactory {
 		result.setPatternNodeBackgroundColor(new PatternNodeBackgroundColor());
 		result.setPatternNodeColor(new PatternNodeColor());
 		result.setPatternNodeFontBold(new PatternNodeFontBold());
+		result.setPatternNodeFontStrikethrough(new PatternNodeFontStrikethrough());
 		result.setPatternNodeFontItalic(new PatternNodeFontItalic());
 		result.setPatternNodeFontName(new PatternNodeFontName());
 		result.setPatternNodeFontSize(new PatternNodeFontSize());
@@ -457,11 +467,14 @@ public class StylePatternFactory {
 		if (pattern.getPatternNodeFontItalic() != null) {
 			((NodeAdapter) pNode)
 					.setItalic(
-							"true".equals(pattern.getPatternNodeFontItalic()
+							TRUE_VALUE.equals(pattern.getPatternNodeFontItalic()
 									.getValue()));
 		}
 		if (pattern.getPatternNodeFontBold() != null) {
-			((NodeAdapter) pNode).setBold("true".equals(pattern.getPatternNodeFontBold().getValue()));
+			((NodeAdapter) pNode).setBold(TRUE_VALUE.equals(pattern.getPatternNodeFontBold().getValue()));
+		}
+		if (pattern.getPatternNodeFontStrikethrough() != null) {
+			((NodeAdapter) pNode).setStrikethrough(TRUE_VALUE.equals(pattern.getPatternNodeFontStrikethrough().getValue()));
 		}
 
 		if (pattern.getPatternEdgeStyle() != null) {
@@ -542,12 +555,16 @@ public class StylePatternFactory {
 			pMapFeedback.setFontSize(node, String.valueOf(nodeFontSize));
 		}
 		if (pattern.getPatternNodeFontItalic() != null) {
-			pMapFeedback.setItalic(node, "true".equals(pattern
+			pMapFeedback.setItalic(node, TRUE_VALUE.equals(pattern
 					.getPatternNodeFontItalic().getValue()));
 		}
 		if (pattern.getPatternNodeFontBold() != null) {
 			pMapFeedback.setBold(node,
-					"true".equals(pattern.getPatternNodeFontBold().getValue()));
+					TRUE_VALUE.equals(pattern.getPatternNodeFontBold().getValue()));
+		}
+		if (pattern.getPatternNodeFontStrikethrough() != null) {
+			pMapFeedback.setStrikethrough(node,
+					TRUE_VALUE.equals(pattern.getPatternNodeFontStrikethrough().getValue()));
 		}
 
 		if (pattern.getPatternEdgeColor() != null) {

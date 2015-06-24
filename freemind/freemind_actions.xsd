@@ -1169,20 +1169,21 @@
 				
 
 	<xs:complexType name="pattern_property_base"><xs:complexContent><!-- if value is not present, the attribute is cleared. -->     <xs:attribute name="value" use="optional" type="xs:string"/>  </xs:complexContent>  </xs:complexType>
-	<xs:element name="pattern_node_background_color"> <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
-    <xs:element name="pattern_node_color">            <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
-    <xs:element name="pattern_node_style">            <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
-    <xs:element name="pattern_node_text">             <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
-    <xs:element name="pattern_node_font_name">        <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
-    <xs:element name="pattern_node_font_bold">        <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
-    <xs:element name="pattern_node_font_italic">      <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
-    <xs:element name="pattern_node_font_size">        <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
-    <xs:element name="pattern_icon">                  <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
-    <xs:element name="pattern_edge_color">            <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
-    <xs:element name="pattern_edge_style">            <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
-    <xs:element name="pattern_edge_width">            <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
-    <xs:element name="pattern_child">                 <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
-    <xs:element name="pattern_script">                <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
+	<xs:element name="pattern_node_background_color">  <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
+    <xs:element name="pattern_node_color">             <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
+    <xs:element name="pattern_node_style">             <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
+    <xs:element name="pattern_node_text">              <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
+    <xs:element name="pattern_node_font_name">         <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
+    <xs:element name="pattern_node_font_bold">         <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
+    <xs:element name="pattern_node_font_strikethrough"><xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
+    <xs:element name="pattern_node_font_italic">       <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
+    <xs:element name="pattern_node_font_size">         <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
+    <xs:element name="pattern_icon">                   <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
+    <xs:element name="pattern_edge_color">             <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
+    <xs:element name="pattern_edge_style">             <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
+    <xs:element name="pattern_edge_width">             <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
+    <xs:element name="pattern_child">                  <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
+    <xs:element name="pattern_script">                 <xs:complexType><xs:complexContent><xs:extension base="pattern_property_base"></xs:extension></xs:complexContent></xs:complexType>  </xs:element>
 
 	<xs:element name="pattern">
 		<xs:complexType>
@@ -1195,6 +1196,7 @@
 						<xs:element minOccurs="0" maxOccurs="1" ref="pattern_node_text"/>
 						<xs:element minOccurs="0" maxOccurs="1" ref="pattern_node_font_name"/>
 						<xs:element minOccurs="0" maxOccurs="1" ref="pattern_node_font_bold"/>
+						<xs:element minOccurs="0" maxOccurs="1" ref="pattern_node_font_strikethrough"/>
 						<xs:element minOccurs="0" maxOccurs="1" ref="pattern_node_font_italic"/>
 						<xs:element minOccurs="0" maxOccurs="1" ref="pattern_node_font_size"/>
 						<xs:element minOccurs="0" maxOccurs="1" ref="pattern_icon"/>

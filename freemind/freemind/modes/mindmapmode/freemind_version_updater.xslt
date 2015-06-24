@@ -72,6 +72,9 @@
 			--></xsl:when><!--
 			--><xsl:when test="@version='1.0.1'"><!--
 			-->1002000<!-- 
+			--></xsl:when><!-- Strikethrough is new in 1.1.0
+			--><xsl:when test="@version='1.1.0'"><!--
+			-->1101000<!-- 
 			--></xsl:when><!--
 			--><xsl:otherwise><!--
 			-->-1<!--
