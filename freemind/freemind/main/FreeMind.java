@@ -26,6 +26,7 @@ import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -700,10 +701,22 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 			Properties pDefaultPreferences, Properties pUserPreferences,
 			File pAutoPropertiesFile) {
 		try {
+
+
 			final FreeMind frame = new FreeMind(pDefaultPreferences,
 					pUserPreferences, pAutoPropertiesFile);
-			Tools.scaleAllFonts(frame.getIntProperty(SCALING_FACTOR_PROPERTY, 100)/100f);
-
+			int scale = frame.getIntProperty(SCALING_FACTOR_PROPERTY, 100);
+			if (scale != 100) {
+				Tools.scaleAllFonts(scale / 100f);
+				Font SEGOE_UI_PLAIN_12 = new Font("Segoe UI", Font.PLAIN,
+						12 * scale / 100);
+				UIManager.put("MenuItem.acceleratorFont", SEGOE_UI_PLAIN_12);
+				UIManager.put("Menu.acceleratorFont", SEGOE_UI_PLAIN_12);
+				UIManager.put("CheckBoxMenuItem.acceleratorFont",
+						SEGOE_UI_PLAIN_12);
+				UIManager.put("RadioButtonMenuItem.acceleratorFont",
+						SEGOE_UI_PLAIN_12);
+			}
 			IFreeMindSplash splash = null;
 			frame.checkForAnotherInstance(args);
 			frame.initServer();

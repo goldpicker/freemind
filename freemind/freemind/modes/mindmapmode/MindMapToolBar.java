@@ -326,5 +326,4 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 		colorCombo.setSelectedItem(pair);
 		color_IgnoreChangeEvent = false;
 	}
-
 }
