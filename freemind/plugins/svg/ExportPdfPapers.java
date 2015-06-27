@@ -65,6 +65,9 @@ class ExportPdfPapers {
 		addPaper(MediaSizeName.ISO_B3, "B3");
 		addPaper(MediaSizeName.ISO_B4, "B4");
 		addPaper(MediaSizeName.ISO_B5, "B5");
+		//American
+		addPaper(MediaSizeName.NA_LEGAL,  "LEGAL");
+		addPaper(MediaSizeName.NA_LETTER, "LETTER");
 
 	}
 
