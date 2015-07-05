@@ -116,7 +116,8 @@ public class StructuredMenuHolder {
 		 * original JCheckBoxMenuItem.
 		 */
 		if (item instanceof MenuItemSelectedListener) {
-			holder.setMenuItem(new JCheckBoxMenuItem(item));
+			JCheckBoxMenuItem checkBox = new JCheckBoxMenuItem(item);
+			holder.setMenuItem(checkBox);
 		} else {
 			holder.setMenuItem(new JMenuItem(item));
 		}

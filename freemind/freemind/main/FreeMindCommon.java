@@ -217,6 +217,8 @@ public class FreeMindCommon {
 
 	public static final String CREATE_THUMBNAIL_ON_SAVE = "create_thumbnail_on_save";
 
+	public static final String TIME_MANAGEMENT_MARKING_XML = "time_management_marking_xml";
+
 	private static Logger logger = null;
 
 	/**

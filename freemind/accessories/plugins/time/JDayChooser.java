@@ -39,12 +39,19 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 
 import freemind.common.ScalableJButton;
+import freemind.common.XmlBindingTools;
+import freemind.controller.actions.generated.instance.CalendarMarking;
+import freemind.controller.actions.generated.instance.CalendarMarkings;
+import freemind.main.FreeMindCommon;
+import freemind.main.Resources;
 import freemind.main.Tools;
 
 /**
@@ -151,8 +158,13 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 
 	protected int maxDayCharacters;
 
+	Border redBorder = BorderFactory.createLineBorder(Color.RED, 2);
+
 	protected JMonthChooser monthChooser = null;
 	protected JYearChooser yearChooser = null;
+
+
+	private static CalendarMarkingEvaluator sCalendarMarkingEvaluator;
 
 	public void setMonthChooser(JMonthChooser monthChooser) {
 		this.monthChooser = monthChooser;
@@ -176,6 +188,15 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 	 *            true, if the weeks of a year shall be shown
 	 */
 	public JDayChooser(boolean weekOfYearVisible) {
+		if(sCalendarMarkingEvaluator==null){
+			String marking = Resources.getInstance().getProperty(FreeMindCommon.TIME_MANAGEMENT_MARKING_XML);
+			if(!marking.isEmpty()) {
+				CalendarMarkings markings = (CalendarMarkings) XmlBindingTools.getInstance().unMarshall(marking);
+				if(markings!=null && markings.sizeCalendarMarkingList() > 0){
+					sCalendarMarkingEvaluator = new CalendarMarkingEvaluator(markings);
+				}
+			}
+		}
 		setName("JDayChooser");
 		setBackground(Color.blue);
 		this.weekOfYearVisible = weekOfYearVisible;
@@ -407,10 +428,10 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 			currentDay.setText("");
 		}
 
-		tmpCalendar.add(Calendar.MONTH, 1);
+		Calendar clone = (Calendar) tmpCalendar.clone();
+		clone.add(Calendar.MONTH, 1);
 
-		Date firstDayInNextMonth = tmpCalendar.getTime();
-		tmpCalendar.add(Calendar.MONTH, -1);
+		Date firstDayInNextMonth = clone.getTime();
 
 		Date day = tmpCalendar.getTime();
 		int n = 0;
@@ -438,6 +459,20 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 			} else {
 				currentDay.setBackground(oldDayBackgroundColor);
 			}
+
+			Border currentBorder = null;
+			String currentToolTipText = null;
+			if (sCalendarMarkingEvaluator!=null) {
+				CalendarMarking marked = sCalendarMarkingEvaluator
+						.isMarked(tmpCalendar);
+				if (marked != null) {
+					currentBorder = BorderFactory.createLineBorder(
+							Tools.xmlToColor(marked.getColor()), 2);
+					currentToolTipText = marked.getName();
+				}
+			}
+			currentDay.setBorder(currentBorder);
+			currentDay.setToolTipText(currentToolTipText);
 
 			if (tmpCalendar.before(minCal) || tmpCalendar.after(maxCal)) {
 				currentDay.setEnabled(false);
