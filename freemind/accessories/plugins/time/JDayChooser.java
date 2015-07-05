@@ -164,7 +164,7 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 	protected JYearChooser yearChooser = null;
 
 
-	private static CalendarMarkingEvaluator sCalendarMarkingEvaluator;
+	private static ICalendarMarkingEvaluator sCalendarMarkingEvaluator;
 
 	public void setMonthChooser(JMonthChooser monthChooser) {
 		this.monthChooser = monthChooser;
@@ -188,13 +188,31 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 	 *            true, if the weeks of a year shall be shown
 	 */
 	public JDayChooser(boolean weekOfYearVisible) {
-		if(sCalendarMarkingEvaluator==null){
-			String marking = Resources.getInstance().getProperty(FreeMindCommon.TIME_MANAGEMENT_MARKING_XML);
-			if(!marking.isEmpty()) {
-				CalendarMarkings markings = (CalendarMarkings) XmlBindingTools.getInstance().unMarshall(marking);
-				if(markings!=null && markings.sizeCalendarMarkingList() > 0){
-					sCalendarMarkingEvaluator = new CalendarMarkingEvaluator(markings);
+		if (sCalendarMarkingEvaluator == null) {
+			try {
+				String marking = Resources.getInstance().getProperty(
+						FreeMindCommon.TIME_MANAGEMENT_MARKING_XML);
+				if (!marking.isEmpty()) {
+					CalendarMarkings markings = (CalendarMarkings) XmlBindingTools
+							.getInstance().unMarshall(marking);
+					if (markings != null
+							&& markings.sizeCalendarMarkingList() > 0) {
+						sCalendarMarkingEvaluator = new CalendarMarkingEvaluator(
+								markings);
+					}
 				}
+			} catch (Exception e) {
+				freemind.main.Resources.getInstance().logException(e);
+			}
+			if(sCalendarMarkingEvaluator==null){
+				// add a trivial one:
+				sCalendarMarkingEvaluator = new ICalendarMarkingEvaluator() {
+					
+					@Override
+					public CalendarMarking isMarked(Calendar pCalendar) {
+						return null;
+					}
+				};
 			}
 		}
 		setName("JDayChooser");

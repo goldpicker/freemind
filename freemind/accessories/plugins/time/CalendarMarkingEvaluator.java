@@ -22,7 +22,6 @@ package accessories.plugins.time;
 
 import java.text.DateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 
 import freemind.controller.actions.generated.instance.CalendarMarking;
@@ -32,7 +31,7 @@ import freemind.controller.actions.generated.instance.CalendarMarkings;
  * @author foltin
  * @date 05.07.2015
  */
-public class CalendarMarkingEvaluator {
+public class CalendarMarkingEvaluator implements ICalendarMarkingEvaluator {
 
 	private CalendarMarkings mCalendarMarkings;
 	private HashMap<Long, CalendarMarking> mCache = new HashMap<>();
@@ -285,6 +284,10 @@ public class CalendarMarkingEvaluator {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see accessories.plugins.time.ICalenderMarkingEvaluator#isMarked(java.util.Calendar)
+	 */
+	@Override
 	public CalendarMarking isMarked(Calendar pCalendar) {
 		long millies = pCalendar.getTimeInMillis();
 		if(mCache.containsKey(millies)) {
