@@ -720,6 +720,47 @@
 	<xs:element name="continent" type="xs:string"/>
  -->
 
+	<xs:element name="calendar_markings">
+	  <xs:complexType>
+		<xs:complexContent>
+			<xs:extension base="xml_action">
+			    <xs:sequence>
+			      <xs:element ref="calendar_marking"/>
+			    </xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	  </xs:complexType>
+	</xs:element>
+	
+	<xs:element name="calendar_marking">
+		<xs:complexContent>
+		    <xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="color" use="required" type="xs:string"/>
+		    <xs:attribute name="start_date" type="xs:long" use="required"/>
+		    <xs:attribute name="end_date" type="xs:long" use="optional"/>
+		    <xs:attribute name="repeat_type" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:token">
+						<xs:enumeration value="never"/>
+						<xs:enumeration value="yearly"/>
+						<xs:enumeration value="yearly_every_nth_day"/>
+						<xs:enumeration value="yearly_every_nth_week"/>
+						<xs:enumeration value="yearly_every_nth_month"/>
+						<xs:enumeration value="monthly"/>
+						<xs:enumeration value="monthly_every_nth_day"/>
+						<xs:enumeration value="monthly_every_nth_week"/>
+						<xs:enumeration value="weekly"/>
+						<xs:enumeration value="daily"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		    <xs:attribute name="repeat_each_n_occurence" type="xs:int" use="optional"/>
+		    <xs:attribute name="first_occurence" type="xs:int" use="optional"/>
+		</xs:complexContent>
+	</xs:element>
+	
+
+
 	<!-- Add (and remove(?)) a permanent hook to a node -->
 	<xs:element name="hook_node_action">
 		<xs:complexType>

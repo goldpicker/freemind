@@ -57,6 +57,7 @@ public class CompileXsdStart extends DefaultHandler {
 	private static final String KEY_CLASS_START = "030_CLASS_START";
 	private static final String KEY_CLASS_EXTENSION = "040_CLASS_EXTENSION";
 	private static final String KEY_CLASS_START2 = "050_CLASS_START2";
+	private static final String KEY_CLASS_CONSTANTS = "051_CONSTANTS";
 	private static final String KEY_CLASS_MIXED = "055_CLASS_MIXED";
 	private static final String KEY_CLASS_PRIVATE_MEMBERS = "060_PRIVATE_MEMBERS";
 	private static final String KEY_CLASS_GETTERS = "070_Getters";
@@ -309,6 +310,9 @@ public class CompileXsdStart extends DefaultHandler {
 				break;
 			case Attribute_Id:
 				nextHandler = new AttributeHandler(this);
+				break;
+			case Enumeration_Id:
+				nextHandler = new EnumerationHandler(this);
 				break;
 			case Group_Id:
 				nextHandler = new GroupHandler(this);
@@ -647,6 +651,8 @@ public class CompileXsdStart extends DefaultHandler {
 			class1.put(KEY_CLASS_START, "public class " + name);
 			mKeyOrder.add(KEY_CLASS_START2);
 			class1.put(KEY_CLASS_START2, " {\n");
+			mKeyOrder.add(KEY_CLASS_CONSTANTS);
+			class1.put(KEY_CLASS_CONSTANTS, "  /* constants from enums*/\n");
 			if (mMixed) {
 				mKeyOrder.add(KEY_CLASS_MIXED);
 				class1.put(
@@ -728,6 +734,22 @@ public class CompileXsdStart extends DefaultHandler {
 
 	}
 
+	private class EnumerationHandler extends XsdHandler {
+		
+		public EnumerationHandler(XsdHandler pParent) {
+			super(pParent);
+		}
+		
+		public void startElement(String arg0, Attributes arg1) {
+			super.startElement(arg0, arg1);
+			String val = arg1.getValue("value");
+			appendToClassMap(KEY_CLASS_CONSTANTS, "  public static final String " + val.toUpperCase()
+					+ " = \"" + val + "\";\n");
+		}
+		
+		
+	}
+	
 	public void endElement(String pUri, String pLocalName, String pName)
 			throws SAXException {
 		mCurrentHandler.endElement(pUri, pLocalName, pName);

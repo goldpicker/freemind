@@ -52,6 +52,7 @@ public class AllTests {
 		suite.addTest(new TestSuite(LastOpenedTests.class));
 		suite.addTest(new TestSuite(StandaloneMapTests.class));
 		suite.addTest(new TestSuite(CollaborationTests.class));
+		suite.addTest(new TestSuite(CalendarMarkingTests.class));
 		// $JUnit-END$
 		return suite;
 	}
