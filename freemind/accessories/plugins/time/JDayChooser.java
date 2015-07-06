@@ -48,11 +48,13 @@ import javax.swing.border.Border;
 
 import freemind.common.ScalableJButton;
 import freemind.common.XmlBindingTools;
+import freemind.controller.Controller;
 import freemind.controller.actions.generated.instance.CalendarMarking;
 import freemind.controller.actions.generated.instance.CalendarMarkings;
 import freemind.main.FreeMindCommon;
 import freemind.main.Resources;
 import freemind.main.Tools;
+import freemind.preferences.FreemindPropertyListener;
 
 /**
  * JDayChooser is a bean for choosing a day.
@@ -199,6 +201,18 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 							&& markings.sizeCalendarMarkingList() > 0) {
 						sCalendarMarkingEvaluator = new CalendarMarkingEvaluator(
 								markings);
+						Controller.addPropertyChangeListener(new FreemindPropertyListener() {
+							
+							@Override
+							public void propertyChanged(String pPropertyName, String pNewValue,
+									String pOldValue) {
+								if(FreeMindCommon.TIME_MANAGEMENT_MARKING_XML.equals(pPropertyName)){
+									CalendarMarkings markings = (CalendarMarkings) XmlBindingTools
+											.getInstance().unMarshall(pNewValue);
+									sCalendarMarkingEvaluator.changeMarkings(markings);
+								}
+							}
+						});
 					}
 				}
 			} catch (Exception e) {
@@ -211,6 +225,10 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 					@Override
 					public CalendarMarking isMarked(Calendar pCalendar) {
 						return null;
+					}
+
+					@Override
+					public void changeMarkings(CalendarMarkings pMarkings) {
 					}
 				};
 			}

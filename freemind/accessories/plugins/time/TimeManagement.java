@@ -22,6 +22,7 @@
 
 package accessories.plugins.time;
 
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -51,13 +52,20 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
+import freemind.common.XmlBindingTools;
 import freemind.controller.MapModuleManager.MapModuleChangeObserver;
+import freemind.controller.actions.generated.instance.CalendarMarking;
+import freemind.controller.actions.generated.instance.CalendarMarkings;
 import freemind.controller.actions.generated.instance.TimeWindowConfigurationStorage;
 import freemind.controller.actions.generated.instance.WindowConfigurationStorage;
+import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.controller.StructuredMenuHolder;
+import freemind.main.FreeMindCommon;
+import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.modes.MindMapNode;
 import freemind.modes.Mode;
+import freemind.modes.ModeController;
 import freemind.modes.common.plugins.ReminderHookBase;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.hooks.MindMapHookAdapter;
@@ -205,6 +213,35 @@ public class TimeManagement extends MindMapHookAdapter implements
 		}
 	}
 
+	private class AppendDailyMarkAction extends AbstractAction {
+
+		private ModeController mModeController;
+
+		public AppendDailyMarkAction() {
+			putValue(Action.NAME, getMindMapController().getText("plugins/TimeManagement.xml_appendDailyButton"));
+			mModeController = getController();
+
+		}
+
+		public void actionPerformed(ActionEvent actionEvent) {
+			Date cal = getCalendarDate();
+			Resources res = Resources.getInstance();
+			String xml = res.getProperty(FreeMindCommon.TIME_MANAGEMENT_MARKING_XML);
+			XmlBindingTools bind = XmlBindingTools.getInstance();
+			CalendarMarkings result = (CalendarMarkings) bind.unMarshall(xml);
+			CalendarMarking mark = new CalendarMarking();
+			mark.setStartDate(cal.getTime());
+			mark.setName(DateFormat.getDateInstance().format(cal));
+			mark.setColor(Tools.colorToXml(Color.red));
+			mark.setRepeatEachNOccurence(1);
+			mark.setRepeatType(CalendarMarking.DAILY);
+			result.addCalendarMarking(mark);
+			mModeController.getController().setProperty(FreeMindCommon.TIME_MANAGEMENT_MARKING_XML, bind.marshall(result));
+			calendar.repaint();
+		}
+
+	}
+
 	public final static String REMINDER_HOOK_NAME = "plugins/TimeManagementReminder.xml";
 
 	private static Calendar lastDate = null;
@@ -278,6 +315,9 @@ public class TimeManagement extends MindMapHookAdapter implements
 		addAccelerator(
 				menuHolder.addAction(new TodayAction(), "main/actions/today"),
 				"keystroke_plugins/TimeManagementToday");
+		addAccelerator(
+				menuHolder.addAction(new AppendDailyMarkAction(), "main/actions/appendDaily"),
+				"keystroke_plugins/TimeManagementDaily");
 		menuHolder.addAction(new CloseAction(), "main/actions/close");
 		menuHolder.updateMenus(menu, "main/");
 		mDialog.setJMenuBar(menu);

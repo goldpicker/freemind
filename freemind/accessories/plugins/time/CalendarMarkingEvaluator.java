@@ -265,9 +265,14 @@ public class CalendarMarkingEvaluator implements ICalendarMarkingEvaluator {
 	
 	
 	private static HashMap<String, RepetitionHandler> sHandlerMap;
+	protected static java.util.logging.Logger logger = null;
 
 	public CalendarMarkingEvaluator(CalendarMarkings pCalendarMarkings) {
 		mCalendarMarkings = pCalendarMarkings;
+		if (logger == null) {
+			logger = freemind.main.Resources.getInstance().getLogger(
+					this.getClass().getName());
+		}
 		if (sHandlerMap == null) {
 			sHandlerMap = new HashMap<>();
 			sHandlerMap.put(CalendarMarking.NEVER, new NeverHandler());
@@ -296,6 +301,10 @@ public class CalendarMarkingEvaluator implements ICalendarMarkingEvaluator {
 		pCalendar = (Calendar) pCalendar.clone();
 		for (int i = 0; i < mCalendarMarkings.sizeCalendarMarkingList(); i++) {
 			CalendarMarking marking = mCalendarMarkings.getCalendarMarking(i);
+			// common error for self written entries:
+			if(marking.getRepeatEachNOccurence()==0){
+				marking.setRepeatEachNOccurence(1);
+			}
 			// get first occurrence:
 			Calendar firstDay = Calendar.getInstance();
 			firstDay.setTimeInMillis(marking.getStartDate());
@@ -357,5 +366,11 @@ public class CalendarMarkingEvaluator implements ICalendarMarkingEvaluator {
 			System.out.println(DateFormat.getDateInstance().format(
 					firstDay.getTime()));
 		}
+	}
+
+	@Override
+	public void changeMarkings(CalendarMarkings pMarkings) {
+		mCalendarMarkings = pMarkings;
+		mCache.clear();
 	}
 }
