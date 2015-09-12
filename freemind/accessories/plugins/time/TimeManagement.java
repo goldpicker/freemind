@@ -54,12 +54,10 @@ import javax.swing.WindowConstants;
 
 import freemind.common.XmlBindingTools;
 import freemind.controller.MapModuleManager.MapModuleChangeObserver;
+import freemind.controller.StructuredMenuHolder;
 import freemind.controller.actions.generated.instance.CalendarMarking;
 import freemind.controller.actions.generated.instance.CalendarMarkings;
-import freemind.controller.actions.generated.instance.TimeWindowConfigurationStorage;
 import freemind.controller.actions.generated.instance.WindowConfigurationStorage;
-import freemind.controller.actions.generated.instance.XmlAction;
-import freemind.controller.StructuredMenuHolder;
 import freemind.main.FreeMindCommon;
 import freemind.main.Resources;
 import freemind.main.Tools;

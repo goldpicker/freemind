@@ -37,6 +37,7 @@ import java.util.HashMap;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.border.LineBorder;
 
 import tests.freemind.FreeMindMainMock;
 import freemind.main.Resources;
@@ -82,9 +83,9 @@ public class JTripleCalendar extends JPanel implements PropertyChangeListener {
 					add(infoPanel, constraints);
 					if (monthIndex == pCurrentMonthPosition) {
 						mCurrentlyActivePanel = infoPanel;
-						infoPanel.setEnabled(true);
+						markSelectedMonth(infoPanel, true);
 					} else {
-						infoPanel.setEnabled(false);
+						markSelectedMonth(infoPanel, false);
 					}
 					monthIndex++;
 				}
@@ -288,13 +289,24 @@ public class JTripleCalendar extends JPanel implements PropertyChangeListener {
 
 	public void exchangeCalendars(JSwitchableCalendar infoPanel,
 			Calendar gregorianCalendar) {
-		mCurrentlyActivePanel.setEnabled(false);
+		markSelectedMonth(mCurrentlyActivePanel, false);
 		mCurrentlyActivePanel = infoPanel;
 		mCurrentMonthPosition = mInfoPanels.get(infoPanel);
-		infoPanel.setEnabled(true);
+		markSelectedMonth(infoPanel, true);
 		infoPanel.setCalendar(gregorianCalendar);
 		propagateDate(gregorianCalendar);
 		infoPanel.getCalendarWidget().setFocus();
+	}
+
+	public void markSelectedMonth(JSwitchableCalendar infoPanel, boolean pSelected) {
+		if (pSelected) {
+			infoPanel.setEnabled(true);
+			infoPanel.setBorder(new LineBorder(Color.red, 4));
+		} else {
+			infoPanel.setEnabled(false);
+			infoPanel.setBackground(null);
+			infoPanel.setBorder(null);
+		}
 	}
 
 	public void propagateDate(Calendar gregorianCalendar) {
