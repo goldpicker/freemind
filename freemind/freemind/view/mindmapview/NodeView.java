@@ -43,6 +43,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
@@ -1049,7 +1050,7 @@ public class NodeView extends JComponent implements TreeModelListener {
 	 * Updates the tool tip of the node.
 	 */
 	public void updateToolTip() {
-		Map tooltips = getModel().getToolTip();
+		Map tooltips = new TreeMap(getModel().getToolTip());
 		// add preview to other map, if appropriate:
 		String link = getModel().getLink();
 		// replace jump mark
