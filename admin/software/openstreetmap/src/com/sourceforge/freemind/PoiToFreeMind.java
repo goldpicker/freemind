@@ -29,14 +29,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import net.osmand.binary.BinaryMapIndexReader;
 import net.osmand.binary.BinaryMapPoiReaderAdapter.PoiRegion;
 import net.osmand.data.Amenity;
 import net.osmand.data.AmenityType;
-import net.osmand.osm.MapUtils;
+import net.osmand.osm.PoiCategory;
+import net.osmand.util.MapUtils;
 
 /**
  * @author foltin
@@ -45,14 +45,15 @@ import net.osmand.osm.MapUtils;
 public class PoiToFreeMind extends BinaryMapIndexReader {
 	/**
 	 * @param pRaf
+	 * @param pInput 
 	 * @throws IOException
 	 */
-	public PoiToFreeMind(RandomAccessFile pRaf) throws IOException {
-		super(pRaf);
+	public PoiToFreeMind(RandomAccessFile pRaf, File pInput) throws IOException {
+		super(pRaf, pInput);
 	}
 
 	public static void main(String[] args) throws IOException {
-		System.out.println("OsmAndToFreeMindImporter Version 1.10");
+		System.out.println("OsmAndToFreeMindImporter Version 2.00");
 		if(!(args.length == 2 || (args.length == 7 && "-b".equals(args[0])))) {
 			System.err.println("Usage: create [-b lat1 lon1 lat2 lon2] <inputfile> <outputfile>");
 			System.exit(1);
@@ -82,8 +83,9 @@ public class PoiToFreeMind extends BinaryMapIndexReader {
 			System.err.println("Destination file " + file + " already exists. Please remove it before and retry.");
 			System.exit(1);
 		}
-		RandomAccessFile raf = new RandomAccessFile(new File(inputFile), "r");
-		PoiToFreeMind reader = new PoiToFreeMind(raf);
+		File input = new File(inputFile);
+		RandomAccessFile raf = new RandomAccessFile(input, "r");
+		PoiToFreeMind reader = new PoiToFreeMind(raf, input);
 		println("VERSION " + reader.getVersion()); //$NON-NLS-1$
 		FileWriter writer = new FileWriter(file);
 		long time = System.currentTimeMillis();
@@ -108,15 +110,19 @@ public class PoiToFreeMind extends BinaryMapIndexReader {
 				stop = boundingBox[0];
 				sbottom = boundingBox[2];
 			}
-			SearchRequest<Amenity> req = buildSearchPoiRequest(sleft, sright, stop, sbottom, -1, new SearchPoiTypeFilter() {
+			SearchRequest<Amenity> req = buildSearchPoiRequest(sleft, sright, stop, sbottom, -1, new BinaryMapIndexReader.SearchPoiTypeFilter() {
 				@Override
-				public boolean accept(AmenityType type, String subcategory) {
-//					return type == AmenityType.TRANSPORTATION && "fuel".equals(subcategory);
+				public boolean accept(PoiCategory pType, String pSubcategory) {
 					return true;
+				}
+
+				@Override
+				public boolean isEmpty() {
+					return false;
 				}
 			}, null);
 			List<Amenity> results = reader.searchPoi(req);
-			HashMap<AmenityType, HashMap<String, Vector<Amenity> > > sortedList = new HashMap<AmenityType, HashMap<String, Vector<Amenity> >>(); 
+			HashMap<PoiCategory, HashMap<String, Vector<Amenity> > > sortedList = new HashMap<PoiCategory, HashMap<String, Vector<Amenity> >>(); 
 			for (Amenity a : results) {
 				if(a.getName().length()>0) {
 					if(!sortedList.containsKey(a.getType())) {
@@ -143,17 +149,17 @@ public class PoiToFreeMind extends BinaryMapIndexReader {
 					+ id + "\"/>");
 			id++;
 
-			Vector<AmenityType> typeKeySet = new Vector<AmenityType>(sortedList.keySet());
-			Collections.sort(typeKeySet, new Comparator<AmenityType>() {
+			Vector<PoiCategory> typeKeySet = new Vector<PoiCategory>(sortedList.keySet());
+			Collections.sort(typeKeySet, new Comparator<PoiCategory>() {
 
 				@Override
-				public int compare(AmenityType pO1, AmenityType pO2) {
+				public int compare(PoiCategory pO1, PoiCategory pO2) {
 					return pO1.toString().compareToIgnoreCase(pO2.toString());
 				}
 			});
-			for (AmenityType type : typeKeySet) {
+			for (PoiCategory type : typeKeySet) {
 				print(writer, "<node TEXT=\"");
-				writeEncoded(writer, type.name());
+				writeEncoded(writer, type.getKeyName());
 				println(writer, "\" POSITION=\"right\" FOLDED=\"true\" ID=\"" + id
 					+ "\">");
 				id++;
