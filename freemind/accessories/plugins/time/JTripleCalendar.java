@@ -115,7 +115,7 @@ public class JTripleCalendar extends JPanel implements PropertyChangeListener {
 	/**
 	 * A calendar widget that can be switched on/off (activated/deactivated).
 	 */
-	private class JSwitchableCalendar extends JCalendar {
+	public static class JSwitchableCalendar extends JCalendar {
 
 		public void setDate(Calendar calendar) {
 			int year = calendar.get(Calendar.YEAR);
