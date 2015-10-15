@@ -573,11 +573,4 @@ public class GrabKeyDialog extends JDialog {
 	private int getModifierMask() {
 		return modifierMask;
 	}
-
-	/**
-	 * FIXME: make method here.
-	 */
-	public static boolean isMacOS() {
-		return false;
-	}
 }

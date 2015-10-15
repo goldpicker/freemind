@@ -28,6 +28,8 @@ import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
 
+import freemind.main.Tools;
+
 /**
  * In conjunction with the <code>KeyEventWorkaround</code>, hides some warts in
  * the AWT key event API.
@@ -359,7 +361,7 @@ public class KeyEventTranslator {
 	private static Map transMap = new HashMap();
 
 	static {
-		if (GrabKeyDialog.isMacOS()) {
+		if (Tools.isMacOsX()) {
 			setModifierMapping(InputEvent.META_MASK, /* == C+ */
 					InputEvent.CTRL_MASK, /* == A+ */
 					/* M+ discarded by key event workaround! */
