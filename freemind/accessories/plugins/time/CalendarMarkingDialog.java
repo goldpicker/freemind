@@ -52,19 +52,22 @@ public class CalendarMarkingDialog extends JDialog {
 	private JTextField nameField;
 	private SpinnerNumberModel mRepeatEachNOccurenceModel;
 	private SpinnerNumberModel mFirstOccurenceModel;
-
+	private static String MARKINGS = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><calendar_markings><calendar_marking name=\"bla\" color=\"#cc0099\" start_date=\"1443650400000\" end_date=\"1447801200000\" repeat_type=\"yearly\" repeat_each_n_occurence=\"1\" first_occurence=\"2\"/></calendar_markings>";
+	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		CalendarMarkingDialog dialog = new CalendarMarkingDialog(null);
+		CalendarMarkings markings = (CalendarMarkings) Tools.unMarshall(MARKINGS);
+		dialog.setCalendarMarking(markings.getCalendarMarking(0));
 		dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
 		dialog.setVisible(true);
 		System.out.println(dialog.getResult());
 		CalendarMarking marking = dialog.getCalendarMarking();
-		CalendarMarkings markings = new CalendarMarkings();
-		markings.addCalendarMarking(marking);
-		System.out.println(Tools.marshall(markings));
+		CalendarMarkings markingsZwo = new CalendarMarkings();
+		markingsZwo.addCalendarMarking(marking);
+		System.out.println(Tools.marshall(markingsZwo));
 	}
 
 	public CalendarMarkingDialog(MindMapController pController) {
@@ -242,7 +245,19 @@ public class CalendarMarkingDialog extends JDialog {
 		marking.setRepeatType(repetitionType.getSelectedItem().toString());
 		return marking;
 	}
-	
+
+	public void setCalendarMarking(CalendarMarking pMarking){
+		nameField.setText(pMarking.getName());
+		markerColor.setColor(Tools.xmlToColor(pMarking.getColor()));
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(pMarking.getStartDate());
+		startDate.setCalendar(cal);
+		cal.setTimeInMillis(pMarking.getEndDate());
+		endDate.setCalendar(cal);
+		mFirstOccurenceModel.setValue(pMarking.getFirstOccurence());
+		mRepeatEachNOccurenceModel.setValue(pMarking.getRepeatEachNOccurence());
+		repetitionType.setSelectedItem(pMarking.getRepeatType());
+	}
 	
 	/**
 	 * This method initializes jButton
