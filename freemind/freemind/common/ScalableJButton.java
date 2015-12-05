@@ -22,18 +22,25 @@ package freemind.common;
 
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 
 import javax.swing.JButton;
+
+import freemind.main.FreeMind;
+import freemind.main.Resources;
+import freemind.main.Tools;
 
 /**
  * @author foltin
  * @date 19.06.2015
  * @see http://stackoverflow.com/questions/8183949/swing-scale-a-text-font-of-component 
  */
-public class ScalableJButton extends JButton {
-	int mCurrentSize = 0;
-	Font mInitialFont = null;
-	int mInitialHeight;
+public class ScalableJButton extends JButton implements ComponentListener {
+	protected static java.util.logging.Logger logger = null;
+//	int mCurrentSize = 0;
+//	Font mInitialFont = null;
+//	int mInitialHeight;
 	
 	private static final long serialVersionUID = 1L;
 
@@ -48,19 +55,37 @@ public class ScalableJButton extends JButton {
 	}
 
 	private void init() {
-		mInitialFont = getFont();
+		if (logger == null) {
+			logger = freemind.main.Resources.getInstance().getLogger(this.getClass().getName());
+		}
+
+//		mInitialFont = getFont();
+//		addComponentListener(this);
+		
 	}
 
 	@Override
-	protected void paintComponent(Graphics g) {
-		if (mInitialHeight == 0) {
-			mInitialHeight = getHeight();
-		}
-		int resizal = this.getHeight() * mInitialFont.getSize() / mInitialHeight;
-		if(resizal != mCurrentSize){
-			setFont(mInitialFont.deriveFont((float) resizal));
-			mCurrentSize = resizal;
-		}
-		super.paintComponent(g);
+	public void componentResized(ComponentEvent pE) {
+//		// FIXME: This doesn't work in GridBagLayout and GroupLayout.
+//		if (mInitialHeight == 0) {
+//			mInitialHeight = getHeight();
+//		}
+//		int resizal = this.getHeight() * mInitialFont.getSize() / mInitialHeight;
+//		if(resizal != mCurrentSize){
+//			setFont(mInitialFont.deriveFont((float) resizal));
+//			mCurrentSize = resizal;
+//		}
+	}
+
+	@Override
+	public void componentMoved(ComponentEvent pE) {
+	}
+
+	@Override
+	public void componentShown(ComponentEvent pE) {
+	}
+
+	@Override
+	public void componentHidden(ComponentEvent pE) {
 	}
 }

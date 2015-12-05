@@ -51,6 +51,7 @@ import freemind.common.XmlBindingTools;
 import freemind.controller.Controller;
 import freemind.controller.actions.generated.instance.CalendarMarking;
 import freemind.controller.actions.generated.instance.CalendarMarkings;
+import freemind.main.FreeMind;
 import freemind.main.FreeMindCommon;
 import freemind.main.Resources;
 import freemind.main.Tools;
@@ -1060,7 +1061,15 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 	 */
 	public void updateUI() {
 		super.updateUI();
-		setFont(Font.decode("Dialog Plain 11"));
+		Font font = Font.decode("Dialog Plain 11");
+		int fontSize = Resources.getInstance().getIntProperty(FreeMind.RESOURCES_CALENDAR_FONT_SIZE, 0);
+		int scale = Resources.getInstance().getIntProperty(FreeMind.SCALING_FACTOR_PROPERTY, 100);
+		if (fontSize > 0) {
+			font = font.deriveFont(fontSize*scale/100.f);
+		} else if(scale != 100){
+			font = font.deriveFont(font.getSize()*scale/100.f);
+		}
+		setFont(font);
 
 		if (weekPanel != null) {
 			weekPanel.updateUI();

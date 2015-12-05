@@ -1,9 +1,6 @@
 package accessories.plugins.time;
 
 import java.awt.Dialog;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -14,6 +11,7 @@ import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
@@ -22,6 +20,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.LayoutStyle;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SpinnerNumberModel;
 
 import accessories.plugins.time.JTripleCalendar.JSwitchableCalendar;
@@ -72,6 +72,8 @@ public class CalendarMarkingDialog extends JDialog {
 
 	public CalendarMarkingDialog(MindMapController pController) {
 		mController = pController;
+		setTitle(pController.getText("CalendarMarkingDialog.title"));
+		setModalityType(ModalityType.APPLICATION_MODAL);
 		JPanel contentPane = getJContentPane();
 		this.setContentPane(contentPane);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
@@ -124,19 +126,14 @@ public class CalendarMarkingDialog extends JDialog {
 	private javax.swing.JPanel getJContentPane() {
 		if (jContentPane == null) {
 			jContentPane = new javax.swing.JPanel();
-			jContentPane.setLayout(new GridBagLayout());
-			int y =0;
-			Insets insets = new Insets(5, 5, 5, 5);
-			jContentPane.add(new JLabel(getText("Name")), new GridBagConstraints(0, y, 1, 1,
-					1.0, 1.0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
-					insets, 0, 0));
+			GroupLayout layout = new GroupLayout(jContentPane);
+			jContentPane.setLayout(layout);
+			layout.setAutoCreateGaps(true);
+			layout.setAutoCreateContainerGaps(true);
+
+			JLabel nameLabel = getLabel("Name");;
 			nameField = new JTextField(80);
-			jContentPane.add(nameField, new GridBagConstraints(1, y++, 1, 1,
-					1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-					insets, 0, 0));
-			jContentPane.add(new JLabel(getText("Repetition_Type")), new GridBagConstraints(0, y, 1, 1,
-					1.0, 1.0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
-					insets, 0, 0));
+			JLabel repetitionTypeLabel = getLabel("Repetition_Type");;
 			Vector<String> items = new Vector<>();
 			items.add(getText("never"));
 			items.add(getText("yearly"));
@@ -150,29 +147,14 @@ public class CalendarMarkingDialog extends JDialog {
 			items.add(getText("weekly_every_nth_day"));
 			items.add(getText("daily"));
 			repetitionType = new JComboBox<String>(items);
-			jContentPane.add(repetitionType, new GridBagConstraints(1, y++, 1, 1,
-					1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-					insets, 0, 0));
-			jContentPane.add(new JLabel(getText("Repeat_Each_N_Occurence")), new GridBagConstraints(0, y, 1, 1,
-					1.0, 1.0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
-					insets, 0, 0));
+			JLabel repeatEachNOccurenceLabel = getLabel("Repeat_Each_N_Occurence");;
 
 			mRepeatEachNOccurenceModel = new SpinnerNumberModel(0, 0, 100, 1);
 			repeatEachNOccurence = new JSpinner(mRepeatEachNOccurenceModel);
-			jContentPane.add(repeatEachNOccurence, new GridBagConstraints(1, y++, 1, 1,
-					1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-					insets, 0, 0));
-			jContentPane.add(new JLabel(getText("First_Occurence")), new GridBagConstraints(0, y, 1, 1,
-					1.0, 1.0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
-					insets, 0, 0));
+			JLabel firstOccurenceLabel = getLabel("First_Occurence");;
 			mFirstOccurenceModel = new SpinnerNumberModel(0, 0, 100, 1);
 			firstOccurence = new JSpinner(mFirstOccurenceModel);
-			jContentPane.add(firstOccurence, new GridBagConstraints(1, y++, 1, 1,
-					1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-					insets, 0, 0));
-			jContentPane.add(new JLabel(getText("Start_Date")), new GridBagConstraints(0, y, 1, 1,
-					1.0, 1.0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
-					insets, 0, 0));
+			JLabel startDateLabel = getLabel("Start_Date");;
 			startDate = new JSwitchableCalendar();
 			startDate.setEnabled(true);
 			startDate.addPropertyChangeListener(new PropertyChangeListener() {
@@ -190,12 +172,7 @@ public class CalendarMarkingDialog extends JDialog {
 					} 
 				}
 			});
-			jContentPane.add(startDate, new GridBagConstraints(1, y++, 1, 1,
-					1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-					insets, 0, 0));
-			jContentPane.add(new JLabel(getText("End_Date")), new GridBagConstraints(0, y, 1, 1,
-					1.0, 1.0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
-					insets, 0, 0));
+			JLabel endDateLabel = getLabel("End_Date");;
 			endDate = new JSwitchableCalendar();
 			endDate.setEnabled(true);
 			endDate.addPropertyChangeListener(new PropertyChangeListener() {
@@ -213,25 +190,53 @@ public class CalendarMarkingDialog extends JDialog {
 					} 
 				}
 			});
-			jContentPane.add(endDate, new GridBagConstraints(1, y++, 1, 1,
-					1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-					insets, 0, 0));
-			jContentPane.add(new JLabel(getText("Background_Color")), new GridBagConstraints(0, y, 1, 1,
-					1.0, 1.0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
-					insets, 0, 0));
+			JLabel markerColorLabel = getLabel("Background_Color");;
 			markerColor = new JColorChooser();
-			jContentPane.add(markerColor, new GridBagConstraints(1, y++, 1, 1,
-					1.0, 1.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-					insets, 0, 0));
-			jContentPane.add(getJOKButton(), new GridBagConstraints(0, y, 1, 1,
-					1.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.NONE,
-					insets, 0, 0));
-			jContentPane.add(getJCancelButton(), new GridBagConstraints(1, y,
-					1, 1, 1.0, 0.0, GridBagConstraints.EAST,
-					GridBagConstraints.NONE, insets, 0, 0));
-			getRootPane().setDefaultButton(getJOKButton());
+			JButton okButton = getJOKButton();
+			JButton cancelButton = getJCancelButton();
+			// FIXME: Example output of dates as list/text
+			layout.setHorizontalGroup(
+					   layout.createSequentialGroup().addGroup(layout.createParallelGroup()
+									   .addComponent(nameLabel)
+									   .addComponent(repetitionTypeLabel)
+									   .addComponent(repeatEachNOccurenceLabel)
+									   .addComponent(firstOccurenceLabel)
+									   .addComponent(startDateLabel)
+									   .addComponent(endDateLabel)
+									   .addComponent(markerColorLabel)
+									   .addComponent(okButton)
+							   ).addGroup(layout.createParallelGroup()
+									   .addComponent(nameField)
+									   .addComponent(repetitionType)
+									   .addComponent(repeatEachNOccurence)
+									   .addComponent(firstOccurence)
+									   .addComponent(startDate)
+									   .addComponent(endDate)
+									   .addComponent(markerColor)
+									   .addComponent(cancelButton)
+							   )
+					);
+			layout.setVerticalGroup(
+					   layout.createSequentialGroup()
+					      .addGroup(layout.createParallelGroup().addComponent(nameLabel).addComponent(nameField))
+					      .addGroup(layout.createParallelGroup().addComponent(repetitionTypeLabel).addComponent(repetitionType))
+					      .addGroup(layout.createParallelGroup().addComponent(repeatEachNOccurenceLabel).addComponent(repeatEachNOccurence))
+					      .addGroup(layout.createParallelGroup().addComponent(firstOccurenceLabel).addComponent(firstOccurence))
+					      .addGroup(layout.createParallelGroup().addComponent(startDateLabel).addComponent(startDate))
+					      .addGroup(layout.createParallelGroup().addComponent(endDateLabel).addComponent(endDate))
+					      .addGroup(layout.createParallelGroup().addComponent(markerColorLabel).addComponent(markerColor))
+					      .addGroup(layout.createParallelGroup().addComponent(okButton).addComponent(cancelButton))
+					);
+			
+			getRootPane().setDefaultButton(okButton);
 		}
 		return jContentPane;
+	}
+
+	private JLabel getLabel(String pString) {
+		JLabel label = new JLabel(getText(pString));
+		label.setToolTipText(getText(pString+"_description"));
+		return label;
 	}
 
 	public CalendarMarking getCalendarMarking() {

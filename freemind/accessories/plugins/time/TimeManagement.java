@@ -24,6 +24,7 @@ package accessories.plugins.time;
 
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -240,6 +241,30 @@ public class TimeManagement extends MindMapHookAdapter implements
 
 	}
 
+	private class AddMarkAction extends AbstractAction {
+		
+		public AddMarkAction() {
+			putValue(Action.NAME, getMindMapController().getText("plugins/TimeManagement.xml_addMarkingsButton"));
+		}
+		
+		public void actionPerformed(ActionEvent actionEvent) {
+			Date cal = getCalendarDate();
+			Resources res = Resources.getInstance();
+			String xml = res.getProperty(FreeMindCommon.TIME_MANAGEMENT_MARKING_XML);
+			XmlBindingTools bind = XmlBindingTools.getInstance();
+			CalendarMarkings result = (CalendarMarkings) bind.unMarshall(xml);
+			CalendarMarkingDialog dialog = new CalendarMarkingDialog(getMindMapController());
+			dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+			dialog.setVisible(true);
+			if(dialog.getResult() == CalendarMarkingDialog.OK){
+				result.addCalendarMarking(dialog.getCalendarMarking());
+				getController().setProperty(FreeMindCommon.TIME_MANAGEMENT_MARKING_XML, bind.marshall(result));
+				calendar.repaint();
+			}
+		}
+		
+	}
+	
 	public final static String REMINDER_HOOK_NAME = "plugins/TimeManagementReminder.xml";
 
 	private static Calendar lastDate = null;
@@ -287,9 +312,8 @@ public class TimeManagement extends MindMapHookAdapter implements
 		/** Menu **/
 		StructuredMenuHolder menuHolder = new StructuredMenuHolder();
 		JMenuBar menu = new JMenuBar();
-		JMenu mainItem = new JMenu(getMindMapController().getText(
-				"TimeManagement.Actions"));
-		menuHolder.addMenu(mainItem, "main/actions/.");
+		menuHolder.addMenu(new JMenu(getMindMapController().getText(
+				"TimeManagement.Actions")), "main/actions/.");
 		addAccelerator(menuHolder.addAction(new AppendDateAction(),
 				"main/actions/append"),
 				"keystroke_plugins/TimeManagement_append");
@@ -314,9 +338,14 @@ public class TimeManagement extends MindMapHookAdapter implements
 				menuHolder.addAction(new TodayAction(), "main/actions/today"),
 				"keystroke_plugins/TimeManagementToday");
 		addAccelerator(
-				menuHolder.addAction(new AppendDailyMarkAction(), "main/actions/appendDaily"),
+				menuHolder.addAction(new AddMarkAction(), "main/actions/appendDaily"),
 				"keystroke_plugins/TimeManagementDaily");
 		menuHolder.addAction(new CloseAction(), "main/actions/close");
+		menuHolder.addMenu(new JMenu(getMindMapController().getText(
+				"TimeManagement.Markings")), "main/markings/.");
+		addAccelerator(
+				menuHolder.addAction(new AddMarkAction(), "main/markings/add"),
+				"keystroke_plugins/TimeManagementDaily");
 		menuHolder.updateMenus(menu, "main/");
 		mDialog.setJMenuBar(menu);
 
