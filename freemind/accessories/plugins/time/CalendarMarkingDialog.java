@@ -2,11 +2,14 @@ package accessories.plugins.time;
 
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -19,10 +22,11 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.LayoutStyle;
-import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import accessories.plugins.time.JTripleCalendar.JSwitchableCalendar;
 import freemind.controller.actions.generated.instance.CalendarMarking;
@@ -31,7 +35,7 @@ import freemind.controller.actions.generated.instance.WindowConfigurationStorage
 import freemind.main.Tools;
 import freemind.modes.mindmapmode.MindMapController;
 
-public class CalendarMarkingDialog extends JDialog {
+public class CalendarMarkingDialog extends JDialog implements ActionListener, ChangeListener, PropertyChangeListener {
 
 	private static final String WINDOW_PREFERENCE_STORAGE_PROPERTY = "CalendarMarkingDialog_WindowPosition";
 	public static final int CANCEL = -1;
@@ -53,7 +57,10 @@ public class CalendarMarkingDialog extends JDialog {
 	private SpinnerNumberModel mRepeatEachNOccurenceModel;
 	private SpinnerNumberModel mFirstOccurenceModel;
 	private static String MARKINGS = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><calendar_markings><calendar_marking name=\"bla\" color=\"#cc0099\" start_date=\"1443650400000\" end_date=\"1447801200000\" repeat_type=\"yearly\" repeat_each_n_occurence=\"1\" first_occurence=\"2\"/></calendar_markings>";
-	
+	private JTextArea mTextArea;
+	private boolean mStarted = false;
+	protected static java.util.logging.Logger logger = null;
+
 	/**
 	 * @param args
 	 */
@@ -71,9 +78,11 @@ public class CalendarMarkingDialog extends JDialog {
 	}
 
 	public CalendarMarkingDialog(MindMapController pController) {
+		if (logger == null) {
+			logger = freemind.main.Resources.getInstance().getLogger(this.getClass().getName());
+		}
 		mController = pController;
 		setTitle(pController.getText("CalendarMarkingDialog.title"));
-		setModalityType(ModalityType.APPLICATION_MODAL);
 		JPanel contentPane = getJContentPane();
 		this.setContentPane(contentPane);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
@@ -94,6 +103,7 @@ public class CalendarMarkingDialog extends JDialog {
 			WindowConfigurationStorage decorateDialog = (WindowConfigurationStorage) mController
 					.decorateDialog(this, WINDOW_PREFERENCE_STORAGE_PROPERTY);
 		}
+		mStarted  = true;
 	}
 
 	private void close() {
@@ -134,22 +144,26 @@ public class CalendarMarkingDialog extends JDialog {
 			JLabel nameLabel = getLabel("Name");;
 			nameField = new JTextField(80);
 			JLabel repetitionTypeLabel = getLabel("Repetition_Type");;
+			mRepetitionTypesList = new Vector<>();
+			mRepetitionTypesList.add(("never"));
+			mRepetitionTypesList.add(("yearly"));
+			mRepetitionTypesList.add(("yearly_every_nth_day"));
+			mRepetitionTypesList.add(("yearly_every_nth_week"));
+			mRepetitionTypesList.add(("yearly_every_nth_month"));
+			mRepetitionTypesList.add(("monthly"));
+			mRepetitionTypesList.add(("monthly_every_nth_day"));
+			mRepetitionTypesList.add(("monthly_every_nth_week"));
+			mRepetitionTypesList.add(("weekly"));
+			mRepetitionTypesList.add(("weekly_every_nth_day"));
+			mRepetitionTypesList.add(("daily"));
 			Vector<String> items = new Vector<>();
-			items.add(getText("never"));
-			items.add(getText("yearly"));
-			items.add(getText("yearly_every_nth_day"));
-			items.add(getText("yearly_every_nth_week"));
-			items.add(getText("yearly_every_nth_month"));
-			items.add(getText("monthly"));
-			items.add(getText("monthly_every_nth_day"));
-			items.add(getText("monthly_every_nth_week"));
-			items.add(getText("weekly"));
-			items.add(getText("weekly_every_nth_day"));
-			items.add(getText("daily"));
+			for (String xmlName : mRepetitionTypesList) {
+				items.add(getText(xmlName));
+			}
 			repetitionType = new JComboBox<String>(items);
 			JLabel repeatEachNOccurenceLabel = getLabel("Repeat_Each_N_Occurence");;
 
-			mRepeatEachNOccurenceModel = new SpinnerNumberModel(0, 0, 100, 1);
+			mRepeatEachNOccurenceModel = new SpinnerNumberModel(1, 1, 100, 1);
 			repeatEachNOccurence = new JSpinner(mRepeatEachNOccurenceModel);
 			JLabel firstOccurenceLabel = getLabel("First_Occurence");;
 			mFirstOccurenceModel = new SpinnerNumberModel(0, 0, 100, 1);
@@ -157,44 +171,17 @@ public class CalendarMarkingDialog extends JDialog {
 			JLabel startDateLabel = getLabel("Start_Date");;
 			startDate = new JSwitchableCalendar();
 			startDate.setEnabled(true);
-			startDate.addPropertyChangeListener(new PropertyChangeListener() {
-				boolean ignoreNextEvent = false;
-				@Override
-				public void propertyChange(PropertyChangeEvent pEvt) {
-					if (pEvt.getNewValue() instanceof Calendar) {
-						if (!ignoreNextEvent) {
-							Calendar cal = (Calendar) pEvt.getNewValue();
-							ignoreNextEvent = true;
-							startDate.setCalendar(cal);
-						} else {
-							ignoreNextEvent = false;
-						}
-					} 
-				}
-			});
 			JLabel endDateLabel = getLabel("End_Date");;
 			endDate = new JSwitchableCalendar();
 			endDate.setEnabled(true);
-			endDate.addPropertyChangeListener(new PropertyChangeListener() {
-				boolean ignoreNextEvent = false;
-				@Override
-				public void propertyChange(PropertyChangeEvent pEvt) {
-					if (pEvt.getNewValue() instanceof Calendar) {
-						if (!ignoreNextEvent) {
-							Calendar cal = (Calendar) pEvt.getNewValue();
-							ignoreNextEvent = true;
-							endDate.setCalendar(cal);
-						} else {
-							ignoreNextEvent = false;
-						}
-					} 
-				}
-			});
-			JLabel markerColorLabel = getLabel("Background_Color");;
+			JLabel markerColorLabel = getLabel("Background_Color");
 			markerColor = new JColorChooser();
 			JButton okButton = getJOKButton();
 			JButton cancelButton = getJCancelButton();
 			// FIXME: Example output of dates as list/text
+			JLabel examplesLabel = getLabel("CalendarMarkings.Examples");
+			mTextArea = new JTextArea();
+			mTextArea.setEditable(false);
 			layout.setHorizontalGroup(
 					   layout.createSequentialGroup().addGroup(layout.createParallelGroup()
 									   .addComponent(nameLabel)
@@ -204,6 +191,7 @@ public class CalendarMarkingDialog extends JDialog {
 									   .addComponent(startDateLabel)
 									   .addComponent(endDateLabel)
 									   .addComponent(markerColorLabel)
+									   .addComponent(examplesLabel)
 									   .addComponent(okButton)
 							   ).addGroup(layout.createParallelGroup()
 									   .addComponent(nameField)
@@ -213,6 +201,7 @@ public class CalendarMarkingDialog extends JDialog {
 									   .addComponent(startDate)
 									   .addComponent(endDate)
 									   .addComponent(markerColor)
+									   .addComponent(mTextArea)
 									   .addComponent(cancelButton)
 							   )
 					);
@@ -225,10 +214,16 @@ public class CalendarMarkingDialog extends JDialog {
 					      .addGroup(layout.createParallelGroup().addComponent(startDateLabel).addComponent(startDate))
 					      .addGroup(layout.createParallelGroup().addComponent(endDateLabel).addComponent(endDate))
 					      .addGroup(layout.createParallelGroup().addComponent(markerColorLabel).addComponent(markerColor))
+					      .addGroup(layout.createParallelGroup().addComponent(examplesLabel).addComponent(mTextArea))
 					      .addGroup(layout.createParallelGroup().addComponent(okButton).addComponent(cancelButton))
 					);
 			
 			getRootPane().setDefaultButton(okButton);
+			repetitionType.addActionListener(this);
+			repeatEachNOccurence.addChangeListener(this);
+			firstOccurence.addChangeListener(this);
+			startDate.addPropertyChangeListener(this);
+			endDate.addPropertyChangeListener(this);
 		}
 		return jContentPane;
 	}
@@ -247,7 +242,12 @@ public class CalendarMarkingDialog extends JDialog {
 		marking.setEndDate(endDate.getCalendar().getTimeInMillis());
 		marking.setFirstOccurence(mFirstOccurenceModel.getNumber().intValue());
 		marking.setRepeatEachNOccurence(mRepeatEachNOccurenceModel.getNumber().intValue());
-		marking.setRepeatType(repetitionType.getSelectedItem().toString());
+		int selectedIndex = repetitionType.getSelectedIndex();
+		if(selectedIndex < 0 || selectedIndex >= mRepetitionTypesList.size()){
+			logger.severe("Selected combo box index out of range: " + selectedIndex);
+		} else {	
+			marking.setRepeatType(mRepetitionTypesList.get(selectedIndex));
+		}
 		return marking;
 	}
 
@@ -261,7 +261,13 @@ public class CalendarMarkingDialog extends JDialog {
 		endDate.setCalendar(cal);
 		mFirstOccurenceModel.setValue(pMarking.getFirstOccurence());
 		mRepeatEachNOccurenceModel.setValue(pMarking.getRepeatEachNOccurence());
-		repetitionType.setSelectedItem(pMarking.getRepeatType());
+		String repeatTypeString = pMarking.getRepeatType();
+		if(mRepetitionTypesList.contains(repeatTypeString)){
+			repetitionType.setSelectedIndex(mRepetitionTypesList.indexOf(repeatTypeString));
+		} else {
+			logger.severe("Repetition type " + repeatTypeString + " not found.");
+			repetitionType.setSelectedIndex(0);
+		}
 	}
 	
 	/**
@@ -318,6 +324,48 @@ public class CalendarMarkingDialog extends JDialog {
 	 */
 	public int getResult() {
 		return result;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent pE) {
+		showExamples();
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent pE) {
+		showExamples();
+	}
+	boolean ignoreNextEvent = false;
+	private Vector<String> mRepetitionTypesList;
+
+	@Override
+	public void propertyChange(PropertyChangeEvent pEvt) {
+		if (pEvt.getNewValue() instanceof Calendar && pEvt.getSource() instanceof JSwitchableCalendar) {
+			if (!ignoreNextEvent) {
+				Calendar cal = (Calendar) pEvt.getNewValue();
+				ignoreNextEvent = true;
+				((JSwitchableCalendar)pEvt.getSource()).setCalendar(cal);
+			} else {
+				ignoreNextEvent = false;
+			}
+		} 
+		showExamples();
+	}
+
+	private void showExamples() {
+		if(!mStarted){
+			return;
+		}
+		CalendarMarking marking = getCalendarMarking();
+		CalendarMarkings container = new CalendarMarkings();
+		container.addCalendarMarking(marking);
+		CalendarMarkingEvaluator evaluator = new CalendarMarkingEvaluator(container);
+		Set<Calendar> nEntries = evaluator.getAtLeastTheFirstNEntries(10);
+		String text = "";
+		for (Calendar calendar : nEntries) {
+			text +=  DateFormat.getDateInstance(DateFormat.SHORT).format(calendar.getTime())+"\n";
+		}
+		mTextArea.setText(text);
 	}
 
 }

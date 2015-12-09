@@ -23,6 +23,8 @@ package accessories.plugins.time;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
 
 import freemind.controller.actions.generated.instance.CalendarMarking;
 import freemind.controller.actions.generated.instance.CalendarMarkings;
@@ -55,13 +57,17 @@ public class CalendarMarkingEvaluator implements ICalendarMarkingEvaluator {
 			return pDay;
 		}
 
-		public Calendar shiftToBeAfterStartDate(Calendar pStartDate,
-				CalendarMarking pMarking, Calendar clone) {
-			while(pStartDate != null && clone.compareTo(pStartDate)>0){
-				// first occurrence in this year is after the start date. we shift unless done.
-				pStartDate = getNext(pStartDate, pMarking);
+		public Calendar shiftToBeAfterStartDate(Calendar pFirstDate,
+				CalendarMarking pMarking, Calendar pUserStartDate) {
+			while(pFirstDate != null && pUserStartDate.compareTo(pFirstDate)>0){
+				// first occurrence is after the start date. we shift unless done.
+				long millies = pFirstDate.getTimeInMillis();
+				pFirstDate = getNext(pFirstDate, pMarking);
+				if(millies >= pFirstDate.getTimeInMillis()){
+					throw new IllegalArgumentException("Next doesn't work: " + pFirstDate.getTime());
+				}
 			}
-			return pStartDate;
+			return pFirstDate;
 		}
 		
 	}		
@@ -108,10 +114,11 @@ public class CalendarMarkingEvaluator implements ICalendarMarkingEvaluator {
 			Calendar clone = (Calendar) pDay.clone();
 			pDay.add(Calendar.DAY_OF_WEEK, pMarking.getRepeatEachNOccurence());
 			if(clone.get(Calendar.WEEK_OF_YEAR) != pDay.get(Calendar.WEEK_OF_YEAR)){
-				// we switched the month. Let's start from new:
+				// we switched the week. Let's start from new:
 				pDay.set(Calendar.DAY_OF_WEEK, pMarking.getFirstOccurence());
 			}
-			return compareIfStillBefore(pDay, pMarking);
+			Calendar nextCal = compareIfStillBefore(pDay, pMarking);
+			return nextCal;
 		}
 		
 	}
@@ -212,9 +219,9 @@ public class CalendarMarkingEvaluator implements ICalendarMarkingEvaluator {
 		@Override
 		public Calendar getFirst(Calendar pStartDate,
 				CalendarMarking pMarking) {
-			Calendar clone = (Calendar) pStartDate.clone();
+			Calendar userStartDate = (Calendar) pStartDate.clone();
 			pStartDate.set(Calendar.WEEK_OF_YEAR, pMarking.getFirstOccurence());
-			return shiftToBeAfterStartDate(pStartDate, pMarking, clone);
+			return shiftToBeAfterStartDate(pStartDate, pMarking, userStartDate);
 		}
 		
 		@Override
@@ -224,8 +231,13 @@ public class CalendarMarkingEvaluator implements ICalendarMarkingEvaluator {
 			if(clone.get(Calendar.YEAR) != pDay.get(Calendar.YEAR)){
 				// we switched the year. Let's start from new:
 				pDay.set(Calendar.WEEK_OF_YEAR, pMarking.getFirstOccurence());
+				if(clone.get(Calendar.YEAR) == pDay.get(Calendar.YEAR)){
+					// case that the first week is still in the old year. 
+					pDay.add(Calendar.WEEK_OF_YEAR, pMarking.getRepeatEachNOccurence());
+				}
 			}
-			return compareIfStillBefore(pDay, pMarking);
+			Calendar nextCal = compareIfStillBefore(pDay, pMarking);
+			return nextCal;
 		}
 		
 	}
@@ -289,6 +301,42 @@ public class CalendarMarkingEvaluator implements ICalendarMarkingEvaluator {
 		}
 	}
 
+	public Set<Calendar> getAtLeastTheFirstNEntries(int n){
+		Set<Calendar> retValue = new TreeSet<>();
+		for (int i = 0; i < mCalendarMarkings.sizeCalendarMarkingList(); i++) {
+			int count = 0;
+			CalendarMarking marking = mCalendarMarkings.getCalendarMarking(i);
+			// common error for self written entries:
+			if(marking.getRepeatEachNOccurence()==0){
+				marking.setRepeatEachNOccurence(1);
+			}
+			// get first occurrence:
+			Calendar firstDay = Calendar.getInstance();
+			firstDay.setTimeInMillis(marking.getStartDate());
+			String repeatType = marking.getRepeatType();
+			if(!sHandlerMap.containsKey(repeatType)){
+				logger.severe("Repeat type " + repeatType + " unknown.");
+				continue;
+			}
+			RepetitionHandler handler = sHandlerMap
+					.get(repeatType);
+			firstDay = handler.getFirst(firstDay, marking);
+			if(firstDay == null){
+				continue;
+			}
+			while(count<n){
+				retValue.add((Calendar) firstDay.clone());
+				firstDay = handler.getNext(firstDay, marking);
+				if(firstDay == null){
+					break;
+				}
+				count++;
+			}
+		}
+		return retValue;
+	}
+	
+	
 	/* (non-Javadoc)
 	 * @see accessories.plugins.time.ICalenderMarkingEvaluator#isMarked(java.util.Calendar)
 	 */

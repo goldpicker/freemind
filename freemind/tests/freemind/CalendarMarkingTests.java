@@ -2,6 +2,7 @@ package tests.freemind;
 
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Set;
 
 import accessories.plugins.time.CalendarMarkingEvaluator;
 import freemind.common.XmlBindingTools;
@@ -227,6 +228,21 @@ public class CalendarMarkingTests extends FreeMindTestBase {
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(DateFormat.getDateInstance().parse("5.2.2016").getTime());
 		assertNull(ev.isMarked(cal));
+	}
+	public void testCalendarMarkingRepeatYearlyEveryNthWeekStrangeDates() throws Exception {
+		long startTime = DateFormat.getDateInstance().parse("9.1.2015").getTime();
+		long endTime = DateFormat.getDateInstance().parse("9.1.2016").getTime();
+		String inputString = "<calendar_markings>" +
+				"  <calendar_marking name='bla2' color='#ff69b5' start_date='"+startTime + "' end_date='"+endTime + "' " +
+				"repeat_type='yearly_every_nth_week' repeat_each_n_occurence='1' first_occurence='0'/>" +
+				"</calendar_markings>";
+		System.out.println(inputString);
+		CalendarMarkings result = (CalendarMarkings) XmlBindingTools.getInstance().unMarshall(inputString);
+		assertEquals(1, result.sizeCalendarMarkingList());
+		CalendarMarkingEvaluator ev = new CalendarMarkingEvaluator(result);
+		ev.print();
+		Set<Calendar> nEntries = ev.getAtLeastTheFirstNEntries(10);
+		assertTrue(nEntries.size() >= 10);
 	}
 }
 
