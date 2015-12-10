@@ -38,6 +38,7 @@ import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -248,19 +249,48 @@ public class TimeManagement extends MindMapHookAdapter implements
 		}
 		
 		public void actionPerformed(ActionEvent actionEvent) {
-			Date cal = getCalendarDate();
+			Calendar cal = getCalendar();
 			Resources res = Resources.getInstance();
 			String xml = res.getProperty(FreeMindCommon.TIME_MANAGEMENT_MARKING_XML);
 			XmlBindingTools bind = XmlBindingTools.getInstance();
 			CalendarMarkings result = (CalendarMarkings) bind.unMarshall(xml);
 			CalendarMarkingDialog dialog = new CalendarMarkingDialog(getMindMapController());
+			dialog.setDates(cal);
 			dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
 			dialog.setVisible(true);
 			if(dialog.getResult() == CalendarMarkingDialog.OK){
 				result.addCalendarMarking(dialog.getCalendarMarking());
-				getController().setProperty(FreeMindCommon.TIME_MANAGEMENT_MARKING_XML, bind.marshall(result));
+				getMindMapController().setProperty(FreeMindCommon.TIME_MANAGEMENT_MARKING_XML, bind.marshall(result));
 				calendar.repaint();
 			}
+		}
+		
+	}
+	private class RemoveMarkAction extends AbstractAction {
+		
+		public RemoveMarkAction() {
+			putValue(Action.NAME, getMindMapController().getText("plugins/TimeManagement.removeMarkingsButton"));
+		}
+		
+		public void actionPerformed(ActionEvent actionEvent) {
+			Calendar cal = getCalendar();
+			Resources res = Resources.getInstance();
+			String xml = res.getProperty(FreeMindCommon.TIME_MANAGEMENT_MARKING_XML);
+			XmlBindingTools bind = XmlBindingTools.getInstance();
+			CalendarMarkings result = (CalendarMarkings) bind.unMarshall(xml);
+			CalendarMarkingEvaluator ev = new CalendarMarkingEvaluator(result);
+			CalendarMarking marking = ev.isMarked(cal);
+			if(marking != null){
+				for (int i = 0; i < result.sizeCalendarMarkingList(); i++) {
+					CalendarMarking mark = result.getCalendarMarking(i);
+					if(mark == marking){
+						result.removeFromCalendarMarkingElementAt(i);
+						break;
+					}
+				}
+			}
+			getMindMapController().setProperty(FreeMindCommon.TIME_MANAGEMENT_MARKING_XML, bind.marshall(result));
+			calendar.repaint();
 		}
 		
 	}
@@ -343,6 +373,9 @@ public class TimeManagement extends MindMapHookAdapter implements
 		addAccelerator(
 				menuHolder.addAction(new AddMarkAction(), "main/markings/add"),
 				"keystroke_plugins/TimeManagement_add_marking");
+		addAccelerator(
+				menuHolder.addAction(new RemoveMarkAction(), "main/markings/remove"),
+				"keystroke_plugins/TimeManagement_remove_marking");
 		menuHolder.updateMenus(menu, "main/");
 		mDialog.setJMenuBar(menu);
 

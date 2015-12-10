@@ -1595,7 +1595,11 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		return getMap().getLinkRegistry().registerLinkTarget(selected);
 	}
 
-	
+	@Override
+	public void setProperty(String pProperty, String pValue) {
+		// this method fires a property change event to inform others.
+		getController().setProperty(pProperty, pValue);
+	}
 	
 	
 }

@@ -9,6 +9,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Set;
 import java.util.Vector;
 
@@ -366,6 +367,14 @@ public class CalendarMarkingDialog extends JDialog implements ActionListener, Ch
 			text +=  DateFormat.getDateInstance(DateFormat.SHORT).format(calendar.getTime())+"\n";
 		}
 		mTextArea.setText(text);
+	}
+
+	/**Sets the dates of both start and end to the specified.
+	 * @param pCal
+	 */
+	public void setDates(Calendar pCal) {
+		endDate.setDate(pCal);
+		startDate.setDate(pCal);
 	}
 
 }
