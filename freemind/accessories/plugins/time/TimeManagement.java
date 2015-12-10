@@ -337,15 +337,12 @@ public class TimeManagement extends MindMapHookAdapter implements
 		addAccelerator(
 				menuHolder.addAction(new TodayAction(), "main/actions/today"),
 				"keystroke_plugins/TimeManagementToday");
-		addAccelerator(
-				menuHolder.addAction(new AddMarkAction(), "main/actions/appendDaily"),
-				"keystroke_plugins/TimeManagementDaily");
 		menuHolder.addAction(new CloseAction(), "main/actions/close");
 		menuHolder.addMenu(new JMenu(getMindMapController().getText(
 				"TimeManagement.Markings")), "main/markings/.");
 		addAccelerator(
 				menuHolder.addAction(new AddMarkAction(), "main/markings/add"),
-				"keystroke_plugins/TimeManagementDaily");
+				"keystroke_plugins/TimeManagement_add_marking");
 		menuHolder.updateMenus(menu, "main/");
 		mDialog.setJMenuBar(menu);
 
