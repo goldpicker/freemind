@@ -78,6 +78,7 @@ import freemind.controller.actions.generated.instance.TimeWindowColumnSetting;
 import freemind.controller.actions.generated.instance.TimeWindowConfigurationStorage;
 import freemind.controller.actions.generated.instance.WindowConfigurationStorage;
 import freemind.main.HtmlTools;
+import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.modes.MindIcon;
 import freemind.modes.MindMapNode;
@@ -157,6 +158,8 @@ public class TimeList extends MindMapHookAdapter implements
 	private MindMapController mMyMindMapController;
 	
 	private boolean mViewFoldedNodes = true;
+
+	private JLabel mStatisticsLabel;
 
 	public void startupMapHook() {
 		super.startupMapHook();
@@ -272,6 +275,10 @@ public class TimeList extends MindMapHookAdapter implements
 		contentPane.add(new JScrollPane(mTreeLabel), new GridBagConstraints(0,
 				5, 1, 2, 1.0, 4.0, GridBagConstraints.WEST,
 				GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+		mStatisticsLabel = new JLabel();
+		contentPane.add(new JScrollPane(mStatisticsLabel), new GridBagConstraints(0,
+				7, 1, 2, 1.0, 4.0, GridBagConstraints.WEST,
+				GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		// button bar
 		AbstractAction selectAction = new AbstractAction(
 				getResourceString("plugins/TimeManagement.xml_Select")) {
@@ -383,6 +390,7 @@ public class TimeList extends MindMapHookAdapter implements
 				if (e.getValueIsAdjusting())
 					return;
 
+				updateStatistics();
 				ListSelectionModel lsm = (ListSelectionModel) e.getSource();
 				if (lsm.isSelectionEmpty()) {
 					mTreeLabel.setText("");
@@ -401,6 +409,7 @@ public class TimeList extends MindMapHookAdapter implements
 		if (storage != null) {
 			setTableConfiguration(storage);
 		}
+		updateStatistics();
 		mDialog.setVisible(true);
 	}
 
@@ -430,7 +439,7 @@ public class TimeList extends MindMapHookAdapter implements
 	protected void toggleViewFoldedNodes() {
 		mViewFoldedNodes = ! mViewFoldedNodes;
 		updateModel();
-		
+		updateStatistics();
 	}
 
 	protected void decorateButtonAndAction(String stringProperty,
@@ -796,6 +805,7 @@ public class TimeList extends MindMapHookAdapter implements
 							Document document = event.getDocument();
 							String text = getRegularExpression(getText(document));
 							mFlatNodeTableFilterModel.setFilter(text);
+							updateStatistics();
 						} catch (BadLocationException e) {
 							freemind.main.Resources.getInstance().logException(
 									e);
@@ -1137,5 +1147,18 @@ public class TimeList extends MindMapHookAdapter implements
 	 * numberOfOpenMapInformation(int, int)
 	 */
 	public void numberOfOpenMapInformation(int pNumber, int pIndex) {
+	}
+
+	public void updateStatistics() {
+		ListSelectionModel lsm = mTimeTable.getSelectionModel();
+		int count = 0;
+		int rowCount = mFlatNodeTableFilterModel.getRowCount();
+		for (int i = 0; i < rowCount; i++) {
+			if(lsm.isSelectedIndex(i)){
+				count++;
+			}
+		}
+		mStatisticsLabel.setText(Resources.getInstance().format("timelist_statistics",
+				new Integer[] { count, rowCount, mTimeTableModel.getRowCount(), ((mViewFoldedNodes)?1:0) }));
 	}
 }
