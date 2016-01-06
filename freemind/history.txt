@@ -3,6 +3,8 @@ Changes made in FreeMind 1.1.0 Beta 2
 ===============================
 * New feature: Strikethrough
 * New feature: Executing "sort-childs" twice sorts in the opposite direction. 
+* New feature: calendar markings for regular events
+* Bug fix: not-well formed HTML pastes are converted to plain text
 
 ===============================
 Changes made in FreeMind 1.1.0 Beta 1

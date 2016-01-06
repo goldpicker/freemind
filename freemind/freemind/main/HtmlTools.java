@@ -103,7 +103,7 @@ public class HtmlTools {
 			freemind.main.Resources.getInstance().logException(e);
 		}
 		// fallback:
-		String fallbackText = toXMLEscapedText(htmlText);
+		String fallbackText = removeAllTagsFromString(htmlText);
 		logger.fine("Leave toXhtml with fallback " + fallbackText);
 		return fallbackText;
 	}
