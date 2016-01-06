@@ -22,10 +22,12 @@ package freemind.modes;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.font.TextAttribute;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -85,6 +87,7 @@ public abstract class NodeAdapter implements MindMapNode {
 	private String xmlText = "no text";
 	private String link = null; // Change this to vector in future for full
 								// graph support
+	private static final String TOOLTIP_PREVIEW_KEY = "preview";
 	private TreeMap toolTip = null; // lazy, fc, 30.6.2005
 
 	// these Attributes have default values, so it can be useful to directly
@@ -1028,10 +1031,57 @@ public abstract class NodeAdapter implements MindMapNode {
 	/**
 	 */
 	public SortedMap getToolTip() {
-		if (toolTip == null)
-			return new TreeMap();
-		;
-		return Collections.unmodifiableSortedMap(toolTip);
+		boolean toolTipChanged = false;
+		TreeMap result = toolTip;
+		if (result == null)
+			result = new TreeMap();
+		// add preview to other map, if appropriate:
+		String link = getLink();
+		// replace jump mark
+		if(link != null && link.matches(".*\\"+FreeMindCommon.FREEMIND_FILE_EXTENSION+"(#.*)?")) {
+			link = link.replaceFirst("#.*?$", "");
+		}
+		if(link != null && link.endsWith(FreeMindCommon.FREEMIND_FILE_EXTENSION)) {
+			String linkHtmlPart = "alt=\""+ link + "\"";
+			boolean addIt = true;
+			// this should be done only once per link, so we have to prevent doing that every time again.
+			if(result.containsKey(TOOLTIP_PREVIEW_KEY)){
+				// check, if the contained link belongs to the same file (ie. hasn't change in between)
+				String prev = (String) result.get(TOOLTIP_PREVIEW_KEY);
+				if(prev != null && prev.contains(linkHtmlPart)){
+					addIt = false;
+				}
+			}
+			if (addIt) {
+				try {
+					File mmFile = Tools.urlToFile(new URL(getMap().getURL(), link));
+					String thumbnailFileName = Resources.getInstance().createThumbnailFileName(mmFile);
+					if (new File(thumbnailFileName).exists()) {
+						URL thumbUrl = Tools.fileToUrl(new File(thumbnailFileName));
+						String imgHtml = "<img src=\"" + thumbUrl + "\" " + linkHtmlPart + "/>";
+						logger.info("Adding new tooltip: " + imgHtml);
+						result.put(TOOLTIP_PREVIEW_KEY, imgHtml);
+						toolTipChanged = true;
+					}
+				} catch (Exception e) {
+					freemind.main.Resources.getInstance().logException(e);
+				} 
+			}
+		} else {
+			if(result.containsKey(TOOLTIP_PREVIEW_KEY)){
+				result.remove(TOOLTIP_PREVIEW_KEY);
+				toolTipChanged = true;
+			}
+		}
+		if(toolTipChanged){
+			// write back, if changed
+			if(result.size()==0){
+				toolTip = null;
+			} else {
+				toolTip = result;
+			}
+		}
+		return Collections.unmodifiableSortedMap(result);
 	}
 
 	/**

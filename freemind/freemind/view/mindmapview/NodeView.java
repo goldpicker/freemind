@@ -72,6 +72,7 @@ import freemind.preferences.FreemindPropertyListener;
  * TreeCellRenderer).
  */
 public class NodeView extends JComponent implements TreeModelListener {
+
 	public void setFocusCycleRoot(boolean pFocusCycleRoot) {
 		// FIXME: On purpose removed. test this!
 		// super.setFocusCycleRoot(pFocusCycleRoot);
@@ -1051,28 +1052,6 @@ public class NodeView extends JComponent implements TreeModelListener {
 	 */
 	public void updateToolTip() {
 		Map tooltips = new TreeMap(getModel().getToolTip());
-		// add preview to other map, if appropriate:
-		String link = getModel().getLink();
-		// replace jump mark
-		if(link != null && link.matches(".*\\"+FreeMindCommon.FREEMIND_FILE_EXTENSION+"(#.*)?")) {
-			link = link.replaceFirst("#.*?$", "");
-		}
-		if(link != null && link.endsWith(FreeMindCommon.FREEMIND_FILE_EXTENSION)) {
-			try {
-				File mmFile = Tools.urlToFile(new URL(getMap().getModel().getURL(), link));
-				String thumbnailFileName = Resources.getInstance()
-						.createThumbnailFileName(mmFile);
-				if (new File(thumbnailFileName).exists()) {
-					URL thumbUrl = Tools.fileToUrl(new File(thumbnailFileName));
-					String imgHtml = "<img src=\"" + thumbUrl + "\"/>";
-					logger.info("Adding new tooltip: " + imgHtml);
-					tooltips.put("preview",
-							imgHtml);
-				}
-			} catch (Exception e) {
-				freemind.main.Resources.getInstance().logException(e);
-			}
-		}
 		if (tooltips.size() == 0) {
 			mainView.setToolTipText(null);
 		} else {
