@@ -161,13 +161,14 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 
 	protected int maxDayCharacters;
 
+	private static final Border NullBorder = BorderFactory.createLineBorder(Color.BLACK, 0);
 	Border redBorder = BorderFactory.createLineBorder(Color.RED, 2);
 
 	protected JMonthChooser monthChooser = null;
 	protected JYearChooser yearChooser = null;
 
 
-	private static ICalendarMarkingEvaluator sCalendarMarkingEvaluator;
+	private ICalendarMarkingEvaluator mCalendarMarkingEvaluator;
 
 	public void setMonthChooser(JMonthChooser monthChooser) {
 		this.monthChooser = monthChooser;
@@ -191,48 +192,32 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 	 *            true, if the weeks of a year shall be shown
 	 */
 	public JDayChooser(boolean weekOfYearVisible) {
-		if (sCalendarMarkingEvaluator == null) {
+		if (mCalendarMarkingEvaluator == null) {
+			CalendarMarkings markings = null;
 			try {
-				String marking = Resources.getInstance().getProperty(
-						FreeMindCommon.TIME_MANAGEMENT_MARKING_XML);
+				String marking = Resources.getInstance().getProperty(FreeMindCommon.TIME_MANAGEMENT_MARKING_XML);
 				if (!marking.isEmpty()) {
-					CalendarMarkings markings = (CalendarMarkings) XmlBindingTools
-							.getInstance().unMarshall(marking);
-					if (markings != null
-							&& markings.sizeCalendarMarkingList() > 0) {
-						sCalendarMarkingEvaluator = new CalendarMarkingEvaluator(
-								markings);
-						Controller.addPropertyChangeListener(new FreemindPropertyListener() {
-							
-							@Override
-							public void propertyChanged(String pPropertyName, String pNewValue,
-									String pOldValue) {
-								if(FreeMindCommon.TIME_MANAGEMENT_MARKING_XML.equals(pPropertyName)){
-									CalendarMarkings markings = (CalendarMarkings) XmlBindingTools
-											.getInstance().unMarshall(pNewValue);
-									sCalendarMarkingEvaluator.changeMarkings(markings);
-								}
-							}
-						});
-					}
+					markings = (CalendarMarkings) XmlBindingTools.getInstance().unMarshall(marking);
 				}
 			} catch (Exception e) {
 				freemind.main.Resources.getInstance().logException(e);
 			}
-			if(sCalendarMarkingEvaluator==null){
-				// add a trivial one:
-				sCalendarMarkingEvaluator = new ICalendarMarkingEvaluator() {
-					
-					@Override
-					public CalendarMarking isMarked(Calendar pCalendar) {
-						return null;
-					}
-
-					@Override
-					public void changeMarkings(CalendarMarkings pMarkings) {
-					}
-				};
+			if (markings == null) {
+				// empty one.
+				markings = new CalendarMarkings();
 			}
+			mCalendarMarkingEvaluator = new CalendarMarkingEvaluator(markings);
+			Controller.addPropertyChangeListener(new FreemindPropertyListener() {
+
+				@Override
+				public void propertyChanged(String pPropertyName, String pNewValue, String pOldValue) {
+					if (FreeMindCommon.TIME_MANAGEMENT_MARKING_XML.equals(pPropertyName)) {
+						CalendarMarkings markings = (CalendarMarkings) XmlBindingTools.getInstance()
+								.unMarshall(pNewValue);
+						mCalendarMarkingEvaluator.changeMarkings(markings);
+					}
+				}
+			});
 		}
 		setName("JDayChooser");
 		setBackground(Color.blue);
@@ -497,14 +482,13 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 				currentDay.setBackground(oldDayBackgroundColor);
 			}
 
-			Border currentBorder = null;
+			Border currentBorder = NullBorder;
 			String currentToolTipText = null;
-			if (sCalendarMarkingEvaluator!=null) {
-				CalendarMarking marked = sCalendarMarkingEvaluator
+			if (mCalendarMarkingEvaluator!=null) {
+				CalendarMarking marked = mCalendarMarkingEvaluator
 						.isMarked(tmpCalendar);
 				if (marked != null) {
-					currentBorder = BorderFactory.createLineBorder(
-							Tools.xmlToColor(marked.getColor()), 2);
+					currentBorder = BorderFactory.createLineBorder(Tools.xmlToColor(marked.getColor()), 2);
 					currentToolTipText = marked.getName();
 				}
 			}
@@ -1078,12 +1062,12 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 			if ("Windows".equals(UIManager.getLookAndFeel().getID())) {
 				setDayBordersVisible(false);
 				setDecorationBackgroundVisible(true);
-				setDecorationBordersVisible(false);
+//				setDecorationBordersVisible(false);
 			} else {
 				setDayBordersVisible(true);
 				setDecorationBackgroundVisible(decorationBackgroundVisible);
-				setDecorationBordersVisible(decorationBordersVisible);
 			}
+			setDecorationBordersVisible(decorationBordersVisible);
 		}
 	}
 
