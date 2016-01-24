@@ -1059,12 +1059,11 @@ public class JDayChooser extends JPanel implements ActionListener, KeyListener,
 			weekPanel.updateUI();
 		}
 		if (initialized) {
+			setDayBordersVisible(true);
 			if ("Windows".equals(UIManager.getLookAndFeel().getID())) {
-				setDayBordersVisible(false);
 				setDecorationBackgroundVisible(true);
-//				setDecorationBordersVisible(false);
+				setDecorationBordersVisible(false);
 			} else {
-				setDayBordersVisible(true);
 				setDecorationBackgroundVisible(decorationBackgroundVisible);
 			}
 			setDecorationBordersVisible(decorationBordersVisible);

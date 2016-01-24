@@ -207,7 +207,7 @@ AppPublisherURL=http://freemind.sourceforge.net
 AppSupportURL=http://freemind.sourceforge.net
 AppUpdatesURL=http://freemind.sourceforge.net
 ;the version is not a number. doesn't work: VersionInfoVersion=${freemind.version}
-VersionInfoVersion=1.0.0.0
+VersionInfoVersion=1.1.0.0
         	
 DefaultDirName={pf}\FreeMind
 DefaultGroupName=FreeMind
