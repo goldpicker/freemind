@@ -92,7 +92,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 			if(mDontUpdateModel) {
 				return;
 			}
-			if (pNode == controller.getSelected()) {
+			if (pNode == mCurrentNode) {
 				if(!areModelAndNodeAttributesEqual(pNode)) {
 					setModelFromNode(pNode);
 				}
@@ -155,6 +155,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 		}
 
 		/**
+		 * Returns true, if the attributes are in the same order and of the same content.
 		 * @param pNode
 		 * @return
 		 */
