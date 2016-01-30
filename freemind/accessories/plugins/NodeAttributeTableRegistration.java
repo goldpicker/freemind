@@ -29,21 +29,27 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -67,7 +73,7 @@ import freemind.modes.mindmapmode.MindMapController;
 import freemind.view.mindmapview.NodeView;
 
 public class NodeAttributeTableRegistration implements HookRegistration,
-		MenuItemSelectedListener {
+		MenuItemSelectedListener, DocumentListener {
 	private final class AttributeManager implements NodeSelectionListener,
 			NodeLifetimeListener {
 
@@ -93,7 +99,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 				return;
 			}
 			if (pNode == mCurrentNode) {
-				if(!areModelAndNodeAttributesEqual(pNode)) {
+				if(!areModelAndNodeAttributesEqual()) {
 					setModelFromNode(pNode);
 				}
 			}
@@ -136,7 +142,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 					return;
 				}
 				// first check for changes:
-				if(areModelAndNodeAttributesEqual(pNode)) {
+				if(areModelAndNodeAttributesEqual()) {
 					return;
 				}
 				// delete all attributes
@@ -156,17 +162,16 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 
 		/**
 		 * Returns true, if the attributes are in the same order and of the same content.
-		 * @param pNode
 		 * @return
 		 */
-		private boolean areModelAndNodeAttributesEqual(MindMapNode pNode) {
+		public boolean areModelAndNodeAttributesEqual() {
 			boolean equal = false;
-			if(pNode.getAttributeTableLength() == mAttributeTableModel.mData.size()) {
+			if(mCurrentNode.getAttributeTableLength() == mAttributeTableModel.mData.size()) {
 				int index = 0;
 				equal = true;
 				for (Iterator it = mAttributeTableModel.mData.iterator(); it.hasNext();) {
 					AttributeHolder holder = (AttributeHolder) it.next();
-					Attribute attribute = pNode.getAttribute(index);
+					Attribute attribute = mCurrentNode.getAttribute(index);
 					if(Tools.safeEquals(holder.mKey, attribute.getName()) && Tools.safeEquals(holder.mValue, attribute.getValue())) {
 						// ok
 					} else {
@@ -251,13 +256,6 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 				makeMapDirty();
 			}
 			return row;
-		}
-
-		/**
-		 * 
-		 */
-		private void makeMapDirty() {
-			controller.setSaved(false);
 		}
 
 		public void removeAttributeHolder(int pIndex) {
@@ -351,20 +349,26 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 		public void setValueAt(Object pAValue, int pRowIndex, int pColumnIndex) {
 			AttributeHolder holder;
 			holder = getAttributeHolder(pRowIndex);
+			boolean isUnchanged = false;
+			String newValue = (String) pAValue;
 			switch(pColumnIndex) {
 			case KEY_COLUMN:
-				holder.mKey = (String) pAValue;
+				isUnchanged = Tools.safeEquals(holder.mKey, newValue);
+				holder.mKey = newValue;
 				break;
 			case VALUE_COLUMN:
-				holder.mValue = (String) pAValue;
+				isUnchanged = Tools.safeEquals(holder.mValue, newValue);
+				holder.mValue = newValue;
 				break;
 			}
-			makeMapDirty();
+			if(!isUnchanged){
+				makeMapDirty();
+			}
 			fireTableCellUpdated(pRowIndex, pColumnIndex);
 		}
 
 	}
-
+	
 	private final MindMapController controller;
 
 	private final java.util.logging.Logger logger;
@@ -415,6 +419,10 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 		mAttributeTable.getTableHeader().setReorderingAllowed(false);
 		mAttributeTableModel = new AttributeTableModel(controller);
 		mAttributeTable.setModel(mAttributeTableModel);
+		// makes map dirty on changes:
+		JTextField tableTextField = new JTextField();
+		tableTextField.getDocument().addDocumentListener(this);
+		DefaultCellEditor cellEditor = new DefaultCellEditor(tableTextField);
 		RowSorter<TableModel> sorter =
 	             new TableRowSorter<TableModel>(mAttributeTableModel);
 		String marshalled = controller.getProperty(ATTRIBUTE_TABLE_PROPERTIES);
@@ -426,6 +434,10 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 			TableColumnOrder setting = (TableColumnOrder) it.next();
 			keys.add(new SortKey(setting.getColumnIndex(), SortOrder
 					.valueOf(setting.getColumnSorting())));
+		}
+		Enumeration<TableColumn> columns = mAttributeTable.getColumnModel().getColumns();
+		while(columns.hasMoreElements()){
+			columns.nextElement().setCellEditor(cellEditor);
 		}
 		sorter.setSortKeys(keys);
 		mAttributeTable.setRowSorter(sorter);
@@ -532,5 +544,33 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 	public void focusAttributeTable() {
 		mAttributeTable.requestFocus();
 		mAttributeTable.getSelectionModel().setSelectionInterval(0, 0);
+	}
+
+	/**
+	 * 
+	 */
+	protected void makeMapDirty() {
+		controller.setSaved(false);
+	}
+
+	@Override
+	public void insertUpdate(DocumentEvent pE) {
+		checkForUpdate();
+	}
+
+	@Override
+	public void removeUpdate(DocumentEvent pE) {
+		checkForUpdate();
+	}
+
+	@Override
+	public void changedUpdate(DocumentEvent pE) {
+		checkForUpdate();
+	}
+
+	public void checkForUpdate() {
+		// only, if editing is already started.
+		if(mAttributeTable.getCellEditor()!=null)
+			makeMapDirty();
 	}
 }
