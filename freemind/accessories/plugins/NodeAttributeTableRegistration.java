@@ -527,9 +527,9 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 
 	public void hideAttributeTablePanel() {
 		// shut down the display:
-		mAttributeViewerComponent.setVisible(false);
 		controller.getController().removeSplitPane(
 				SplitComponentType.ATTRIBUTE_PANEL);
+		mAttributeViewerComponent.setVisible(false);
 		mSplitPaneVisible = false;
 	}
 

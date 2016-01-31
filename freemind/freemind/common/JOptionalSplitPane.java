@@ -223,6 +223,17 @@ public class JOptionalSplitPane extends JPanel {
 	}
 
 	/**
+	 * @return the dividerPosition or last location is currently no split pane is visible
+	 */
+	public int getDividerPosition() {
+		if (mBasicComponent instanceof JSplitPane) {
+			JSplitPane pane = (JSplitPane) mBasicComponent;
+			return pane.getDividerLocation();
+		}
+		return mLastDividerPosition;
+	}
+	
+	/**
 	 * @param pLastDividerPosition the lastDividerPosition to set
 	 */
 	public void setLastDividerPosition(int pLastDividerPosition) {

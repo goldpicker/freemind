@@ -952,6 +952,7 @@ public class Controller implements MapModuleChangeObserver {
 	private void quit() {
 		String currentMapRestorable = (getModel() != null) ? getModel()
 				.getRestorable() : null;
+		storeOptionSplitPanePosition();
 		// collect all maps:
 		Vector restorables = new Vector();
 		// move to first map in the window.
@@ -1023,7 +1024,6 @@ public class Controller implements MapModuleChangeObserver {
 			}
 			setProperty("appwindow_state", String.valueOf(winState));
 		}
-		storeOptionSplitPanePosition();
 		// Stop edit server!
 		getFrame().saveProperties(true);
 		// save to properties
@@ -1973,11 +1973,13 @@ public class Controller implements MapModuleChangeObserver {
 	public void insertComponentIntoSplitPane(JComponent pMindMapComponent, SplitComponentType pSplitComponentType) {
 		if(mOptionalSplitPane == null) {
 			mOptionalSplitPane = new JOptionalSplitPane();
-			getFrame().insertComponentIntoSplitPane(mOptionalSplitPane);
 			mOptionalSplitPane.setLastDividerPosition(getIntProperty(
 					FreeMind.RESOURCES_OPTIONAL_SPLIT_DIVIDER_POSITION, -1));
+			mOptionalSplitPane.setComponent(pMindMapComponent, pSplitComponentType.getIndex());
+			getFrame().insertComponentIntoSplitPane(mOptionalSplitPane);
+		} else {
+			mOptionalSplitPane.setComponent(pMindMapComponent, pSplitComponentType.getIndex());
 		}
-		mOptionalSplitPane.setComponent(pMindMapComponent, pSplitComponentType.getIndex());
 	}
 
 	/**
@@ -1987,7 +1989,6 @@ public class Controller implements MapModuleChangeObserver {
 		if(mOptionalSplitPane != null) {
 			mOptionalSplitPane.removeComponent(pSplitComponentType.getIndex());
 			if(mOptionalSplitPane.getAmountOfComponents() == 0) {
-				storeOptionSplitPanePosition();
 				getFrame().removeSplitPane();
 				mOptionalSplitPane = null;
 			}
@@ -2000,7 +2001,7 @@ public class Controller implements MapModuleChangeObserver {
 	private void storeOptionSplitPanePosition() {
 		if (mOptionalSplitPane != null) {
 			setProperty(FreeMind.RESOURCES_OPTIONAL_SPLIT_DIVIDER_POSITION, ""
-					+ mOptionalSplitPane.getLastDividerPosition());
+					+ mOptionalSplitPane.getDividerPosition());
 		}
 	}
 
