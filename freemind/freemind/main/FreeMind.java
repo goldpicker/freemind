@@ -1002,6 +1002,7 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 		// first define the final layout of the screen:
 		setFocusTraversalKeysEnabled(false);
 		// and now, determine size, position and state.
+		pack();
 		// set the default size (PN)
 		int win_width = getIntProperty("appwindow_width", 0);
 		int win_height = getIntProperty("appwindow_height", 0);
@@ -1024,7 +1025,6 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 		win_y = Math.max(screenInsets.top, win_y);
 		win_y = Math.min(screenWidth + screenInsets.top - win_height, win_y);
 		setBounds(win_x, win_y, win_width, win_height);
-		pack();
 		// set the default state (normal/maximized) (PN)
 		// (note: this must be done later when partucular
 		// initalizations of the windows are ready,
@@ -1219,7 +1219,7 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 	public String getAdjustableProperty(String label) {
 		return mFreeMindCommon.getAdjustableProperty(label);
 	}
-
+	
 	public JSplitPane insertComponentIntoSplitPane(JComponent pMindMapComponent) {
 		if (mSplitPane != null) {
 			// already present:
@@ -1250,7 +1250,7 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 		// set divider position:
 		int splitPanePosition = getIntProperty(SPLIT_PANE_POSITION, -1);
 		int lastSplitPanePosition = getIntProperty(SPLIT_PANE_LAST_POSITION, -1);
-		if (splitPanePosition != -1 && lastSplitPanePosition != -1) {
+		if (mSplitPane != null && splitPanePosition != -1 && lastSplitPanePosition != -1) {
 			mSplitPane.setDividerLocation(splitPanePosition);
 			mSplitPane.setLastDividerLocation(lastSplitPanePosition);
 		}
