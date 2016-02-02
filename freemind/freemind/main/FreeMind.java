@@ -1001,7 +1001,6 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 
 		// first define the final layout of the screen:
 		setFocusTraversalKeysEnabled(false);
-		pack();
 		// and now, determine size, position and state.
 		// set the default size (PN)
 		int win_width = getIntProperty("appwindow_width", 0);
@@ -1025,6 +1024,7 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 		win_y = Math.max(screenInsets.top, win_y);
 		win_y = Math.min(screenWidth + screenInsets.top - win_height, win_y);
 		setBounds(win_x, win_y, win_width, win_height);
+		pack();
 		// set the default state (normal/maximized) (PN)
 		// (note: this must be done later when partucular
 		// initalizations of the windows are ready,
