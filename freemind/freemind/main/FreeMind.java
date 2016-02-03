@@ -31,6 +31,8 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -1248,13 +1250,25 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 		mContentComponent = mSplitPane;
 		setContentComponent();
 		// set divider position:
+		setSplitLocation();
+		// after making this window visible, the size is adjusted. To get the right split location, we postpone this.
+		addComponentListener(new ComponentAdapter(){
+		@Override
+			public void componentResized(ComponentEvent pE) {
+				setSplitLocation();
+				removeComponentListener(this);
+			}	
+		});
+		return mSplitPane;
+	}
+
+	private void setSplitLocation() {
 		int splitPanePosition = getIntProperty(SPLIT_PANE_POSITION, -1);
 		int lastSplitPanePosition = getIntProperty(SPLIT_PANE_LAST_POSITION, -1);
 		if (mSplitPane != null && splitPanePosition != -1 && lastSplitPanePosition != -1) {
 			mSplitPane.setDividerLocation(splitPanePosition);
 			mSplitPane.setLastDividerLocation(lastSplitPanePosition);
 		}
-		return mSplitPane;
 	}
 
 	public void removeSplitPane() {
