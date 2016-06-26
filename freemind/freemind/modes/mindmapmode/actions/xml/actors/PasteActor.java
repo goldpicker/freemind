@@ -544,6 +544,11 @@ public class PasteActor extends XmlActorAdapter {
 			File parentFile= mindmapFile.getParentFile();
 			String filePrefix= mindmapFile.getName().replace(
 					FreeMindCommon.FREEMIND_FILE_EXTENSION, "_");
+			/* prefix for createTempFile must be at least three characters long. 
+			 See  [bugs:#1261] Unable to paste images from clipboard */
+			while(filePrefix.length()<3){
+				filePrefix += "_";
+			}
 			File tempFile = File
 					.createTempFile(filePrefix, ".jpeg", parentFile);
 			FileOutputStream fos = new FileOutputStream(tempFile);
