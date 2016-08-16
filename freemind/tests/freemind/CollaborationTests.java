@@ -29,8 +29,6 @@ import java.io.StringWriter;
 import java.net.Socket;
 import java.util.Iterator;
 
-import plugins.collaboration.socket.MindMapMaster;
-import plugins.collaboration.socket.StandaloneMindMapMaster;
 import freemind.controller.actions.generated.instance.CollaborationGetOffers;
 import freemind.controller.actions.generated.instance.CollaborationHello;
 import freemind.controller.actions.generated.instance.CollaborationMapOffer;
@@ -46,6 +44,8 @@ import freemind.main.Tools;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.ExtendedMapFeedbackImpl;
 import freemind.modes.MindMap;
+import plugins.collaboration.socket.MindMapMaster;
+import plugins.collaboration.socket.StandaloneMindMapMaster;
 
 /**
  * @author foltin
@@ -142,22 +142,22 @@ public class CollaborationTests extends FreeMindTestBase {
 		public void reactOnWelcome(CollaborationWelcome collWelcome)
 				throws IOException {
 			String map = collWelcome.getMap();
-			logger.info("Received map: " + map);
+			logger.info(getName() + ":" + "Received map: " + map);
 			createNewMap(map);
 			setCurrentState(STATE_IDLE);
 		}
 
 		public void reactOnReceiveLock(CollaborationReceiveLock lockReceived) {
 			mLockId = lockReceived.getId();
-			logger.info("Lock received: " + mLockId);
+			logger.info(getName() + ":" + "Lock received: " + mLockId);
 			setCurrentState(STATE_LOCK_RECEIVED);
 		}
 		
 		public void reactOnTransaction(CollaborationTransaction trans) {
-			logger.info("Transaction received: " + trans.getDoAction());
-			setCurrentState(STATE_IDLE);
 			mTransactionReceived = true;
 			mTransactionPaket = trans;
+			logger.info(getName() + ":" + "Transaction received: " + trans.getDoAction());
+			setCurrentState(STATE_IDLE);
 		}
 		
 
@@ -222,7 +222,7 @@ public class CollaborationTests extends FreeMindTestBase {
 		socket2.setSoTimeout(MindMapMaster.SOCKET_TIMEOUT_IN_MILLIES);
 		ExtendedMapFeedbackImpl mapFeedback2 = new ExtendedMapFeedbackImpl();
 		NormalTestClient testClient2 = new NormalTestClient(
-				"TestClient", socket2, mapFeedback2, new DataOutputStream(
+				"TestClient2", socket2, mapFeedback2, new DataOutputStream(
 						socket2.getOutputStream()), new DataInputStream(
 								socket2.getInputStream()));
 		testClient2.start();
@@ -243,9 +243,15 @@ public class CollaborationTests extends FreeMindTestBase {
 		t.setUndoAction(marshall);
 		testClient.send(t);
 		waitForState(testClient, CollaborationTestClient.STATE_IDLE);
+		waitForState(testClient2, CollaborationTestClient.STATE_IDLE);
+		int timeout = 100;
+		while (--timeout>0 && !testClient2.mTransactionReceived) {
+			Thread.sleep(100);
+		}
 		assertTrue("transaction received", testClient2.mTransactionReceived);
 		assertEquals("Correct class", testClient.mLockId, testClient2.mTransactionPaket.getId());
 		testClient.terminateSocket();
+		testClient2.terminateSocket();
 		
 	}
 	
@@ -314,7 +320,7 @@ public class CollaborationTests extends FreeMindTestBase {
 			Thread.sleep(100);
 		}
 		assertTrue("wrong map sent", testClient.mWrongMap);
-		testClient.terminateSocket();
+//		testClient.terminateSocket();
 
 	}
 	
@@ -359,18 +365,16 @@ public class CollaborationTests extends FreeMindTestBase {
 
 		public void reactOnReceiveLock(CollaborationReceiveLock lockReceived) {
 			mLockId = lockReceived.getId();
-			logger.info("Lock received: " + mLockId);
+			logger.info(getName() + ":" + "Lock received: " + mLockId);
 			setCurrentState(STATE_LOCK_RECEIVED);
 		}
 		
 		public void reactOnTransaction(CollaborationTransaction trans) {
-			logger.info("Transaction received: " + trans.getDoAction());
+			logger.info(getName() + ":" + "Transaction received: " + trans.getDoAction());
 			setCurrentState(STATE_IDLE);
 		}
 		
 
 	}
-
-
 	
 }

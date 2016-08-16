@@ -211,10 +211,10 @@ public abstract class CommunicationBase extends TerminateableThread {
 			XmlAction doAction = Tools.unMarshall(trans.getDoAction());
 			String out = pDirection + ": " + Tools.printXmlAction(doAction)
 					+ " (Id: " + trans.getId() + ")";
-			logger.info(out);
+			logger.info(getName() + ":" + out);
 		} else {
 			String out = pDirection + ": " + Tools.printXmlAction(pCommand);
-			logger.info(out);
+			logger.info(getName() + ":" + out);
 			
 		}
 	}
