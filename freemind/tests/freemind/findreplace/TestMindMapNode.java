@@ -424,6 +424,11 @@ public final class TestMindMapNode implements MindMapNode {
 	public List getAttributeKeyList() {
 		return null;
 	}
+	
+	@Override
+	public List<Attribute> getAttributes() {
+		return null;
+	}
 
 	public int getAttributePosition(String key) {
 		return 0;
@@ -525,6 +530,11 @@ public final class TestMindMapNode implements MindMapNode {
 	@Override
 	public boolean isStrikethrough() {
 		return false;
+	}
+
+	@Override
+	public String getBareStyle() {
+		return null;
 	}
 
 }

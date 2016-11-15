@@ -151,6 +151,11 @@ public interface MindMapNode extends MutableTreeNode {
 
 	Color getColor();
 
+	/**
+	 * @return the pure style string (even if the style is "AS_PARENT" or null)
+	 */
+	String getBareStyle();
+	
 	String getStyle();
 
 	/**
@@ -368,8 +373,13 @@ public interface MindMapNode extends MutableTreeNode {
 	 * @return an unmodifiable list of all attribute keys as String. There can
 	 *         be double entries.
 	 */
-	List getAttributeKeyList();
+	List<String> getAttributeKeyList();
 
+	/**
+	 * @return an unmodifiable list of all attributes. 
+	 */
+	List<Attribute> getAttributes();
+	
 	/**
 	 * @return the amount of attributes.
 	 */

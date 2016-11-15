@@ -81,7 +81,7 @@ public class NodeStyleActor extends XmlActorAdapter {
 			NodeStyleFormatAction nodeStyleAction = (NodeStyleFormatAction) action;
 			MindMapNode node = getNodeFromID(nodeStyleAction.getNode());
 			String style = nodeStyleAction.getStyle();
-			if (!Tools.safeEquals(node.hasStyle() ? node.getStyle() : null,
+			if (!Tools.safeEquals(node.hasStyle() ? node.getBareStyle() : null,
 					style)) {
 				// logger.info("Setting style of " + node + " to "+ style +
 				// " and was " + node.getStyle());

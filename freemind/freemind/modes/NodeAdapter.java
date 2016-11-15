@@ -324,6 +324,11 @@ public abstract class NodeAdapter implements MindMapNode {
 		}
 	}
 
+	
+	public String getBareStyle(){
+		return style;
+	}
+	
 	/** A Node-Style like MindMapNode.STYLE_FORK or MindMapNode.STYLE_BUBBLE */
 	public String getStyle() {
 		String returnedString = style; /* Style string returned */
@@ -1458,6 +1463,14 @@ public abstract class NodeAdapter implements MindMapNode {
 		return returnValue;
 	}
 
+	@Override
+	public List<Attribute> getAttributes() {
+		if(mAttributeVector==null){
+			return Collections.emptyList();
+		}
+		return Collections.unmodifiableList(mAttributeVector);
+	}
+	
 	@Override
 	public int getAttributeTableLength() {
 		if(mAttributeVector==null) {
