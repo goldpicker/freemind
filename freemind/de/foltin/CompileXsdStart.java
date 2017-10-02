@@ -30,7 +30,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
@@ -70,31 +69,12 @@ public class CompileXsdStart extends DefaultHandler {
 
 	private final InputStream mInputStream;
 	private XsdHandler mCurrentHandler;
-	private TreeSet/* <String> */mKeyOrder = new TreeSet/* <String> */();
-	private HashMap/* <String, HashMap<String, String> > */mClassMap = new HashMap/*
-																					 * <
-																					 * String
-																					 * ,
-																					 * HashMap
-																					 * <
-																					 * String
-																					 * ,
-																					 * String
-																					 * >
-																					 * >
-																					 */();
+	private TreeSet<String> mKeyOrder = new TreeSet<String>();
+	private HashMap<String, HashMap<String, String> > mClassMap = new HashMap<>();
 	private StringBuffer mBindingXml = new StringBuffer();
 
-	private HashMap/* <String, ElementTypes> */mElementMap = new HashMap/*
-																		 * <String
-																		 * ,
-																		 * ElementTypes
-																		 * >
-																		 */();
-	private HashMap/* <String, String> */mTypeMap = new HashMap/*
-																 * <String,
-																 * String>
-																 */();
+	private HashMap<String, ElementTypes> mElementMap = new HashMap<>();
+	private HashMap<String, String> mTypeMap = new HashMap<>();
 
 	private class ElementTypes {
 
@@ -167,20 +147,15 @@ public class CompileXsdStart extends DefaultHandler {
 	private void print() throws Exception {
 		File dir = new File(DESTINATION_DIR);
 		dir.mkdirs();
-		// for (String className : mClassMap.keySet()) {
-		for (Iterator it = mClassMap.keySet().iterator(); it.hasNext();) {
-			String className = (String) it.next();
+		for (String className : mClassMap.keySet()) {
+
 			// special handling for strange group tag.
 			if (className == null)
 				continue;
-			HashMap/* <String, String> */classMap = (HashMap) mClassMap
-					.get(className);
+			HashMap<String, String> classMap = mClassMap.get(className);
 			// System.out.println("\nClass:" + keys);
-			FileOutputStream fs = new FileOutputStream(DESTINATION_DIR + "/"
-					+ className + ".java");
-			// for (String orderString : mKeyOrder) {
-			for (Iterator it2 = mKeyOrder.iterator(); it2.hasNext();) {
-				String orderString = (String) it2.next();
+			FileOutputStream fs = new FileOutputStream(DESTINATION_DIR + "/" + className + ".java");
+			for (String orderString : mKeyOrder) {
 				if (classMap.containsKey(orderString)) {
 					String string = (String) classMap.get(orderString);
 					fs.write(string.getBytes());
@@ -191,8 +166,7 @@ public class CompileXsdStart extends DefaultHandler {
 		}
 		// write binding to disk
 		if (true) {
-			FileOutputStream fs = new FileOutputStream(DESTINATION_DIR
-					+ "/binding.xml");
+			FileOutputStream fs = new FileOutputStream(DESTINATION_DIR + "/binding.xml");
 			fs.write(mBindingXml.toString().getBytes());
 			fs.close();
 		}
@@ -233,14 +207,14 @@ public class CompileXsdStart extends DefaultHandler {
 				return null;
 		}
 
-		HashMap/* <String, String> */getClassMap() {
+		HashMap<String, String> getClassMap() {
 			String className = getClassName();
 			return createClass(className);
 		}
 
 		protected void appendToClassMap(String key, String value) {
 			mKeyOrder.add(key);
-			HashMap/* <String, String> */classMap = getClassMap();
+			HashMap<String, String> classMap = getClassMap();
 
 			if (classMap.containsKey(key)) {
 				classMap.put(key, classMap.get(key) + value);
@@ -378,11 +352,9 @@ public class CompileXsdStart extends DefaultHandler {
 
 		public ChoiceHandler(XsdHandler pParent) {
 			super(pParent);
-			// TODO Auto-generated constructor stub
 		}
 
 		protected XsdHandler createElementHandler() {
-			// TODO Auto-generated method stub
 			return new ChoiceElementHandler(this);
 		}
 
@@ -391,7 +363,6 @@ public class CompileXsdStart extends DefaultHandler {
 		}
 
 		public void startElement(String arg0, Attributes arg1) {
-			// TODO Auto-generated method stub
 			super.startElement(arg0, arg1);
 			if (arg1.getValue("maxOccurs") != null) {
 				// single array list:
@@ -447,7 +418,6 @@ public class CompileXsdStart extends DefaultHandler {
 
 		public ChoiceElementHandler(XsdHandler pParent) {
 			super(pParent);
-			// TODO Auto-generated constructor stub
 			if (pParent instanceof ChoiceHandler) {
 				ChoiceHandler choiceParent = (ChoiceHandler) pParent;
 				mIsSingle = choiceParent.isSingleChoice();
@@ -459,7 +429,6 @@ public class CompileXsdStart extends DefaultHandler {
 		}
 
 		public void startElement(String arg0, Attributes arg1) {
-			// TODO Auto-generated method stub
 			super.startElement(arg0, arg1);
 			String rawName = arg1.getValue("ref");
 			String name = getNameFromXml(rawName);
@@ -506,11 +475,9 @@ public class CompileXsdStart extends DefaultHandler {
 
 		public SequenceHandler(XsdHandler pParent) {
 			super(pParent);
-			// TODO Auto-generated constructor stub
 		}
 
 		protected XsdHandler createElementHandler() {
-			// TODO Auto-generated method stub
 			return new SequenceElementHandler(this);
 		}
 
@@ -520,11 +487,9 @@ public class CompileXsdStart extends DefaultHandler {
 
 		public SequenceElementHandler(XsdHandler pParent) {
 			super(pParent);
-			// TODO Auto-generated constructor stub
 		}
 
 		public void startElement(String arg0, Attributes arg1) {
-			// TODO Auto-generated method stub
 			super.startElement(arg0, arg1);
 			String rawName = arg1.getValue("name");
 			String type = arg1.getValue("type");
@@ -644,7 +609,7 @@ public class CompileXsdStart extends DefaultHandler {
 			mKeyOrder.add(KEY_CLASS_END);
 			String rawName = arg1.getValue("name");
 			String name = getNameFromXml(rawName);
-			HashMap/* <String, String> */class1 = createClass(name);
+			HashMap<String, String> class1 = createClass(name);
 			mClassName = name;
 			class1.put(FILE_START, "/* " + name + "...*/\n");
 			class1.put(KEY_PACKAGE, "package " + FREEMIND_PACKAGE + ";\n");
@@ -755,11 +720,11 @@ public class CompileXsdStart extends DefaultHandler {
 		mCurrentHandler.endElement(pUri, pLocalName, pName);
 	}
 
-	public HashMap/* <String, String> */createClass(String pName) {
+	public HashMap<String, String> createClass(String pName) {
 		if (mClassMap.containsKey(pName)) {
-			return (HashMap) mClassMap.get(pName);
+			return mClassMap.get(pName);
 		}
-		HashMap/* <String, String> */newValue = new HashMap/* <String, String> */();
+		HashMap<String, String> newValue = new HashMap<>();
 		mClassMap.put(pName, newValue);
 		return newValue;
 	}
