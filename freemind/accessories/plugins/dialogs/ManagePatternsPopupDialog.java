@@ -226,7 +226,7 @@ public class ManagePatternsPopupDialog extends JDialog implements
 
 	private boolean mIsDragging = false;
 
-	private accessories.plugins.dialogs.ArrayListTransferHandler mArrayListHandler;
+	private accessories.plugins.dialogs.ListTransferHandler mListHandler;
 
 	private JSplitPane mSplitPane;
 
@@ -337,11 +337,11 @@ public class ManagePatternsPopupDialog extends JDialog implements
 			jContentPane = new javax.swing.JPanel();
 			jContentPane.setLayout(new GridBagLayout());
 			mList = new JList();
-			mArrayListHandler = new ArrayListTransferHandler();
+			mListHandler = new ListTransferHandler();
 			mList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			mPatternListModel = new PatternListModel(patternList);
 			mList.setModel(mPatternListModel);
-			mList.setTransferHandler(mArrayListHandler);
+			mList.setTransferHandler(mListHandler);
 			mList.setDragEnabled(true);
 			mList.addListSelectionListener(new PatternListSelectionListener());
 			mList.addMouseMotionListener(new MouseMotionListener() {
