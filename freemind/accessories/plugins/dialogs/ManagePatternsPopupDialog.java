@@ -21,6 +21,7 @@
 package accessories.plugins.dialogs;
 
 import java.awt.CardLayout;
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -33,15 +34,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
-import javax.swing.AbstractListModel;
 import javax.swing.Action;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -70,8 +70,10 @@ import freemind.modes.StylePatternFactory;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.dialogs.StylePatternFrame;
 import freemind.modes.mindmapmode.dialogs.StylePatternFrame.StylePatternFrameType;
+import freemind.swing.DefaultListModel;
 
 /** */
+@SuppressWarnings("serial")
 public class ManagePatternsPopupDialog extends JDialog implements
 		TextTranslator, KeyListener {
 	private static Pattern sLastSelectedPattern = null;
@@ -90,109 +92,18 @@ public class ManagePatternsPopupDialog extends JDialog implements
 				return;
 			// save old list:
 			writePatternBackToModel();
-			JList theList = (JList) e.getSource();
+			JList<?> theList = (JList<?>) e.getSource();
 			if (theList.isSelectionEmpty()) {
 				mCardLayout.show(mRightStack, EMPTY_FRAME);
 			} else {
 				int index = theList.getSelectedIndex();
-				Pattern p = mPatternListModel.getPatternAt(index);
+				Pattern p = mPatternListModel.get(index);
 				setLastSelectedPattern(p);
 				// write pattern:
-				mStylePatternFrame.setPatternList(mPatternListModel
-						.getPatternList());
+				mStylePatternFrame.setPatternList(mPatternListModel.unmodifiableList());
 				mStylePatternFrame.setPattern(p);
 				mCardLayout.show(mRightStack, STACK_PATTERN_FRAME);
 			}
-		}
-	}
-
-	protected final class PatternListModel extends AbstractListModel {
-		private final List mPatternList;
-
-		// private final List mListeners;
-
-		public PatternListModel(List patternList) {
-			// we take a copy of the list as it may came from the patterns xml
-			// element and would be read-only
-			this.mPatternList = new Vector(patternList);
-			// this.mListeners = new Vector();
-		}
-
-		public int getSize() {
-			return mPatternList.size();
-		}
-
-		/**
-		 * @return the name of the pattern belonging to index.
-		 */
-		public Object getElementAt(int index) {
-			return getPatternAt(index).getName();
-			// return
-			// "<html><table width=\"100\"><tr><td>"+getPatternAt(index).getName()+"</td><td align=\"right\">TEST</td></tr></table></html>";
-		}
-
-		/**
-		 * @return the pattern belonging to index.
-		 */
-		public Pattern getPatternAt(int index) {
-			return ((Pattern) mPatternList.get(index));
-		}
-
-		public List getPatternList() {
-			return Collections.unmodifiableList(mPatternList);
-		}
-
-		public void removePattern(int index) {
-			if (index < 0 || index >= mPatternList.size()) {
-				throw new IllegalArgumentException(
-						"try to delete in pattern list with an index out of range: "
-								+ index);
-			}
-			logger.info("Pattern "
-					+ ((Pattern) mPatternList.get(index)).getName()
-					+ " should be removed at " + index);
-			mPatternList.remove(index);
-			fireIntervalRemoved(mList, index, index);
-		}
-
-		public void addPattern(Pattern newPattern, int selectedIndex) {
-			logger.info("Pattern " + newPattern.getName()
-					+ " should be added at " + selectedIndex);
-			mPatternList.add(selectedIndex, newPattern);
-			fireIntervalAdded(mList, selectedIndex, selectedIndex);
-		}
-
-		private void printPatterns() {
-			int i = 0;
-			for (Iterator iter = mPatternList.iterator(); iter.hasNext();) {
-				Pattern pattern = (Pattern) iter.next();
-				logger.info("Pattern " + i + " = " + pattern.getName());
-				i++;
-			}
-		}
-
-		public Pattern getPatternByName(String name) {
-			for (Iterator iter = mPatternList.iterator(); iter.hasNext();) {
-				Pattern pattern = (Pattern) iter.next();
-				if (pattern.getName().equals(name)) {
-					return pattern;
-				}
-			}
-			return null;
-		}
-
-		public void add(int i, Object object) {
-			if (object instanceof String) {
-				String patternName = (String) object;
-				Pattern correspondingPattern = getPatternByName(patternName);
-				if (correspondingPattern != null) {
-					addPattern(correspondingPattern, i);
-				}
-			}
-		}
-
-		public void remove(int i) {
-			removePattern(i);
 		}
 	}
 
@@ -216,13 +127,13 @@ public class ManagePatternsPopupDialog extends JDialog implements
 
 	private JPanel mRightStack;
 
-	private PatternListModel mPatternListModel;
+	private DefaultListModel<Pattern> mPatternListModel;
 
 	private JPopupMenu popupMenu;
 
 	private StylePatternFrame mStylePatternFrame;
 
-	private JList mList;
+	private JList<Pattern> mList;
 
 	private boolean mIsDragging = false;
 
@@ -242,10 +153,9 @@ public class ManagePatternsPopupDialog extends JDialog implements
 			logger = mController.getFrame()
 					.getLogger(this.getClass().getName());
 		}
-		List patternList = new Vector();
+		List<Pattern> patternList = new Vector<>();
 		try {
-			patternList = StylePatternFactory.loadPatterns(controller
-					.getPatternReader());
+			patternList = StylePatternFactory.loadPatterns(controller.getPatternReader());
 		} catch (Exception e) {
 			freemind.main.Resources.getInstance().logException(e);
 			JOptionPane.showMessageDialog(this, getDialogTitle(), controller
@@ -261,7 +171,7 @@ public class ManagePatternsPopupDialog extends JDialog implements
 	 * 
 	 * @return void
 	 */
-	private void initialize(List patternList) {
+	private void initialize(List<Pattern> patternList) {
 		this.setTitle(getDialogTitle());
 		JPanel contentPane = getJContentPane(patternList);
 		this.setContentPane(contentPane);
@@ -281,9 +191,7 @@ public class ManagePatternsPopupDialog extends JDialog implements
 		// // recover latest pattern:
 		int i = 0;
 		if (sLastSelectedPattern != null) {
-			for (Iterator iterator = mPatternListModel.getPatternList()
-					.iterator(); iterator.hasNext();) {
-				Pattern pattern = (Pattern) iterator.next();
+			for (Pattern pattern : mPatternListModel.unmodifiableList()) {
 				if (pattern.getName().equals(sLastSelectedPattern.getName())) {
 					mList.setSelectedIndex(i);
 					break;
@@ -332,27 +240,32 @@ public class ManagePatternsPopupDialog extends JDialog implements
 	 * 
 	 * @return javax.swing.JPanel
 	 */
-	private javax.swing.JPanel getJContentPane(List patternList) {
+	private javax.swing.JPanel getJContentPane(List<Pattern> patternList) {
 		if (jContentPane == null) {
 			jContentPane = new javax.swing.JPanel();
 			jContentPane.setLayout(new GridBagLayout());
-			mList = new JList();
+			mList = new JList<>();
 			mListHandler = new ListTransferHandler();
 			mList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			mPatternListModel = new PatternListModel(patternList);
+			mPatternListModel = new DefaultListModel<Pattern>();
+			mPatternListModel.addAll(patternList);
 			mList.setModel(mPatternListModel);
 			mList.setTransferHandler(mListHandler);
 			mList.setDragEnabled(true);
 			mList.addListSelectionListener(new PatternListSelectionListener());
+			mList.setCellRenderer(new DefaultListCellRenderer() {
+				@Override
+				public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+					return super.getListCellRendererComponent(list, ((Pattern) value).getName(), index, isSelected,cellHasFocus);
+				}
+			});
 			mList.addMouseMotionListener(new MouseMotionListener() {
 
 				public void mouseDragged(MouseEvent pE) {
-					// TODO Auto-generated method stub
 					mIsDragging = true;
 				}
 
 				public void mouseMoved(MouseEvent pE) {
-					// TODO Auto-generated method stub
 					mIsDragging = false;
 				}
 			});
@@ -436,7 +349,7 @@ public class ManagePatternsPopupDialog extends JDialog implements
 					showPopup(mList, me);
 				}
 
-				private void showPopup(final JList mList, MouseEvent me) {
+				private void showPopup(final JList<Pattern> mList, MouseEvent me) {
 					// if right mouse button clicked (or me.isPopupTrigger())
 					if (me.isPopupTrigger()
 							&& !mList.isSelectionEmpty()
@@ -487,7 +400,7 @@ public class ManagePatternsPopupDialog extends JDialog implements
 		if (selectedIndex < 0) {
 			selectedIndex = mList.getModel().getSize();
 		}
-		mPatternListModel.addPattern(newPattern, selectedIndex);
+		mPatternListModel.add(selectedIndex, newPattern);
 		mList.setSelectedIndex(selectedIndex);
 	}
 
@@ -495,11 +408,11 @@ public class ManagePatternsPopupDialog extends JDialog implements
 		int selectedIndex = mList.getSelectedIndex();
 		writePatternBackToModel();
 		setLastSelectedPattern(null);
-		Pattern oldPattern = mPatternListModel.getPatternAt(selectedIndex);
+		Pattern oldPattern = mPatternListModel.get(selectedIndex);
 		// deep copy:
 		Pattern newPattern = (Pattern) Tools.deepCopy(oldPattern);
 		newPattern.setName(searchForNameForNewPattern());
-		mPatternListModel.addPattern(newPattern, selectedIndex);
+		mPatternListModel.add(selectedIndex, newPattern);
 		mList.setSelectedIndex(selectedIndex);
 	}
 
@@ -513,7 +426,7 @@ public class ManagePatternsPopupDialog extends JDialog implements
 		if (selectedIndex < 0) {
 			selectedIndex = mList.getModel().getSize();
 		}
-		mPatternListModel.addPattern(newPattern, selectedIndex);
+		mPatternListModel.add(selectedIndex, newPattern);
 		mList.setSelectedIndex(selectedIndex);
 	}
 
@@ -523,10 +436,9 @@ public class ManagePatternsPopupDialog extends JDialog implements
 			return;
 		writePatternBackToModel();
 		setLastSelectedPattern(null);
-		Pattern pattern = mPatternListModel.getPatternAt(selectedIndex);
-		for (Iterator iterator = mController.getSelecteds().iterator(); iterator
-				.hasNext();) {
-			MindMapNode node = (MindMapNode) iterator.next();
+		Pattern pattern = mPatternListModel.get(selectedIndex);
+		for (Iterator<MindMapNode> iterator = mController.getSelecteds().iterator(); iterator.hasNext();) {
+			MindMapNode node = iterator.next();
 			mController.applyPattern(node, pattern);
 		}
 	}
@@ -535,10 +447,8 @@ public class ManagePatternsPopupDialog extends JDialog implements
 		// give it a good name:
 		String newName = mController.getText("PatternNewNameProperty");
 		// collect names:
-		Vector allNames = new Vector();
-		for (Iterator iter = mPatternListModel.getPatternList().iterator(); iter
-				.hasNext();) {
-			Pattern p = (Pattern) iter.next();
+		Vector<String> allNames = new Vector<>();
+		for (Pattern p : mPatternListModel.unmodifiableList()) {
 			allNames.add(p.getName());
 		}
 		String toGiveName = newName;
@@ -553,7 +463,7 @@ public class ManagePatternsPopupDialog extends JDialog implements
 	private void removePattern(ActionEvent actionEvent) {
 		int selectedIndex = mList.getSelectedIndex();
 		setLastSelectedPattern(null);
-		mPatternListModel.removePattern(selectedIndex);
+		mPatternListModel.remove(selectedIndex);
 		if (mPatternListModel.getSize() > selectedIndex) {
 			mList.setSelectedIndex(selectedIndex);
 		} else if (mPatternListModel.getSize() > 0 && selectedIndex >= 0) {
@@ -617,8 +527,8 @@ public class ManagePatternsPopupDialog extends JDialog implements
 		return mController.getText(pKey);
 	}
 
-	public List getPatternList() {
-		return mPatternListModel.getPatternList();
+	public List<Pattern> getPatternList() {
+		return mPatternListModel.unmodifiableList();
 	}
 
 	private void writePatternBackToModel() {
@@ -631,9 +541,7 @@ public class ManagePatternsPopupDialog extends JDialog implements
 			String newPatternName = resultPatternCopy.getName();
 			if (!(oldPatternName.equals(newPatternName))) {
 				// now, let's check, whether or not it is still unique:
-				for (Iterator iter = mPatternListModel.getPatternList()
-						.iterator(); iter.hasNext();) {
-					Pattern otherPattern = (Pattern) iter.next();
+				for (Pattern otherPattern : mPatternListModel.unmodifiableList()) {
 					if (otherPattern == pattern) {
 						// myself is not regarded:
 						continue;
@@ -649,9 +557,7 @@ public class ManagePatternsPopupDialog extends JDialog implements
 				}
 			}
 			// no duplicates. We search for uses of the old name:
-			for (Iterator iter = mPatternListModel.getPatternList().iterator(); iter
-					.hasNext();) {
-				Pattern otherPattern = (Pattern) iter.next();
+			for (Pattern otherPattern : mPatternListModel.unmodifiableList()) {
 				if (otherPattern.getPatternChild() != null
 						&& oldPatternName.equals(otherPattern.getPatternChild()
 								.getValue())) {

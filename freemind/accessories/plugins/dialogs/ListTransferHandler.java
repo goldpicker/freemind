@@ -28,8 +28,7 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.TransferHandler;
-
-import accessories.plugins.dialogs.ManagePatternsPopupDialog.PatternListModel;
+import freemind.swing.DefaultListModel;
 
 @SuppressWarnings("serial")
 public class ListTransferHandler extends TransferHandler {
@@ -88,7 +87,7 @@ public class ListTransferHandler extends TransferHandler {
 			}
 		}
 
-		PatternListModel listModel = (PatternListModel) target.getModel();
+		DefaultListModel listModel = (DefaultListModel<?>) target.getModel();
 		int max = listModel.getSize();
 		if (index < 0) {
 			index = max;
@@ -100,16 +99,16 @@ public class ListTransferHandler extends TransferHandler {
 		}
 		addIndex = index;
 		addCount = alist.size();
-		for (int i = 0; i < alist.size(); i++) {
-			listModel.add(index++, alist.get(i));
-		}
+
+		listModel.addAll(index, alist);
+
 		return true;
 	}
 
 	@Override
 	protected void exportDone(JComponent c, Transferable data, int action) {
 		if ((action == MOVE) && (indices != null)) {
-			PatternListModel model = (PatternListModel) source.getModel();
+			DefaultListModel model = (DefaultListModel<?>) source.getModel();
 
 			// If we are moving items around in the same list, we
 			// need to adjust the indices accordingly since those
