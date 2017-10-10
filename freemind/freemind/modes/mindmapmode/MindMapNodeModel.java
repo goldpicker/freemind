@@ -20,6 +20,7 @@
 
 package freemind.modes.mindmapmode;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
@@ -47,7 +48,7 @@ public class MindMapNodeModel extends NodeAdapter {
 
 	public MindMapNodeModel(Object userObject, MindMap pMap) {
 		super(userObject, pMap);
-		children = new LinkedList();
+		children = new LinkedList<>();
 		setEdge(new MindMapEdgeModel(this, getMapFeedback()));
 	}
 
@@ -109,7 +110,7 @@ public class MindMapNodeModel extends NodeAdapter {
 		}
 	}
 
-	public void collectColors(HashSet colors) {
+	public void collectColors(HashSet<Color> colors) {
 		if (color != null) {
 			colors.add(getColor());
 		}

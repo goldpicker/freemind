@@ -1161,8 +1161,8 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 	 * @return an ArrayList of MindMapNode objects. If both ancestor and
 	 *         descandant node are selected, only the ancestor ist returned
 	 */
-	public ArrayList /* of MindMapNodes */getSingleSelectedNodes() {
-		ArrayList selectedNodes = new ArrayList(selected.size());
+	public ArrayList<MindMapNode> getSingleSelectedNodes() {
+		ArrayList<MindMapNode> selectedNodes = new ArrayList<>(selected.size());
 		for (int i = selected.size() - 1; i >= 0; i--) {
 			selectedNodes.add(getSelected(i).getModel().shallowCopy());
 		}

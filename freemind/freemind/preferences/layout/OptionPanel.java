@@ -78,6 +78,7 @@ import freemind.modes.MindIcon;
 import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
 import freemind.modes.mindmapmode.MindMapController;
+import freemind.modes.mindmapmode.actions.IconAction;
 import freemind.preferences.FreemindPropertyContributor;
 import freemind.preferences.layout.GrabKeyDialog.KeyBinding;
 
@@ -151,7 +152,7 @@ public class OptionPanel implements TextTranslator {
 		void writeProperties(Properties props);
 	}
 
-	public static Vector changeListeners = new Vector();
+	public static Vector changeListeners = new Vector<>();
 
 	/**
 	 */
@@ -1172,8 +1173,8 @@ public class OptionPanel implements TextTranslator {
 				.getModeController();
 		if (modeController instanceof MindMapController) {
 			MindMapController controller = (MindMapController) modeController;
-			Vector iconActions = controller.iconActions;
-			Vector actions = new Vector();
+			Vector<IconAction> iconActions = controller.iconActions;
+			Vector<IconInformation> actions = new Vector<>();
 			actions.addAll(iconActions);
 			actions.add(controller.removeLastIconAction);
 			actions.add(controller.removeAllIconsAction);

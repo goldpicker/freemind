@@ -44,6 +44,7 @@ import freemind.main.Resources;
  * @author foltin
  * @date 26.08.2014
  */
+@SuppressWarnings("serial")
 public class JOptionalSplitPane extends JPanel {
 
 	private HashMap<Integer, JComponent> mComponentHash = new HashMap<Integer, JComponent>();

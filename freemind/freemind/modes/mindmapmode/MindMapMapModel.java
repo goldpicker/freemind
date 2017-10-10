@@ -59,6 +59,7 @@ import freemind.modes.MindMapLinkRegistry;
 import freemind.modes.MindMapNode;
 import freemind.modes.NodeAdapter;
 
+@SuppressWarnings("serial")
 public class MindMapMapModel extends MapAdapter {
 
 	public static final String RESTORE_MODE_MIND_MAP = "MindMap:";
@@ -151,8 +152,8 @@ public class MindMapMapModel extends MapAdapter {
 			StringWriter stringWriter = new StringWriter();
 			BufferedWriter fileout = new BufferedWriter(stringWriter);
 
-			for (ListIterator it = mindMapNodes.listIterator(); it.hasNext();) {
-				((MindMapNodeModel) it.next()).saveTXT(fileout,/* depth= */0);
+			for (ListIterator<MindMapNodeModel> it = mindMapNodes.listIterator(); it.hasNext();) {
+				it.next().saveTXT(fileout,/* depth= */0);
 			}
 
 			fileout.close();
@@ -195,24 +196,24 @@ public class MindMapMapModel extends MapAdapter {
 		}
 	}
 
-	public boolean saveRTF(List mindMapNodes, BufferedWriter fileout) {
+	public boolean saveRTF(List<MindMapNodeModel> mindMapNodes, BufferedWriter fileout) {
 		// Returns success of the operation.
 		try {
 
 			// First collect all used colors
-			HashSet colors = new HashSet();
-			for (ListIterator it = mindMapNodes.listIterator(); it.hasNext();) {
-				((MindMapNodeModel) it.next()).collectColors(colors);
+			HashSet<Color> colors = new HashSet<>();
+			for (MindMapNodeModel nodeModel : mindMapNodes) {
+				nodeModel.collectColors(colors);
 			}
 
 			// Prepare table of colors containing indices to color table
 			String colorTableString = "{\\colortbl;\\red0\\green0\\blue255;";
 			// 0 - Automatic, 1 - blue for links
 
-			HashMap colorTable = new HashMap();
+			HashMap<Color, Integer> colorTable = new HashMap<>();
 			int colorPosition = 2;
-			for (Iterator it = colors.iterator(); it.hasNext(); ++colorPosition) {
-				Color color = (Color) it.next();
+			for (Iterator<Color> it = colors.iterator(); it.hasNext(); ++colorPosition) {
+				Color color = it.next();
 				colorTableString += "\\red" + color.getRed() + "\\green"
 						+ color.getGreen() + "\\blue" + color.getBlue() + ";";
 				colorTable.put(color, new Integer(colorPosition));
@@ -225,9 +226,8 @@ public class MindMapMapModel extends MapAdapter {
 					+ "\\viewkind4\\uc1\\pard\\f0\\fs20{}");
 			// ^ If \\ud is appended here, Unicode does not work in MS Word.
 
-			for (ListIterator it = mindMapNodes.listIterator(); it.hasNext();) {
-				((MindMapNodeModel) it.next()).saveRTF(fileout,/* depth= */0,
-						colorTable);
+			for (MindMapNodeModel nodeModel : mindMapNodes) {
+				nodeModel.saveRTF(fileout,/* depth= */0, colorTable);
 			}
 
 			fileout.write("}");
@@ -532,7 +532,7 @@ public class MindMapMapModel extends MapAdapter {
 
 	static private class DoAutomaticSave extends TimerTask {
 		private MindMapMapModel model;
-		private Vector tempFileStack;
+		private Vector<File> tempFileStack;
 		private int numberOfFiles;
 		private boolean filesShouldBeDeletedAfterShutdown;
 		private File pathToStore;
@@ -546,7 +546,7 @@ public class MindMapMapModel extends MapAdapter {
 		DoAutomaticSave(MindMapMapModel model, int numberOfTempFiles,
 				boolean filesShouldBeDeletedAfterShutdown, File pathToStore) {
 			this.model = model;
-			tempFileStack = new Vector();
+			tempFileStack = new Vector<>();
 			numberOfFiles = ((numberOfTempFiles > 0) ? numberOfTempFiles : 1);
 			this.filesShouldBeDeletedAfterShutdown = filesShouldBeDeletedAfterShutdown;
 			this.pathToStore = pathToStore;

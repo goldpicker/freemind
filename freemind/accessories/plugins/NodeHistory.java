@@ -24,7 +24,6 @@
 package accessories.plugins;
 
 import java.awt.EventQueue;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -51,7 +50,7 @@ import freemind.view.mindmapview.NodeView;
 public class NodeHistory extends MindMapNodeHookAdapter {
 
 	/** Of NodeHolder */
-	private static Vector sNodeVector = new Vector();
+	private static Vector<NodeHolder> sNodeVector = new Vector<>();
 
 	private static int sCurrentPosition = 0;
 
@@ -94,9 +93,8 @@ public class NodeHistory extends MindMapNodeHookAdapter {
 
 		private MapModule getMapModule(Controller pController) {
 			MapModule mapModule = null;
-			Map mapModules = pController.getMapModuleManager().getMapModules();
-			for (Iterator iter = mapModules.keySet().iterator(); iter.hasNext();) {
-				String mapModuleName = (String) iter.next();
+			Map<String, MapModule>  mapModules = pController.getMapModuleManager().getMapModules();
+			for (String mapModuleName : mapModules.keySet()) {
 				if (mapModuleName != null
 						&& mapModuleName.equals(mMapModuleName)) {
 					mapModule = (MapModule) mapModules.get(mapModuleName);
@@ -212,7 +210,6 @@ public class NodeHistory extends MindMapNodeHookAdapter {
 
 	public void invoke(MindMapNode node) {
 		super.invoke(node);
-		final Registration registration = (Registration) getPluginBaseClass();
 		final MindMapController modeController = getMindMapController();
 		String direction = getResourceString("direction");
 		// logger.info("Direction: " + direction);
@@ -286,8 +283,7 @@ public class NodeHistory extends MindMapNodeHookAdapter {
 	private void printVector() {
 		StringBuffer sb = new StringBuffer("\n");
 		int i = 0;
-		for (Iterator iter = sNodeVector.iterator(); iter.hasNext();) {
-			NodeHolder holder = (NodeHolder) iter.next();
+		for (NodeHolder holder : sNodeVector) {
 			sb.append(((sCurrentPosition - 1 == i) ? "==>" : "   ")
 					+ "Node pos " + i + " is "
 					+ holder.getNode(getMindMapController().getController()));

@@ -134,16 +134,16 @@ public class UnfoldAll extends MindMapNodeHookAdapter {
 	/**
 	 */
 	protected void foldAll(MindMapNode node) {
-		for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-			foldAll((MindMapNode) i.next());
+		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+			foldAll(i.next());
 		}
 		setFolded(node, true);
 	}
 
 	public void unfoldAll(MindMapNode node) {
 		setFolded(node, false);
-		for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-			unfoldAll((MindMapNode) i.next());
+		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+			unfoldAll(i.next());
 		}
 	}
 
@@ -157,15 +157,15 @@ public class UnfoldAll extends MindMapNodeHookAdapter {
 	 */
 	public void foldLastBranches(MindMapNode node) {
 		boolean nodeHasChildWhichIsLeave = false;
-		for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-			MindMapNode child = (MindMapNode) i.next();
+		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+			MindMapNode child = i.next();
 			if (child.getChildCount() == 0) {
 				nodeHasChildWhichIsLeave = true;
 			}
 		}
 		setFolded(node, nodeHasChildWhichIsLeave);
-		for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-			foldLastBranches((MindMapNode) i.next());
+		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+			foldLastBranches(i.next());
 		}
 	}
 
@@ -179,8 +179,8 @@ public class UnfoldAll extends MindMapNodeHookAdapter {
 		int k = depth(node);
 		if (k < stage) {
 			setFolded(node, false);
-			for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-				unfoldStageN((MindMapNode) i.next(), stage);
+			for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+				unfoldStageN(i.next(), stage);
 			}
 		} else {
 			foldAll(node);
@@ -191,8 +191,8 @@ public class UnfoldAll extends MindMapNodeHookAdapter {
 		int k = depth(node);
 		if (k < stage) {
 			setFolded(node, false);
-			for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-				foldStageN((MindMapNode) i.next(), stage);
+			for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+				foldStageN(i.next(), stage);
 			}
 		} else {
 			foldAll(node);
@@ -205,8 +205,8 @@ public class UnfoldAll extends MindMapNodeHookAdapter {
 		if (!node.hasChildren())
 			return Integer.MAX_VALUE;
 		int k = Integer.MAX_VALUE;
-		for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-			int l = getMinDepth((MindMapNode) i.next());
+		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+			int l = getMinDepth(i.next());
 			if (l < k)
 				k = l;
 		}
@@ -219,8 +219,8 @@ public class UnfoldAll extends MindMapNodeHookAdapter {
 		if (node.isFolded() || !node.hasChildren())
 			return depth(node);
 		int k = 0;
-		for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-			int l = getMaxDepth((MindMapNode) i.next());
+		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+			int l = getMaxDepth(i.next());
 			if (l > k)
 				k = l;
 		}

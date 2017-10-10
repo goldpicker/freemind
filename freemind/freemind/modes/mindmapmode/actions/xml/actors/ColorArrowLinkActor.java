@@ -28,7 +28,6 @@ import freemind.main.Tools;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.LineAdapter;
 import freemind.modes.MindMapLink;
-import freemind.modes.MindMapLinkRegistry;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
@@ -66,7 +65,7 @@ public class ColorArrowLinkActor extends XmlActorAdapter {
 		}
 	}
 
-	public Class getDoActionClass() {
+	public Class<ArrowLinkColorXmlAction> getDoActionClass() {
 		return ArrowLinkColorXmlAction.class;
 	}
 

@@ -24,7 +24,6 @@
 package plugins.collaboration.database;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import javax.swing.Action;
 import javax.swing.JMenuItem;
@@ -72,10 +71,8 @@ public class DatabaseRegistration implements HookRegistration,
 	}
 
 	private boolean isMaster() {
-		Collection activatedHooks = mController.getRootNode()
-				.getActivatedHooks();
-		for (Iterator it = activatedHooks.iterator(); it.hasNext();) {
-			PermanentNodeHook hook = (PermanentNodeHook) it.next();
+		Collection<PermanentNodeHook> activatedHooks = mController.getRootNode().getActivatedHooks();
+		for (PermanentNodeHook hook : activatedHooks) {
 			if (hook instanceof DatabaseStarter) {
 				return true;
 			}
@@ -84,10 +81,8 @@ public class DatabaseRegistration implements HookRegistration,
 	}
 
 	private boolean isSlave() {
-		Collection activatedHooks = mController.getRootNode()
-				.getActivatedHooks();
-		for (Iterator it = activatedHooks.iterator(); it.hasNext();) {
-			PermanentNodeHook hook = (PermanentNodeHook) it.next();
+		Collection<PermanentNodeHook> activatedHooks = mController.getRootNode().getActivatedHooks();
+		for (PermanentNodeHook hook : activatedHooks) {
 			if (hook instanceof DatabaseConnectionHook) {
 				return true;
 			}

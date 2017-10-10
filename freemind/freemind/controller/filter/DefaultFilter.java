@@ -80,12 +80,12 @@ public class DefaultFilter implements Filter {
 	}
 
 	static public void selectVisibleNode(MapView mapView) {
-		LinkedList selectedNodes = mapView.getSelecteds();
+		LinkedList<NodeView> selectedNodes = mapView.getSelecteds();
 		final int lastSelectedIndex = selectedNodes.size() - 1;
 		if (lastSelectedIndex == -1) {
 			return;
 		}
-		ListIterator iterator = selectedNodes.listIterator(lastSelectedIndex);
+		ListIterator<NodeView> iterator = selectedNodes.listIterator(lastSelectedIndex);
 		while (iterator.hasPrevious()) {
 			NodeView previous = (NodeView) iterator.previous();
 			if (!previous.getModel().isVisible()) {
@@ -112,7 +112,7 @@ public class DefaultFilter implements Filter {
 	 */
 	private boolean filterChildren(MindMapNode parent, Controller c,
 			boolean isAncestorSelected, boolean isAncestorEclipsed) {
-		ListIterator iterator = parent.childrenUnfolded();
+		ListIterator<MindMapNode> iterator = parent.childrenUnfolded();
 		boolean isDescendantSelected = false;
 		while (iterator.hasNext()) {
 			MindMapNode node = (MindMapNode) iterator.next();

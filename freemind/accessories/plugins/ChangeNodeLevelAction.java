@@ -26,13 +26,13 @@
 package accessories.plugins;
 
 import java.awt.datatransfer.Transferable;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
 import freemind.main.Tools;
 import freemind.modes.MindMapNode;
+import freemind.modes.NodeAdapter;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
 
 /**
@@ -56,10 +56,10 @@ public class ChangeNodeLevelAction extends MindMapNodeHookAdapter {
 	public void invoke(MindMapNode rootNode) {
 		// we dont need node.
 		MindMapNode selectedNode;
-		List selectedNodes;
+		List<MindMapNode> selectedNodes;
 		{
 			MindMapNode focussed = getMindMapController().getSelected();
-			List selecteds = getMindMapController().getSelecteds();
+			List<MindMapNode> selecteds = getMindMapController().getSelecteds();
 			selectedNode = focussed;
 			selectedNodes = selecteds;
 		}
@@ -80,8 +80,7 @@ public class ChangeNodeLevelAction extends MindMapNodeHookAdapter {
 		// possibly be removed in the future, when we have undo)
 		// Also make sure that none of the selected nodes are the root node
 		MindMapNode selectedParent = selectedNode.getParentNode();
-		for (Iterator it = selectedNodes.iterator(); it.hasNext();) {
-			MindMapNode node = (MindMapNode) it.next();
+		for (MindMapNode node : selectedNodes) {
 			if (node.getParentNode() != selectedParent) {
 				getMindMapController().getController().errorMessage(
 						getResourceString("cannot_add_parent_diff_parents"));
@@ -99,9 +98,8 @@ public class ChangeNodeLevelAction extends MindMapNodeHookAdapter {
 		// WORKAROUND: Make target of local hyperlinks for the case, that ids
 		// are not stored persistently.
 		getMap().getLinkRegistry().registerLocalHyperlinkId(selectedNodeId);
-		Vector selectedNodesId = new Vector();
-		for (Iterator iter = selectedNodes.iterator(); iter.hasNext();) {
-			MindMapNode node = (MindMapNode) iter.next();
+		Vector<String> selectedNodesId = new Vector<>();
+		for (MindMapNode node : selectedNodes) {
 			String nodeId = node.getObjectId(getController());
 			// WORKAROUND: Make target of local hyperlinks for the case, that
 			// ids are not stored persistently.
@@ -171,13 +169,12 @@ public class ChangeNodeLevelAction extends MindMapNodeHookAdapter {
 		obtainFocusForSelected();
 	}
 
-	private void select(String selectedNodeId, List selectedNodesIds) {
+	private void select(String selectedNodeId, List<String> selectedNodesIds) {
 		// get new nodes by object id:
 		MindMapNode newInstanceOfSelectedNode = getMindMapController()
 				.getNodeFromID(selectedNodeId);
-		List newSelecteds = new LinkedList();
-		for (Iterator iter = selectedNodesIds.iterator(); iter.hasNext();) {
-			String nodeId = (String) iter.next();
+		List<NodeAdapter> newSelecteds = new LinkedList<>();
+		for (String nodeId : selectedNodesIds) {
 			newSelecteds.add(getMindMapController().getNodeFromID(nodeId));
 		}
 		getMindMapController().select(newInstanceOfSelectedNode, newSelecteds);

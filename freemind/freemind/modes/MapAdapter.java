@@ -40,7 +40,6 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 import freemind.controller.filter.DefaultFilter;
@@ -50,7 +49,6 @@ import freemind.controller.filter.util.SortedMapListModel;
 import freemind.main.FreeMind;
 import freemind.main.Resources;
 import freemind.main.Tools;
-import freemind.main.Tools.ReaderCreator;
 import freemind.main.XMLParseException;
 
 public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
@@ -75,7 +73,7 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 	private long mFileTime = 0;
 	static protected Logger logger;
 	private Filter filter = null;
-	private HashSet mMapSourceChangedObserverSet = new HashSet();
+	private HashSet<MapSourceChangedObserver> mMapSourceChangedObserverSet = new HashSet<>();
 	private Timer mTimerForFileChangeObservation;
 	protected MapFeedback mMapFeedback;
 
@@ -108,13 +106,10 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 				}
 			}
 			if (shouldFire) {
-				for (Iterator it = mMapSourceChangedObserverSet.iterator(); it
-						.hasNext();) {
+				for (MapSourceChangedObserver observer : mMapSourceChangedObserverSet) {
 					logger.info("File " + getFile()
 							+ " changed on disk as it was last modified at "
 							+ new Date(lastModified));
-					MapSourceChangedObserver observer = (MapSourceChangedObserver) it
-							.next();
 					try {
 						boolean changeAccepted = observer.mapSourceChanged(MapAdapter.this);
 						if(!changeAccepted) {
@@ -258,7 +253,7 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 		boolean left = newRoot.isLeft();
 		MindMapNode node = newRoot;
 		// collect parents (as we remove them from their parents...)
-		Vector parents = new Vector();
+		Vector<MindMapNode> parents = new Vector<>();
 		while (node.getParentNode() != null) {
 			MindMapNode parent = node.getParentNode();
 			parents.add(0, node);
@@ -554,7 +549,7 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 	@Override
 	public MindMapNode createNodeTreeFromXml(Reader pReader, HashMap pIDToTarget)
 			throws XMLParseException, IOException {
-		XMLElementAdapter xmlAdapter = new XMLElementAdapter(mMapFeedback, new Vector(), pIDToTarget);
+		XMLElementAdapter xmlAdapter = new XMLElementAdapter(mMapFeedback, new Vector<>(), pIDToTarget);
 		xmlAdapter.parseFromReader(pReader);
 		xmlAdapter.processUnfinishedLinks(getLinkRegistry());
 		MindMapNode node = xmlAdapter.getMapChild();
@@ -615,7 +610,7 @@ public abstract class MapAdapter extends DefaultTreeModel implements MindMap {
 			}
 		}
 		try {
-			HashMap IDToTarget = new HashMap();
+			HashMap IDToTarget = new HashMap<>();
 			return (MindMapNode) createNodeTreeFromXml(
 					reader, IDToTarget);
 		} catch (Exception ex) {

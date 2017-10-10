@@ -101,7 +101,7 @@ public class MapDialog extends MindMapHookAdapter implements
 
 	private JDialog mMapDialog;
 
-	private HashMap /* < MapNodePositionHolder, MapMarkerLocation > */mMarkerMap = new HashMap();
+	private HashMap<MapNodePositionHolder, MapMarkerLocation> mMarkerMap = new HashMap<>();
 
 	private CloseAction mCloseAction;
 
@@ -177,9 +177,9 @@ public class MapDialog extends MindMapHookAdapter implements
 		 */
 		private final String[] COLUMNS = new String[] {
 				SEARCH_DESCRIPTION_COLUMN_TEXT, SEARCH_DISTANCE_COLUMN_TEXT };
-		Vector mData = new Vector();
+		Vector mData = new Vector<>();
 		private Coordinate mCursorCoordinate = new Coordinate(0, 0);
-		private HashMap mMapSearchMarkerLocationHash = new HashMap();
+		private HashMap mMapSearchMarkerLocationHash = new HashMap<>();
 		private final TextTranslator mTextTranslator;
 
 		/**

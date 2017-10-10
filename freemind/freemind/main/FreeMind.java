@@ -97,6 +97,7 @@ import freemind.preferences.FreemindPropertyListener;
 import freemind.view.MapModule;
 import freemind.view.mindmapview.MapView;
 
+@SuppressWarnings("serial")
 public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 
 	public static final String J_SPLIT_PANE_SPLIT_TYPE = "JSplitPane.SPLIT_TYPE";
@@ -257,8 +258,6 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 	
 	private Timer mStatusMessageDisplayTimer;
 
-	private Map filetypes; // Hopefully obsolete. Used to store applications
-
 	// used to open different file types
 
 	private File autoPropertiesFile;
@@ -287,11 +286,11 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 
 	private boolean mStartupDone = false;
 
-	private List mStartupDoneListeners = new Vector();
+	private List<StartupDoneListener> mStartupDoneListeners = new Vector<>();
 
 	private EditServer mEditServer = null;
 
-	private Vector mLoggerList = new Vector();
+	private Vector<Logger> mLoggerList = new Vector<>();
 
 
 	private static LogFileLogHandler sLogFileHandler;
@@ -336,14 +335,12 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 			StringBuffer b = new StringBuffer();
 			// print all java/sun properties
 			Properties properties = System.getProperties();
-			List list = new ArrayList();
-			for (Iterator it = properties.keySet().iterator(); it.hasNext();) {
-				Object key = (Object) it.next();
-				list.add(key);
+			List<String> list = new ArrayList<>();
+			for (Object key : properties.keySet()) {
+				list.add((String) key);
 			}
 			Collections.sort(list);
-			for (Iterator it = list.iterator(); it.hasNext();) {
-				String key = (String) it.next();
+			for (String key : list) {
 				if (key.startsWith("java") || key.startsWith("sun")) {
 					b.append("Environment key " + key + " = "
 							+ properties.getProperty(key) + "\n");
@@ -919,8 +916,7 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 
 	private void fireStartupDone() {
 		mStartupDone = true;
-		for (Iterator it = mStartupDoneListeners.iterator(); it.hasNext();) {
-			StartupDoneListener listener = (StartupDoneListener) it.next();
+		for (StartupDoneListener listener : mStartupDoneListeners) {
 			listener.startupDone();
 		}
 	}
@@ -1064,10 +1060,7 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 			int index = 0;
 			MapModule mapToFocus = null;
 			LastStateStorageManagement management = getLastStateStorageManagement();
-			for (Iterator it = management.getLastOpenList().iterator(); it
-					.hasNext();) {
-				MindmapLastStateStorage store = (MindmapLastStateStorage) it
-						.next();
+			for (MindmapLastStateStorage store : management.getLastOpenList()) {
 				String restorable = store.getRestorableName();
 				pFeedBack.increase(FREE_MIND_PROGRESS_LOAD_MAPS_NAME,
 						new Object[] { restorable.replaceAll(".*/", "") });
@@ -1323,7 +1316,7 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 			mStartupDoneListeners.add(pStartupDoneListener);
 	}
 
-	public List getLoggerList() {
+	public List<Logger> getLoggerList() {
 		return Collections.unmodifiableList(mLoggerList);
 	}
 

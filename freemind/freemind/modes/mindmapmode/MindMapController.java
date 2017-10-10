@@ -480,7 +480,7 @@ public class MindMapController extends ControllerAdapter implements
 	public SelectAllAction selectAllAction = null;
 
 	// Extension Actions
-	public Vector iconActions = new Vector(); // fc
+	public Vector<IconAction> iconActions = new Vector<>(); // fc
 
 	FileFilter filefilter = new MindMapFilter();
 

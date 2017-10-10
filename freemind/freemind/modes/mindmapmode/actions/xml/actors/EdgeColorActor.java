@@ -88,7 +88,7 @@ public class EdgeColorActor extends XmlActorAdapter {
 	 * 
 	 * @see freemind.controller.actions.ActorXml#getDoActionClass()
 	 */
-	public Class getDoActionClass() {
+	public Class<EdgeColorFormatAction> getDoActionClass() {
 		return EdgeColorFormatAction.class;
 	}
 

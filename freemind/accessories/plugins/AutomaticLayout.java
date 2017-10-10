@@ -147,8 +147,6 @@ public class AutomaticLayout extends PermanentMindMapNodeHookAdapter {
 
 		JButton mButton;
 
-		private final TextTranslator mTranslator;
-
 		private final MindMapController mindMapController;
 
 		public StylePatternProperty(String description, String label,
@@ -156,7 +154,6 @@ public class AutomaticLayout extends PermanentMindMapNodeHookAdapter {
 			super();
 			this.description = description;
 			this.label = label;
-			mTranslator = pTranslator;
 			mindMapController = pController;
 			mButton = new JButton();
 			mButton.addActionListener(this);
@@ -232,7 +229,7 @@ public class AutomaticLayout extends PermanentMindMapNodeHookAdapter {
 
 		String patterns;
 
-		JList mList;
+		JList<String> mList;
 
 		boolean mDialogIsShown = false;
 
@@ -240,7 +237,7 @@ public class AutomaticLayout extends PermanentMindMapNodeHookAdapter {
 
 		private final MindMapController mindMapController;
 
-		private DefaultListModel mDefaultListModel;
+		private DefaultListModel<String> mDefaultListModel;
 
 		public StylePatternListProperty(String description, String label,
 				TextTranslator pTranslator, MindMapController pController) {
@@ -249,9 +246,9 @@ public class AutomaticLayout extends PermanentMindMapNodeHookAdapter {
 			this.label = label;
 			mTranslator = pTranslator;
 			mindMapController = pController;
-			mList = new JList();
+			mList = new JList<>();
 			mList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			mDefaultListModel = new DefaultListModel();
+			mDefaultListModel = new DefaultListModel<>();
 			mList.setModel(mDefaultListModel);
 			mList.addListSelectionListener(this);
 			patterns = null;
@@ -272,13 +269,11 @@ public class AutomaticLayout extends PermanentMindMapNodeHookAdapter {
 			int j = 1;
 			StylePropertyTranslator stylePropertyTranslator = new StylePropertyTranslator(
 					mindMapController);
-			for (Iterator i = resultPatterns.getListChoiceList().iterator(); i
-					.hasNext();) {
-				Pattern pattern = (Pattern) i.next();
+			for (Iterator<Pattern> i = resultPatterns.getListChoiceList().iterator(); i.hasNext();) {
+				Pattern pattern = i.next();
 				mDefaultListModel.addElement(mTranslator.getText("level" + j)
 						+ ": "
-						+ StylePatternFactory.toString(pattern,
-								stylePropertyTranslator));
+						+ StylePatternFactory.toString(pattern, stylePropertyTranslator));
 				j++;
 			}
 		}
@@ -308,7 +303,7 @@ public class AutomaticLayout extends PermanentMindMapNodeHookAdapter {
 		public void valueChanged(ListSelectionEvent e) {
 			// construct pattern:
 			final Patterns pat = getPatternsFromString();
-			JList source = (JList) e.getSource();
+			JList<String> source = (JList<String>) e.getSource();
 			if (source.getSelectedIndex() < 0)
 				return;
 			final Pattern choice = (Pattern) pat.getChoice(source
@@ -355,8 +350,8 @@ public class AutomaticLayout extends PermanentMindMapNodeHookAdapter {
 			this.modeController = modeController;
 		}
 
-		public List getControls(TextTranslator pTextTranslator) {
-			Vector controls = new Vector();
+		public List<PropertyControl> getControls(TextTranslator pTextTranslator) {
+			Vector<PropertyControl> controls = new Vector<>();
 			controls.add(new OptionPanel.NewTabProperty(
 					"accessories/plugins/AutomaticLayout.properties_PatternTabName"));
 			controls.add(new SeparatorProperty(
@@ -457,8 +452,8 @@ public class AutomaticLayout extends PermanentMindMapNodeHookAdapter {
 		logger.finest("setStyle " + node);
 		setStyle(node);
 		// recurse:
-		for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-			MindMapNode child = (MindMapNode) i.next();
+		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+			MindMapNode child = i.next();
 			invoke(child);
 		}
 	}

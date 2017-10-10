@@ -24,7 +24,6 @@
 package freemind.modes.mindmapmode.actions;
 
 import java.awt.event.ActionEvent;
-import java.util.ListIterator;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -36,7 +35,6 @@ import freemind.modes.IconInformation;
 import freemind.modes.MindIcon;
 import freemind.modes.MindMapNode;
 import freemind.modes.mindmapmode.MindMapController;
-import freemind.modes.mindmapmode.MindMapNodeModel;
 import freemind.modes.mindmapmode.actions.xml.actors.AddIconActor;
 
 public class IconAction extends MindmapAction implements IconInformation {
@@ -80,33 +78,25 @@ public class IconAction extends MindmapAction implements IconInformation {
 	}
 
 	private void addLastIcon() {
-		for (ListIterator it = modeController.getSelecteds().listIterator(); it
-				.hasNext();) {
-			MindMapNodeModel selected = (MindMapNodeModel) it.next();
+		for (MindMapNode selected : modeController.getSelecteds()) {
 			getAddIconActor().addIcon(selected, icon);
 		}
 	}
 
 	private void removeIcon(boolean removeFirst) {
-		for (ListIterator it = modeController.getSelecteds().listIterator(); it
-				.hasNext();) {
-			MindMapNodeModel selected = (MindMapNodeModel) it.next();
+		for (MindMapNode selected : modeController.getSelecteds()) {
 			getAddIconActor().removeIcon(selected, icon, removeFirst);
 		}
 	}
 
 	private void toggleIcon() {
-		for (ListIterator it = modeController.getSelecteds().listIterator(); it
-				.hasNext();) {
-			MindMapNodeModel selected = (MindMapNodeModel) it.next();
+		for (MindMapNode selected : modeController.getSelecteds()) {
 			getAddIconActor().toggleIcon(selected, icon);
 		}
 	}
 
 	private void removeAllIcons() {
-		for (ListIterator it = modeController.getSelecteds().listIterator(); it
-				.hasNext();) {
-			MindMapNodeModel selected = (MindMapNodeModel) it.next();
+		for (MindMapNode selected : modeController.getSelecteds()) {
 			if (selected.getIcons().size() > 0) {
 				modeController.removeAllIcons(selected);
 			}
@@ -125,7 +115,7 @@ public class IconAction extends MindmapAction implements IconInformation {
 		return getMindMapController().getActorFactory().getAddIconActor();
 	}
 
-	public Class getDoActionClass() {
+	public Class<AddIconAction> getDoActionClass() {
 		return AddIconAction.class;
 	}
 	

@@ -34,7 +34,6 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -81,14 +80,14 @@ public abstract class NodeAdapter implements MindMapNode {
 	public final static int RIGHT_POSITION = 1;
 	public final static int UNKNOWN_POSITION = 0;
 
-	private HashSet activatedHooks;
-	private List hooks;
+	private HashSet<PermanentNodeHook> activatedHooks;
+	private List<PermanentNodeHook> hooks;
 	protected Object userObject = "no text";
 	private String xmlText = "no text";
 	private String link = null; // Change this to vector in future for full
 								// graph support
 	private static final String TOOLTIP_PREVIEW_KEY = "preview";
-	private TreeMap toolTip = null; // lazy, fc, 30.6.2005
+	private TreeMap<String, String> toolTip = null; // lazy, fc, 30.6.2005
 
 	// these Attributes have default values, so it can be useful to directly
 	// access them in
@@ -98,9 +97,9 @@ public abstract class NodeAdapter implements MindMapNode {
 	// example.
 	protected String style;
 	/** stores the icons associated with this node. */
-	protected Vector/* <MindIcon> */icons = null; // lazy, fc, 30.6.2005
+	protected Vector<MindIcon> icons = null; // lazy, fc, 30.6.2005
 
-	protected TreeMap /* of String to MindIcon s */stateIcons = null; // lazy, fc,
+	protected TreeMap<String,ImageIcon> stateIcons = null; // lazy, fc,
 																	// 30.6.2005
 	// /**stores the label associated with this node:*/
 	// protected String mLabel;
@@ -116,7 +115,7 @@ public abstract class NodeAdapter implements MindMapNode {
 	private int hGap = HGAP;
 	private int shiftY = 0;
 
-	protected List children;
+	protected List<MindMapNode> children;
 	private MindMapNode preferredChild;
 
 	protected Font font;
@@ -133,7 +132,6 @@ public abstract class NodeAdapter implements MindMapNode {
 	private MindMapEdge edge;
 
 	private static final boolean ALLOWSCHILDREN = true;
-	private static final boolean ISLEAF = false; // all nodes may have children
 	private HistoryInformation historyInformation = null;
 	// Logging:
 	static protected java.util.logging.Logger logger;
@@ -281,7 +279,7 @@ public abstract class NodeAdapter implements MindMapNode {
 
 	/** Creates the TreePath recursively */
 	public TreePath getPath() {
-		Vector pathVector = new Vector();
+		Vector<NodeAdapter> pathVector = new Vector<>();
 		TreePath treePath;
 		this.addToPathVector(pathVector);
 		treePath = new TreePath(pathVector.toArray());
@@ -314,8 +312,8 @@ public abstract class NodeAdapter implements MindMapNode {
 	 * Correct iterative level values of children
 	 */
 	private void changeChildCloudIterativeLevels(int deltaLevel) {
-		for (ListIterator e = childrenUnfolded(); e.hasNext();) {
-			NodeAdapter childNode = (NodeAdapter) e.next();
+		for (ListIterator<NodeAdapter> e = childrenUnfolded(); e.hasNext();) {
+			NodeAdapter childNode = e.next();
 			MindMapCloud childCloud = childNode.getCloud();
 			if (childCloud != null) {
 				childCloud.changeIterativeLevel(deltaLevel);
@@ -509,9 +507,9 @@ public abstract class NodeAdapter implements MindMapNode {
 	}
 
 	// fc, 24.9.2003:
-	public List getIcons() {
+	public List<MindIcon> getIcons() {
 		if (icons == null)
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		return icons;
 	}
 
@@ -551,8 +549,8 @@ public abstract class NodeAdapter implements MindMapNode {
 	 */
 	public boolean hasFoldedStrictDescendant() {
 
-		for (ListIterator e = childrenUnfolded(); e.hasNext();) {
-			NodeAdapter child = (NodeAdapter) e.next();
+		for (ListIterator<NodeAdapter> e = childrenUnfolded(); e.hasNext();) {
+			NodeAdapter child = e.next();
 			if (child.isFolded() || child.hasFoldedStrictDescendant()) {
 				return true;
 			}
@@ -584,7 +582,7 @@ public abstract class NodeAdapter implements MindMapNode {
 			StringWriter writer = new StringWriter();
 			this.save(writer, this.getMap().getLinkRegistry(), true, false);
 			String result = writer.toString();
-			HashMap IDToTarget = new HashMap();
+			HashMap IDToTarget = new HashMap<>();
 			MindMapNode copy = getMap().createNodeTreeFromXml(
 					new StringReader(result), IDToTarget);
 			copy.setFolded(false);
@@ -636,8 +634,8 @@ public abstract class NodeAdapter implements MindMapNode {
 
 	public int getChildPosition(MindMapNode childNode) {
 		int position = 0;
-		for (ListIterator i = children.listIterator(); i.hasNext(); ++position) {
-			if (((MindMapNode) i.next()) == childNode) {
+		for (ListIterator<MindMapNode> i = children.listIterator(); i.hasNext(); ++position) {
+			if (i.next() == childNode) {
 				return position;
 			}
 		}
@@ -654,17 +652,17 @@ public abstract class NodeAdapter implements MindMapNode {
 	 * 
 	 * @see freemind.modes.MindMapNode#sortedChildrenUnfolded()
 	 */
-	public ListIterator sortedChildrenUnfolded() {
+	public ListIterator<MindMapNode> sortedChildrenUnfolded() {
 		if (children == null)
 			return null;
-		LinkedList sorted = new LinkedList(children);
+		LinkedList<MindMapNode> sorted = new LinkedList<>(children);
 		/*
 		 * Using this stable sort, we assure that the left nodes came in front
 		 * of the right ones.
 		 */
-		Collections.sort(sorted, new Comparator() {
+		Collections.sort(sorted, new Comparator<MindMapNode>() {
 
-			public int compare(Object pO1, Object pO2) {
+			public int compare(MindMapNode pO1, MindMapNode pO2) {
 				return comp(((MindMapNode) pO2).isLeft(),
 						((MindMapNode) pO1).isLeft());
 			}
@@ -689,9 +687,9 @@ public abstract class NodeAdapter implements MindMapNode {
 		return childrenUnfolded();
 	}
 
-	public List getChildren() {
+	public List<MindMapNode> getChildren() {
 		return Collections.unmodifiableList((children != null) ? children
-				: Collections.EMPTY_LIST);
+				: Collections.<MindMapNode>emptyList());
 	}
 
 	//
@@ -796,9 +794,9 @@ public abstract class NodeAdapter implements MindMapNode {
 		final MindMapNode childNode = (MindMapNode) child;
 		if (index < 0) { // add to the end (used in xml load) (PN)
 			index = getChildCount();
-			children.add(index, child);
+			children.add(index, childNode);
 		} else { // mind preferred child :-)
-			children.add(index, child);
+			children.add(index, childNode);
 			preferredChild = childNode;
 		}
 		child.setParent(this);
@@ -830,9 +828,7 @@ public abstract class NodeAdapter implements MindMapNode {
 			MindMapNode addedChild) {
 		// Tell any node hooks that the node is added:
 		if (node instanceof MindMapNode) {
-			for (Iterator i = ((MindMapNode) node).getActivatedHooks()
-					.iterator(); i.hasNext();) {
-				PermanentNodeHook hook = (PermanentNodeHook) i.next();
+			for (PermanentNodeHook hook : ((MindMapNode) node).getActivatedHooks()) {
 				if (addedChild.getParentNode() == node) {
 					hook.onAddChild(addedChild);
 				}
@@ -849,8 +845,7 @@ public abstract class NodeAdapter implements MindMapNode {
 	 */
 	private void recursiveCallRemoveChildren(MindMapNode node,
 			MindMapNode removedChild, MindMapNode oldDad) {
-		for (Iterator i = node.getActivatedHooks().iterator(); i.hasNext();) {
-			PermanentNodeHook hook = (PermanentNodeHook) i.next();
+		for (PermanentNodeHook hook : node.getActivatedHooks()) {
 			if (removedChild.getParentNode() == node) {
 				hook.onRemoveChild(removedChild);
 			}
@@ -882,7 +877,7 @@ public abstract class NodeAdapter implements MindMapNode {
 	// ////////////
 
 	/** Recursive Method for getPath() */
-	private void addToPathVector(Vector pathVector) {
+	private void addToPathVector(Vector<NodeAdapter> pathVector) {
 		pathVector.add(0, this); // Add myself to beginning of Vector
 		if (parent != null) {
 			((NodeAdapter) parent).addToPathVector(pathVector);
@@ -930,7 +925,7 @@ public abstract class NodeAdapter implements MindMapNode {
 		}
 		if (hook instanceof PermanentNodeHook) {
 			createActivatedHooks();
-			activatedHooks.add(hook);
+			activatedHooks.add((PermanentNodeHook) hook);
 		} else {
 			// end of its short life:
 			hook.shutdownMapHook();
@@ -939,31 +934,31 @@ public abstract class NodeAdapter implements MindMapNode {
 
 	private void createActivatedHooks() {
 		if (activatedHooks == null) {
-			activatedHooks = new HashSet();
+			activatedHooks = new HashSet<>();
 		}
 	}
 
 	private void createToolTip() {
 		if (toolTip == null) {
-			toolTip = new TreeMap();
+			toolTip = new TreeMap<>();
 		}
 	}
 
 	private void createHooks() {
 		if (hooks == null) {
-			hooks = new Vector();
+			hooks = new Vector<>();
 		}
 	}
 
 	private void createStateIcons() {
 		if (stateIcons == null) {
-			stateIcons = new TreeMap();
+			stateIcons = new TreeMap<>();
 		}
 	}
 
 	private void createIcons() {
 		if (icons == null) {
-			icons = new Vector();
+			icons = new Vector<>();
 		}
 	}
 
@@ -972,9 +967,9 @@ public abstract class NodeAdapter implements MindMapNode {
 	 * 
 	 * @see freemind.modes.MindMapNode#getHooks()
 	 */
-	public List getHooks() {
+	public List<PermanentNodeHook> getHooks() {
 		if (hooks == null)
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		return Collections.unmodifiableList(hooks);
 	}
 
@@ -983,9 +978,9 @@ public abstract class NodeAdapter implements MindMapNode {
 	 * 
 	 * @see freemind.modes.MindMapNode#getActivatedHooks()
 	 */
-	public Collection getActivatedHooks() {
+	public Collection<PermanentNodeHook> getActivatedHooks() {
 		if (activatedHooks == null) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 		return Collections.unmodifiableCollection(activatedHooks);
 	}
@@ -1030,11 +1025,11 @@ public abstract class NodeAdapter implements MindMapNode {
 
 	/**
 	 */
-	public SortedMap getToolTip() {
+	public SortedMap<String, String> getToolTip() {
 		boolean toolTipChanged = false;
-		TreeMap result = toolTip;
+		TreeMap<String, String> result = toolTip;
 		if (result == null)
-			result = new TreeMap();
+			result = new TreeMap<>();
 		// add preview to other map, if appropriate:
 		String link = getLink();
 		// replace jump mark
@@ -1162,7 +1157,7 @@ public abstract class NodeAdapter implements MindMapNode {
 			node.addChild(cloud);
 		}
 
-		Vector linkVector = registry.getAllLinksFromMe(this);
+		Vector<MindMapLink> linkVector = registry.getAllLinksFromMe(this);
 		for (int i = 0; i < linkVector.size(); ++i) {
 			if (linkVector.get(i) instanceof ArrowLinkAdapter) {
 				XMLElement arrowLinkElement = ((ArrowLinkAdapter) linkVector
@@ -1172,7 +1167,7 @@ public abstract class NodeAdapter implements MindMapNode {
 		}
 
 		// virtual link targets:
-		Vector targetVector = registry.getAllLinksIntoMe(this);
+		Vector<MindMapLink> targetVector = registry.getAllLinksIntoMe(this);
 		for (int i = 0; i < targetVector.size(); ++i) {
 			if (targetVector.get(i) instanceof ArrowLinkAdapter) {
 				XMLElement arrowLinkTargetElement = ((ArrowLinkAdapter) targetVector
@@ -1277,8 +1272,7 @@ public abstract class NodeAdapter implements MindMapNode {
 			node.addChild(iconElement);
 		}
 
-		for (Iterator i = getActivatedHooks().iterator(); i.hasNext();) {
-			PermanentNodeHook permHook = (PermanentNodeHook) i.next();
+		for (PermanentNodeHook permHook : getActivatedHooks()) {
 			if (permHook instanceof DontSaveMarker) {
 				continue;
 			}
@@ -1316,8 +1310,8 @@ public abstract class NodeAdapter implements MindMapNode {
 
 	private void saveChildren(Writer writer, MindMapLinkRegistry registry,
 			NodeAdapter node, boolean saveHidden) throws IOException {
-		for (ListIterator e = node.childrenUnfolded(); e.hasNext();) {
-			NodeAdapter child = (NodeAdapter) e.next();
+		for (ListIterator<NodeAdapter> e = node.childrenUnfolded(); e.hasNext();) {
+			NodeAdapter child = e.next();
 			if (saveHidden || child.isVisible())
 				child.save(writer, registry, saveHidden, true);
 			else
@@ -1331,8 +1325,8 @@ public abstract class NodeAdapter implements MindMapNode {
 
 	public boolean hasExactlyOneVisibleChild() {
 		int count = 0;
-		for (ListIterator i = childrenUnfolded(); i.hasNext();) {
-			if (((MindMapNode) i.next()).isVisible())
+		for (ListIterator<MindMapNode> i = childrenUnfolded(); i.hasNext();) {
+			if (i.next().isVisible())
 				count++;
 			if (count == 2)
 				return false;
@@ -1341,8 +1335,8 @@ public abstract class NodeAdapter implements MindMapNode {
 	}
 
 	public boolean hasVisibleChilds() {
-		for (ListIterator i = childrenUnfolded(); i.hasNext();) {
-			if (((MindMapNode) i.next()).isVisible())
+		for (ListIterator<MindMapNode> i = childrenUnfolded(); i.hasNext();) {
+			if (i.next().isVisible())
 				return true;
 		}
 		return false;
@@ -1390,9 +1384,9 @@ public abstract class NodeAdapter implements MindMapNode {
 			stateIcons = null;
 	}
 
-	public Map getStateIcons() {
+	public Map<String,ImageIcon> getStateIcons() {
 		if (stateIcons == null)
-			return Collections.EMPTY_MAP;
+			return Collections.emptyMap();
 		return Collections.unmodifiableSortedMap(stateIcons);
 	}
 
@@ -1445,14 +1439,12 @@ public abstract class NodeAdapter implements MindMapNode {
 	//
 
 	@Override
-	public List getAttributeKeyList() {
+	public List<String> getAttributeKeyList() {
 		if(mAttributeVector==null) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
-		Vector returnValue = new Vector();
-		for (Iterator iter = mAttributeVector.iterator(); iter
-				.hasNext();) {
-			Attribute attr = (Attribute) iter.next();
+		Vector<String> returnValue = new Vector<>();
+		for (Attribute attr : mAttributeVector) {
 			returnValue.add(attr.getName());
 		}
 		return returnValue;

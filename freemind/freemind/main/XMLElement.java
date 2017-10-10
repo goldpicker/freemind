@@ -188,7 +188,7 @@ public class XMLElement {
 	 * </dd>
 	 * </dl>
 	 */
-	private TreeMap attributes;
+	private TreeMap<String, String> attributes;
 
 	/**
 	 * Child elements of the element.

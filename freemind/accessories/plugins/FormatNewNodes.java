@@ -54,13 +54,13 @@ public class FormatNewNodes implements ActionHandler, ActionFilter,
 
 	private Logger logger;
 
-	private HashMap formatActions;
+	private HashMap<String, XmlAction> formatActions;
 
 	public FormatNewNodes(ModeController controller, MindMap map) {
 		this.controller = (MindMapController) controller;
 		mMap = map;
 		logger = controller.getFrame().getLogger(this.getClass().getName());
-		this.formatActions = new HashMap();
+		this.formatActions = new HashMap<>();
 	}
 
 	public void register() {

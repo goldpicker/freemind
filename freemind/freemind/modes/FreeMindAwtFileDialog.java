@@ -135,16 +135,8 @@ public class FreeMindAwtFileDialog extends FileDialog implements
 			return mPrincipalFilter.accept(file) && mCustomFilter.accept(file);
 		}
 
-		public FileFilter getCustomFilter() {
-			return mCustomFilter;
-		}
-
 		public void setCustomFilter(FileFilter pFilter) {
 			mCustomFilter = pFilter;
-		}
-
-		public FileFilter getPrincipalFilter() {
-			return mPrincipalFilter;
 		}
 
 		public void setPrincipalFilter(FileFilter pPrincipalFilter) {

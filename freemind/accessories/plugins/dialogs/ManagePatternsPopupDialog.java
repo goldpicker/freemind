@@ -34,7 +34,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -437,8 +436,7 @@ public class ManagePatternsPopupDialog extends JDialog implements
 		writePatternBackToModel();
 		setLastSelectedPattern(null);
 		Pattern pattern = mPatternListModel.get(selectedIndex);
-		for (Iterator<MindMapNode> iterator = mController.getSelecteds().iterator(); iterator.hasNext();) {
-			MindMapNode node = iterator.next();
+		for (MindMapNode node : mController.getSelecteds()) {
 			mController.applyPattern(node, pattern);
 		}
 	}

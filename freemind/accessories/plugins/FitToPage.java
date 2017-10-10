@@ -26,8 +26,6 @@ package accessories.plugins;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Rectangle;
-
-import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
 import freemind.extensions.ModeControllerHookAdapter;
@@ -79,7 +77,6 @@ public class FitToPage extends ModeControllerHookAdapter {
 		// calculate the zoom:
 		double oldZoom = getController().getView().getZoom();
 		JViewport viewPort = (JViewport) view.getParent();
-		JScrollPane pane = (JScrollPane) viewPort.getParent();
 		Dimension viewer = viewPort.getExtentSize();
 		logger.info("Found viewer rect=" + viewer.height + "/" + rect.height
 				+ ", " + viewer.width + "/" + rect.width);

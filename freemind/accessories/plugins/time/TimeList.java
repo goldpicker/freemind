@@ -95,6 +95,7 @@ import freemind.view.mindmapview.MultipleImage;
  * 
  *         TODO: - Extract HTML from nodes and notes.
  */
+@SuppressWarnings("serial")
 public class TimeList extends MindMapHookAdapter implements
 		MapModuleChangeObserver {
 
@@ -421,11 +422,10 @@ public class TimeList extends MindMapHookAdapter implements
 			toggleViewFoldedNodes();
 		}
 		int column = 0;
-		for (Iterator i = timeStorage
+		for (Iterator<TimeWindowColumnSetting> i = timeStorage
 				.getListTimeWindowColumnSettingList().iterator(); i
 				.hasNext();) {
-			TimeWindowColumnSetting setting = (TimeWindowColumnSetting) i
-					.next();
+			TimeWindowColumnSetting setting = i.next();
 			mTimeTable.getColumnModel().getColumn(column)
 					.setPreferredWidth(setting.getColumnWidth());
 			mSorter.setSortingStatus(column, setting.getColumnSorting());
@@ -452,7 +452,7 @@ public class TimeList extends MindMapHookAdapter implements
 
 	protected void exportSelectedRowsAndClose() {
 		int[] selectedRows = mTimeTable.getSelectedRows();
-		Vector selectedNodes = new Vector();
+		Vector<MindMapNode> selectedNodes = new Vector<>();
 		for (int i = 0; i < selectedRows.length; i++) {
 			int row = selectedRows[i];
 			selectedNodes.add(getMindMapNode(row));
@@ -461,8 +461,7 @@ public class TimeList extends MindMapHookAdapter implements
 		MindMapController newMindMapController = (MindMapController) getMindMapController().newMap();
 		// Tools.BooleanHolder booleanHolder = new Tools.BooleanHolder();
 		// booleanHolder.setValue(false);
-		for (Iterator iter = selectedNodes.iterator(); iter.hasNext();) {
-			MindMapNode node = (MindMapNode) iter.next();
+		for (MindMapNode node : selectedNodes) {
 			MindMapNode copy = node.shallowCopy();
 			if (copy != null) {
 				newMindMapController.insertNodeInto(copy, newMindMapController.getRootNode());
@@ -608,7 +607,7 @@ public class TimeList extends MindMapHookAdapter implements
 		if (focussedRow >= 0) {
 			MindMapNode focussedNode = getMindMapNode(focussedRow);
 			// getController().centerNode(focussedNode);
-			Vector selectedNodes = new Vector();
+			Vector<MindMapNode> selectedNodes = new Vector<>();
 			for (int i = 0; i < selectedRows.length; i++) {
 				int row = selectedRows[i];
 				selectedNodes.add(getMindMapNode(row));
@@ -683,8 +682,8 @@ public class TimeList extends MindMapHookAdapter implements
 			// no recursion, if folded nodes should be hidden.
 			return;
 		}
-		for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-			MindMapNode child = (MindMapNode) i.next();
+		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+			MindMapNode child = i.next();
 			updateModel(model, child);
 		}
 	}
@@ -1023,16 +1022,15 @@ public class TimeList extends MindMapHookAdapter implements
 	}
 
 	static class IconsHolder implements Comparable {
-		Vector icons = new Vector();
+		Vector<MindIcon> icons = new Vector<>();
 
-		private Vector iconNames;
+		private Vector<String> iconNames;
 
 		public IconsHolder(MindMapNode node) {
 			icons.addAll(node.getIcons());
 			// sorting the output.
-			iconNames = new Vector();
-			for (Iterator i = icons.iterator(); i.hasNext();) {
-				MindIcon icon = (MindIcon) i.next();
+			iconNames = new Vector<>();
+			for (MindIcon icon : icons) {
 				iconNames.add(icon.getName());
 			}
 			Collections.sort(iconNames);
@@ -1042,15 +1040,14 @@ public class TimeList extends MindMapHookAdapter implements
 			return toString().compareTo(compareToObject.toString());
 		}
 
-		public Vector getIcons() {
+		public Vector<MindIcon> getIcons() {
 			return icons;
 		}
 
 		/** Returns a sorted list of icon names. */
 		public String toString() {
 			String result = "";
-			for (Iterator i = iconNames.iterator(); i.hasNext();) {
-				String name = (String) i.next();
+			for (String name : iconNames) {
 				result += name + " ";
 			}
 			return result;
@@ -1069,9 +1066,7 @@ public class TimeList extends MindMapHookAdapter implements
 			if (value instanceof IconsHolder) {
 				IconsHolder iconsHolder = (IconsHolder) value;
 				MultipleImage iconImages = new MultipleImage(1.0f);
-				for (Iterator i = iconsHolder.getIcons().iterator(); i
-						.hasNext();) {
-					MindIcon icon = (MindIcon) i.next();
+				for (MindIcon icon : iconsHolder.getIcons()) {
 					iconImages.addImage(icon.getIcon());
 				}
 				if (iconImages.getImageCount() > 0) {

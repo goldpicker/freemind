@@ -47,6 +47,7 @@ import freemind.main.Tools;
  * Formerly, it has only three calendar widgets at once.
  * Now, it has 9 in total, but we keep the naming.
  * */
+@SuppressWarnings("serial")
 public class JTripleCalendar extends JPanel implements PropertyChangeListener {
 
 	private static final int AMOUNT_OF_ROWS = 3;

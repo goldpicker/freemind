@@ -40,7 +40,7 @@ public class EdgeWidthActor extends XmlActorAdapter {
 		super(pMapFeedback);
 	}
 
-	public Class getDoActionClass() {
+	public Class<EdgeWidthFormatAction> getDoActionClass() {
 		return EdgeWidthFormatAction.class;
 	}
 

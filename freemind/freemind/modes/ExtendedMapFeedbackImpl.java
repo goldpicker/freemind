@@ -71,8 +71,7 @@ public final class ExtendedMapFeedbackImpl extends ExtendedMapFeedbackAdapter {
 					.getLinkRegistry(), pSaveInvisible, true);
 		} catch (IOException e) {
 		}
-		Vector nodeList = Tools
-				.getVectorWithSingleElement(getNodeID(pNode));
+		Vector<String> nodeList = Tools.getVectorWithSingleElement(getNodeID(pNode));
 		return new MindMapNodesSelection(stringWriter.toString(), null,
 				null, null, null, null, null, nodeList);
 	}

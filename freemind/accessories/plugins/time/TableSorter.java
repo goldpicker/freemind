@@ -91,6 +91,7 @@ import javax.swing.table.TableModel;
  * @version 2.0 02/27/04
  */
 
+@SuppressWarnings("serial")
 public class TableSorter extends AbstractTableModel {
 	protected TableModel tableModel;
 
@@ -117,8 +118,8 @@ public class TableSorter extends AbstractTableModel {
 	private JTableHeader tableHeader;
 	private MouseListener mouseListener;
 	private TableModelListener tableModelListener;
-	private Map columnComparators = new HashMap();
-	private List sortingColumns = new ArrayList();
+	private Map columnComparators = new HashMap<>();
+	private List<Directive> sortingColumns = new ArrayList<>();
 
 	public TableSorter() {
 		this.mouseListener = new MouseHandler();
@@ -325,8 +326,8 @@ public class TableSorter extends AbstractTableModel {
 			int row1 = modelIndex;
 			int row2 = ((Row) o).modelIndex;
 
-			for (Iterator it = sortingColumns.iterator(); it.hasNext();) {
-				Directive directive = (Directive) it.next();
+			for (Iterator<Directive> it = sortingColumns.iterator(); it.hasNext();) {
+				Directive directive = it.next();
 				int column = directive.column;
 				Object o1 = tableModel.getValueAt(row1, column);
 				Object o2 = tableModel.getValueAt(row2, column);

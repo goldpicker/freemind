@@ -61,14 +61,12 @@ public class JMonthChooser extends JPanel implements ItemListener,
 
 	private int month;
 
-	private int oldSpinnerValue = 0;
-
 	// needed for comparison
 	private JDayChooser dayChooser;
 
 	private JYearChooser yearChooser;
 
-	private JComboBox comboBox;
+	private JComboBox<String> comboBox;
 
 	private JSpinner spinner;
 
@@ -96,7 +94,7 @@ public class JMonthChooser extends JPanel implements ItemListener,
 
 		setLayout(new BorderLayout());
 
-		comboBox = new JComboBox();
+		comboBox = new JComboBox<>();
 		comboBox.addItemListener(this);
 
 		// comboBox.addPopupMenuListener(this);
@@ -160,8 +158,6 @@ public class JMonthChooser extends JPanel implements ItemListener,
 		SpinnerNumberModel model = (SpinnerNumberModel) ((JSpinner) e
 				.getSource()).getModel();
 		int value = model.getNumber().intValue();
-		boolean increase = (value > oldSpinnerValue) ? true : false;
-		oldSpinnerValue = value;
 
 //		changeMonth(increase);
 		firePropertyChange(MONTH_PROPERTY, 0, value);

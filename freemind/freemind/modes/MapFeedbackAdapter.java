@@ -222,8 +222,7 @@ public abstract class MapFeedbackAdapter implements MapFeedback, ViewFeedback {
 			NodeAdapter child = (NodeAdapter) i.next();
 			invokeHooksRecursively(child, getMap());
 		}
-		for (Iterator i = pNode.getHooks().iterator(); i.hasNext();) {
-			PermanentNodeHook hook = (PermanentNodeHook) i.next();
+		for (PermanentNodeHook hook : pNode.getHooks()) {
 			hook.setController(this);
 			hook.setMap(getMap());
 			pNode.invokeHook(hook);
@@ -345,14 +344,12 @@ public abstract class MapFeedbackAdapter implements MapFeedback, ViewFeedback {
 	 * Moreover, it sorts nodes with the same depth according to their position
 	 * relative to each other.
 	 */
-	protected class NodesDepthComparator implements Comparator {
+	protected class NodesDepthComparator implements Comparator<MindMapNode> {
 		public NodesDepthComparator() {
 		}
 
 		/* the < relation. */
-		public int compare(Object p1, Object p2) {
-			MindMapNode n1 = ((MindMapNode) p1);
-			MindMapNode n2 = ((MindMapNode) p2);
+		public int compare(MindMapNode n1, MindMapNode n2) {
 			Object[] path1 = getMap().getPathToRoot(n1);
 			Object[] path2 = getMap().getPathToRoot(n2);
 			int depth = path1.length - path2.length;

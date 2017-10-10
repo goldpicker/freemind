@@ -58,7 +58,7 @@ public class AddIconActor extends XmlActorAdapter {
 		}
 	}
 
-	public Class getDoActionClass() {
+	public Class<AddIconAction> getDoActionClass() {
 		return AddIconAction.class;
 	}
 

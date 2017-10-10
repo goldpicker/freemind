@@ -42,11 +42,10 @@ public class ShowCloneNodes extends MindMapNodeHookAdapter{
 	 */
 	public void invoke(MindMapNode pNode) {
 		super.invoke(pNode);
-		final Vector newSelecteds = new Vector();
+		final Vector<MindMapNode> newSelecteds = new Vector<>();
 		final MindMapController mindMapController = getMindMapController();
-		List selecteds = mindMapController.getSelecteds();
-		for (Iterator it = selecteds.iterator(); it.hasNext();) {
-			MindMapNode node = (MindMapNode) it.next();
+		List<MindMapNode> selecteds = mindMapController.getSelecteds();
+		for (MindMapNode node : selecteds) {
 			addClonesToList(newSelecteds, node);
 			newSelecteds.remove(node);
 		}
@@ -60,7 +59,7 @@ public class ShowCloneNodes extends MindMapNodeHookAdapter{
 		}
 	}
 
-	protected void addClonesToList(Vector newSelecteds, MindMapNode node) {
+	protected void addClonesToList(Vector<MindMapNode> newSelecteds, MindMapNode node) {
 		ClonePlugin hook = ClonePlugin.getHook(node);
 		if(hook != null) {
 			// original found. 

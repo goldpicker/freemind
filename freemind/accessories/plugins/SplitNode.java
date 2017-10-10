@@ -62,7 +62,7 @@ public class SplitNode extends MindMapNodeHookAdapter {
 	 */
 	public void invoke(MindMapNode node) {
 		super.invoke(node);
-		final List list = getMindMapController().getSelecteds();
+		final List<MindMapNode> list = getMindMapController().getSelecteds();
 		final ListIterator listIterator = list.listIterator();
 		while (listIterator.hasNext()) {
 			MindMapNode next = (MindMapNode) listIterator.next();

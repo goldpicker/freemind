@@ -24,12 +24,11 @@ package freemind.common;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Iterator;
 import java.util.Vector;
 
 public abstract class PropertyBean {
 
-	private Vector mPropertyChangeListeners = new Vector();
+	private Vector<PropertyChangeListener> mPropertyChangeListeners = new Vector<>();
 
 	/** The key of the property. */
 	public abstract String getLabel();
@@ -49,8 +48,7 @@ public abstract class PropertyBean {
 	protected void firePropertyChangeEvent() {
 		PropertyChangeEvent evt = new PropertyChangeEvent(this, getLabel(),
 				null, getValue());
-		for (Iterator i = mPropertyChangeListeners.iterator(); i.hasNext();) {
-			PropertyChangeListener listener = (PropertyChangeListener) i.next();
+		for (PropertyChangeListener listener : mPropertyChangeListeners) {
 			listener.propertyChange(evt);
 		}
 	}

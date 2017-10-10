@@ -26,7 +26,6 @@ package accessories.plugins;
 import java.awt.datatransfer.Transferable;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Vector;
 
 import freemind.main.Tools;
@@ -98,9 +97,8 @@ public class SortNodes extends MindMapNodeHookAdapter {
 		}
 		Collections.sort(sortVector, comparator);
 		// now, as it is sorted. we cut the children
-		for (Iterator iter = sortVector.iterator(); iter.hasNext();) {
-			MindMapNode child = (MindMapNode) iter.next();
-			Vector childList = Tools.getVectorWithSingleElement(child);
+		for (MindMapNode child : sortVector) {
+			Vector<MindMapNode> childList = Tools.getVectorWithSingleElement(child);
 			Transferable cut = getMindMapController().cut(childList);
 			// paste directly again causes that the node is added as the last
 			// one.

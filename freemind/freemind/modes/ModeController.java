@@ -146,7 +146,7 @@ public interface ModeController extends TextTranslator, MapFeedback,
 	/**
 	 * @return a List of MindMapNode s.
 	 */
-	List getSelecteds();
+	List<MindMapNode> getSelecteds();
 
 	/**
 	 * @return a LinkedList of MindMapNodes ordered by depth. nodes with greater

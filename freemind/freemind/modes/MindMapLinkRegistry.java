@@ -42,6 +42,7 @@ public class MindMapLinkRegistry {
 	 * @author foltin
 	 * @date 23.01.2012
 	 */
+	@SuppressWarnings("serial")
 	private class SynchronousVector extends Vector {
 		/*
 		 * (non-Javadoc)
@@ -54,7 +55,7 @@ public class MindMapLinkRegistry {
 				MindMapLink link = (MindMapLink) pE;
 				MindMapNode source = link.getSource();
 				if (!mSourceToLinks.containsKey(source)) {
-					mSourceToLinks.put(source, new Vector());
+					mSourceToLinks.put(source, new Vector<>());
 				}
 				((Vector) mSourceToLinks.get(source)).add(pE);
 			}
@@ -82,7 +83,7 @@ public class MindMapLinkRegistry {
 	}
 
 	/** source -> vector of links with same source */
-	protected HashMap mSourceToLinks = new HashMap();
+	protected HashMap mSourceToLinks = new HashMap<>();
 
 	// //////////////////////////////////////////////////////////////////////////////////////
 	// // Attributes /////
@@ -109,11 +110,11 @@ public class MindMapLinkRegistry {
 			logger = freemind.main.Resources.getInstance().getLogger(
 					this.getClass().getName());
 		}
-		mTargetToId = new HashMap();
-		mIdToTarget = new HashMap();
-		mIdToLinks = new HashMap();
-		mIdToLink = new HashMap();
-		mLocallyLinkedIds = new HashSet();
+		mTargetToId = new HashMap<>();
+		mIdToTarget = new HashMap<>();
+		mIdToLinks = new HashMap<>();
+		mIdToLink = new HashMap<>();
+		mLocallyLinkedIds = new HashSet<>();
 	}
 
 	/**
@@ -304,7 +305,7 @@ public class MindMapLinkRegistry {
 	 */
 	public Vector /* of MindMapNode s */getAllSources(MindMapNode target) {
 		Vector returnValue;
-		returnValue = new Vector();
+		returnValue = new Vector<>();
 		String id = getState(target);
 		if (id != null) {
 			Vector vec = getAssignedLinksVector(id);
@@ -317,7 +318,7 @@ public class MindMapLinkRegistry {
 
 	/** @return returns all links from or to this node. */
 	public Vector /* of MindMapLink s */getAllLinks(MindMapNode node) {
-		Vector returnValue = new Vector();
+		Vector returnValue = new Vector<>();
 		returnValue.addAll(getAllLinksIntoMe(node));
 		returnValue.addAll(getAllLinksFromMe(node));
 		// Dimitry : logger is a performance killer here

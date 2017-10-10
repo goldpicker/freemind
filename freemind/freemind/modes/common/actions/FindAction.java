@@ -29,7 +29,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -50,21 +49,22 @@ import freemind.modes.ControllerAdapter;
 import freemind.modes.FreemindAction;
 import freemind.modes.MindMapNode;
 
+@SuppressWarnings("serial")
 public class FindAction extends FreemindAction {
 	private final ControllerAdapter controller;
 
-	private ArrayList findNodesUnfoldedByLastFind;
+	private ArrayList<MindMapNode> findNodesUnfoldedByLastFind;
 
 	private MindMapNode findFromNode;
 
 	private String searchTerm;
 
-	private Collection subterms;
+	private Collection<String> subterms;
 
 	/**
 	 * @return Returns the subterms.
 	 */
-	public Collection getSubterms() {
+	public Collection<String> getSubterms() {
 		return subterms;
 	}
 
@@ -81,7 +81,7 @@ public class FindAction extends FreemindAction {
 
 	private boolean findCaseSensitive;
 
-	private LinkedList findNodeQueue;
+	private LinkedList<MindMapNode> findNodeQueue;
 
 	private JDialog mDialog;
 
@@ -108,7 +108,7 @@ public class FindAction extends FreemindAction {
 		if (what == null || what.equals("")) {
 			return;
 		}
-		Collection subterms = breakSearchTermIntoSubterms(what);
+		Collection<String> subterms = breakSearchTermIntoSubterms(what);
 		this.searchTerm = what;
 		// System.err.println(subterms);
 		/* caseSensitive=false */
@@ -233,7 +233,7 @@ public class FindAction extends FreemindAction {
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			Collection subterms = find.getSubterms();
+			Collection<String> subterms = find.getSubterms();
 			if (subterms == null) {
 				controller.getController().informationMessage(
 						controller.getText("no_previous_find"),
@@ -254,17 +254,17 @@ public class FindAction extends FreemindAction {
 		}
 	}
 
-	public boolean find(MindMapNode node, Collection subterms,
+	public boolean find(MindMapNode node, Collection<String> subterms,
 			boolean caseSensitive) {
-		findNodesUnfoldedByLastFind = new ArrayList();
-		LinkedList nodes = new LinkedList();
+		findNodesUnfoldedByLastFind = new ArrayList<>();
+		LinkedList<MindMapNode> nodes = new LinkedList<>();
 		nodes.addFirst(node);
 		findFromNode = node;
-		Collection finalizedSubterms;
+		Collection<String> finalizedSubterms;
 		if (!caseSensitive) {
-			finalizedSubterms = new ArrayList();
-			for (Iterator i = subterms.iterator(); i.hasNext();) {
-				finalizedSubterms.add(((String) i.next()).toLowerCase());
+			finalizedSubterms = new ArrayList<>();
+			for (String subterm : subterms) {
+				finalizedSubterms.add(subterm.toLowerCase());
 			}
 		} else {
 			finalizedSubterms = subterms;
@@ -272,35 +272,31 @@ public class FindAction extends FreemindAction {
 		return find(nodes, finalizedSubterms, caseSensitive);
 	}
 
-	private boolean find(LinkedList /* queue of MindMapNode */nodes,
-			Collection subterms, boolean caseSensitive) {
+	private boolean find(LinkedList<MindMapNode> nodes,
+			Collection<String> subterms, boolean caseSensitive) {
 		// Precondition: if !caseSensitive then >>what<< is in lowercase.
 		boolean searchInNotesToo = Resources.getInstance().getBoolProperty(
 				FreeMind.RESOURCES_SEARCH_IN_NOTES_TOO);
 
-		// Fold the path of previously found node
-		boolean thereWereNodesToBeFolded = !findNodesUnfoldedByLastFind
-				.isEmpty();
 		if (!findNodesUnfoldedByLastFind.isEmpty()) {
 
 			// if (false) {
-			ListIterator i = findNodesUnfoldedByLastFind
-					.listIterator(findNodesUnfoldedByLastFind.size());
+			ListIterator<MindMapNode> i = findNodesUnfoldedByLastFind.listIterator(findNodesUnfoldedByLastFind.size());
 			while (i.hasPrevious()) {
-				MindMapNode node = (MindMapNode) i.previous();
+				MindMapNode node = i.previous();
 				try {
 					controller.setFolded(node, true);
 				} catch (Exception e) {
 				}
 			}
-			findNodesUnfoldedByLastFind = new ArrayList();
+			findNodesUnfoldedByLastFind = new ArrayList<>();
 		}
 
 		// We implement width-first search.
 		while (!nodes.isEmpty()) {
 			MindMapNode node = (MindMapNode) nodes.removeFirst();
 			// Add children to the queue
-			for (ListIterator i = node.childrenUnfolded(); i.hasNext();) {
+			for (ListIterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
 				nodes.addLast(i.next());
 			}
 
@@ -317,8 +313,8 @@ public class FindAction extends FreemindAction {
 
 			boolean found = true;
 			boolean foundInNotes = false;
-			for (Iterator i = subterms.iterator(); i.hasNext();) {
-				if (nodeText.indexOf((String) i.next()) < 0) {
+			for (String subterm : subterms) {
+				if (nodeText.indexOf(subterm) < 0) {
 					// Subterm not found
 					found = false;
 					break;
@@ -328,8 +324,8 @@ public class FindAction extends FreemindAction {
 			if ((!found) && searchInNotesToo) {
 				/* now, search the notes. */
 				found = true;
-				for (Iterator i = subterms.iterator(); i.hasNext();) {
-					if (noteText.indexOf((String) i.next()) < 0) {
+				for (String subterm : subterms) {
+					if (noteText.indexOf(subterm) < 0) {
 						// Subterm not found
 						found = false;
 						break;
@@ -369,12 +365,12 @@ public class FindAction extends FreemindAction {
 		return nodeText;
 	}
 
-	private Collection breakSearchTermIntoSubterms(String searchTerm) {
-		ArrayList subterms = new ArrayList();
+	private Collection<String> breakSearchTermIntoSubterms(String searchTerm) {
+		ArrayList<String> subterms = new ArrayList<>();
 		StringBuffer subterm = new StringBuffer();
 		int len = searchTerm.length();
 		char myChar;
-		char previousChar = 'a';
+
 		boolean withinQuotes = false;
 		for (int i = 0; i < len; ++i) {
 			myChar = searchTerm.charAt(i);
@@ -395,7 +391,7 @@ public class FindAction extends FreemindAction {
 			} else {
 				subterm.append(myChar);
 			}
-			previousChar = myChar;
+
 		}
 		subterms.add(subterm.toString());
 		return subterms;
@@ -405,7 +401,7 @@ public class FindAction extends FreemindAction {
 	 * Display a node in the display (used by find and the goto action by arrow
 	 * link actions).
 	 */
-	public void displayNode(MindMapNode node, ArrayList nodesUnfoldedByDisplay) {
+	public void displayNode(MindMapNode node, ArrayList<MindMapNode> nodesUnfoldedByDisplay) {
 		// Unfold the path to the node
 		Object[] path = controller.getMap().getPathToRoot(node);
 		// Iterate the path with the exception of the last node

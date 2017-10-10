@@ -57,14 +57,13 @@ public class ToggleFoldedActor extends XmlActorAdapter {
 		execute(new ActionPair(doAction, undoAction));
 	}
 
-	private CompoundAction createFoldAction(ListIterator iterator,
+	private CompoundAction createFoldAction(ListIterator<MindMapNode> iterator,
 			boolean fold, boolean undo) {
 		CompoundAction comp = new CompoundAction();
-		MindMapNode lastNode = null;
 		// sort selectedNodes list by depth, in order to guarantee that sons
 		// are deleted first:
-		for (ListIterator it = iterator; it.hasNext();) {
-			MindMapNode node = (MindMapNode) it.next();
+		for (ListIterator<MindMapNode> it = iterator; it.hasNext();) {
+			MindMapNode node = it.next();
 			FoldAction foldAction = createSingleFoldAction(fold, node, undo);
 			if (foldAction != null) {
 				if (!undo) {
@@ -77,7 +76,6 @@ public class ToggleFoldedActor extends XmlActorAdapter {
 
 					.addAtChoice(0, foldAction);
 				}
-				lastNode = node;
 			}
 		}
 		logger.finest("Compound contains " + comp.sizeChoiceList()
@@ -126,7 +124,7 @@ public class ToggleFoldedActor extends XmlActorAdapter {
 		}
 	}
 
-	public Class getDoActionClass() {
+	public Class<FoldAction> getDoActionClass() {
 		return FoldAction.class;
 	}
 

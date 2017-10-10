@@ -23,8 +23,6 @@
 
 package freemind.modes.mindmapmode.actions.xml.actors;
 
-import java.awt.event.ActionEvent;
-
 import freemind.controller.actions.generated.instance.CompoundAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.modes.ExtendedMapFeedback;
@@ -68,7 +66,7 @@ public class CompoundActor extends XmlActorAdapter {
 	 * 
 	 * @see freemind.controller.actions.ActorXml#getDoActionClass()
 	 */
-	public Class getDoActionClass() {
+	public Class<CompoundAction> getDoActionClass() {
 		return CompoundAction.class;
 	}
 

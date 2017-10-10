@@ -23,7 +23,6 @@
  */
 package accessories.plugins;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -51,12 +50,11 @@ public class SaveAll extends ModeControllerHookAdapter {
 		// store initial mapModule:
 		Controller mainController = getController().getController();
 		MapModule initialMapModule = mainController.getMapModule();
-		Map modules = getMapModules();
+		Map<String, MapModule> modules = getMapModules();
 		// to prevent concurrent modification:
-		Vector v = new Vector();
+		Vector<MapModule> v = new Vector<>();
 		v.addAll(modules.values());
-		for (Iterator iter = v.iterator(); iter.hasNext();) {
-			MapModule module = (MapModule) iter.next();
+		for (MapModule module : v) {
 			// change to module to display map properly.
 			mainController.getMapModuleManager().changeToMapModule(
 					module.toString());
@@ -77,7 +75,7 @@ public class SaveAll extends ModeControllerHookAdapter {
 
 	/**
      */
-	private Map getMapModules() {
+	private Map<String, MapModule> getMapModules() {
 		return getController().getController().getMapModuleManager()
 				.getMapModules();
 	}

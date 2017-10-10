@@ -238,7 +238,7 @@ public class ExportWithXSLT extends ExportHook {
 	/**
      */
 	private void copyIconsToDirectory(String directoryName2) {
-		Vector iconNames = MindIcon.getAllIconNames();
+		Vector<String> iconNames = MindIcon.getAllIconNames();
 		for (int i = 0; i < iconNames.size(); ++i) {
 			String iconName = ((String) iconNames.get(i));
 			MindIcon myIcon = MindIcon.factory(iconName);

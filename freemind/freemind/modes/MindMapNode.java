@@ -109,13 +109,13 @@ public interface MindMapNode extends MutableTreeNode {
 	 * @return returns a ListIterator of all children of the node if the node is
 	 *         unfolded. EMPTY_LIST_ITERATOR otherwise.
 	 * */
-	ListIterator childrenFolded();
+	ListIterator<MindMapNode> childrenFolded();
 
 	/**
 	 * @return returns a ListIterator of all (and not only the unfolded ones!!)
 	 *         children of the node.
 	 * */
-	ListIterator childrenUnfolded();
+	ListIterator<MindMapNode> childrenUnfolded();
 
 	/**
 	 * @return returns a ListIterator of all (and not only the unfolded ones!!)
@@ -128,7 +128,7 @@ public interface MindMapNode extends MutableTreeNode {
 	 * @return a list of (unmodifiable) children (all ones, folded and unfolded)
 	 *         of type MindMapNode.
 	 */
-	List getChildren();
+	List<MindMapNode> getChildren();
 
 	boolean hasChildren();
 
@@ -233,7 +233,7 @@ public interface MindMapNode extends MutableTreeNode {
 
 	// fc, 06.10.2003:
 	/** Is a vector of MindIcon s */
-	List getIcons();
+	List<MindIcon> getIcons();
 
 	void addIcon(MindIcon icon, int position);
 
@@ -261,14 +261,14 @@ public interface MindMapNode extends MutableTreeNode {
 	 * 
 	 * @return a list of PermanentNodeHook elements.
 	 * */
-	List getHooks();
+	List<PermanentNodeHook> getHooks();
 
 	/**
 	 * After activation, this method returns the hooks of this node.
 	 * 
 	 * @return a list of PermanentNodeHook elements
 	 */
-	Collection getActivatedHooks();
+	Collection<PermanentNodeHook> getActivatedHooks();
 
 	/**
 	 * Adds the hook to the list of hooks to my node. Does not invoke the hook!
@@ -297,7 +297,7 @@ public interface MindMapNode extends MutableTreeNode {
 	// tooltips,fc 29.2.2004
 	void setToolTip(String key, String tip);
 
-	SortedMap getToolTip();
+	SortedMap<String, String> getToolTip();
 
 	// additional info, fc, 15.12.2004
 
@@ -334,7 +334,7 @@ public interface MindMapNode extends MutableTreeNode {
 	 * State icons are icons that are not saved. They indicate that this node is
 	 * special.
 	 */
-	Map getStateIcons();
+	Map<String, ImageIcon> getStateIcons();
 
 	/**
 	 * @param icon

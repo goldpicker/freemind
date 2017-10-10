@@ -22,7 +22,6 @@ package accessories.plugins;
 
 import java.awt.Component;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.Action;
@@ -149,7 +148,7 @@ public class ChangeRootNode extends MindMapNodeHookAdapter {
 				// change the root node:
 				mMap.changeRoot(focussed);
 				// remove all viewers:
-				Vector nodes = new Vector();
+				Vector<MindMapNode> nodes = new Vector<>();
 				nodes.add(focussed);
 				MapView view = controller.getView();
 				while (!nodes.isEmpty()) {
@@ -157,9 +156,8 @@ public class ChangeRootNode extends MindMapNodeHookAdapter {
 					logger.fine("Removing viewers for " + child);
 					nodes.remove(0);
 					nodes.addAll(child.getChildren());
-					Collection viewers = new Vector(view.getViewers(child));
-					for (Iterator it = viewers.iterator(); it.hasNext();) {
-						NodeView viewer = (NodeView) it.next();
+					Collection<NodeView> viewers = new Vector<>(view.getViewers(child));
+					for (NodeView viewer :  viewers) {
 						view.removeViewer(child, viewer);
 					}
 				}
@@ -190,7 +188,7 @@ public class ChangeRootNode extends MindMapNodeHookAdapter {
 		 * @see
 		 * freemind.modes.mindmapmode.actions.xml.ActorXml#getDoActionClass()
 		 */
-		public Class getDoActionClass() {
+		public Class<ChangeRootNodeAction> getDoActionClass() {
 			return ChangeRootNodeAction.class;
 		}
 

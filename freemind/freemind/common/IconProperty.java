@@ -24,7 +24,6 @@ package freemind.common;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -33,6 +32,7 @@ import javax.swing.JLabel;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 
 import freemind.main.FreeMindMain;
+import freemind.modes.IconInformation;
 import freemind.modes.MindIcon;
 import freemind.modes.common.dialogs.IconSelectionPopupDialog;
 
@@ -49,12 +49,12 @@ public class IconProperty extends PropertyBean implements PropertyControl,
 	/**
 	 * Of IconInformation s.
 	 */
-	private final Vector mIcons;
+	private final Vector<MindIcon> mIcons;
 
 	private MindIcon mActualIcon = null;
 
 	public IconProperty(String description, String label, FreeMindMain frame,
-			Vector icons) {
+			Vector<MindIcon> icons) {
 		super();
 		this.description = description;
 		this.label = label;
@@ -73,8 +73,7 @@ public class IconProperty extends PropertyBean implements PropertyControl,
 	}
 
 	public void setValue(String value) {
-		for (Iterator iter = mIcons.iterator(); iter.hasNext();) {
-			MindIcon icon = (MindIcon) iter.next();
+		for (MindIcon icon : mIcons) {
 			if (icon.getName().equals(value)) {
 				mActualIcon = icon;
 				setIcon(mActualIcon);
@@ -97,10 +96,9 @@ public class IconProperty extends PropertyBean implements PropertyControl,
 	}
 
 	public void actionPerformed(ActionEvent arg0) {
-		Vector icons = new Vector();
-		Vector descriptions = new Vector();
-		for (Iterator iter = mIcons.iterator(); iter.hasNext();) {
-			MindIcon icon = (MindIcon) iter.next();
+		Vector<IconInformation> icons = new Vector<>();
+		Vector<String> descriptions = new Vector<>();
+		for (MindIcon icon : mIcons) {
 			icons.add(icon);
 			descriptions.add(icon.getDescription());
 		}

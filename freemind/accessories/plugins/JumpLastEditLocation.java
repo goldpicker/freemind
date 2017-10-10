@@ -85,7 +85,7 @@ public class JumpLastEditLocation extends MindMapNodeHookAdapter {
 
 		private Logger logger;
 
-		private Vector mLastEditLocations = new Vector();
+		private Vector<String> mLastEditLocations = new Vector<>();
 
 		public MindMapNode getLastEditLocation(MindMapNode pCurrentNode) {
 			int size = mLastEditLocations.size();
@@ -143,9 +143,8 @@ public class JumpLastEditLocation extends MindMapNodeHookAdapter {
 		private void detectFormatChanges(XmlAction doAction) {
 			if (doAction instanceof CompoundAction) {
 				CompoundAction compAction = (CompoundAction) doAction;
-				for (Iterator i = compAction.getListChoiceList().iterator(); i
-						.hasNext();) {
-					XmlAction childAction = (XmlAction) i.next();
+				for (Iterator<XmlAction> i = compAction.getListChoiceList().iterator(); i.hasNext();) {
+					XmlAction childAction = i.next();
 					detectFormatChanges(childAction);
 				}
 			} else if ((doAction instanceof NodeAction)

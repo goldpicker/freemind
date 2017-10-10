@@ -34,7 +34,7 @@ import freemind.view.mindmapview.MultipleImage;
 public class HierarchicalIcons extends PermanentMindMapNodeHookAdapter
 		implements UndoEventReceiver {
 
-	private HashMap /* of MindMapNode to a TreeSet */nodeIconSets = new HashMap();
+	private HashMap<MindMapNode, TreeSet<String>> nodeIconSets = new HashMap<>();
 
 	public void shutdownMapHook() {
 		// remove all icons:
@@ -48,8 +48,8 @@ public class HierarchicalIcons extends PermanentMindMapNodeHookAdapter
 	private void removeIcons(MindMapNode node) {
 		node.setStateIcon(getName(), null);
 		getMindMapController().nodeRefresh(node);
-		for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-			MindMapNode child = (MindMapNode) i.next();
+		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+			MindMapNode child = i.next();
 			removeIcons(child);
 		}
 	}
@@ -66,21 +66,19 @@ public class HierarchicalIcons extends PermanentMindMapNodeHookAdapter
 		// precondition: all children are contained in nodeIconSets
 
 		// gather all icons of my children and of me here:
-		TreeSet iconSet = new TreeSet();
-		for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-			MindMapNode child = (MindMapNode) i.next();
-			addAccumulatedIconsToTreeSet(child, iconSet,
-					(TreeSet) nodeIconSets.get(child));
+		TreeSet<String> iconSet = new TreeSet<>();
+		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+			MindMapNode child = i.next();
+			addAccumulatedIconsToTreeSet(child, iconSet, (TreeSet<String>) nodeIconSets.get(child));
 		}
 		// remove my icons from the treeset:
-		for (Iterator i = node.getIcons().iterator(); i.hasNext();) {
-			MindIcon icon = (MindIcon) i.next();
+		for (MindIcon icon :node.getIcons()) {
 			iconSet.remove(icon.getName());
 		}
 		boolean dirty = true;
 		// look for a change:
 		if (nodeIconSets.containsKey(node)) {
-			TreeSet storedIconSet = (TreeSet) nodeIconSets.get(node);
+			TreeSet<String> storedIconSet = nodeIconSets.get(node);
 			if (storedIconSet.equals(iconSet)) {
 				dirty = false;
 			}
@@ -91,8 +89,7 @@ public class HierarchicalIcons extends PermanentMindMapNodeHookAdapter
 			if (iconSet.size() > 0) {
 				// create multiple image:
 				MultipleImage image = new MultipleImage(0.75f);
-				for (Iterator i = iconSet.iterator(); i.hasNext();) {
-					String iconName = (String) i.next();
+				for (String iconName : iconSet) {
 					// logger.info("Adding icon "+iconName + " to node "+
 					// node.toString());
 					MindIcon icon = MindIcon.factory(iconName);
@@ -110,15 +107,13 @@ public class HierarchicalIcons extends PermanentMindMapNodeHookAdapter
 	/**
      */
 	private void addAccumulatedIconsToTreeSet(MindMapNode child,
-			TreeSet iconSet, TreeSet childsTreeSet) {
-		for (Iterator i = child.getIcons().iterator(); i.hasNext();) {
-			MindIcon icon = (MindIcon) i.next();
+			TreeSet<String> iconSet, TreeSet<String> childsTreeSet) {
+		for (MindIcon icon : child.getIcons()) {
 			iconSet.add(icon.getName());
 		}
 		if (childsTreeSet == null)
 			return;
-		for (Iterator i = childsTreeSet.iterator(); i.hasNext();) {
-			String iconName = (String) i.next();
+		for (String iconName : childsTreeSet) {
 			iconSet.add(iconName);
 		}
 	}
@@ -183,8 +178,8 @@ public class HierarchicalIcons extends PermanentMindMapNodeHookAdapter
 			setStyle(node);
 			return;
 		}
-		for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-			MindMapNode child = (MindMapNode) i.next();
+		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+			MindMapNode child = i.next();
 			gatherLeavesAndSetStyle(child);
 		}
 	}
@@ -199,8 +194,8 @@ public class HierarchicalIcons extends PermanentMindMapNodeHookAdapter
 			}
 			return;
 		}
-		for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-			MindMapNode child = (MindMapNode) i.next();
+		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+			MindMapNode child = i.next();
 			gatherLeavesAndSetParentsStyle(child);
 		}
 	}

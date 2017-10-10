@@ -163,15 +163,15 @@ public class PermanentNodeHookAdapter extends NodeHookAdapter implements
 
 	/**
 	 */
-	protected HashMap loadNameValuePairs(XMLElement xml) {
-		HashMap result = new HashMap();
+	protected HashMap<String, String> loadNameValuePairs(XMLElement xml) {
+		HashMap<String, String> result = new HashMap<>();
 		if(xml.getChildren().isEmpty()) {
 			return result;
 		}
 		XMLElement child = (XMLElement) xml.getChildren().get(0);
 		if (child != null && PARAMETERS.equals(child.getName())) {
-			for (Iterator i = child.enumerateAttributeNames(); i.hasNext();) {
-				String name = (String) i.next();
+			for (Iterator<String> i = child.enumerateAttributeNames(); i.hasNext();) {
+				String name = i.next();
 				result.put(name, child.getStringAttribute(name));
 			}
 		}
@@ -184,8 +184,8 @@ public class PermanentNodeHookAdapter extends NodeHookAdapter implements
 		if(!nameValuePairs.isEmpty()) {
 			XMLElement child = new XMLElement();
 			child.setName(PARAMETERS);
-			for (Iterator i = nameValuePairs.keySet().iterator(); i.hasNext();) {
-				String key = (String) i.next();
+			for (Iterator<String> i = nameValuePairs.keySet().iterator(); i.hasNext();) {
+				String key = i.next();
 				Object value = nameValuePairs.get(key);
 				child.setAttribute(key, value);
 			}
