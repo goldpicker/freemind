@@ -27,7 +27,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -45,6 +44,7 @@ import freemind.common.PropertyControl;
 import freemind.main.Tools;
 import freemind.modes.mindmapmode.MindMapController;
 
+@SuppressWarnings("serial")
 public class FormDialog extends JDialog implements
 		PropertyChangeListener {
 
@@ -75,7 +75,7 @@ public class FormDialog extends JDialog implements
 		mController2 = pController;
 	}
 
-	public void setUp(Vector controls) {
+	public void setUp(Vector<PropertyControl> controls) {
 		setUp(controls, new FormDialogValidator() {
 
 			public boolean isValid() {
@@ -84,7 +84,7 @@ public class FormDialog extends JDialog implements
 		});
 	}
 
-	public void setUp(Vector controls, FormDialogValidator pValidator) {
+	public void setUp(Vector<PropertyControl> controls, FormDialogValidator pValidator) {
 		mFormDialogValidator = pValidator;
 		setModal(true);
 		getContentPane().setLayout(new BorderLayout());
@@ -92,8 +92,7 @@ public class FormDialog extends JDialog implements
 				"right:max(40dlu;p), 4dlu, 80dlu, 7dlu", "");
 		DefaultFormBuilder builder = new DefaultFormBuilder(formLayout);
 		builder.setDefaultDialogBorder();
-		for (Iterator it = controls.iterator(); it.hasNext();) {
-			PropertyControl prop = (PropertyControl) it.next();
+		for (PropertyControl prop : controls) {
 			prop.layout(builder, mController2);
 			PropertyBean bean = (PropertyBean) prop;
 			bean.addPropertyChangeListener(this);

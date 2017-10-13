@@ -102,8 +102,8 @@ public class DeleteChildActor extends XmlActorAdapter {
 	}
 
 	private void removeHooks(MindMapNode selectedNode) {
-		for (Iterator it = selectedNode.childrenUnfolded(); it.hasNext();) {
-			MindMapNode child = (MindMapNode) it.next();
+		for (Iterator<MindMapNode> it = selectedNode.childrenUnfolded(); it.hasNext();) {
+			MindMapNode child = it.next();
 			removeHooks(child);
 		}
 		long currentRun = 0;
@@ -125,7 +125,7 @@ public class DeleteChildActor extends XmlActorAdapter {
 	 * 
 	 * @see freemind.controller.actions.ActorXml#getDoActionClass()
 	 */
-	public Class getDoActionClass() {
+	public Class<DeleteNodeAction> getDoActionClass() {
 		return DeleteNodeAction.class;
 	}
 

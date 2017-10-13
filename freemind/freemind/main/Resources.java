@@ -48,7 +48,7 @@ import freemind.modes.FreeMindJFileDialog;
 public class Resources implements TextTranslator {
 	private FreeMindMain main;
 	static Resources resourcesInstance = null;
-	private HashMap countryMap;
+	private HashMap<String, String> countryMap;
 	private Logger logger = null;
 
 	private Resources(FreeMindMain frame) {
@@ -136,14 +136,14 @@ public class Resources implements TextTranslator {
 		return main.getResources();
 	}
 
-	public HashMap getCountryMap() {
+	public HashMap<String, String> getCountryMap() {
 		if (countryMap == null) {
 			String[] countryMapArray = new String[] { "de", "DE", "en", "UK",
 					"en", "US", "es", "ES", "es", "MX", "fi", "FI", "fr", "FR",
 					"hu", "HU", "it", "CH", "it", "IT", "nl", "NL", "no", "NO",
 					"pt", "PT", "ru", "RU", "sl", "SI", "uk", "UA", "zh", "CN" };
 
-			countryMap = new HashMap();
+			countryMap = new HashMap<>();
 			for (int i = 0; i < countryMapArray.length; i = i + 2) {
 				countryMap.put(countryMapArray[i], countryMapArray[i + 1]);
 			}

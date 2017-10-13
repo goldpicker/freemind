@@ -39,15 +39,13 @@ import org.openstreetmap.gui.jmapviewer.MemoryTileCache;
 import org.openstreetmap.gui.jmapviewer.OsmFileCacheTileLoader;
 import org.openstreetmap.gui.jmapviewer.OsmTileLoader;
 import org.openstreetmap.gui.jmapviewer.Tile;
-import org.openstreetmap.gui.jmapviewer.TileController;
 import org.openstreetmap.gui.jmapviewer.interfaces.TileCache;
 import org.openstreetmap.gui.jmapviewer.interfaces.TileLoaderListener;
-import org.openstreetmap.gui.jmapviewer.interfaces.TileSource;
-import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
 
 import plugins.map.MapNodePositionHolder.MapNodePositionListener;
 import freemind.common.BooleanProperty;
 import freemind.common.DontShowNotificationProperty;
+import freemind.common.PropertyControl;
 import freemind.common.SeparatorProperty;
 import freemind.common.TextTranslator;
 import freemind.controller.MenuItemEnabledListener;
@@ -174,17 +172,15 @@ public class Registration implements HookRegistration, ActorXml,
 	 * Collects MapNodePositionHolder. This is necessary to be able to display
 	 * them all efficiently.
 	 */
-	private HashSet/* MapNodePositionHolder s */mMapNodePositionHolders = new HashSet();
+	private HashSet<MapNodePositionHolder> mMapNodePositionHolders = new HashSet<>();
 
-	private HashSet mMapNodePositionListeners = new HashSet();
+	private HashSet<MapNodePositionListener> mMapNodePositionListeners = new HashSet<>();
 
 	private final MindMapController controller;
 
 	private final MindMap mMap;
 
 	private final java.util.logging.Logger logger;
-
-	private TileSource mTileSource;
 
 	private MemoryTileCache mTileCache;
 
@@ -207,8 +203,8 @@ public class Registration implements HookRegistration, ActorXml,
 			this.modeController = modeController;
 		}
 
-		public List getControls(TextTranslator pTextTranslator) {
-			Vector controls = new Vector();
+		public List<PropertyControl> getControls(TextTranslator pTextTranslator) {
+			Vector<PropertyControl> controls = new Vector<>();
 			controls.add(new OptionPanel.NewTabProperty(
 					"plugins/map/MapDialog.properties_MapDialogTabName"));
 			controls.add(new SeparatorProperty(
@@ -226,7 +222,6 @@ public class Registration implements HookRegistration, ActorXml,
 		this.controller = (MindMapController) controller;
 		mMap = map;
 		logger = controller.getFrame().getLogger(this.getClass().getName());
-		mTileSource = new OsmTileSource.Mapnik();
 		mTileCache = new MemoryTileCache();
 		mOptionContributor = new MapDialogPropertyContributor(this.controller);
 
@@ -256,9 +251,8 @@ public class Registration implements HookRegistration, ActorXml,
 
 	public void registerMapNode(MapNodePositionHolder pMapNodePositionHolder) {
 		mMapNodePositionHolders.add(pMapNodePositionHolder);
-		for (Iterator it = mMapNodePositionListeners.iterator(); it.hasNext();) {
-			MapNodePositionListener listener = (MapNodePositionListener) it
-					.next();
+		for (MapNodePositionListener listener : mMapNodePositionListeners) {
+
 			try {
 				listener.registerMapNode(pMapNodePositionHolder);
 			} catch (Exception e) {
@@ -267,15 +261,13 @@ public class Registration implements HookRegistration, ActorXml,
 		}
 	}
 
-	public Set getMapNodePositionHolders() {
+	public Set<MapNodePositionHolder> getMapNodePositionHolders() {
 		return Collections.unmodifiableSet(mMapNodePositionHolders);
 	}
 
 	public void deregisterMapNode(MapNodePositionHolder pMapNodePositionHolder) {
 		mMapNodePositionHolders.remove(pMapNodePositionHolder);
-		for (Iterator it = mMapNodePositionListeners.iterator(); it.hasNext();) {
-			MapNodePositionListener listener = (MapNodePositionListener) it
-					.next();
+		for (MapNodePositionListener listener : mMapNodePositionListeners) {
 			try {
 				listener.deregisterMapNode(pMapNodePositionHolder);
 			} catch (Exception e) {
@@ -423,7 +415,7 @@ public class Registration implements HookRegistration, ActorXml,
 	 * 
 	 * @see freemind.modes.mindmapmode.actions.xml.ActorXml#getDoActionClass()
 	 */
-	public Class getDoActionClass() {
+	public Class<PlaceNodeXmlAction> getDoActionClass() {
 		return PlaceNodeXmlAction.class;
 	}
 
@@ -466,9 +458,7 @@ public class Registration implements HookRegistration, ActorXml,
 						.equals(hookName)
 				|| AddMapImageToNodeAction.NODE_CONTEXT_PLUGIN_NAME
 						.equals(hookName)) {
-			for (Iterator it = controller.getSelecteds().iterator(); it
-					.hasNext();) {
-				MindMapNode node = (MindMapNode) it.next();
+			for (MindMapNode node : controller.getSelecteds()) {
 				MapNodePositionHolder hook = MapNodePositionHolder
 						.getHook(node);
 				if (hook != null) {
@@ -493,7 +483,7 @@ public class Registration implements HookRegistration, ActorXml,
 
 	}
 
-	private HashSet mNodeVisibilityListeners = new HashSet();
+	private HashSet<NodeVisibilityListener> mNodeVisibilityListeners = new HashSet<>();
 
 	public void registerNodeVisibilityListener(
 			NodeVisibilityListener pNodeVisibilityListener) {
@@ -512,9 +502,7 @@ public class Registration implements HookRegistration, ActorXml,
 	 */
 	public void fireNodeVisibilityChanged(boolean pVisible,
 			MapNodePositionHolder pMapNodePositionHolder) {
-		for (Iterator it = mNodeVisibilityListeners.iterator(); it.hasNext();) {
-			NodeVisibilityListener listener = (NodeVisibilityListener) it
-					.next();
+		for (NodeVisibilityListener listener : mNodeVisibilityListeners) {
 			try {
 				listener.nodeVisibilityChanged(pMapNodePositionHolder, pVisible);
 			} catch (Exception e) {

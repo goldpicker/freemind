@@ -689,25 +689,6 @@ public class TimeList extends MindMapHookAdapter implements
 	}
 
 	/**
-	 */
-	private JPanel getTimePanel() {
-		if (mTimePanel == null) {
-			mTimePanel = new JPanel();
-			mTimePanel.setLayout(new GridBagLayout());
-			// {
-			// GridBagConstraints gb2 = new GridBagConstraints();
-			// gb2.gridx = 0;
-			// gb2.gridy = 0;
-			// gb2.fill = GridBagConstraints.HORIZONTAL;
-			// timePanel.add(new JLabel(
-			// getResourceString("plugins/TimeManagement.xml_hour")),
-			// gb2);
-			// }
-		}
-		return mTimePanel;
-	}
-
-	/**
 	 *
 	 */
 	private void disposeDialog() {

@@ -47,11 +47,11 @@ public interface MindMap extends TreeModel {
 
 	MapFeedback getMapFeedback();
 
-	String getAsPlainText(List mindMapNodes);
+	String getAsPlainText(List<MindMapNode> mindMapNodes);
 
-	String getAsRTF(List mindMapNodes);
+	String getAsRTF(List<MindMapNode> mindMapNodes);
 
-	String getAsHTML(List mindMapNodes);
+	String getAsHTML(List<MindMapNode> mindMapNodes);
 
 	/**
 	 * Returns the file name of the map edited or null if not possible.
@@ -207,7 +207,7 @@ public interface MindMap extends TreeModel {
 	public abstract MindMapNode loadTree(Tools.ReaderCreator pReaderCreator, AskUserBeforeUpdateCallback pAskUserBeforeUpdateCallback)
 			throws XMLParseException, IOException;
 
-	public abstract MindMapNode createNodeTreeFromXml(Reader pReader, HashMap pIDToTarget)
+	public abstract MindMapNode createNodeTreeFromXml(Reader pReader, HashMap<String, NodeAdapter>  pIDToTarget)
 			throws XMLParseException, IOException;
 
 	NodeAdapter createEncryptedNode(String additionalInfo);

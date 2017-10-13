@@ -23,7 +23,6 @@
  */
 package freemind.controller.filter;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -37,7 +36,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -52,6 +50,7 @@ import freemind.main.Resources;
 import freemind.modes.MindMap;
 import freemind.modes.MindMapNode;
 
+@SuppressWarnings("serial")
 class FilterToolbar extends FreeMindToolBar {
 	private FilterController mFilterController;
 	private FilterComposerDialog filterDialog = null;
@@ -62,7 +61,6 @@ class FilterToolbar extends FreeMindToolBar {
 	private JButton btnEdit;
 	private JButton btnUnfoldAncestors;
 	private Controller c;
-	private static Color filterInactiveColor = null;
 	private String pathToFilterFile;
 	private FilterChangeListener filterChangeListener;
 
@@ -160,8 +158,8 @@ class FilterToolbar extends FreeMindToolBar {
 		}
 
 		private void unfoldAncestors(MindMapNode parent) {
-			for (Iterator i = parent.childrenUnfolded(); i.hasNext();) {
-				MindMapNode node = (MindMapNode) i.next();
+			for (Iterator<MindMapNode> i = parent.childrenUnfolded(); i.hasNext();) {
+				MindMapNode node = i.next();
 				if (showDescendants.isSelected()
 						|| node.getFilterInfo().isAncestor()) {
 					setFolded(node, false);
@@ -227,8 +225,7 @@ class FilterToolbar extends FreeMindToolBar {
 	}
 
 	void addStandardConditions() {
-		DefaultComboBoxModel filterConditionModel = mFilterController
-				.getFilterConditionModel();
+		DefaultComboBoxModel<Condition> filterConditionModel = mFilterController.getFilterConditionModel();
 		final Condition noFiltering = NoFilteringCondition.createCondition();
 		filterConditionModel.insertElementAt(noFiltering, 0);
 		filterConditionModel.insertElementAt(

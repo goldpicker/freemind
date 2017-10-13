@@ -36,7 +36,7 @@ import freemind.view.mindmapview.ViewFeedback;
 public abstract class XmlActorAdapter implements ActorXml {
 
 	protected ExtendedMapFeedback mMapFeedback;
-	private ActorXml mActor;
+
 	protected static java.util.logging.Logger logger = null;
 
 	/**
@@ -105,7 +105,6 @@ public abstract class XmlActorAdapter implements ActorXml {
 	}
 
 	protected void addActor(ActorXml actor) {
-		this.mActor = actor;
 		if (actor != null) {
 			// registration:
 			getExMapFeedback().getActionRegistry().registerActor(actor,

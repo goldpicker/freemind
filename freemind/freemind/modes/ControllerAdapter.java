@@ -101,6 +101,7 @@ import freemind.view.mindmapview.ViewFeedback;
  * default Actions you may want to use for easy editing of your model. Take
  * MindMapController as a sample.
  */
+@SuppressWarnings("serial")
 public abstract class ControllerAdapter extends MapFeedbackAdapter implements ModeController,
 		DirectoryResultListener {
 
@@ -447,11 +448,10 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 				// Selected:
 				sel = modeController.getNodeFromID(store.getLastSelected());
 				modeController.centerNode(sel);
-				List<NodeAdapter> selected = new Vector<>();
+				List<MindMapNode> selected = new Vector<>();
 				for (Iterator<NodeListMember> iter = store.getListNodeListMemberList().iterator(); iter.hasNext();) {
 					NodeListMember member = iter.next();
-					NodeAdapter selNode = modeController.getNodeFromID(member
-							.getNode());
+					MindMapNode selNode = modeController.getNodeFromID(member.getNode());
 					selected.add(selNode);
 				}
 				modeController.select(sel, selected);
@@ -613,10 +613,9 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		getView().select(node);
 	}
 
-	public void select(MindMapNode primarySelected, List selecteds) {
+	public void select(MindMapNode primarySelected, List<MindMapNode> selecteds) {
 		// are they visible?
-		for (Iterator<MindMapNode> i = selecteds.iterator(); i.hasNext();) {
-			MindMapNode node = i.next();
+		for (MindMapNode node : selecteds) {
 			displayNode(node);
 		}
 		final NodeView focussedNodeView = getNodeView(primarySelected);
@@ -1168,6 +1167,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		return null;
 	}
 
+	
 	public class OpenAction extends AbstractAction {
 		ControllerAdapter mc;
 
@@ -1249,8 +1249,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 			}
 			dtde.acceptDrop(DnDConstants.ACTION_COPY);
 			try {
-				Object data = dtde.getTransferable().getTransferData(
-						DataFlavor.javaFileListFlavor);
+				Object data = dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
 				if (data == null) {
 					// Shouldn't happen because dragEnter() rejects drags w/out
 					// at least
@@ -1258,9 +1257,9 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 					dtde.dropComplete(false);
 					return;
 				}
-				Iterator iterator = ((List) data).iterator();
+				Iterator<File> iterator = ((List<File>) data).iterator();
 				while (iterator.hasNext()) {
-					File file = (File) iterator.next();
+					File file = iterator.next();
 					load(file);
 				}
 			} catch (Exception e) {
@@ -1310,7 +1309,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		return copy(selectedNodes, false);
 	}
 
-	public Transferable copy(List selectedNodes, boolean copyInvisible) {
+	public Transferable copy(List<MindMapNode> selectedNodes, boolean copyInvisible) {
 		try {
 			String forNodesFlavor = createForNodesFlavor(selectedNodes,
 					copyInvisible);
@@ -1392,8 +1391,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		setAllActions(true);
 		if (getFrame().getView() != null) {
 			FileOpener fileOpener = new FileOpener();
-			DropTarget dropTarget = new DropTarget(getFrame().getView(),
-					fileOpener);
+			new DropTarget(getFrame().getView(),fileOpener);
 		}
 		getMapMouseWheelListener().register(
 				new MindMapMouseWheelEventHandler(this));
@@ -1549,8 +1547,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	 */
 	@Override
 	public NodeAdapter getNodeFromID(String nodeID) {
-		NodeAdapter node = (NodeAdapter) getMap().getLinkRegistry()
-				.getTargetForId(nodeID);
+		NodeAdapter node = (NodeAdapter) getMap().getLinkRegistry().getTargetForId(nodeID);
 		if (node == null) {
 			throw new IllegalArgumentException("Node belonging to the node id "
 					+ nodeID + " not found in map " + getMap().getFile());

@@ -1085,8 +1085,8 @@ public class NodeView extends JComponent implements TreeModelListener {
 	public void updateAll() {
 		update();
 		invalidate();
-		for (ListIterator e = getChildrenViews().listIterator(); e.hasNext();) {
-			NodeView child = (NodeView) e.next();
+		for (ListIterator<NodeView> e = getChildrenViews().listIterator(); e.hasNext();) {
+			NodeView child = e.next();
 			child.updateAll();
 		}
 	}
@@ -1375,8 +1375,8 @@ public class NodeView extends JComponent implements TreeModelListener {
 	 */
 	public void treeStructureChanged(TreeModelEvent e) {
 		getMap().resetShiftSelectionOrigin();
-		for (ListIterator i = getChildrenViews().listIterator(); i.hasNext();) {
-			((NodeView) i.next()).remove();
+		for (ListIterator<NodeView> i = getChildrenViews().listIterator(); i.hasNext();) {
+			i.next().remove();
 		}
 		insert();
 		if (mapView.getSelected() == null) {

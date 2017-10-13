@@ -25,6 +25,7 @@ package freemind.extensions;
 import java.util.List;
 
 import freemind.controller.actions.generated.instance.Plugin;
+import freemind.controller.actions.generated.instance.PluginMode;
 import freemind.controller.actions.generated.instance.PluginRegistration;
 
 /**
@@ -53,7 +54,7 @@ public class HookDescriptorRegistration extends HookDescriptorBase {
 		return mRegistration.getIsPluginBase();
 	}
 
-	public List getListPluginModeList() {
+	public List<PluginMode> getListPluginModeList() {
 		return mRegistration.getListPluginModeList();
 	}
 

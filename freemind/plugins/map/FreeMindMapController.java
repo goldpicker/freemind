@@ -124,6 +124,7 @@ import freemind.view.mindmapview.NodeView;
  *         FIXME: On undo place node, the position is gone. (Undo action
  *         contains the initial zeros, I guess).
  */
+@SuppressWarnings("serial")
 public class FreeMindMapController extends JMapController implements
 		MouseListener, MouseMotionListener, MouseWheelListener, ActionListener,
 		KeyListener {
@@ -213,7 +214,7 @@ public class FreeMindMapController extends JMapController implements
 
 	private Coordinate mRectangularStart;
 
-	private Vector mPositionHolderVector = new Vector();
+	private Vector<FreeMindMapController.PositionHolder> mPositionHolderVector = new Vector<>();
 	/**
 	 * Marks the index of the current position or -1 if none.
 	 */
@@ -475,15 +476,13 @@ public class FreeMindMapController extends JMapController implements
 			boolean returnValue = false;
 			Coordinate cursorPosition = getMap().getCursorPosition();
 			// get map marker locations:
-			HashSet mapNodePositionHolders = new HashSet(
-					mMapHook.getMapNodePositionHolders());
+			HashSet<MapNodePositionHolder> mapNodePositionHolders = new HashSet<>(mMapHook.getMapNodePositionHolders());
 			logger.fine("Before removal " + mapNodePositionHolders.size()
 					+ " elements");
 			// take only those elements in the correct quadrant (eg. -45° -
 			// +45°) which are not identical to the current
-			for (Iterator it = mapNodePositionHolders.iterator(); it.hasNext();) {
-				MapNodePositionHolder holder = (MapNodePositionHolder) it
-						.next();
+			for (Iterator<MapNodePositionHolder> it = mapNodePositionHolders.iterator(); it.hasNext();) {
+				MapNodePositionHolder holder = it.next();
 				Coordinate pointPosition = holder.getPosition();
 				boolean inDestinationQuadrant = destinationQuadrantCheck(
 						cursorPosition, pointPosition, alternative);
@@ -499,9 +498,7 @@ public class FreeMindMapController extends JMapController implements
 			// for the nearest
 			MapNodePositionHolder nearest = null;
 			double distance = Double.MAX_VALUE;
-			for (Iterator it = mapNodePositionHolders.iterator(); it.hasNext();) {
-				MapNodePositionHolder holder = (MapNodePositionHolder) it
-						.next();
+			for (MapNodePositionHolder holder : mapNodePositionHolders) {
 				double newDist = dist(holder.getPosition(), cursorPosition);
 				logger.fine("Position " + holder + " is " + newDist);
 				if (newDist < distance) {
@@ -970,9 +967,8 @@ public class FreeMindMapController extends JMapController implements
 			Reversegeocode reverseLookup = getReverseLookup(pos, getMap()
 					.getZoom());
 			if (reverseLookup != null) {
-				for (Iterator it = reverseLookup.getListResultList().iterator(); it
-						.hasNext();) {
-					Result result = (Result) it.next();
+				for (Iterator<Result> it = reverseLookup.getListResultList().iterator(); it.hasNext();) {
+					Result result = it.next();
 					addNode(mMindMapController.getSelected(),
 							result.getContent(), result.getLat(),
 							result.getLon());
@@ -1443,7 +1439,7 @@ public class FreeMindMapController extends JMapController implements
 	 */
 	public void showSelectedNodes() {
 		MindMapNode selected = mMindMapController.getSelected();
-		List selecteds = mMindMapController.getSelecteds();
+		List<MindMapNode> selecteds = mMindMapController.getSelecteds();
 		if (selecteds.size() == 1) {
 			MapNodePositionHolder hook = MapNodePositionHolder
 					.getHook(selected);
@@ -1458,8 +1454,7 @@ public class FreeMindMapController extends JMapController implements
 		int x_max = Integer.MIN_VALUE;
 		int y_max = Integer.MIN_VALUE;
 		int mapZoomMax = getMaxZoom();
-		for (Iterator it = selecteds.iterator(); it.hasNext();) {
-			MindMapNode node = (MindMapNode) it.next();
+		for (MindMapNode node : selecteds) {
 			MapNodePositionHolder hook = MapNodePositionHolder.getHook(node);
 
 			if (hook != null) {
@@ -1536,9 +1531,7 @@ public class FreeMindMapController extends JMapController implements
 					map.getZoom());
 		}
 		storeMapPosition(position);
-		for (Iterator it = mCursorPositionListeners.iterator(); it.hasNext();) {
-			CursorPositionListener listener = (CursorPositionListener) it
-					.next();
+		for (CursorPositionListener listener : mCursorPositionListeners) {
 			listener.cursorPositionChanged(position);
 		}
 	}
@@ -1894,7 +1887,7 @@ public class FreeMindMapController extends JMapController implements
 
 	private long mWheelZoomLastTime = 0;
 
-	private Vector mCursorPositionListeners = new Vector();
+	private Vector<CursorPositionListener> mCursorPositionListeners = new Vector<>();
 
 	private JPopupMenu mSearchPopupMenu;
 
@@ -1923,8 +1916,7 @@ public class FreeMindMapController extends JMapController implements
 					// select the node (single click)
 					MindMapNode node = mMapNodeMovingSource.getNode();
 					if (e.isShiftDown()) {
-						Vector sel = new Vector(
-								mMindMapController.getSelecteds());
+						Vector<MindMapNode> sel = new Vector<>(mMindMapController.getSelecteds());
 						if (sel.contains(node)) {
 							// remove:
 							sel.remove(node);
@@ -1942,16 +1934,13 @@ public class FreeMindMapController extends JMapController implements
 			}
 			if (mIsRectangularSelect) {
 				// gather all locations and select them:
-				Vector mapNodePositionHolders = new Vector();
+				Vector<MindMapNode> mapNodePositionHolders = new Vector<>();
 				// take only those elements in the correct rectangle:
 				Rectangle r = getMap().getRectangle(mRectangularStart,
 						coordinates);
 				if (r != null) {
 					MindMapNode last = null;
-					for (Iterator it = mMapHook.getMapNodePositionHolders()
-							.iterator(); it.hasNext();) {
-						MapNodePositionHolder holder = (MapNodePositionHolder) it
-								.next();
+					for (MapNodePositionHolder holder : mMapHook.getMapNodePositionHolders()) {
 						Coordinate pointPosition = holder.getPosition();
 						Point mapPosition = getMap().getMapPosition(
 								pointPosition, true);
@@ -1982,7 +1971,7 @@ public class FreeMindMapController extends JMapController implements
 	protected void storeMapPosition(final Coordinate coordinates) {
 		final PositionHolder holder = new PositionHolder(coordinates.getLat(),
 				coordinates.getLon(), getMap().getZoom());
-		final Vector positionHolderVector = getPositionHolderVector();
+		final Vector<FreeMindMapController.PositionHolder> positionHolderVector = getPositionHolderVector();
 		if (getPositionHolderIndex() >= 0) {
 			// check for equalness
 			PositionHolder currentPosition = (PositionHolder) positionHolderVector
@@ -2174,8 +2163,7 @@ public class FreeMindMapController extends JMapController implements
 			if (results == null) {
 				mResultTable.setBackground(Color.RED);
 			} else {
-				for (Iterator it = results.getListPlaceList().iterator(); it
-						.hasNext();) {
+				for (Iterator<Place> it = results.getListPlaceList().iterator(); it.hasNext();) {
 					Place place = (Place) it.next();
 					logger.fine("Found place " + place.getDisplayName());
 					// error handling, if the query wasn't successful.
@@ -2648,7 +2636,7 @@ public class FreeMindMapController extends JMapController implements
 		}
 	}
 
-	public Vector getPositionHolderVector() {
+	public Vector<FreeMindMapController.PositionHolder> getPositionHolderVector() {
 		return mPositionHolderVector;
 	}
 

@@ -39,7 +39,7 @@ import freemind.view.ScalableImageIcon;
  * This class represents a MindIcon than can be applied to a node or a whole
  * branch.
  */
-public class MindIcon implements Comparable, IconInformation {
+public class MindIcon implements Comparable<MindIcon>, IconInformation {
 	public static final String PROPERTY_STRING_ICONS_LIST = "icons.list";
 	private String name;
 	private int number = UNKNOWN;
@@ -224,14 +224,10 @@ public class MindIcon implements Comparable, IconInformation {
 	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
-	public int compareTo(Object o) {
-		if (o instanceof MindIcon) {
-			MindIcon icon = (MindIcon) o;
-			int i1 = getNumber();
-			int i2 = icon.getNumber();
-			return i1 < i2 ? -1 : i1 == i2 ? 0 : +1;
-		}
-		throw new ClassCastException();
+	public int compareTo(MindIcon icon) {
+		int i1 = getNumber();
+		int i2 = icon.getNumber();
+		return i1 < i2 ? -1 : i1 == i2 ? 0 : +1;
 	}
 
 	private int getNumber() {

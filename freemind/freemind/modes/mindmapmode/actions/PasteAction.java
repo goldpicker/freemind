@@ -26,19 +26,15 @@ import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
-
 import freemind.controller.actions.generated.instance.PasteNodeAction;
-import freemind.controller.actions.generated.instance.UndoPasteNodeAction;
 import freemind.modes.MindMapNode;
 import freemind.modes.mindmapmode.MindMapController;
-import freemind.modes.mindmapmode.actions.xml.actors.UndoPasteActor;
 
+@SuppressWarnings("serial")
 public class PasteAction extends AbstractAction {
 
 	private static java.util.logging.Logger logger;
 	private final MindMapController mMindMapController;
-	private UndoPasteActor mUndoPasteHandler;
 
 	public PasteAction(MindMapController pMindMapController) {
 		super(pMindMapController.getText("paste"), freemind.view.ImageFactory.getInstance().createIcon(
@@ -65,7 +61,7 @@ public class PasteAction extends AbstractAction {
 	 * 
 	 * @see freemind.controller.actions.ActorXml#getDoActionClass()
 	 */
-	public Class getDoActionClass() {
+	public Class<PasteNodeAction> getDoActionClass() {
 		return PasteNodeAction.class;
 	}
 

@@ -31,7 +31,6 @@ import java.io.Writer;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
 
 import freemind.controller.Controller;
 import freemind.controller.MapModuleManager.MapModuleChangeObserver;
@@ -54,7 +53,7 @@ import freemind.view.MapModule;
 public class FilterController implements MapModuleChangeObserver {
 	private Controller c;
 	private FilterToolbar filterToolbar;
-	private DefaultComboBoxModel filterConditionModel;
+	private DefaultComboBoxModel<Condition> filterConditionModel;
 	static private ConditionRenderer conditionRenderer = null;
 	static private ConditionFactory conditionFactory;
 	private MindMap map;
@@ -77,8 +76,7 @@ public class FilterController implements MapModuleChangeObserver {
 	public FilterToolbar getFilterToolbar() {
 		if (filterToolbar == null) {
 			filterToolbar = new FilterToolbar(c);
-			filterConditionModel = (DefaultComboBoxModel) filterToolbar
-					.getFilterConditionModel();
+			filterConditionModel = (DefaultComboBoxModel<Condition>) filterToolbar.getFilterConditionModel();
 
 			// FIXME state icons should be created on order to make possible
 			// their use in the filter component.
@@ -178,7 +176,7 @@ public class FilterController implements MapModuleChangeObserver {
 		}
 	}
 
-	public DefaultComboBoxModel getFilterConditionModel() {
+	public DefaultComboBoxModel<Condition> getFilterConditionModel() {
 		return filterConditionModel;
 	}
 

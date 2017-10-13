@@ -33,6 +33,7 @@ import freemind.controller.MenuItemEnabledListener;
  * @author foltin
  * @date 22.10.2013
  */
+@SuppressWarnings("serial")
 public abstract class FreemindAction extends AbstractAction implements MenuItemEnabledListener{
 
 	private final ControllerAdapter pControllerAdapter;

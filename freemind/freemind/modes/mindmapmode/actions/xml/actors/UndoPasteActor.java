@@ -68,7 +68,7 @@ public class UndoPasteActor extends XmlActorAdapter {
 	 * 
 	 * @see freemind.modes.mindmapmode.actions.xml.ActorXml#getDoActionClass()
 	 */
-	public Class getDoActionClass() {
+	public Class<UndoPasteNodeAction> getDoActionClass() {
 		return UndoPasteNodeAction.class;
 	}
 

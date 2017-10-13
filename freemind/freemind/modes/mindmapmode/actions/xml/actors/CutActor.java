@@ -102,7 +102,7 @@ public class CutActor extends XmlActorAdapter {
 	 * 
 	 * @see freemind.controller.actions.ActorXml#getDoActionClass()
 	 */
-	public Class getDoActionClass() {
+	public Class<CutNodeAction> getDoActionClass() {
 		return CutNodeAction.class;
 	}
 

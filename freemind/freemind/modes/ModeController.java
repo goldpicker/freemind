@@ -135,7 +135,7 @@ public interface ModeController extends TextTranslator, MapFeedback,
 	 * Multiple selection. All MindMapNode s from the selecteds list are
 	 * selected, and the focused is moreover focused.
 	 */
-	public void select(MindMapNode focused, List selecteds);
+	public void select(MindMapNode focused, List<MindMapNode> selecteds);
 
 	public void selectBranch(NodeView selected, boolean extend);
 
@@ -371,7 +371,7 @@ public interface ModeController extends TextTranslator, MapFeedback,
 
 	Transferable copySingle();
 
-	public Transferable copy(List selectedNodes, boolean copyInvisible);
+	public Transferable copy(List<MindMapNode> selectedNodes, boolean copyInvisible);
 
 	FreeMindFileDialog getFileChooser(FileFilter filter);
 

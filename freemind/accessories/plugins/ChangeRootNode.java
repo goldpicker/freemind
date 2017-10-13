@@ -35,7 +35,6 @@ import freemind.main.Tools;
 import freemind.modes.MindMap;
 import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
-import freemind.modes.NodeAdapter;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 import freemind.modes.mindmapmode.actions.xml.ActorXml;
@@ -131,8 +130,7 @@ public class ChangeRootNode extends MindMapNodeHookAdapter {
 		public void act(XmlAction pAction) {
 			if (pAction instanceof ChangeRootNodeAction) {
 				ChangeRootNodeAction rootNodeAction = (ChangeRootNodeAction) pAction;
-				NodeAdapter focussed = controller.getNodeFromID(rootNodeAction
-						.getNode());
+				MindMapNode focussed = controller.getNodeFromID(rootNodeAction.getNode());
 				if (focussed.isRoot()) {
 					// node is already root. Everything ok.
 					return;

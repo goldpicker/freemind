@@ -63,7 +63,7 @@ public class StructuredMenuHolder {
 
 	private static final String SEPARATOR_TEXT = "000";
 	private static final String ORDER_NAME = "/order";
-	Map menuMap;
+	Map<String, Vector<String>> menuMap;
 	private static java.util.logging.Logger logger = null;
 
 	private int mIndent;
@@ -74,8 +74,8 @@ public class StructuredMenuHolder {
 			logger = freemind.main.Resources.getInstance().getLogger(
 					this.getClass().getName());
 		}
-		menuMap = new HashMap();
-		Vector order = new Vector();
+		menuMap = new HashMap<>();
+		Vector<String> order = new Vector<>();
 		menuMap.put(ORDER_NAME, order);
 		if (sSelectedIcon == null) {
 			sSelectedIcon = freemind.view.ImageFactory.getInstance().createIcon(Resources.getInstance().getResource(
@@ -209,13 +209,13 @@ public class StructuredMenuHolder {
 			String nextToken = tokens.nextToken();
 			if (tokens.hasMoreTokens()) {
 				if (!thisMap.containsKey(nextToken)) {
-					Map newMap = new HashMap();
-					Vector newOrder = new Vector();
+					Map newMap = new HashMap<>();
+					Vector newOrder = new Vector<>();
 					newMap.put(ORDER_NAME, newOrder);
 					thisMap.put(nextToken, newMap);
 				}
 				Map nextMap = (Map) thisMap.get(nextToken);
-				Vector order = (Vector) thisMap.get(ORDER_NAME);
+				Vector<String> order = (Vector) thisMap.get(ORDER_NAME);
 				if (!order.contains(nextToken)) {
 					order.add(nextToken);
 				}
@@ -422,13 +422,12 @@ public class StructuredMenuHolder {
 		}
 	}
 
-	private void updateMenus(MenuAdder menuAdder, Map thisMap,
+	private void updateMenus(MenuAdder menuAdder, Map<String, Vector<String>> thisMap,
 			MenuAdderCreator factory) {
 		// System.out.println(thisMap);
 		// iterate through maps and do the changes:
-		Vector myVector = (Vector) thisMap.get(ORDER_NAME);
-		for (Iterator i = myVector.iterator(); i.hasNext();) {
-			String category = (String) i.next();
+		Vector<String> myVector = (Vector<String>) thisMap.get(ORDER_NAME);
+		for (String category : myVector) {
 			// The "." target was handled earlier.
 			if (category.equals("."))
 				continue;
@@ -510,16 +509,14 @@ public class StructuredMenuHolder {
 
 	public static class StructuredMenuListener implements
 			javax.swing.event.MenuListener {
-		private Vector menuItemHolder = new Vector();
+		private Vector<StructuredMenuItemHolder> menuItemHolder = new Vector<>();
 
 		public StructuredMenuListener() {
 		}
 
 		public void menuSelected(MenuEvent arg0) {
 //			System.out.println("Selected menu items " + arg0);
-			for (Iterator i = menuItemHolder.iterator(); i.hasNext();) {
-				StructuredMenuItemHolder holder = (StructuredMenuItemHolder) i
-						.next();
+			for (StructuredMenuItemHolder holder : menuItemHolder) {
 				Action action = holder.getAction();
 				boolean isEnabled = false;
 				JMenuItem menuItem = holder.getMenuItem();

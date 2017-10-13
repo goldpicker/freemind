@@ -37,6 +37,7 @@ import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
  * @author foltin
  * @date 28.08.2012
  */
+@SuppressWarnings("serial")
 public abstract class MapMarkerBase extends JLabel implements MapMarker {
 
 	/**

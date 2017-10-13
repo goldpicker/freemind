@@ -26,11 +26,11 @@ package plugins.collaboration.database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Vector;
 
 import plugins.collaboration.socket.FormDialog;
 import freemind.common.NumberProperty;
+import freemind.common.PropertyControl;
 import freemind.common.StringProperty;
 import freemind.extensions.PermanentNodeHook;
 import freemind.modes.mindmapmode.MindMapController;
@@ -72,7 +72,7 @@ public class DatabaseConnector extends DatabaseBasics {
 			// get last value
 			hostProperty.setValue(controller.getFrame().getProperty(
 					HOST_PROPERTY));
-			Vector controls = new Vector();
+			Vector<PropertyControl> controls = new Vector<>();
 			controls.add(passwordProperty);
 			controls.add(hostProperty);
 			controls.add(portProperty);
@@ -103,10 +103,9 @@ public class DatabaseConnector extends DatabaseBasics {
 	}
 
 	private DatabaseConnectionHook isConnected() {
-		Collection activatedHooks = getMindMapController().getRootNode()
+		Collection<PermanentNodeHook> activatedHooks = getMindMapController().getRootNode()
 				.getActivatedHooks();
-		for (Iterator it = activatedHooks.iterator(); it.hasNext();) {
-			PermanentNodeHook hook = (PermanentNodeHook) it.next();
+		for (PermanentNodeHook hook : activatedHooks) {
 			if (hook instanceof DatabaseConnectionHook) {
 				return (DatabaseConnectionHook) hook;
 			}

@@ -37,6 +37,7 @@ import accessories.plugins.time.TimeList.NotesHolder;
  * @author foltin
  * 
  */
+@SuppressWarnings("serial")
 public class FlatNodeTableFilterModel extends AbstractTableModel {
 
 	private final TableModel mTableModel;
@@ -44,7 +45,7 @@ public class FlatNodeTableFilterModel extends AbstractTableModel {
 	/**
 	 * Contains indices or rows matching the filter criteria.
 	 */
-	private ArrayList mIndexArray;
+	private ArrayList<Integer> mIndexArray;
 	private Pattern mPattern;
 	/**
 	 * The column that contains the NodeHolder items
@@ -79,13 +80,12 @@ public class FlatNodeTableFilterModel extends AbstractTableModel {
 	}
 
 	private void updateIndexArray() {
-		ArrayList newIndexArray = new ArrayList();
+		ArrayList<Integer> newIndexArray = new ArrayList<>();
 		for (int i = 0; i < mTableModel.getRowCount(); i++) {
-			NodeHolder nodeContent = (NodeHolder) mTableModel.getValueAt(i,
-					mNodeTextColumn);
+			NodeHolder nodeContent = (NodeHolder) mTableModel.getValueAt(i, mNodeTextColumn);
 			if (mPattern.matcher(nodeContent.toString()).matches()) {
 				// add index to array:
-				newIndexArray.add(new Integer(i));
+				newIndexArray.add(i);
 			} else {
 				// only check notes, when not already a hit.
 				NotesHolder noteContent = (NotesHolder) mTableModel.getValueAt(i,
@@ -134,7 +134,7 @@ public class FlatNodeTableFilterModel extends AbstractTableModel {
 		if (row < 0 || row >= getRowCount()) {
 			throw new IllegalArgumentException("Illegal Row specified: " + row);
 		}
-		int origRow = ((Integer) mIndexArray.get(row)).intValue();
+		int origRow = mIndexArray.get(row);
 		return mTableModel.getValueAt(origRow, column);
 	}
 

@@ -582,9 +582,8 @@ public abstract class NodeAdapter implements MindMapNode {
 			StringWriter writer = new StringWriter();
 			this.save(writer, this.getMap().getLinkRegistry(), true, false);
 			String result = writer.toString();
-			HashMap IDToTarget = new HashMap<>();
-			MindMapNode copy = getMap().createNodeTreeFromXml(
-					new StringReader(result), IDToTarget);
+			HashMap<String, NodeAdapter> IDToTarget = new HashMap<>();
+			MindMapNode copy = getMap().createNodeTreeFromXml(new StringReader(result), IDToTarget);
 			copy.setFolded(false);
 			return copy;
 		} catch (Exception e) {

@@ -52,7 +52,7 @@ public class BoldNodeActor extends NodeXmlActorAdapter {
 		}
 	}
 
-	public Class getDoActionClass() {
+	public Class<BoldNodeAction> getDoActionClass() {
 		return BoldNodeAction.class;
 	}
 

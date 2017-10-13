@@ -122,7 +122,7 @@ public interface MindMapNode extends MutableTreeNode {
 	 *         children of the node sorted in the way they occur (if called from root, this
 	 *         has the effect to sort the children first left then right).
 	 * */
-	ListIterator sortedChildrenUnfolded();
+	ListIterator<MindMapNode> sortedChildrenUnfolded();
 	
 	/**
 	 * @return a list of (unmodifiable) children (all ones, folded and unfolded)
@@ -368,7 +368,7 @@ public interface MindMapNode extends MutableTreeNode {
 	 * @return an unmodifiable list of all attribute keys as String. There can
 	 *         be double entries.
 	 */
-	List getAttributeKeyList();
+	List<String> getAttributeKeyList();
 
 	/**
 	 * @return the amount of attributes.

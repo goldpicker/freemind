@@ -24,7 +24,6 @@ import freemind.controller.actions.generated.instance.NodeStyleFormatAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.main.Tools;
 import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.MindMap;
 import freemind.modes.MindMapNode;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
@@ -41,7 +40,7 @@ public class NodeStyleActor extends XmlActorAdapter {
 		super(pMapFeedback);
 	}
 	
-	public Class getDoActionClass() {
+	public Class<NodeStyleFormatAction> getDoActionClass() {
 		return NodeStyleFormatAction.class;
 	}
 

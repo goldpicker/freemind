@@ -32,7 +32,6 @@ import java.util.Vector;
 
 import freemind.main.Tools;
 import freemind.modes.MindMapNode;
-import freemind.modes.NodeAdapter;
 import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
 
 /**
@@ -173,7 +172,7 @@ public class ChangeNodeLevelAction extends MindMapNodeHookAdapter {
 		// get new nodes by object id:
 		MindMapNode newInstanceOfSelectedNode = getMindMapController()
 				.getNodeFromID(selectedNodeId);
-		List<NodeAdapter> newSelecteds = new LinkedList<>();
+		List<MindMapNode> newSelecteds = new LinkedList<>();
 		for (String nodeId : selectedNodesIds) {
 			newSelecteds.add(getMindMapController().getNodeFromID(nodeId));
 		}

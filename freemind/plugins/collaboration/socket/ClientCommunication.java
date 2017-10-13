@@ -34,7 +34,6 @@ import java.net.Socket;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractListModel;
@@ -77,12 +76,13 @@ import freemind.modes.mindmapmode.MindMapNodeModel;
  * @author foltin
  * @date 06.09.2012
  */
+@SuppressWarnings("serial")
 public class ClientCommunication extends CommunicationBase {
 
 	private static final int MAX_LOCK_RETRIES = 5;
 	private static final long LOCK_RETRY_SLEEP_TIME = 1000;
 	private String mLockId;
-	private HashSet mLockIds = new HashSet();
+	private HashSet<String> mLockIds = new HashSet<>();
 	private String mPassword;
 	private SocketConnectionHook mSocketConnectionHook = null;
 	private boolean mReceivedGoodbye = false;
@@ -210,9 +210,9 @@ public class ClientCommunication extends CommunicationBase {
 						terminateSocketWithGoodbye();
 					}};
 				Tools.addEscapeActionToDialog(mapChooserDialog, cancelAction);
-				final JList mapList = new JList();
+				final JList<String> mapList = new JList<>();
 				mapList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-				mapList.setModel(new AbstractListModel() {
+				mapList.setModel(new AbstractListModel<String>() {
 					
 					@Override
 					public int getSize() {
@@ -220,7 +220,7 @@ public class ClientCommunication extends CommunicationBase {
 					}
 					
 					@Override
-					public Object getElementAt(int pIndex) {
+					public String getElementAt(int pIndex) {
 						return collOffers.getCollaborationMapOffer(pIndex).getMap();
 					}});
 				AbstractAction okAction = new AbstractAction() {
@@ -425,7 +425,7 @@ public class ClientCommunication extends CommunicationBase {
 					.getMode().createModeController();
 			MapAdapter newModel = new MindMapMapModel(newModeController);
 			newModeController.setModel(newModel);
-			HashMap IDToTarget = new HashMap();
+			HashMap<String, NodeAdapter>  IDToTarget = new HashMap<>();
 			StringReader reader = new StringReader(map);
 			MindMapNodeModel rootNode = (MindMapNodeModel) newModel
 					.createNodeTreeFromXml(reader, IDToTarget);
@@ -444,10 +444,8 @@ public class ClientCommunication extends CommunicationBase {
 
 	protected void registerClientCommunicationAtHook() {
 		// tell him about this thread.
-		Collection activatedHooks = getMindMapController().getRootNode()
-				.getActivatedHooks();
-		for (Iterator it = activatedHooks.iterator(); it.hasNext();) {
-			PermanentNodeHook hook = (PermanentNodeHook) it.next();
+		Collection<PermanentNodeHook> activatedHooks = getMindMapController().getRootNode().getActivatedHooks();
+		for (PermanentNodeHook hook : activatedHooks) {
 			if (hook instanceof SocketConnectionHook) {
 				SocketConnectionHook connHook = null;
 				connHook = (SocketConnectionHook) hook;

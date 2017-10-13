@@ -53,7 +53,7 @@ public class SetLinkActor extends XmlActorAdapter {
 		}
 	}
 
-	public Class getDoActionClass() {
+	public Class<AddLinkXmlAction> getDoActionClass() {
 		return AddLinkXmlAction.class;
 	}
 

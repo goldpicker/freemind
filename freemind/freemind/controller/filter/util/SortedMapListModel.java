@@ -37,7 +37,7 @@ public class SortedMapListModel extends AbstractListModel implements
 	SortedSet model;
 
 	public SortedMapListModel() {
-		model = new TreeSet();
+		model = new TreeSet<>();
 	}
 
 	public int getSize() {

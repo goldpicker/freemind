@@ -50,7 +50,7 @@ public class UnderlineActor extends NodeXmlActorAdapter {
 		}
 	}
 
-	public Class getDoActionClass() {
+	public Class<UnderlinedNodeAction> getDoActionClass() {
 		return UnderlinedNodeAction.class;
 	}
 

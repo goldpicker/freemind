@@ -51,7 +51,7 @@ public class MoveNodeActor extends NodeXmlActorAdapter {
 		getExMapFeedback().nodeChanged(node);
 	}
 
-	public Class getDoActionClass() {
+	public Class<MoveNodeXmlAction> getDoActionClass() {
 		return MoveNodeXmlAction.class;
 	}
 

@@ -39,7 +39,7 @@ public class MindMapNodesSelection implements Transferable, ClipboardOwner {
 	private String htmlContent;
 	private String dropActionContent;
 	private final List fileList;
-	private List nodeIdsContent;
+	private List<String> nodeIdsContent;
 	public static DataFlavor mindMapNodesFlavor = null;
 	public static DataFlavor rtfFlavor = null;
 	public static DataFlavor htmlFlavor = null;
@@ -75,7 +75,7 @@ public class MindMapNodesSelection implements Transferable, ClipboardOwner {
 	//
 	public MindMapNodesSelection(String nodesContent, String imageContent,
 			String stringContent, String rtfContent, String htmlContent,
-			String dropActionContent, List fileList, List nodeIdsContent) {
+			String dropActionContent, List fileList, List<String> nodeIdsContent) {
 		this.nodesContent = nodesContent;
 		this.rtfContent = rtfContent;
 		this.imageContent = imageContent;

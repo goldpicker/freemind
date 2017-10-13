@@ -49,7 +49,7 @@ public class ImportWizard {
 
 	public final String lookFor = ".xml";
 	/** Stores the list of all classes in the classpath */
-	public Vector CLASS_LIST = new Vector(500);
+	public Vector<String> CLASS_LIST = new Vector<>(500);
 	protected static java.util.logging.Logger logger = null;
 
 	public ImportWizard() {

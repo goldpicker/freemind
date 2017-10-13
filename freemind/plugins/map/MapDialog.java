@@ -74,6 +74,7 @@ import freemind.view.mindmapview.NodeView;
  * 
  * @author Jan Peter Stotz adapted for FreeMind by Chris.
  */
+@SuppressWarnings("serial")
 public class MapDialog extends MindMapHookAdapter implements
 		JMapViewerEventListener, MapModuleChangeObserver,
 		MapNodePositionListener, NodeSelectionListener, NodeVisibilityListener {
@@ -177,9 +178,9 @@ public class MapDialog extends MindMapHookAdapter implements
 		 */
 		private final String[] COLUMNS = new String[] {
 				SEARCH_DESCRIPTION_COLUMN_TEXT, SEARCH_DISTANCE_COLUMN_TEXT };
-		Vector mData = new Vector<>();
+		Vector<Place> mData = new Vector<>();
 		private Coordinate mCursorCoordinate = new Coordinate(0, 0);
-		private HashMap mMapSearchMarkerLocationHash = new HashMap<>();
+		private HashMap<Place, MapSearchMarkerLocation> mMapSearchMarkerLocationHash = new HashMap<>();
 		private final TextTranslator mTextTranslator;
 
 		/**
@@ -289,9 +290,7 @@ public class MapDialog extends MindMapHookAdapter implements
 		 */
 		public void clear() {
 			// clear old search results:
-			for (Iterator it = mMapSearchMarkerLocationHash.keySet().iterator(); it
-					.hasNext();) {
-				Place place = (Place) it.next();
+			for (Place place : mMapSearchMarkerLocationHash.keySet()) {
 				MapSearchMarkerLocation location = (MapSearchMarkerLocation) mMapSearchMarkerLocationHash
 						.get(place);
 				getMap().removeMapMarker(location);
@@ -517,9 +516,8 @@ public class MapDialog extends MindMapHookAdapter implements
 			map.setMapMarkerVisible(storage.getShowMapMarker());
 			map.setHideFoldedNodes(storage.getHideFoldedNodes());
 			int column = 0;
-			for (Iterator i = storage.getListTableColumnSettingList()
-					.iterator(); i.hasNext();) {
-				TableColumnSetting setting = (TableColumnSetting) i.next();
+			for (Iterator<TableColumnSetting> i = storage.getListTableColumnSettingList().iterator(); i.hasNext();) {
+				TableColumnSetting setting = i.next();
 				mResultTable.getColumnModel().getColumn(column)
 						.setPreferredWidth(setting.getColumnWidth());
 				mResultTableSorter.setSortingStatus(column,
@@ -536,13 +534,10 @@ public class MapDialog extends MindMapHookAdapter implements
 			mLastDividerPosition = storage.getLastDividerPosition();
 			mSearchSplitPane.setDividerLocation(mLastDividerPosition);
 			// restore last map positions
-			final Vector positionHolderVector = getFreeMindMapController()
-					.getPositionHolderVector();
-			for (Iterator it = storage.getListMapLocationStorageList()
-					.iterator(); it.hasNext();) {
-				MapLocationStorage location = (MapLocationStorage) it.next();
-				positionHolderVector
-						.add(new FreeMindMapController.PositionHolder(location
+			final Vector<FreeMindMapController.PositionHolder> positionHolderVector = getFreeMindMapController().getPositionHolderVector();
+			for (Iterator<MapLocationStorage> it = storage.getListMapLocationStorageList().iterator(); it.hasNext();) {
+				MapLocationStorage location = it.next();
+				positionHolderVector.add(new FreeMindMapController.PositionHolder(location
 								.getCursorLatitude(), location
 								.getCursorLongitude(), location.getZoom()));
 			}
@@ -567,10 +562,8 @@ public class MapDialog extends MindMapHookAdapter implements
 
 	public void addMarkersToMap() {
 		// add known markers to the map.
-		Set mapNodePositionHolders = getAllMapNodePositionHolders();
-		for (Iterator it = mapNodePositionHolders.iterator(); it.hasNext();) {
-			MapNodePositionHolder nodePositionHolder = (MapNodePositionHolder) it
-					.next();
+		Set<MapNodePositionHolder> mapNodePositionHolders = getAllMapNodePositionHolders();
+		for (MapNodePositionHolder nodePositionHolder : mapNodePositionHolders) {
 			boolean visible = !nodePositionHolder.hasFoldedParents();
 			changeVisibilityOfNode(nodePositionHolder, visible);
 		}
@@ -641,7 +634,7 @@ public class MapDialog extends MindMapHookAdapter implements
 	 * @return a set of MapNodePositionHolder elements of all nodes (even if
 	 *         hidden)
 	 */
-	public Set getAllMapNodePositionHolders() {
+	public Set<MapNodePositionHolder> getAllMapNodePositionHolders() {
 		return getRegistration().getMapNodePositionHolders();
 	}
 
@@ -649,7 +642,7 @@ public class MapDialog extends MindMapHookAdapter implements
 	 * @return a set of MapNodePositionHolder elements to those nodes currently
 	 *         displayed (ie. not hidden).
 	 */
-	public Set getMapNodePositionHolders() {
+	public Set<MapNodePositionHolder> getMapNodePositionHolders() {
 		return mMarkerMap.keySet();
 	}
 
@@ -728,10 +721,7 @@ public class MapDialog extends MindMapHookAdapter implements
 			setting.setColumnSorting(mResultTableSorter.getSortingStatus(i));
 			storage.addTableColumnSetting(setting);
 		}
-		for (Iterator it = getFreeMindMapController().getPositionHolderVector()
-				.iterator(); it.hasNext();) {
-			FreeMindMapController.PositionHolder pos = (FreeMindMapController.PositionHolder) it
-					.next();
+		for (FreeMindMapController.PositionHolder pos : getFreeMindMapController().getPositionHolderVector()) {
 			MapLocationStorage mapLocationStorage = new MapLocationStorage();
 			mapLocationStorage.setCursorLatitude(pos.lat);
 			mapLocationStorage.setCursorLongitude(pos.lon);
@@ -938,7 +928,7 @@ public class MapDialog extends MindMapHookAdapter implements
 	 * @return < MapNodePositionHolder, MapMarkerLocation > of those nodes
 	 *         currently displayed (ie. not hidden)
 	 */
-	public Map getMarkerMap() {
+	public Map<MapNodePositionHolder, MapMarkerLocation> getMarkerMap() {
 		return Collections.unmodifiableMap(mMarkerMap);
 	}
 

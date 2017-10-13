@@ -23,7 +23,6 @@
 package freemind.extensions;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -32,8 +31,6 @@ import freemind.controller.actions.generated.instance.PluginAction;
 import freemind.controller.actions.generated.instance.PluginMenu;
 import freemind.controller.actions.generated.instance.PluginMode;
 import freemind.controller.actions.generated.instance.PluginProperty;
-import freemind.main.FreeMindMain;
-
 /**
  * This is an information class that holds all outer properties of a hook, i.e.
  * all contents of the XML description file.
@@ -46,8 +43,8 @@ import freemind.main.FreeMindMain;
  */
 public class HookDescriptorPluginAction extends HookDescriptorBase {
 	private Properties properties;
-	public Vector menuPositions;
-	private Vector modes;
+	public Vector<String> menuPositions;
+	private Vector<String> modes;
 	private PluginAction pluginAction;
 
 	public HookDescriptorPluginAction(String xmlPluginFile,
@@ -57,12 +54,10 @@ public class HookDescriptorPluginAction extends HookDescriptorBase {
 		if (pluginAction.getName() == null) {
 			pluginAction.setName(pluginAction.getLabel());
 		}
-		menuPositions = new Vector();
+		menuPositions = new Vector<>();
 		properties = new Properties();
-		modes = new Vector();
-		for (Iterator i = pluginAction.getListChoiceList().iterator(); i
-				.hasNext();) {
-			Object obj = i.next();
+		modes = new Vector<>();
+		for (Object obj : pluginAction.getListChoiceList()) {
 			if (obj instanceof PluginMenu) {
 				PluginMenu menu = (PluginMenu) obj;
 				menuPositions.add(menu.getLocation());
@@ -85,10 +80,9 @@ public class HookDescriptorPluginAction extends HookDescriptorBase {
 
 	public HookInstanciationMethod getInstanciationMethod() {
 		if (pluginAction.getInstanciation() != null) {
-			HashMap allInstMethods = HookInstanciationMethod
+			HashMap<String, HookInstanciationMethod> allInstMethods = HookInstanciationMethod
 					.getAllInstanciationMethods();
-			for (Iterator i = allInstMethods.keySet().iterator(); i.hasNext();) {
-				String name = (String) i.next();
+			for (String name : allInstMethods.keySet()) {
 				if (pluginAction.getInstanciation().equalsIgnoreCase(name)) {
 					return (HookInstanciationMethod) allInstMethods.get(name);
 				}
@@ -98,7 +92,7 @@ public class HookDescriptorPluginAction extends HookDescriptorBase {
 		return HookInstanciationMethod.Other;
 	}
 
-	public Vector getModes() {
+	public Vector<String> getModes() {
 		return modes;
 	}
 

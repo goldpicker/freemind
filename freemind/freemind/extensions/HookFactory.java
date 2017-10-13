@@ -88,7 +88,7 @@ public interface HookFactory {
 	 *         registration via the registerRegistrationContainer method when
 	 *         instanciated (this is typically done in the ModeController).
 	 */
-	public abstract List getRegistrations();
+	public abstract List<RegistrationContainer> getRegistrations();
 
 	/**
 	 * See getRegistrations. The registration makes sense for the factory, as
