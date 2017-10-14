@@ -27,9 +27,7 @@ import java.awt.CardLayout;
 import java.awt.HeadlessException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -317,7 +315,7 @@ public class StylePatternFrame extends JPanel implements TextTranslator,
 			mSetChildPattern = new ThreeCheckBoxProperty(SET_CHILD_PATTERN
 					+ ".tooltip", SET_CHILD_PATTERN);
 			controls.add(mSetChildPattern);
-			Vector childNames = new Vector<>();
+			Vector<String> childNames = new Vector<>();
 			mChildPattern = new ComboProperty(CHILD_PATTERN + ".tooltip",
 					CHILD_PATTERN, childNames, childNames);
 			controls.add(mChildPattern);

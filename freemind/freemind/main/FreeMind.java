@@ -20,12 +20,10 @@
 
 package freemind.main;
 
-import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.Toolkit;
@@ -830,13 +828,6 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 		}
 	}
 
-
-	private class MyEventQueue extends EventQueue {
-        public void postEvent(AWTEvent theEvent) {
-            logger.info("Event Posted: " + theEvent);
-            super.postEvent(theEvent);
-        }
-    }
 
 	private void initServer() {
 		String portFile = getPortFile();

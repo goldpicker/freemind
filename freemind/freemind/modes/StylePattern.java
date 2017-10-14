@@ -29,7 +29,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
 import freemind.main.Tools;
 import freemind.main.XMLElement;
@@ -79,7 +78,7 @@ public class StylePattern {
 	public StylePattern() {
 	}
 
-	public StylePattern(XMLElement elm, List justConstructedPatterns) {
+	public StylePattern(XMLElement elm, List<StylePattern> justConstructedPatterns) {
 		loadPattern(elm, justConstructedPatterns);
 	}
 
@@ -380,7 +379,7 @@ public class StylePattern {
 		return list;
 	}
 
-	protected void loadPattern(XMLElement pattern, List justConstructedPatterns) {
+	protected void loadPattern(XMLElement pattern, List<StylePattern> justConstructedPatterns) {
 		// PATTERN
 		if (pattern.getStringAttribute("name") != null) {
 			setName(pattern.getStringAttribute("name"));
@@ -389,10 +388,10 @@ public class StylePattern {
 			setRecursive(true);
 		}
 
-		for (Iterator i = pattern.getChildren().iterator(); i.hasNext();) {
+		for (Iterator<XMLElement> i = pattern.getChildren().iterator(); i.hasNext();) {
 			// this has to be improved!
 			// NODE
-			XMLElement child = (XMLElement) i.next();
+			XMLElement child = i.next();
 			if (child.getName().equals("node")) {
 				if (child.getStringAttribute("color") != null
 						&& child.getStringAttribute("color").length() == 7) {
@@ -415,8 +414,8 @@ public class StylePattern {
 				}
 				setText(child.getStringAttribute("text"));
 
-				for (Iterator j = child.getChildren().iterator(); j.hasNext();) {
-					XMLElement nodeChild = (XMLElement) j.next();
+				for (Iterator<XMLElement> j = child.getChildren().iterator(); j.hasNext();) {
+					XMLElement nodeChild = j.next();
 					// FONT
 					if (nodeChild.getName().equals("font")) {
 
@@ -470,9 +469,7 @@ public class StylePattern {
 					// find name in list of justConstructedPatterns:
 					String searchName = child.getStringAttribute("pattern");
 					boolean anythingFound = false;
-					for (ListIterator e = justConstructedPatterns
-							.listIterator(); e.hasNext();) {
-						StylePattern patternFound = (StylePattern) e.next();
+					for (StylePattern patternFound : justConstructedPatterns) {
 						if (patternFound.getName().equals(searchName)) {
 							setChildrenStylePattern(patternFound);
 							anythingFound = true;

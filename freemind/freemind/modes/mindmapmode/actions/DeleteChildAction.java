@@ -32,6 +32,7 @@ import freemind.main.FreeMind;
 import freemind.modes.MindMapNode;
 import freemind.modes.mindmapmode.MindMapController;
 
+@SuppressWarnings("serial")
 public class DeleteChildAction extends MindmapAction  {
 	private final MindMapController mMindMapController;
 

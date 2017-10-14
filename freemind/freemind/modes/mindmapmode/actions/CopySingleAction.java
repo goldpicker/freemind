@@ -29,6 +29,7 @@ import javax.swing.AbstractAction;
 
 import freemind.modes.mindmapmode.MindMapController;
 
+@SuppressWarnings("serial")
 public class CopySingleAction extends AbstractAction {
 	private final MindMapController controller;
 

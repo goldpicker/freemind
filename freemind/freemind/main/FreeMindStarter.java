@@ -87,8 +87,7 @@ public class FreeMindStarter {
 			Method mainMethod = mainClass.getMethod("main", new Class[] {
 					String[].class, Properties.class, Properties.class,
 					File.class });
-			mainMethod.invoke(null,
-							new Object[] {
+			mainMethod.invoke(null, new Object[] {
 									args,
 									defaultPreferences,
 									userPreferences,

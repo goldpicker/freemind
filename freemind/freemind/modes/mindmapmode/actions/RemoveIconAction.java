@@ -36,10 +36,9 @@ import freemind.modes.mindmapmode.MindMapController;
  * @author foltin
  * 
  */
+@SuppressWarnings("serial")
 public class RemoveIconAction extends NodeGeneralAction implements
 		IconInformation {
-
-	private IconAction iconAction;
 
 	/**
      */
@@ -55,7 +54,6 @@ public class RemoveIconAction extends NodeGeneralAction implements
 	 *            The addIconAction to set.
 	 */
 	public void setIconAction(IconAction iconAction) {
-		this.iconAction = iconAction;
 	}
 
 	public String getDescription() {

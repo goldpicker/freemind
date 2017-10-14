@@ -28,8 +28,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.text.MessageFormat;
 
-import javax.swing.JFrame;
-
 import freemind.main.Tools;
 import freemind.modes.ModeController;
 
@@ -40,7 +38,6 @@ import freemind.modes.ModeController;
 public class EditNodeExternalApplication extends EditNodeBase {
 
 	private KeyEvent firstEvent;
-	private boolean lastEditingWasSuccessful;
 
 	public EditNodeExternalApplication(final NodeView node, final String text,
 			final KeyEvent firstEvent, ModeController controller,
@@ -50,8 +47,7 @@ public class EditNodeExternalApplication extends EditNodeBase {
 	}
 
 	public void show() {
-		final JFrame mainWindow = (JFrame) getFrame();
-		lastEditingWasSuccessful = false;
+		getFrame();
 		// final Controller controller = getController();
 		// mainWindow.setEnabled(false);
 		new Thread() {
@@ -75,7 +71,7 @@ public class EditNodeExternalApplication extends EditNodeBase {
 					// System.out.println("External application:"+expandedHtmlEditingCommand);
 					Process htmlEditorProcess = Runtime.getRuntime().exec(
 							expandedHtmlEditingCommand);
-					int result = htmlEditorProcess.waitFor(); // Here we wait
+					htmlEditorProcess.waitFor(); // Here we wait
 																// until the
 																// editor ends
 																// up itself
@@ -91,7 +87,6 @@ public class EditNodeExternalApplication extends EditNodeBase {
 						getEditControl().cancel();
 					}
 					getEditControl().ok(content);
-					lastEditingWasSuccessful = true;
 				} catch (Exception e) {
 					freemind.main.Resources.getInstance().logException(e);
 					try {

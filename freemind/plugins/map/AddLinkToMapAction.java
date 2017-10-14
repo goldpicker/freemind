@@ -20,7 +20,6 @@
 
 package plugins.map;
 
-import java.util.Iterator;
 import java.util.List;
 
 import freemind.modes.MindMapNode;
@@ -41,9 +40,8 @@ public class AddLinkToMapAction extends MindMapNodeHookAdapter {
 	 * freemind.extensions.NodeHookAdapter#invoke(freemind.modes.MindMapNode)
 	 */
 	public void invoke(MindMapNode pNode) {
-		List selecteds = getMindMapController().getSelecteds();
-		for (Iterator it = selecteds.iterator(); it.hasNext();) {
-			MindMapNode node = (MindMapNode) it.next();
+		List<MindMapNode> selecteds = getMindMapController().getSelecteds();
+		for (MindMapNode node : selecteds) {
 			MapNodePositionHolder hook = MapNodePositionHolder.getHook(node);
 			if(hook != null) {
 				if(node.getLink() != null) {

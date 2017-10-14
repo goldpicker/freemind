@@ -44,7 +44,7 @@ public class FontFamilyActor extends XmlActorAdapter {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Class getDoActionClass() {
+	public Class<FontNodeAction> getDoActionClass() {
 		return FontNodeAction.class;
 	}
 

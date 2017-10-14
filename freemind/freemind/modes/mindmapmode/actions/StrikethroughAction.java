@@ -27,6 +27,7 @@ import freemind.controller.MenuItemSelectedListener;
 import freemind.controller.actions.generated.instance.StrikethroughNodeAction;
 import freemind.modes.mindmapmode.MindMapController;
 
+@SuppressWarnings("serial")
 public class StrikethroughAction extends NodeGeneralAction implements
 		MenuItemSelectedListener {
 	/**

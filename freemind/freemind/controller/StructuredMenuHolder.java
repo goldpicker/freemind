@@ -24,7 +24,6 @@
 package freemind.controller;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -148,7 +147,7 @@ public class StructuredMenuHolder {
 	public void addCategory(String category) {
 		StringTokenizer tokens = new StringTokenizer(category + "/blank", "/");
 		// with this call, the category is created.
-		MapTokenPair categoryPair = getCategoryMap(tokens, menuMap);
+		getCategoryMap(tokens, menuMap);
 	}
 
 	public void addSeparator(String category) {

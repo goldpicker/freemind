@@ -28,6 +28,7 @@ import javax.swing.ComboBoxModel;
 /**
  * @author Dimitri Polivaev 10.07.2005
  */
+@SuppressWarnings("serial")
 public class SortedComboBoxModel extends SortedMapListModel implements
 		SortedListModel, ComboBoxModel {
 	private Object selectedItem;

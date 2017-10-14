@@ -20,7 +20,6 @@
 
 package freemind.extensions;
 
-import java.util.HashMap;
 import java.util.Iterator;
 
 import freemind.main.XMLElement;
@@ -48,8 +47,8 @@ public class PermanentNodeHookSubstituteUnknown extends
 
 	public void save(XMLElement xml) {
 		super.save(xml);
-		for (Iterator i = child.getChildren().iterator(); i.hasNext();) {
-			XMLElement childchild = (XMLElement) i.next();
+		for (Iterator<XMLElement> i = child.getChildren().iterator(); i.hasNext();) {
+			XMLElement childchild = i.next();
 			xml.addChild(childchild);
 		}
 	}

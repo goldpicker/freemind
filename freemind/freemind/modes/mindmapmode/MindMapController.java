@@ -1095,7 +1095,7 @@ public class MindMapController extends ControllerAdapter implements
 				+ "/removeAllIcons");
 		holder.addSeparator(iconMenuString);
 		for (int i = 0; i < iconActions.size(); ++i) {
-			JMenuItem item = holder.addAction((Action) iconActions.get(i), iconMenuString + "/" + i);
+			holder.addAction((Action) iconActions.get(i), iconMenuString + "/" + i);
 		}
 	}
 

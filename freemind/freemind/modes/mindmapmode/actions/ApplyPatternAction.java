@@ -36,6 +36,7 @@ import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin;
 import freemind.modes.mindmapmode.MindMapMapModel;
 import freemind.modes.mindmapmode.MindMapNodeModel;
 
+@SuppressWarnings("serial")
 public class ApplyPatternAction extends NodeGeneralAction implements
 		SingleNodeOperation {
 	public interface ExternalPatternAction extends MindMapControllerPlugin {

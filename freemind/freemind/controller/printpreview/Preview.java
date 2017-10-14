@@ -32,6 +32,7 @@ import javax.swing.JComponent;
 
 import freemind.view.mindmapview.MapView;
 
+@SuppressWarnings("serial")
 class Preview extends JComponent {
 	private final static int DEFAULT_PREVIEW_SIZE = 300;
 	private final static double MINIMUM_ZOOM_FACTOR = 0.1;

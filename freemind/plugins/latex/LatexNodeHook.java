@@ -39,14 +39,14 @@ import freemind.view.mindmapview.NodeView;
  * */
 public class LatexNodeHook extends PermanentMindMapNodeHookAdapter {
 	private String equation;
-	private Set viewers;
+	private Set<Component> viewers;
 
 	/**
 	 */
 	public LatexNodeHook() {
 		super();
 		equation = "\\mbox{I}^\\fgcolor{ff0000}{\\heartsuit}\\mbox{HotEqn}";
-		viewers = new LinkedHashSet();
+		viewers = new LinkedHashSet<>();
 	}
 
 	public void onViewCreatedHook(NodeView nodeView) {
@@ -77,9 +77,7 @@ public class LatexNodeHook extends PermanentMindMapNodeHookAdapter {
 	}
 
 	public void invoke(MindMapNode node) {
-		Iterator iterator = getMindMapController().getView().getViewers(node).iterator();
-		while (iterator.hasNext()) {
-			NodeView view = (NodeView) iterator.next();
+		for(NodeView view : getMindMapController().getView().getViewers(node)) {
 			createViewer(view);
 		}
 		super.invoke(node);

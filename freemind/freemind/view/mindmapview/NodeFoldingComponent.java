@@ -52,6 +52,7 @@ import freemind.modes.MindMapNode;
  * @author Foltin
  * 
  */
+@SuppressWarnings("serial")
 public class NodeFoldingComponent extends JButton {
 	private static final int TIMER_DELAY = 50;
 	private static final int COLOR_COUNTER_MAX = 15;

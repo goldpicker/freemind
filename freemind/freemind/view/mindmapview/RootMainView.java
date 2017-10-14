@@ -31,6 +31,7 @@ import freemind.main.FreeMind;
 import freemind.main.Resources;
 import freemind.main.Tools;
 
+@SuppressWarnings("serial")
 class RootMainView extends MainView {
 
 	/*

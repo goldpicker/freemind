@@ -25,7 +25,6 @@ package plugins.collaboration.database;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -111,7 +110,7 @@ public abstract class DatabaseBasics extends MindMapNodeHookAdapter implements
 
 	protected static void togglePermanentHook(MindMapController controller) {
 		MindMapNode rootNode = controller.getRootNode();
-		List selecteds = Arrays.asList(new MindMapNode[] { rootNode });
+		List<MindMapNode> selecteds = Arrays.asList(new MindMapNode[] { rootNode });
 		controller.addHook(rootNode, selecteds, SLAVE_HOOK_NAME, null);
 	}
 
@@ -138,9 +137,7 @@ public abstract class DatabaseBasics extends MindMapNodeHookAdapter implements
 		return mUpdateThread;
 	}
 
-	public String getMapTitle(String pOldTitle, MapModule pMapModule,
-			MindMap pModel) {
-		String title = pOldTitle;
+	public String getMapTitle(String pOldTitle, MapModule pMapModule, MindMap pModel) {
 		if (pMapModule.getModeController() != getMindMapController()) {
 			return pOldTitle;
 		}
@@ -148,9 +145,8 @@ public abstract class DatabaseBasics extends MindMapNodeHookAdapter implements
 		if (mUpdateThread != null) {
 			try {
 				boolean first = true;
-				Vector users = mUpdateThread.getUsers();
-				for (Iterator it = users.iterator(); it.hasNext();) {
-					String user = (String) it.next();
+				Vector<String> users = mUpdateThread.getUsers();
+				for (String user : users) {
 					if (first)
 						first = false;
 					else

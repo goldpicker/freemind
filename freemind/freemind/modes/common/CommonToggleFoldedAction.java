@@ -37,6 +37,7 @@ import freemind.modes.MindMapNode;
  * @author foltin
  * 
  */
+@SuppressWarnings("serial")
 public class CommonToggleFoldedAction extends AbstractAction {
 
 	private ControllerAdapter modeController;
@@ -59,8 +60,8 @@ public class CommonToggleFoldedAction extends AbstractAction {
 
 	public void toggleFolded(ListIterator listIterator) {
 		boolean fold = getFoldingState(reset(listIterator));
-		for (Iterator i = reset(listIterator); i.hasNext();) {
-			MindMapNode node = (MindMapNode) i.next();
+		for (Iterator<MindMapNode> i = reset(listIterator); i.hasNext();) {
+			MindMapNode node = i.next();
 			modeController.setFolded(node, fold);
 		}
 	}

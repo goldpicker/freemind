@@ -679,7 +679,7 @@ public abstract class NodeAdapter implements MindMapNode {
 		return sorted.listIterator();
 	}
 
-	public ListIterator childrenFolded() {
+	public ListIterator<MindMapNode> childrenFolded() {
 		if (isFolded()) {
 			return Collections.EMPTY_LIST.listIterator();
 		}

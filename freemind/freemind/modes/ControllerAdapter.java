@@ -1468,8 +1468,8 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		}
 	}
 
-	public Set getRegisteredMouseWheelEventHandler() {
-		return Collections.EMPTY_SET;
+	public Set<MouseWheelEventHandler> getRegisteredMouseWheelEventHandler() {
+		return Collections.emptySet();
 	}
 
 	public MapModule getMapModule() {

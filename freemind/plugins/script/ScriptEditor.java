@@ -23,7 +23,6 @@
 package plugins.script;
 
 import java.io.PrintStream;
-import java.util.Iterator;
 import java.util.Vector;
 
 import plugins.script.ScriptEditorPanel.ScriptHolder;
@@ -56,12 +55,12 @@ public class ScriptEditor extends MindMapHookAdapter {
 		/**
 		 * Of AttributeHolder
 		 */
-		private final Vector mScripts;
+		private final Vector<AttributeHolder> mScripts;
 		private final MindMapNode mNode;
 		private final MindMapController mMindMapController;
 		private boolean isDirty = false;
 
-		private NodeScriptModel(Vector pScripts, MindMapNode node,
+		private NodeScriptModel(Vector<AttributeHolder> pScripts, MindMapNode node,
 				MindMapController pMindMapController) {
 			mScripts = pScripts;
 			mNode = node;
@@ -120,8 +119,7 @@ public class ScriptEditor extends MindMapHookAdapter {
 				// position.
 				int attributeTableLength = mNode.getAttributeTableLength();
 				// store node attributes back
-				for (Iterator iter = mScripts.iterator(); iter.hasNext();) {
-					AttributeHolder holder = (AttributeHolder) iter.next();
+				for (AttributeHolder holder : mScripts) {
 					Attribute attribute = holder.mAttribute;
 					int position = holder.mPosition;
 					if (attributeTableLength <= position) {
@@ -154,9 +152,7 @@ public class ScriptEditor extends MindMapHookAdapter {
 			boolean found;
 			do {
 				found = false;
-				for (Iterator iterator = mScripts.iterator(); iterator
-						.hasNext();) {
-					AttributeHolder holder = (AttributeHolder) iterator.next();
+				for (AttributeHolder holder : mScripts) {
 					if ((scriptName + scriptNameSuffix)
 							.equals(holder.mAttribute.getName())) {
 						found = true;
@@ -175,7 +171,7 @@ public class ScriptEditor extends MindMapHookAdapter {
 	public void startupMapHook() {
 		super.startupMapHook();
 		final MindMapNode node = getMindMapController().getSelected();
-		final Vector scripts = new Vector();
+		final Vector<AttributeHolder> scripts = new Vector<>();
 		for (int position = 0; position < node.getAttributeTableLength(); position++) {
 			Attribute attribute = node.getAttribute(position);
 			if (attribute.getName().startsWith(ScriptingEngine.SCRIPT_PREFIX)) {

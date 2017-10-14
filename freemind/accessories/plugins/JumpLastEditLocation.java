@@ -81,8 +81,6 @@ public class JumpLastEditLocation extends MindMapNodeHookAdapter {
 
 		private MindMapController controller;
 
-		private MindMap mMap;
-
 		private Logger logger;
 
 		private Vector<String> mLastEditLocations = new Vector<>();
@@ -121,7 +119,6 @@ public class JumpLastEditLocation extends MindMapNodeHookAdapter {
 		public JumpLastEditLocationRegistration(ModeController controller,
 				MindMap map) {
 			this.controller = (MindMapController) controller;
-			mMap = map;
 			logger = controller.getFrame().getLogger(this.getClass().getName());
 		}
 

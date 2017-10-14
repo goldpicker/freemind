@@ -25,7 +25,6 @@ package freemind.modes.common.listeners;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.util.Iterator;
 import java.util.Set;
 
 import freemind.controller.Controller;
@@ -83,15 +82,11 @@ public class MindMapMouseWheelEventHandler implements MouseWheelListener {
 	 * (java.awt.event.MouseWheelEvent)
 	 */
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		MapView mapView = (MapView) e.getSource();
 		if (mController.isBlocked()) {
 			return; // block the scroll during edit (PN)
 		}
-		Set registeredMouseWheelEventHandler = mController
-				.getRegisteredMouseWheelEventHandler();
-		for (Iterator i = registeredMouseWheelEventHandler.iterator(); i
-				.hasNext();) {
-			MouseWheelEventHandler handler = (MouseWheelEventHandler) i.next();
+		Set<MouseWheelEventHandler> registeredMouseWheelEventHandler = mController.getRegisteredMouseWheelEventHandler();
+		for (MouseWheelEventHandler handler : registeredMouseWheelEventHandler) {
 			boolean result = handler.handleMouseWheelEvent(e);
 			if (result) {
 				// event was consumed:

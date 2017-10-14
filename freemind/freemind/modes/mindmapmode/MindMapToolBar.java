@@ -25,7 +25,6 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.Action;
@@ -47,6 +46,7 @@ import freemind.modes.MindMapNode;
 import freemind.view.ImageFactory;
 import freemind.view.mindmapview.MapView;
 
+@SuppressWarnings("serial")
 public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 
 	/**
@@ -190,8 +190,7 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 	}
 
 	private void setFontColorByItem(ColorPair pItem) {
-		for (Iterator it = c.getSelecteds().iterator(); it.hasNext();) {
-			MindMapNode node = (MindMapNode) it.next();
+		for (MindMapNode node : c.getSelecteds()) {
 			c.setNodeColor(node, pItem.color);
 		}
 	}

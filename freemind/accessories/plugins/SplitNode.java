@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.List;
-import java.util.ListIterator;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
@@ -63,9 +62,8 @@ public class SplitNode extends MindMapNodeHookAdapter {
 	public void invoke(MindMapNode node) {
 		super.invoke(node);
 		final List<MindMapNode> list = getMindMapController().getSelecteds();
-		final ListIterator listIterator = list.listIterator();
-		while (listIterator.hasNext()) {
-			MindMapNode next = (MindMapNode) listIterator.next();
+		
+		for(MindMapNode next : list) {
 			splitNode(next);
 		}
 	}

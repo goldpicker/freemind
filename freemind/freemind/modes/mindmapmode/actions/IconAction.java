@@ -37,16 +37,15 @@ import freemind.modes.MindMapNode;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.xml.actors.AddIconActor;
 
+@SuppressWarnings("serial")
 public class IconAction extends MindmapAction implements IconInformation {
 	public MindIcon icon;
 	private final MindMapController modeController;
-	private final RemoveIconAction removeLastIconAction;
 
 	public IconAction(MindMapController controller, MindIcon _icon,
 			RemoveIconAction removeLastIconAction) {
 		super(_icon.getDescription(), _icon.getIcon(), controller);
 		this.modeController = controller;
-		this.removeLastIconAction = removeLastIconAction;
 		putValue(Action.SHORT_DESCRIPTION, _icon.getDescription());
 		this.icon = _icon;
 		
@@ -86,12 +85,6 @@ public class IconAction extends MindmapAction implements IconInformation {
 	private void removeIcon(boolean removeFirst) {
 		for (MindMapNode selected : modeController.getSelecteds()) {
 			getAddIconActor().removeIcon(selected, icon, removeFirst);
-		}
-	}
-
-	private void toggleIcon() {
-		for (MindMapNode selected : modeController.getSelecteds()) {
-			getAddIconActor().toggleIcon(selected, icon);
 		}
 	}
 

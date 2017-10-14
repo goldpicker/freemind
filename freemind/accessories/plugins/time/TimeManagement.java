@@ -22,7 +22,6 @@
 
 package accessories.plugins.time;
 
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.GridBagConstraints;
@@ -37,8 +36,6 @@ import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -65,7 +62,6 @@ import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.modes.MindMapNode;
 import freemind.modes.Mode;
-import freemind.modes.ModeController;
 import freemind.modes.common.plugins.ReminderHookBase;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.hooks.MindMapHookAdapter;
@@ -77,6 +73,7 @@ import freemind.view.MapModule;
  * @author foltin
  * 
  */
+@SuppressWarnings("serial")
 public class TimeManagement extends MindMapHookAdapter implements
 		PropertyChangeListener, ActionListener, MapModuleChangeObserver {
 
@@ -89,7 +86,6 @@ public class TimeManagement extends MindMapHookAdapter implements
 	}
 
 	private class AppendDateAbstractAction extends AbstractAction {
-		private NodeFactory mFactory;
 
 		public AppendDateAbstractAction() {
 
@@ -97,15 +93,12 @@ public class TimeManagement extends MindMapHookAdapter implements
 
 		public void init(NodeFactory pFactory, String pText) {
 			putValue(Action.NAME, getMindMapController().getText(pText));
-			mFactory = pFactory;
 		}
 
 		public void actionPerformed(ActionEvent actionEvent) {
 			MindMapNode lastElement = null;
-			Vector sel = new Vector();
-			for (Iterator i = getMindMapController().getSelecteds().iterator(); i
-					.hasNext();) {
-				MindMapNode element = mFactory.getNode((MindMapNode) i.next());
+			Vector<MindMapNode> sel = new Vector<>();
+			for (MindMapNode element : getMindMapController().getSelecteds()) {
 				DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
 				String dateAsString = df.format(getCalendarDate());
 				getMindMapController().setNodeText(element,
@@ -177,10 +170,7 @@ public class TimeManagement extends MindMapHookAdapter implements
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			for (Iterator i = getMindMapController().getSelecteds().iterator(); i
-					.hasNext();) {
-				MindMapNode node = (MindMapNode) i.next();
-
+			for (MindMapNode node : getMindMapController().getSelecteds()) {
 				ReminderHookBase alreadyPresentHook = TimeManagementOrganizer
 						.getHook(node);
 				if (alreadyPresentHook != null) {
@@ -211,35 +201,6 @@ public class TimeManagement extends MindMapHookAdapter implements
 		public void actionPerformed(ActionEvent arg0) {
 			disposeDialog();
 		}
-	}
-
-	private class AppendDailyMarkAction extends AbstractAction {
-
-		private ModeController mModeController;
-
-		public AppendDailyMarkAction() {
-			putValue(Action.NAME, getMindMapController().getText("plugins/TimeManagement.xml_appendDailyButton"));
-			mModeController = getController();
-
-		}
-
-		public void actionPerformed(ActionEvent actionEvent) {
-			Date cal = getCalendarDate();
-			Resources res = Resources.getInstance();
-			String xml = res.getProperty(FreeMindCommon.TIME_MANAGEMENT_MARKING_XML);
-			XmlBindingTools bind = XmlBindingTools.getInstance();
-			CalendarMarkings result = (CalendarMarkings) bind.unMarshall(xml);
-			CalendarMarking mark = new CalendarMarking();
-			mark.setStartDate(cal.getTime());
-			mark.setName(DateFormat.getDateInstance().format(cal));
-			mark.setColor(Tools.colorToXml(Color.red));
-			mark.setRepeatEachNOccurence(1);
-			mark.setRepeatType(CalendarMarking.DAILY);
-			result.addCalendarMarking(mark);
-			mModeController.getController().setProperty(FreeMindCommon.TIME_MANAGEMENT_MARKING_XML, bind.marshall(result));
-			calendar.repaint();
-		}
-
 	}
 
 	private class AddMarkAction extends AbstractAction {
@@ -410,8 +371,7 @@ public class TimeManagement extends MindMapHookAdapter implements
 				mDialog.removeWindowFocusListener(this);
 			}
 		});
-		WindowConfigurationStorage storage = getMindMapController()
-				.decorateDialog(mDialog, WINDOW_PREFERENCE_STORAGE_PROPERTY);
+		getMindMapController().decorateDialog(mDialog, WINDOW_PREFERENCE_STORAGE_PROPERTY);
 		mDialog.setVisible(true);
 
 	}
@@ -479,12 +439,8 @@ public class TimeManagement extends MindMapHookAdapter implements
 		Date date = getCalendarDate();
 		// add permanent node hook to the nodes and this hook checks
 		// permanently.
-		for (Iterator i = getMindMapController().getSelecteds().iterator(); i
-				.hasNext();) {
-			MindMapNode node = (MindMapNode) i.next();
-
-			ReminderHookBase alreadyPresentHook = TimeManagementOrganizer
-					.getHook(node);
+		for (MindMapNode node : getMindMapController().getSelecteds()) {
+			ReminderHookBase alreadyPresentHook = TimeManagementOrganizer.getHook(node);
 			if (alreadyPresentHook != null) {
 				// already present:
 				Object[] messageArguments = {

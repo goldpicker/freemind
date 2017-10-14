@@ -23,11 +23,10 @@
 
 package freemind.modes.mindmapmode.actions;
 
-import javax.swing.ImageIcon;
-
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
+@SuppressWarnings("serial")
 public class RedoAction extends UndoAction {
 	private MindMapController controller;
 

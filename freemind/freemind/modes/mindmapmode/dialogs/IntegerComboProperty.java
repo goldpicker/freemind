@@ -20,7 +20,6 @@
 
 package freemind.modes.mindmapmode.dialogs;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 import freemind.common.ComboProperty;
@@ -40,7 +39,7 @@ public class IntegerComboProperty extends ComboProperty {
 	 * @param pSizesVector
 	 */
 	public IntegerComboProperty(String pDescription, String pLabel,
-			String[] pPossibles, Vector pSizesVector) {
+			String[] pPossibles, Vector<String> pSizesVector) {
 		super(pDescription, pLabel, pPossibles, pSizesVector);
 	}
 
@@ -58,8 +57,7 @@ public class IntegerComboProperty extends ComboProperty {
 			int givenVal;
 			try {
 				givenVal = Integer.parseInt(pValue);
-				for (Iterator it = possibleValues.iterator(); it.hasNext();) {
-					String stringValue = (String) it.next();
+				for (String stringValue : possibleValues) {
 					int val = Integer.parseInt(stringValue);
 					if(val > givenVal && lastMatchedValue != null) {
 						super.setValue(lastMatchedValue);

@@ -42,11 +42,9 @@ public class DatabaseRegistration implements HookRegistration,
 
 	private final MindMapController mController;
 	private final java.util.logging.Logger logger;
-	private MindMap mMap;
 
 	public DatabaseRegistration(ModeController controller, MindMap map) {
 		this.mController = (MindMapController) controller;
-		mMap = map;
 		logger = controller.getFrame().getLogger(this.getClass().getName());
 	}
 

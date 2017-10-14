@@ -119,7 +119,7 @@ public class ScriptingSecurityManager extends SecurityManager {
 		/*
 		 * This should permit system libraries to be loaded.
 		 */
-		HashSet set = new HashSet();
+		HashSet<String> set = new HashSet<>();
 		set.add("awt");
 		set.add("net");
 		set.add("jpeg");

@@ -241,7 +241,7 @@ public final class TestMindMapNode implements MindMapNode {
 	public void setColor(Color color) {
 	}
 
-	public List getIcons() {
+	public List<MindIcon> getIcons() {
 		return null;
 	}
 
@@ -266,11 +266,11 @@ public final class TestMindMapNode implements MindMapNode {
 	public void setBackgroundColor(Color color) {
 	}
 
-	public List getHooks() {
+	public List<PermanentNodeHook> getHooks() {
 		return null;
 	}
 
-	public Collection getActivatedHooks() {
+	public Collection<PermanentNodeHook> getActivatedHooks() {
 		return null;
 	}
 
@@ -287,7 +287,7 @@ public final class TestMindMapNode implements MindMapNode {
 	public void setToolTip(String key, String tip) {
 	}
 
-	public SortedMap getToolTip() {
+	public SortedMap<String, String> getToolTip() {
 		return null;
 	}
 
@@ -307,7 +307,7 @@ public final class TestMindMapNode implements MindMapNode {
 		return null;
 	}
 
-	public Map getStateIcons() {
+	public Map<String, ImageIcon> getStateIcons() {
 		return null;
 	}
 
@@ -421,7 +421,7 @@ public final class TestMindMapNode implements MindMapNode {
 		return null;
 	}
 
-	public List getAttributeKeyList() {
+	public List<String> getAttributeKeyList() {
 		return null;
 	}
 

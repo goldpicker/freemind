@@ -53,7 +53,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -126,8 +125,6 @@ public class TimeList extends MindMapHookAdapter implements
 	protected static final int NODE_NOTES_COLUMN = 5;
 
 	private JDialog mDialog;
-
-	private JPanel mTimePanel;
 
 	private JTable mTimeTable;
 
@@ -338,7 +335,7 @@ public class TimeList extends MindMapHookAdapter implements
 				menuHolder.addAction(replaceSelectedAction,
 						"main/actions/replaceSelected"),
 				"keystroke_plugins/TimeList_replaceSelected");
-		final JMenuItem replaceAllMenuItem = addAccelerator(
+		addAccelerator(
 				menuHolder.addAction(replaceAllAction,
 						"main/actions/replaceAll"),
 				"keystroke_plugins/TimeList_replaceAll");
@@ -422,9 +419,7 @@ public class TimeList extends MindMapHookAdapter implements
 			toggleViewFoldedNodes();
 		}
 		int column = 0;
-		for (Iterator<TimeWindowColumnSetting> i = timeStorage
-				.getListTimeWindowColumnSettingList().iterator(); i
-				.hasNext();) {
+		for (Iterator<TimeWindowColumnSetting> i = timeStorage.getListTimeWindowColumnSettingList().iterator(); i.hasNext();) {
 			TimeWindowColumnSetting setting = i.next();
 			mTimeTable.getColumnModel().getColumn(column)
 					.setPreferredWidth(setting.getColumnWidth());
@@ -1036,11 +1031,9 @@ public class TimeList extends MindMapHookAdapter implements
 	}
 
 	static class IconsRenderer extends DefaultTableCellRenderer {
-		private final ModeController modeController;
 
 		public IconsRenderer(ModeController controller) {
 			super();
-			modeController = controller;
 		}
 
 		public void setValue(Object value) {

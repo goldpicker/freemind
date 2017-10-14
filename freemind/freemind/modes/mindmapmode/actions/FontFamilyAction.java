@@ -31,6 +31,7 @@ import freemind.modes.mindmapmode.actions.xml.ActionPair;
  * @author foltin
  * 
  */
+@SuppressWarnings("serial")
 public class FontFamilyAction extends NodeGeneralAction  {
 	/** This action is used for all fonts, which have to be set first. */
 	private String actionFont;

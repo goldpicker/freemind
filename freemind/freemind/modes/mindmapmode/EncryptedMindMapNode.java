@@ -123,10 +123,9 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
 					node = getNodeFromXml(mapContent);
 				}
 				int index = 0;
-				for (ListIterator i = node.childrenUnfolded(); i.hasNext();) {
-					MindMapNodeModel importNode = (MindMapNodeModel) i.next();
-					getMap().insertNodeInto(
-							importNode, this, index++);
+				for (ListIterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+					MindMapNode importNode = i.next();
+					getMap().insertNodeInto(importNode, this, index++);
 				}
 				isDecrypted = true;
 			} catch (Exception e) {
@@ -136,10 +135,6 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
 		}
 		setFolded(false);
 		return true;
-	}
-
-	private void paste(MindMapNodeModel importNode) {
-		getMapFeedback().paste(importNode, this);
 	}
 
 	private MindMapNode getNodeFromXml(String childXml) throws IOException {
@@ -221,14 +216,14 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
 		if (isAccessible()) {
 			return super.childrenFolded();
 		}
-		return new Vector().listIterator();
+		return new Vector<>().listIterator();
 	}
 
 	public ListIterator childrenUnfolded() {
 		if (isAccessible() || isShuttingDown) {
 			return super.childrenUnfolded();
 		}
-		return new Vector().listIterator();
+		return new Vector<>().listIterator();
 	}
 
 	public boolean hasChildren() {

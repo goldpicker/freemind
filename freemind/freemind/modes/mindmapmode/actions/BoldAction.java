@@ -32,6 +32,7 @@ import freemind.controller.MenuItemSelectedListener;
 import freemind.controller.actions.generated.instance.BoldNodeAction;
 import freemind.modes.mindmapmode.MindMapController;
 
+@SuppressWarnings("serial")
 public class BoldAction extends NodeGeneralAction implements
 		MenuItemSelectedListener {
 	/**

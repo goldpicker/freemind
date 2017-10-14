@@ -32,6 +32,7 @@ import javax.swing.JScrollPane;
 /**
  * @author Dimitri Polivaev 15.11.2005
  */
+@SuppressWarnings("serial")
 public class JAutoScrollBarPane extends JScrollPane {
 
 	/**

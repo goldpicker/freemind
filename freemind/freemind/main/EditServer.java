@@ -32,7 +32,6 @@ import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.Vector;
 
@@ -218,9 +217,8 @@ public class EditServer extends Thread {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					try {
-						Vector urls = Tools.urlStringToUrls(script);
-						for (Iterator it = urls.iterator(); it.hasNext();) {
-							URL urli = (URL) it.next();
+						Vector<URL> urls = Tools.urlStringToUrls(script);
+						for (URL urli : urls) {
 							mFrame.getController().getModeController()
 									.load(urli);
 						}

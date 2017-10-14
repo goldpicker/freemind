@@ -249,8 +249,8 @@ public class ClonePlugin extends PermanentMindMapNodeHookAdapter implements
 		}
 		if (mCloneNodes.isEmpty()) {
 			mCloneNodes.add(getNode());
-			for (Iterator it = mCloneNodeIds.iterator(); it.hasNext();) {
-				String cloneId = (String) it.next();
+			for (Iterator<String> it = mCloneNodeIds.iterator(); it.hasNext();) {
+				String cloneId = it.next();
 				try {
 					mCloneNodes.add(getMindMapController().getNodeFromID(
 							cloneId));

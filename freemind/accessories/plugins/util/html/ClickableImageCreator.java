@@ -28,7 +28,6 @@ import java.util.Vector;
 import javax.swing.JComponent;
 
 import freemind.main.HtmlTools;
-import freemind.main.Resources;
 import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
 import freemind.view.mindmapview.MapView;
@@ -60,7 +59,7 @@ public class ClickableImageCreator {
 
 	}
 
-	Vector area = new Vector();
+	Vector<AreaHolder> area = new Vector<>();
 
 	private final MindMapNode root;
 
@@ -95,8 +94,8 @@ public class ClickableImageCreator {
 
 	public String generateHtml() {
 		StringBuffer htmlArea = new StringBuffer();
-		for (Iterator i = area.iterator(); i.hasNext();) {
-			AreaHolder holder = (AreaHolder) i.next();
+		for (Iterator<AreaHolder> i = area.iterator(); i.hasNext();) {
+			AreaHolder holder = i.next();
 			MessageFormat formatter = new MessageFormat(linkFormatter);
 			String replacement = formatter.format(new Object[] { holder.href, holder.link });
 			if(replacement.isEmpty()) {
@@ -138,8 +137,8 @@ public class ClickableImageCreator {
 			holder.coordinates.width = content.getWidth();
 			holder.coordinates.height = content.getHeight();
 			area.add(holder);
-			for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-				MindMapNode child = (MindMapNode) i.next();
+			for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+				MindMapNode child = i.next();
 				createArea(child);
 			}
 		}

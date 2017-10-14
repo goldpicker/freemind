@@ -38,6 +38,7 @@ import freemind.common.TextTranslator;
 import freemind.main.Tools;
 
 /** */
+@SuppressWarnings("serial")
 public class EnterPasswordDialog extends JDialog {
 
 	public static final int CANCEL = -1;

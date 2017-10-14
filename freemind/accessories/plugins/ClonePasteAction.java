@@ -573,7 +573,7 @@ public class ClonePasteAction extends MindMapNodeHookAdapter {
 				boolean pStartWithParent) {
 			// in case, no clones are present, this method returns very fast.
 			if (mClonesMap.isEmpty()) {
-				return Collections.EMPTY_LIST;
+				return Collections.emptyList();
 			}
 			MindMapNode clone;
 			{
@@ -588,7 +588,7 @@ public class ClonePasteAction extends MindMapNodeHookAdapter {
 				while (!mClonesMap.containsKey(child)) {
 					if (child.isRoot()) {
 						// nothing found!
-						return Collections.EMPTY_LIST;
+						return Collections.emptyList();
 					}
 					child = child.getParentNode();
 				}

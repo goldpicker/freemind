@@ -103,6 +103,7 @@ public class EditNodeTextField extends EditNodeBase {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	public void show() {
 		// Make fields for short texts editable
 		textfield = (getText().length() < 8) ? new JTextField(getText(), 8)

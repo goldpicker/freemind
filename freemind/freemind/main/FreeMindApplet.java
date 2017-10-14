@@ -36,7 +36,6 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
@@ -46,6 +45,7 @@ import freemind.controller.Controller;
 import freemind.controller.MenuBar;
 import freemind.view.mindmapview.MapView;
 
+@SuppressWarnings("serial")
 public class FreeMindApplet extends JApplet implements FreeMindMain {
 
 	public static final VersionInformation version = FreeMind.VERSION;
@@ -232,7 +232,7 @@ public class FreeMindApplet extends JApplet implements FreeMindMain {
 	}
 
 	public void init() {
-		JRootPane rootPane = createRootPane();
+		createRootPane();
 		// load properties
 		defaultPropsURL = getResource("freemind.properties");
 		try {
@@ -434,7 +434,7 @@ public class FreeMindApplet extends JApplet implements FreeMindMain {
 	 * @see freemind.main.FreeMindMain#getLoggerList()
 	 */
 	public List getLoggerList() {
-		return new Vector();
+		return new Vector<>();
 	}
 
 }

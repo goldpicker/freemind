@@ -13,6 +13,7 @@ import javax.swing.JTextArea;
 
 import atp.sHotEqn;
 
+@SuppressWarnings("serial")
 public class JZoomedHotEqn extends sHotEqn {
 	static private double zoom = 1f;
 	static String editorTitle = null;

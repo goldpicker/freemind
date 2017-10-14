@@ -32,6 +32,7 @@ import java.awt.event.ActionEvent;
 import freemind.modes.mindmapmode.MindMapArrowLinkModel;
 import freemind.modes.mindmapmode.MindMapController;
 
+@SuppressWarnings("serial")
 public class RemoveArrowLinkAction extends MindmapAction {
 
 	private MindMapArrowLinkModel mArrowLink;

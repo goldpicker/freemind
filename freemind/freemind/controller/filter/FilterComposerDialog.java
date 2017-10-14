@@ -497,10 +497,8 @@ public class FilterComposerDialog extends JDialog {
 		simpleConditionBox.add(attributes);
 		attributes.setRenderer(mFilterController.getConditionRenderer());
 
-		simpleNodeConditionComboBoxModel = new DefaultComboBoxModel(mFilterController
-				.getConditionFactory().getNodeConditionNames());
-		simpleIconConditionComboBoxModel = new DefaultComboBoxModel(mFilterController
-				.getConditionFactory().getIconConditionNames());
+		simpleNodeConditionComboBoxModel = new DefaultComboBoxModel(FilterController.getConditionFactory().getNodeConditionNames());
+		simpleIconConditionComboBoxModel = new DefaultComboBoxModel(FilterController.getConditionFactory().getIconConditionNames());
 
 		simpleCondition = new JComboBox<>();
 		simpleCondition.setModel(simpleNodeConditionComboBoxModel);

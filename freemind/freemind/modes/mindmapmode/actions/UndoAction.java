@@ -30,7 +30,6 @@ import java.util.Vector;
 import java.util.logging.Logger;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 
 import freemind.controller.actions.generated.instance.CompoundAction;
 import freemind.controller.actions.generated.instance.XmlAction;
@@ -39,11 +38,12 @@ import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.xml.AbstractXmlAction;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
+@SuppressWarnings("serial")
 public class UndoAction extends AbstractXmlAction {
 
 	private MindMapController controller;
 	private boolean isUndoAction;
-	protected Vector actionPairList = new Vector();
+	protected Vector<ActionPair> actionPairList = new Vector<>();
 	private long timeOfLastAdd = 0;
 	private boolean actionFrameStarted = false;
 	private static final long TIME_TO_BEGIN_NEW_ACTION = 100;
@@ -184,8 +184,7 @@ public class UndoAction extends AbstractXmlAction {
 	public void print() {
 		logger.info("Undo list:");
 		int j = 0;
-		for (Iterator i = actionPairList.iterator(); i.hasNext();) {
-			ActionPair pair = (ActionPair) i.next();
+		for (ActionPair pair : actionPairList) {
 			logger.info("line " + (j++) + " = "
 					+ Tools.printXmlAction(pair.getDoAction()));
 		}

@@ -39,6 +39,7 @@ import freemind.controller.actions.generated.instance.Pattern;
 import freemind.extensions.HookFactory;
 import freemind.main.XMLParseException;
 import freemind.modes.attributes.Attribute;
+import freemind.modes.mindmapmode.MindMapController.MindMapControllerPlugin;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 import freemind.modes.mindmapmode.actions.xml.ActionRegistry;
 import freemind.modes.mindmapmode.actions.xml.DefaultActionHandler;
@@ -136,7 +137,7 @@ public abstract class ExtendedMapFeedbackAdapter extends MapFeedbackAdapter
 	@Override
 	public void nodeStyleChanged(MindMapNode node) {
 		nodeChanged(node);
-		final ListIterator childrenFolded = node.childrenFolded();
+		final ListIterator<MindMapNode> childrenFolded = node.childrenFolded();
 		while (childrenFolded.hasNext()) {
 			MindMapNode child = (MindMapNode) childrenFolded.next();
 			if (!(child.hasStyle() && child.getEdge().hasStyle())) {
@@ -238,12 +239,12 @@ public abstract class ExtendedMapFeedbackAdapter extends MapFeedbackAdapter
 	}
 
 	@Override
-	public Transferable cut(List pNodeList) {
+	public Transferable cut(List<MindMapNode> pNodeList) {
 		return getActorFactory().getCutActor().cut(pNodeList);
 	}
 
 	@Override
-	public void moveNodes(MindMapNode pSelected, List pSelecteds, int pDirection) {
+	public void moveNodes(MindMapNode pSelected, List<MindMapNode> pSelecteds, int pDirection) {
 		getActorFactory().getNodeUpActor().moveNodes(pSelected, pSelecteds, pDirection);
 	}
 
@@ -316,7 +317,7 @@ public abstract class ExtendedMapFeedbackAdapter extends MapFeedbackAdapter
 
 	@Override
 	public void applyPattern(MindMapNode pNode, Pattern pPattern) {
-		StylePatternFactory.applyPattern(pNode, pPattern, Collections.EMPTY_LIST, Collections.EMPTY_SET, this);
+		StylePatternFactory.applyPattern(pNode, pPattern, Collections.<Pattern>emptyList(), Collections.<MindMapControllerPlugin>emptySet(), this);
 	}
 
 	@Override
@@ -390,13 +391,13 @@ public abstract class ExtendedMapFeedbackAdapter extends MapFeedbackAdapter
 	}
 
 	@Override
-	public void addHook(MindMapNode pFocussed, List pSelecteds,
+	public void addHook(MindMapNode pFocussed, List<MindMapNode> pSelecteds,
 			String pHookName, Properties pHookProperties) {
 		getActorFactory().getAddHookActor().addHook(pFocussed, pSelecteds, pHookName, pHookProperties);
 	}
 
 	@Override
-	public void removeHook(MindMapNode pFocussed, List pSelecteds,
+	public void removeHook(MindMapNode pFocussed, List<MindMapNode> pSelecteds,
 			String pHookName) {
 		getActorFactory().getAddHookActor().removeHook(pFocussed, pSelecteds, pHookName);
 	}

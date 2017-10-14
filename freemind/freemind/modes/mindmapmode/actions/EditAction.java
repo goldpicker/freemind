@@ -50,6 +50,7 @@ import freemind.view.mindmapview.NodeView;
 //Node editing
 //
 
+@SuppressWarnings("serial")
 public class EditAction extends MindmapAction {
 	private static final Pattern HTML_HEAD = Pattern.compile(
 			"\\s*<head>.*</head>", Pattern.DOTALL);
@@ -62,7 +63,6 @@ public class EditAction extends MindmapAction {
 	}
 
 	public void actionPerformed(ActionEvent arg0) {
-		MindMapNode selected = this.mMindMapController.getSelected();
 		this.mMindMapController.edit(null, false, false);
 	}
 
@@ -229,7 +229,7 @@ public class EditAction extends MindmapAction {
 											// to the parent
 							mMindMapController.getView()
 									.selectAsTheOnlyOneSelected(node);
-							Vector nodeList = new Vector();
+							Vector<MindMapNode> nodeList = new Vector<>();
 							nodeList.add(node.getModel());
 							mMindMapController.cut(nodeList);
 							mMindMapController.select(prevSelected);

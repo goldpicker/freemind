@@ -128,14 +128,6 @@ public class FilterController implements MapModuleChangeObserver {
 		return map;
 	}
 
-	/**
-	 * @param filterToolbar
-	 *            The filterToolbar to set.
-	 */
-	private void setFilterToolbar(FilterToolbar filterToolbar) {
-		this.filterToolbar = filterToolbar;
-	}
-
 	public boolean isMapModuleChangeAllowed(MapModule oldMapModule,
 			Mode oldMode, MapModule newMapModule, Mode newMode) {
 		return true;
@@ -209,8 +201,7 @@ public class FilterController implements MapModuleChangeObserver {
 		final Vector conditions = loader.getChildren();
 		for (int i = 0; i < conditions.size(); i++) {
 			filterConditionModel.addElement(FilterController
-					.getConditionFactory().loadCondition(
-							(XMLElement) conditions.get(i)));
+					.getConditionFactory().loadCondition((XMLElement) conditions.get(i)));
 		}
 	}
 }

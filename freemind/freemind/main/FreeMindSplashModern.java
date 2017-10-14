@@ -44,13 +44,13 @@ import freemind.view.ImageFactory;
  * Class to put a splash during launching the application.
  */
 
+@SuppressWarnings("serial")
 public class FreeMindSplashModern extends JFrame implements IFreeMindSplash {
 
 	private static final String FREEMIND_SPLASH = "images/Freemind_Splash_Butterfly_Modern.png";
 	
 	private static final int SPLASH_HEIGHT = 200;
 	private static final int SPLASH_WIDTH = 300;
-	private static final int SPLASH_FONT_SIZE = 16;
 
 	private class FeedBackImpl implements FeedBack {
 
@@ -149,8 +149,7 @@ public class FreeMindSplashModern extends JFrame implements IFreeMindSplash {
 					10);
 			private Font versionTextFont = null;
 			{
-				Set availableFontFamilyNames = Tools
-						.getAvailableFontFamilyNames();
+				Set<String> availableFontFamilyNames = Tools.getAvailableFontFamilyNames();
 				versionTextFont = availableFontFamilyNames
 						.contains("Century Gothic") ? new Font(
 						"Century Gothic", Font.BOLD, 14) : new Font("Arial",

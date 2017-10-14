@@ -29,6 +29,7 @@ import freemind.modes.MindMapNode;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.view.mindmapview.MapView;
 
+@SuppressWarnings("serial")
 public class ToggleChildrenFoldedAction extends MindmapAction {
 	private final MindMapController modeController;
 

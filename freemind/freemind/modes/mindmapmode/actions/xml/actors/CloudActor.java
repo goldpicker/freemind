@@ -44,7 +44,7 @@ public class CloudActor extends NodeXmlActorAdapter {
 		super(pMapFeedback);
 	}
 	
-	public Class getDoActionClass() {
+	public Class<AddCloudXmlAction> getDoActionClass() {
 		return AddCloudXmlAction.class;
 	}
 

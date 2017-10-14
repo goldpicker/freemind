@@ -9,7 +9,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Set;
 import java.util.Vector;
 
@@ -36,6 +35,7 @@ import freemind.controller.actions.generated.instance.WindowConfigurationStorage
 import freemind.main.Tools;
 import freemind.modes.mindmapmode.MindMapController;
 
+@SuppressWarnings("serial")
 public class CalendarMarkingDialog extends JDialog implements ActionListener, ChangeListener, PropertyChangeListener {
 
 	private static final String WINDOW_PREFERENCE_STORAGE_PROPERTY = "CalendarMarkingDialog_WindowPosition";
@@ -101,8 +101,7 @@ public class CalendarMarkingDialog extends JDialog implements ActionListener, Ch
 		Tools.addEscapeActionToDialog(this, cancelAction);
 		this.pack();
 		if (mController != null) {
-			WindowConfigurationStorage decorateDialog = (WindowConfigurationStorage) mController
-					.decorateDialog(this, WINDOW_PREFERENCE_STORAGE_PROPERTY);
+			mController.decorateDialog(this, WINDOW_PREFERENCE_STORAGE_PROPERTY);
 		}
 		mStarted  = true;
 	}

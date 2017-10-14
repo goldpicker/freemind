@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Timer;
@@ -178,8 +177,6 @@ public class Registration implements HookRegistration, ActorXml,
 
 	private final MindMapController controller;
 
-	private final MindMap mMap;
-
 	private final java.util.logging.Logger logger;
 
 	private MemoryTileCache mTileCache;
@@ -197,10 +194,7 @@ public class Registration implements HookRegistration, ActorXml,
 	private static final class MapDialogPropertyContributor implements
 			FreemindPropertyContributor {
 
-		private final MindMapController modeController;
-
 		public MapDialogPropertyContributor(MindMapController modeController) {
-			this.modeController = modeController;
 		}
 
 		public List<PropertyControl> getControls(TextTranslator pTextTranslator) {
@@ -220,7 +214,6 @@ public class Registration implements HookRegistration, ActorXml,
 
 	public Registration(ModeController controller, MindMap map) {
 		this.controller = (MindMapController) controller;
-		mMap = map;
 		logger = controller.getFrame().getLogger(this.getClass().getName());
 		mTileCache = new MemoryTileCache();
 		mOptionContributor = new MapDialogPropertyContributor(this.controller);

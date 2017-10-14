@@ -28,7 +28,6 @@ package freemind.modes.common.actions;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
 
 import freemind.modes.ModeController;
 
@@ -36,6 +35,7 @@ import freemind.modes.ModeController;
 // Actions
 // /////////
 
+@SuppressWarnings("serial")
 public class NewMapAction extends AbstractAction {
 	private final ModeController modeController;
 

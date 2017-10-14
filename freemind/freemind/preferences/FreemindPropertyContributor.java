@@ -24,6 +24,7 @@ package freemind.preferences;
 
 import java.util.List;
 
+import freemind.common.PropertyControl;
 import freemind.common.TextTranslator;
 
 /**
@@ -34,6 +35,6 @@ import freemind.common.TextTranslator;
  */
 public interface FreemindPropertyContributor {
 
-	public List getControls(TextTranslator pTextTranslator);
+	public List<PropertyControl> getControls(TextTranslator pTextTranslator);
 
 }

@@ -31,6 +31,7 @@ import freemind.modes.mindmapmode.MindMapNodeModel;
  * @author foltin
  * 
  */
+@SuppressWarnings("serial")
 public class NodeColorBlendAction extends NodeGeneralAction {
 	/**
      *

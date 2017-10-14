@@ -60,7 +60,7 @@ import groovy.transform.ThreadInterrupt;
  */
 public class ScriptingEngine extends MindMapHookAdapter {
 	public static final String SCRIPT_PREFIX = "script";
-	private static final HashMap sScriptCookies = new HashMap();
+	private static final HashMap sScriptCookies = new HashMap<>();
 	static java.util.logging.Logger logger;
 
 	public interface ErrorHandler {
@@ -104,8 +104,8 @@ public class ScriptingEngine extends MindMapHookAdapter {
 	private void performScriptOperation(MindMapNode node,
 			BooleanHolder pAlreadyAScriptExecuted) {
 		// depth first:
-		for (Iterator iter = node.childrenUnfolded(); iter.hasNext();) {
-			MindMapNode element = (MindMapNode) iter.next();
+		for (Iterator<MindMapNode> iter = node.childrenUnfolded(); iter.hasNext();) {
+			MindMapNode element = iter.next();
 			performScriptOperation(element, pAlreadyAScriptExecuted);
 		}
 		// FIXME: Scripts

@@ -37,7 +37,6 @@ public abstract class EdgeView {
 	private NodeView target;
 	protected NodeView source;
 	protected Point start, end;
-	private static int i;
 	protected static final BasicStroke DEF_STROKE = new BasicStroke();
 
 	static Stroke ECLIPSED_STROKE = null;

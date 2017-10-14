@@ -23,6 +23,7 @@ package plugins.map;
 
 import freemind.modes.MindMapNode;
 
+@SuppressWarnings("serial")
 public class MapMarkerLocation extends MapMarkerBase {
 
 	private final MapNodePositionHolder mNodePositionHolder;

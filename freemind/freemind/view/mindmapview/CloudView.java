@@ -77,12 +77,12 @@ public class CloudView {
 			distanceBetweenPoints = 100 * getZoom(); /* flat */
 		double distanceToConvexHull = getDistanceToConvexHull();
 		/** get coordinates */
-		LinkedList coordinates = new LinkedList();
+		LinkedList<Point> coordinates = new LinkedList<>();
 		ConvexHull hull = new ConvexHull();
 		source.getCoordinates(coordinates);
 		// source.getCoordinates(coordinates, (getIterativeLevel()==0)?(int)(5*
 		// getZoom()):0 /* = additionalDistanceForConvexHull */);
-		Vector/* <Point> */res = hull.calculateHull(coordinates);
+		Vector<Point> res = hull.calculateHull(coordinates);
 		Polygon p = new Polygon();
 		for (int i = 0; i < res.size(); ++i) {
 			Point pt = (Point) res.get(i);

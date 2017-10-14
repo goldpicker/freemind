@@ -44,12 +44,12 @@ public interface HookFactory {
 	/**
 	 * @return a string vector with representatives for plugins.
 	 */
-	public abstract Vector getPossibleNodeHooks();
+	public abstract Vector<String> getPossibleNodeHooks();
 
 	/**
 	 * @return a string vector with representatives for plugins.
 	 */
-	public abstract Vector getPossibleModeControllerHooks();
+	public abstract Vector<String> getPossibleModeControllerHooks();
 
 	public abstract ModeControllerHook createModeControllerHook(String hookName);
 
@@ -69,7 +69,7 @@ public interface HookFactory {
 	 * @return returns a list of menu position strings for the
 	 *         StructuredMenuHolder.
 	 */
-	public abstract List getHookMenuPositions(String hookName);
+	public abstract List<String> getHookMenuPositions(String hookName);
 
 	/**
 	 */

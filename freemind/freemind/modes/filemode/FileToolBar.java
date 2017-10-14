@@ -23,6 +23,7 @@ package freemind.modes.filemode;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
 
+@SuppressWarnings("serial")
 public class FileToolBar extends JToolBar {
 
 	private FileController c;

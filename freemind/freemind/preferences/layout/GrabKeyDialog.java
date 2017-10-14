@@ -48,6 +48,7 @@ import freemind.main.Resources;
 /**
  * A dialog for getting shortcut keys.
  */
+@SuppressWarnings("serial")
 public class GrabKeyDialog extends JDialog {
 	private final FreeMindMain fmMain;
 
@@ -240,8 +241,7 @@ public class GrabKeyDialog extends JDialog {
 		content.setBorder(new EmptyBorder(12, 12, 12, 12));
 		setContentPane(content);
 
-		JLabel label = new JLabel(
-				debugBuffer == null ? (getText("grab-key.caption") + " " + binding.label)
+		new JLabel(debugBuffer == null ? (getText("grab-key.caption") + " " + binding.label)
 						// FIXME: getText("grab-key.caption")+new String[] {
 						// binding.label })
 						: (getText("grab-key.keyboard-test")));

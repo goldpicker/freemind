@@ -34,6 +34,7 @@ import freemind.modes.mindmapmode.MindMapController;
  * @author foltin
  * 
  */
+@SuppressWarnings("serial")
 public class CloudAction extends NodeGeneralAction implements MenuItemSelectedListener {
 
 	public CloudAction(MindMapController controller) {

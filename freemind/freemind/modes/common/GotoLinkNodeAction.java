@@ -27,12 +27,12 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.ImageIcon;
 
 import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
 
 /** Follow a graphical link (AKA connector) action. */
+@SuppressWarnings("serial")
 public class GotoLinkNodeAction extends AbstractAction {
 	MindMapNode source;
 

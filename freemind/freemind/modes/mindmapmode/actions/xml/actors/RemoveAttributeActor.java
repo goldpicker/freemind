@@ -48,7 +48,7 @@ public class RemoveAttributeActor extends XmlActorAdapter {
 		}
 	}
 
-	public Class getDoActionClass() {
+	public Class<RemoveAttributeAction> getDoActionClass() {
 		return RemoveAttributeAction.class;
 	}
 

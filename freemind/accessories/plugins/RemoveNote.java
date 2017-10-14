@@ -81,13 +81,10 @@ public class RemoveNote extends MindMapNodeHookAdapter {
 
 		private final MindMapController controller;
 
-		private final MindMap mMap;
-
 		private final java.util.logging.Logger logger;
 
 		public Registration(ModeController controller, MindMap map) {
 			this.controller = (MindMapController) controller;
-			mMap = map;
 			logger = controller.getFrame().getLogger(this.getClass().getName());
 		}
 

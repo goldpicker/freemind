@@ -51,7 +51,7 @@ public class ItalicNodeActor extends NodeXmlActorAdapter {
 		}
 	}
 
-	public Class getDoActionClass() {
+	public Class<ItalicNodeAction> getDoActionClass() {
 		return ItalicNodeAction.class;
 	}
 

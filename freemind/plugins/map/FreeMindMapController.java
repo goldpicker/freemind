@@ -89,7 +89,6 @@ import freemind.controller.MenuItemEnabledListener;
 import freemind.controller.MenuItemSelectedListener;
 import freemind.controller.StructuredMenuHolder;
 import freemind.controller.actions.generated.instance.Place;
-import freemind.controller.actions.generated.instance.Result;
 import freemind.controller.actions.generated.instance.Reversegeocode;
 import freemind.controller.actions.generated.instance.Searchresults;
 import freemind.extensions.ExportHook;
@@ -153,8 +152,6 @@ public class FreeMindMapController extends JMapController implements
 	private static final int MOUSE_BUTTONS_MASK = MouseEvent.BUTTON3_DOWN_MASK
 			| MouseEvent.BUTTON1_DOWN_MASK | MouseEvent.BUTTON2_DOWN_MASK;
 
-	private static final int MAC_MOUSE_BUTTON3_MASK = MouseEvent.CTRL_DOWN_MASK
-			| MouseEvent.BUTTON1_DOWN_MASK;
 	private static final int MAC_MOUSE_BUTTON1_MASK = MouseEvent.BUTTON1_DOWN_MASK;
 
 	private static final int SCROLL_MARGIN = 5;
@@ -340,7 +337,7 @@ public class FreeMindMapController extends JMapController implements
 
 		public void ok(String newText) {
 			mMindMapController.setNodeText(mNewNode, newText);
-			MapNodePositionHolderBase hook = placeNode(mNewNode);
+			placeNode(mNewNode);
 			endEdit();
 		}
 
@@ -955,29 +952,6 @@ public class FreeMindMapController extends JMapController implements
 
 	}
 
-	private final class NewNodeReverseLookupAction extends AbstractAction {
-
-		public NewNodeReverseLookupAction() {
-			super(
-					getText("MapControllerPopupDialog.NewNodeReverseLookupAction"));
-		}
-
-		public void actionPerformed(ActionEvent pE) {
-			Coordinate pos = getMap().getCursorPosition();
-			Reversegeocode reverseLookup = getReverseLookup(pos, getMap()
-					.getZoom());
-			if (reverseLookup != null) {
-				for (Iterator<Result> it = reverseLookup.getListResultList().iterator(); it.hasNext();) {
-					Result result = it.next();
-					addNode(mMindMapController.getSelected(),
-							result.getContent(), result.getLat(),
-							result.getLon());
-				}
-			}
-		}
-
-	}
-
 	private final class EditNodeInContextMenu extends AbstractAction {
 
 		public EditNodeInContextMenu() {
@@ -1586,7 +1560,7 @@ public class FreeMindMapController extends JMapController implements
 
 	public MapNodePositionHolder addHookToNode(MindMapNode selected) {
 		MapNodePositionHolder hook;
-		List selecteds = Tools.getVectorWithSingleElement(selected);
+		List<MindMapNode> selecteds = Tools.getVectorWithSingleElement(selected);
 		mMindMapController.addHook(selected, selecteds,
 				MapNodePositionHolderBase.NODE_MAP_HOOK_NAME, null);
 		hook = MapNodePositionHolder.getHook(selected);

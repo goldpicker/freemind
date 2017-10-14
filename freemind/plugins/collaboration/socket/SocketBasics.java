@@ -127,7 +127,7 @@ public abstract class SocketBasics extends MindMapNodeHookAdapter implements
 	public static void togglePermanentHook(MindMapController controller,
 			final String hookName) {
 		MindMapNode rootNode = controller.getRootNode();
-		List selecteds = Arrays.asList(new MindMapNode[] { rootNode });
+		List<MindMapNode> selecteds = Arrays.asList(new MindMapNode[] { rootNode });
 		controller.addHook(rootNode, selecteds, hookName, null);
 	}
 
@@ -185,9 +185,9 @@ public abstract class SocketBasics extends MindMapNodeHookAdapter implements
 		if (pAction instanceof CompoundAction) {
 			CompoundAction compound = (CompoundAction) pAction;
 			boolean result = false;
-			for (Iterator it = compound.getListChoiceList().iterator(); it
+			for (Iterator<XmlAction> it = compound.getListChoiceList().iterator(); it
 					.hasNext();) {
-				XmlAction action = (XmlAction) it.next();
+				XmlAction action = it.next();
 				result |= visit(action, pSearchString);
 			}
 			return result;
@@ -242,6 +242,7 @@ public abstract class SocketBasics extends MindMapNodeHookAdapter implements
 		return new ActionPair(new CompoundAction(), new CompoundAction());
 	}
 
+	@SuppressWarnings("serial")
 	protected static class UnableToGetLockException extends Exception {
 
 	}

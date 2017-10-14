@@ -38,6 +38,7 @@ import javax.xml.transform.stream.StreamResult;
  * @author foltin
  * @date 23.02.2012
  */
+@SuppressWarnings("serial")
 public class FreeMindAwtFileDialog extends FileDialog implements
 		FreeMindFileDialog {
 

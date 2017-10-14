@@ -22,8 +22,6 @@ package freemind.modes.common.plugins;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Iterator;
-
 import javax.swing.ImageIcon;
 
 import freemind.extensions.PermanentNodeHook;
@@ -152,8 +150,7 @@ public class MapNodePositionHolderBase extends PermanentNodeHookAdapter {
 	}
 
 	public static MapNodePositionHolderBase getBaseHook(MindMapNode node) {
-		for (Iterator j = node.getActivatedHooks().iterator(); j.hasNext();) {
-			PermanentNodeHook element = (PermanentNodeHook) j.next();
+		for (PermanentNodeHook element : node.getActivatedHooks()) {
 			if (element instanceof MapNodePositionHolderBase) {
 				return (MapNodePositionHolderBase) element;
 			}

@@ -52,6 +52,7 @@ public class ExportTests extends FreeMindTestBase {
 		System.out.println("Done.");
 	}
 
+	@SuppressWarnings("serial")
 	public static void main(String[] args) throws FileNotFoundException,
 			XMLParseException, IOException, URISyntaxException {
 		FreeMindMainMock mFreeMindMain = new FreeMindMainMock();

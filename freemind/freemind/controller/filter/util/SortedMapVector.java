@@ -44,21 +44,17 @@ public class SortedMapVector {
 			return value;
 		}
 
-		void setValue(Object value) {
-			this.value = value;
-		}
-
 		Comparable getKey() {
 			return key;
 		}
 	}
 
-	private Vector elements;
+	private Vector<MapElement> elements;
 	private static final int ELEMENT_NOT_FOUND_FLAG = 1 << 31;
 	private static final int CAPACITY_INCREMENT = 10;
 
 	public SortedMapVector() {
-		elements = new Vector(0, CAPACITY_INCREMENT);
+		elements = new Vector<>(0, CAPACITY_INCREMENT);
 	}
 
 	public int add(Comparable key, Object value) {
@@ -114,14 +110,13 @@ public class SortedMapVector {
 			return first | ELEMENT_NOT_FOUND_FLAG;
 		int halfSize = size / 2;
 		int middle = first + halfSize;
-		MapElement middleElement = (MapElement) elements.get(middle);
+		MapElement middleElement = elements.get(middle);
 		int comparationResult = key.compareTo(middleElement.getKey());
 		int last = first + size - 1;
 		if (comparationResult < 0) {
 			if (halfSize <= 1) {
 				if (middle != first)
-					comparationResult = key.compareTo(((MapElement) elements
-							.get(first)).getKey());
+					comparationResult = key.compareTo((elements.get(first)).getKey());
 				if (comparationResult < 0)
 					return first | ELEMENT_NOT_FOUND_FLAG;
 				if (comparationResult == 0)
@@ -135,8 +130,7 @@ public class SortedMapVector {
 
 			if (halfSize <= 1) {
 				if (middle != last)
-					comparationResult = key.compareTo(((MapElement) elements
-							.get(last)).getKey());
+					comparationResult = key.compareTo((elements.get(last)).getKey());
 				if (comparationResult < 0)
 					return last | ELEMENT_NOT_FOUND_FLAG;
 				if (comparationResult == 0)

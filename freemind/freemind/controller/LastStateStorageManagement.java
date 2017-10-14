@@ -70,8 +70,7 @@ public class LastStateStorageManagement {
 	}
 
 	public void clearTabIndices() {
-		for (Iterator<MindmapLastStateStorage> it = mLastStatesMap.getListMindmapLastStateStorageList()
-				.iterator(); it.hasNext();) {
+		for (Iterator<MindmapLastStateStorage> it = mLastStatesMap.getListMindmapLastStateStorageList().iterator(); it.hasNext();) {
 			MindmapLastStateStorage store = it.next();
 			store.setTabIndex(-1);
 		}
@@ -79,8 +78,7 @@ public class LastStateStorageManagement {
 
 	public void changeOrAdd(MindmapLastStateStorage pStore) {
 		boolean found = false;
-		for (Iterator<MindmapLastStateStorage> it = mLastStatesMap.getListMindmapLastStateStorageList()
-				.iterator(); it.hasNext();) {
+		for (Iterator<MindmapLastStateStorage> it = mLastStatesMap.getListMindmapLastStateStorageList().iterator(); it.hasNext();) {
 			MindmapLastStateStorage store = it.next();
 			if (Tools.safeEquals(pStore.getRestorableName(),
 					store.getRestorableName())) {
@@ -118,9 +116,7 @@ public class LastStateStorageManagement {
 			// rebuild
 			int counter = 0;
 			for (Entry entry : dateToStoreMap.entrySet()) {
-				mLastStatesMap
-						.addMindmapLastStateStorage((MindmapLastStateStorage) entry
-								.getValue());
+				mLastStatesMap.addMindmapLastStateStorage((MindmapLastStateStorage) entry.getValue());
 				counter++;
 				if (counter >= LIST_AMOUNT_LIMIT) {
 					// drop the rest of the elements.
@@ -135,8 +131,7 @@ public class LastStateStorageManagement {
 	}
 
 	public MindmapLastStateStorage getStorage(String pRestorableName) {
-		for (Iterator<MindmapLastStateStorage> it = mLastStatesMap.getListMindmapLastStateStorageList()
-				.iterator(); it.hasNext();) {
+		for (Iterator<MindmapLastStateStorage> it = mLastStatesMap.getListMindmapLastStateStorageList().iterator(); it.hasNext();) {
 			MindmapLastStateStorage store = it.next();
 			if (Tools.safeEquals(pRestorableName, store.getRestorableName())) {
 				setLastChanged(store);

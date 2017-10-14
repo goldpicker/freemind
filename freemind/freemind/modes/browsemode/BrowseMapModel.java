@@ -36,6 +36,7 @@ import freemind.modes.MindMapLinkRegistry;
 import freemind.modes.ModeController;
 import freemind.modes.NodeAdapter;
 
+@SuppressWarnings("serial")
 public class BrowseMapModel extends MapAdapter {
 
 	private static final String ENCRYPTED_BROWSE_NODE = EncryptedBrowseNode.class

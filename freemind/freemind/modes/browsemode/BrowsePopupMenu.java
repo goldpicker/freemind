@@ -27,6 +27,7 @@ import javax.swing.KeyStroke;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+@SuppressWarnings("serial")
 public class BrowsePopupMenu extends JPopupMenu implements PopupMenuListener {
 
 	private BrowseController c;

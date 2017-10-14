@@ -26,16 +26,15 @@ package freemind.modes.mindmapmode.actions;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.util.ListIterator;
 
 import javax.swing.Action;
 import javax.swing.JMenuItem;
-
 import freemind.controller.Controller;
 import freemind.controller.MenuItemEnabledListener;
+import freemind.modes.MindMapNode;
 import freemind.modes.mindmapmode.MindMapController;
-import freemind.modes.mindmapmode.MindMapNodeModel;
 
+@SuppressWarnings("serial")
 public class CloudColorAction extends MindmapAction implements MenuItemEnabledListener {
 	private final MindMapController controller;
 
@@ -55,9 +54,7 @@ public class CloudColorAction extends MindmapAction implements MenuItemEnabledLi
 		if (color == null) {
 			return;
 		}
-		for (ListIterator it = controller.getSelecteds().listIterator(); it
-				.hasNext();) {
-			MindMapNodeModel selected = (MindMapNodeModel) it.next();
+		for (MindMapNode selected : controller.getSelecteds()) {
 			controller.setCloudColor(selected, color);
 		}
 	}

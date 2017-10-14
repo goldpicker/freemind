@@ -29,13 +29,12 @@ import java.io.Writer;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.SwingUtilities;
 
-import plugins.collaboration.socket.FormDialog.FormDialogValidator;
 import freemind.common.NumberProperty;
+import freemind.common.PropertyControl;
 import freemind.common.StringProperty;
 import freemind.controller.actions.generated.instance.CollaborationGoodbye;
 import freemind.controller.actions.generated.instance.CollaborationUserInformation;
@@ -45,10 +44,10 @@ import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.main.XMLElement;
 import freemind.modes.ExtendedMapFeedback;
-import freemind.modes.ExtendedMapFeedbackImpl;
 import freemind.modes.MindMapNode;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.view.mindmapview.NodeView;
+import plugins.collaboration.socket.FormDialog.FormDialogValidator;
 
 /**
  * @author foltin
@@ -93,8 +92,7 @@ public class MindMapMaster extends SocketMaster implements PermanentNodeHook,
 			} catch (SocketTimeoutException e) {
 			}
 			final long now = System.currentTimeMillis();
-			for (Iterator it = mFileMap.keySet().iterator(); it.hasNext();) {
-				String mapName = (String) it.next();
+			for (String mapName : mFileMap.keySet()) {
 				ExtendedMapFeedback extendedMapFeedback = mFileMap.get(mapName);
 				SessionData sessionData = getSessionData(extendedMapFeedback);
 				if (now - mLastTimeUserInformationSent > TIME_BETWEEN_USER_INFORMATION_IN_MILLIES) {
@@ -162,7 +160,7 @@ public class MindMapMaster extends SocketMaster implements PermanentNodeHook,
 		// StringProperty bindProperty = new StringProperty(
 		// "IP address of the local machine, or 0.0.0.0 if ", "Host");
 		final NumberProperty portProperty = getPortProperty();
-		Vector controls = new Vector();
+		Vector<PropertyControl> controls = new Vector<>();
 		controls.add(passwordProperty);
 		controls.add(passwordProperty2);
 		// controls.add(bindProperty);

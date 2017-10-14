@@ -28,7 +28,6 @@ import java.awt.Stroke;
 
 import javax.swing.JComponent;
 
-import freemind.controller.Controller;
 import freemind.main.Resources;
 import freemind.main.Tools;
 
@@ -39,6 +38,7 @@ import freemind.main.Tools;
  * @author Dimitri
  * 
  */
+@SuppressWarnings("serial")
 public class NodeMotionListenerView extends JComponent {
 	protected static java.util.logging.Logger logger = null;
 	public NodeMotionListenerView(NodeView view) {

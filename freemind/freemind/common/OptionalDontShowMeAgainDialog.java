@@ -126,6 +126,7 @@ public class OptionalDontShowMeAgainDialog {
 		return mResult;
 	}
 
+	@SuppressWarnings("serial")
 	public OptionalDontShowMeAgainDialog show() {
 		String property = mDontShowPropertyHandler.getProperty();
 		if (Tools.safeEquals(property, "true")) {

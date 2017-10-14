@@ -237,7 +237,7 @@ public class FreeMindMainMock implements FreeMindMain {
 	 * @see freemind.main.FreeMindMain#getLoggerList()
 	 */
 	public List getLoggerList() {
-		return new Vector();
+		return new Vector<>();
 	}
 
 }

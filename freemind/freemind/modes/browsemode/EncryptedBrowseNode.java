@@ -109,7 +109,7 @@ public class EncryptedBrowseNode extends BrowseNodeModel {
 		String decrypted = encrypter.decrypt(encryptedContent);
 		if (decrypted == null)
 			return;
-		HashMap IDToTarget = new HashMap();
+		HashMap<String, NodeAdapter>  IDToTarget = new HashMap<>();
 		String[] childs = decrypted.split(ModeController.NODESEPARATOR);
 		// and now? paste it:
 		for (int i = childs.length - 1; i >= 0; i--) {
@@ -120,8 +120,7 @@ public class EncryptedBrowseNode extends BrowseNodeModel {
 				continue;
 			try {
 				NodeAdapter node = (NodeAdapter) getMap()
-						.createNodeTreeFromXml(new StringReader(string),
-								IDToTarget);
+						.createNodeTreeFromXml(new StringReader(string),IDToTarget);
 				// now, the import is finished. We can inform others about
 				// the new nodes:
 				MindMap model = mMapFeedback.getMap();

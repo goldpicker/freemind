@@ -53,7 +53,7 @@ public class ChangeNoteTextActor extends XmlActorAdapter {
 		}
 	}
 
-	public Class getDoActionClass() {
+	public Class<EditNoteToNodeAction> getDoActionClass() {
 		return EditNoteToNodeAction.class;
 	}
 

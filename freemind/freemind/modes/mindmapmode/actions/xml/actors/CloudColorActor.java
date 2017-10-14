@@ -80,7 +80,7 @@ public class CloudColorActor extends XmlActorAdapter {
 		}
 	}
 
-	public Class getDoActionClass() {
+	public Class<CloudColorXmlAction> getDoActionClass() {
 		return CloudColorXmlAction.class;
 	}
 

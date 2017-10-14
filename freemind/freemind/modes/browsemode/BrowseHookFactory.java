@@ -52,8 +52,8 @@ public class BrowseHookFactory extends HookFactoryAdapter {
 	 * 
 	 * @see freemind.extensions.HookFactory#getPossibleNodeHooks()
 	 */
-	public Vector getPossibleNodeHooks() {
-		return new Vector();
+	public Vector<String> getPossibleNodeHooks() {
+		return new Vector<>();
 	}
 
 	/*
@@ -61,8 +61,8 @@ public class BrowseHookFactory extends HookFactoryAdapter {
 	 * 
 	 * @see freemind.extensions.HookFactory#getPossibleModeControllerHooks()
 	 */
-	public Vector getPossibleModeControllerHooks() {
-		return new Vector();
+	public Vector<String> getPossibleModeControllerHooks() {
+		return new Vector<>();
 	}
 
 	/*
@@ -105,7 +105,7 @@ public class BrowseHookFactory extends HookFactoryAdapter {
 	 * @see
 	 * freemind.extensions.HookFactory#getHookMenuPositions(java.lang.String)
 	 */
-	public List getHookMenuPositions(String hookName) {
+	public List<String> getHookMenuPositions(String hookName) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -126,7 +126,7 @@ public class BrowseHookFactory extends HookFactoryAdapter {
 	 * 
 	 * @see freemind.extensions.HookFactory#getRegistrations()
 	 */
-	public List getRegistrations() {
+	public List<RegistrationContainer> getRegistrations() {
 		// TODO Auto-generated method stub
 		return null;
 	}

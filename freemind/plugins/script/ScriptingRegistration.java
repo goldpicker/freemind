@@ -13,6 +13,7 @@ import plugins.script.ScriptEditorPanel.ScriptHolder;
 import plugins.script.ScriptEditorPanel.ScriptModel;
 import plugins.script.ScriptingEngine.ErrorHandler;
 import freemind.common.BooleanProperty;
+import freemind.common.PropertyControl;
 import freemind.common.ScriptEditorProperty;
 import freemind.common.SeparatorProperty;
 import freemind.common.StringProperty;
@@ -39,15 +40,12 @@ public class ScriptingRegistration implements HookRegistration,
 	private static final class ScriptingPluginPropertyContributor implements
 			FreemindPropertyContributor {
 
-		private final MindMapController modeController;
-
 		public ScriptingPluginPropertyContributor(
 				MindMapController modeController) {
-			this.modeController = modeController;
 		}
 
-		public List getControls(TextTranslator pTextTranslator) {
-			Vector controls = new Vector();
+		public List<PropertyControl> getControls(TextTranslator pTextTranslator) {
+			Vector<PropertyControl> controls = new Vector<>();
 			controls.add(new OptionPanel.NewTabProperty(
 					"plugins/scripting/tab_name"));
 			controls.add(new SeparatorProperty(
@@ -138,14 +136,12 @@ public class ScriptingRegistration implements HookRegistration,
 	}
 
 	private final MindMapController controller;
-	private final MindMap mMap;
 	private ScriptEditorProperty.ScriptEditorStarter mScriptEditorStarter;
-	private HashMap mScriptCookies = new HashMap();
+	private HashMap mScriptCookies = new HashMap<>();
 	private ScriptingPluginPropertyContributor mScriptingPluginPropertyContributor;
 
 	public ScriptingRegistration(ModeController controller, MindMap map) {
 		this.controller = (MindMapController) controller;
-		mMap = map;
 		ScriptingEngine.logger = controller.getFrame().getLogger(
 				this.getClass().getName());
 	}

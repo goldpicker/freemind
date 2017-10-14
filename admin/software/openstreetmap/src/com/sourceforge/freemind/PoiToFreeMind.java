@@ -34,7 +34,6 @@ import java.util.Vector;
 import net.osmand.binary.BinaryMapIndexReader;
 import net.osmand.binary.BinaryMapPoiReaderAdapter.PoiRegion;
 import net.osmand.data.Amenity;
-import net.osmand.data.AmenityType;
 import net.osmand.osm.PoiCategory;
 import net.osmand.util.MapUtils;
 

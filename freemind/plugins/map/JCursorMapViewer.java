@@ -24,13 +24,11 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.event.ActionEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import javax.swing.AbstractAction;
@@ -54,6 +52,7 @@ import freemind.modes.mindmapmode.MindMapController;
  * @author foltin
  * @date 24.10.2011
  */
+@SuppressWarnings("serial")
 final class JCursorMapViewer extends JMapViewer {
 
 	private static final class ScalableTileController extends TileController {
@@ -124,7 +123,6 @@ final class JCursorMapViewer extends JMapViewer {
 	Stroke mRectangularStroke = new BasicStroke(1, BasicStroke.CAP_SQUARE,
 			BasicStroke.JOIN_MITER, 10.0f, new float[] { 10.0f, 10.0f }, 0.0f);
 	private FreeMindMapController mFreeMindMapController;
-	private final MapDialog mMapHook;
 	private boolean mHideFoldedNodes = true;
 	private Coordinate mRectangularStart;
 	private Coordinate mRectangularEnd;
@@ -144,7 +142,6 @@ final class JCursorMapViewer extends JMapViewer {
 		int scaleProperty = Resources.getInstance().getIntProperty(FreeMind.SCALING_FACTOR_PROPERTY, 100);
 		mCursorLength = 15 * scaleProperty/100;
 		mStroke = new BasicStroke(2 * scaleProperty / 100);
-		mMapHook = pMapHook;
 		mFreeMindMapController = new FreeMindMapController(this,
 				pMindMapController, pMapDialog, pMapHook);
 		Action updateCursorAction = new AbstractAction() {

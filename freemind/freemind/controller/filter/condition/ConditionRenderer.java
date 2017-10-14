@@ -39,7 +39,7 @@ import freemind.modes.MindIcon;
 /**
  * @author dimitri 06.05.2005
  */
-public class ConditionRenderer implements ListCellRenderer {
+public class ConditionRenderer implements ListCellRenderer<Object> {
 
 	final public static Color SELECTED_BACKGROUND = new Color(207, 247, 202);
 

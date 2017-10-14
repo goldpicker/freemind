@@ -23,7 +23,7 @@ class ExportPdfPapers {
 	/**
 	 * map to store all papers
 	 */
-	Map paperFormats = new HashMap();
+	Map<String, Paper> paperFormats = new HashMap<>();
 
 	/**
 	 * constructor

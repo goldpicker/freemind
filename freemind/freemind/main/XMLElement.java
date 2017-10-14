@@ -205,7 +205,7 @@ public class XMLElement {
 	 * </dd>
 	 * </dl>
 	 */
-	private Vector children;
+	private Vector<XMLElement> children;
 
 	/**
 	 * The name of the element.
@@ -357,7 +357,7 @@ public class XMLElement {
 	 *      XMLElement(Hashtable, boolean)
 	 */
 	public XMLElement() {
-		this(new Hashtable(), false, true, true);
+		this(new Hashtable<>(), false, true, true);
 	}
 
 	/**
@@ -440,7 +440,7 @@ public class XMLElement {
 	 *      XMLElement(Hashtable, boolean)
 	 */
 	public XMLElement(boolean skipLeadingWhitespace) {
-		this(new Hashtable(), skipLeadingWhitespace, true, true);
+		this(new Hashtable<>(), skipLeadingWhitespace, true, true);
 	}
 
 	/**
@@ -584,8 +584,8 @@ public class XMLElement {
 		this.ignoreCase = ignoreCase;
 		this.name = null;
 		this.contents = "";
-		this.attributes = new TreeMap();
-		this.children = new Vector();
+		this.attributes = new TreeMap<>();
+		this.children = new Vector<>();
 		this.entities = entities;
 		this.lineNr = 0;
 		Enumeration enumerator = this.entities.keys();
@@ -913,7 +913,7 @@ public class XMLElement {
 	 *      java.lang.String, java.lang.String, boolean)
 	 *      getBooleanAttribute(String, String, String, boolean)
 	 */
-	public Iterator enumerateAttributeNames() {
+	public Iterator<String> enumerateAttributeNames() {
 		return this.attributes.keySet().iterator();
 	}
 
@@ -2345,16 +2345,15 @@ public class XMLElement {
 		writer.write('<');
 		writer.write(this.name);
 		if (!this.attributes.isEmpty()) {
-			Iterator enumerator = this.attributes.keySet().iterator();
-			while (enumerator.hasNext()) {
+			
+			for(String key : this.attributes.keySet()) {
 				writer.write(' ');
-				String key = (String) enumerator.next();
 				String value = (String) this.attributes.get(key);
 				writer.write(key);
 				writer.write('=');
 				writer.write('"');
 				this.writeEncoded(writer, value);
-				writer.write('"');
+				writer.write('"');	
 			}
 		}
 		if ((this.contents != null) && (this.contents.length() > 0)) {

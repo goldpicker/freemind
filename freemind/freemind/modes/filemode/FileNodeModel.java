@@ -115,17 +115,17 @@ public class FileNodeModel extends NodeAdapter {
 	/**
      * 
      */
-	public ListIterator childrenFolded() {
+	public ListIterator<MindMapNode> childrenFolded() {
 		if (!isRoot()) {
 			if (isFolded() || isLeaf()) {
-				return Collections.EMPTY_LIST.listIterator();
+				return Collections.emptyListIterator();
 				// return null;//Empty Enumeration
 			}
 		}
 		return childrenUnfolded();
 	}
 
-	public ListIterator childrenUnfolded() {
+	public ListIterator<MindMapNode> childrenUnfolded() {
 		if (children != null) {
 			return children.listIterator();
 		}
@@ -133,7 +133,7 @@ public class FileNodeModel extends NodeAdapter {
 		try {
 			String[] files = file.list();
 			if (files != null) {
-				children = new LinkedList();
+				children = new LinkedList<>();
 
 				String path = file.getPath();
 				for (int i = 0; i < files.length; i++) {
@@ -149,8 +149,7 @@ public class FileNodeModel extends NodeAdapter {
 		} catch (SecurityException se) {
 		}
 		// return children.listIterator();
-		return children != null ? children.listIterator()
-				: Collections.EMPTY_LIST.listIterator();
+		return children != null ? children.listIterator() : Collections.<MindMapNode>emptyListIterator();
 	}
 
 	public boolean isLeaf() {

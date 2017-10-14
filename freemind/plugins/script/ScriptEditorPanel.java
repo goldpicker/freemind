@@ -78,6 +78,7 @@ import freemind.main.Tools;
  *         <li>show line/column numbers in status bar</li>
  *         </ul>
  */
+@SuppressWarnings("serial")
 public class ScriptEditorPanel extends JDialog implements MenuListener {
 	/**
 	 * 
