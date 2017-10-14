@@ -28,7 +28,6 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.text.MessageFormat;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
@@ -141,20 +140,11 @@ public class FreeMindSplashModern extends JFrame implements IFreeMindSplash {
 		getRootPane().setWindowDecorationStyle(JRootPane.NONE); // Set no border
 		// lamentablemente since 1.5: setAlwaysOnTop(true);
 
-		final ImageIcon splashImage = imageFactory.createIcon(
-				frame.getResource(FREEMIND_SPLASH));
+		final ImageIcon splashImage = imageFactory.createIcon(frame.getResource(FREEMIND_SPLASH));
 		JLabel splashImageLabel = new JLabel(splashImage) {
 			private Integer mWidth = null;
-			private final Font progressFont = new Font("SansSerif", Font.PLAIN,
-					10);
-			private Font versionTextFont = null;
-			{
-				Set<String> availableFontFamilyNames = Tools.getAvailableFontFamilyNames();
-				versionTextFont = availableFontFamilyNames
-						.contains("Century Gothic") ? new Font(
-						"Century Gothic", Font.BOLD, 14) : new Font("Arial",
-						Font.BOLD, 12);
-			}
+			private final Font progressFont = new Font("SansSerif", Font.PLAIN, 10);
+			private Font versionTextFont = Tools.isAvailableFontFamily("Century Gothic") ? new Font("Century Gothic", Font.BOLD, 14) : new Font("Arial", Font.BOLD, 12);
 
 			private int calcYRelative(int y){
 				return (int) (((float)y)/SPLASH_HEIGHT*splashImage.getIconHeight());
