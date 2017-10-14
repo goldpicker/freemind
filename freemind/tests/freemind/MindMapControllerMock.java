@@ -348,7 +348,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * @see freemind.modes.ModeController#getSelectedsByDepth()
 	 */
 	@Override
-	public List getSelectedsByDepth() {
+	public List<MindMapNode> getSelectedsByDepth() {
 
 		return null;
 	}
@@ -359,7 +359,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * @see freemind.modes.ModeController#sortNodesByDepth(java.util.List)
 	 */
 	@Override
-	public void sortNodesByDepth(List pInPlaceList) {
+	public void sortNodesByDepth(List<MindMapNode> pInPlaceList) {
 
 	}
 

@@ -93,7 +93,7 @@ public class SortedMapListModel extends AbstractListModel implements
 	/**
  */
 	public int getIndexOf(Object o) {
-		Iterator i = iterator();
+		Iterator<Object> i = iterator();
 		int count = -1;
 		while (i.hasNext()) {
 			count++;

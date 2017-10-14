@@ -105,8 +105,7 @@ public class LastStateStorageManagement {
 		if (mLastStatesMap.sizeMindmapLastStateStorageList() > LIST_AMOUNT_LIMIT) {
 			// make map from date to object:
 			TreeMap<Long, MindmapLastStateStorage> dateToStoreMap = new TreeMap<>();
-			for (Iterator<MindmapLastStateStorage> it = mLastStatesMap
-					.getListMindmapLastStateStorageList().iterator(); it.hasNext();) {
+			for (Iterator<MindmapLastStateStorage> it = mLastStatesMap.getListMindmapLastStateStorageList().iterator(); it.hasNext();) {
 				MindmapLastStateStorage store =  it.next();
 				dateToStoreMap
 						.put(Long.valueOf(-store.getLastChanged()), store);
@@ -115,8 +114,8 @@ public class LastStateStorageManagement {
 			mLastStatesMap.clearMindmapLastStateStorageList();
 			// rebuild
 			int counter = 0;
-			for (Entry entry : dateToStoreMap.entrySet()) {
-				mLastStatesMap.addMindmapLastStateStorage((MindmapLastStateStorage) entry.getValue());
+			for (Entry<Long, MindmapLastStateStorage> entry : dateToStoreMap.entrySet()) {
+				mLastStatesMap.addMindmapLastStateStorage(entry.getValue());
 				counter++;
 				if (counter >= LIST_AMOUNT_LIMIT) {
 					// drop the rest of the elements.

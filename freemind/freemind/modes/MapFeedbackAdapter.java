@@ -364,7 +364,7 @@ public abstract class MapFeedbackAdapter implements MapFeedback, ViewFeedback {
 		}
 	}
 
-	public void sortNodesByDepth(List inPlaceList) {
+	public void sortNodesByDepth(List<MindMapNode> inPlaceList) {
 		Collections.sort(inPlaceList, new NodesDepthComparator());
 		logger.finest("Sort result: " + inPlaceList);
 	}

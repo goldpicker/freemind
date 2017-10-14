@@ -54,7 +54,7 @@ import freemind.modes.MindMapNode;
 class FilterToolbar extends FreeMindToolBar {
 	private FilterController mFilterController;
 	private FilterComposerDialog filterDialog = null;
-	private JComboBox activeFilterConditionComboBox;
+	private JComboBox<Condition> activeFilterConditionComboBox;
 	private JCheckBox showAncestors;
 	private JCheckBox showDescendants;
 	private Filter activeFilter;
@@ -194,7 +194,7 @@ class FilterToolbar extends FreeMindToolBar {
 				+ " "));
 
 		activeFilter = null;
-		activeFilterConditionComboBox = new JComboBox() {
+		activeFilterConditionComboBox = new JComboBox<Condition>() {
 			public Dimension getMaximumSize() {
 				return getPreferredSize();
 			}
@@ -314,11 +314,11 @@ class FilterToolbar extends FreeMindToolBar {
 		}
 	}
 
-	ComboBoxModel getFilterConditionModel() {
+	ComboBoxModel<Condition> getFilterConditionModel() {
 		return activeFilterConditionComboBox.getModel();
 	}
 
-	void setFilterConditionModel(ComboBoxModel filterConditionModel) {
+	void setFilterConditionModel(ComboBoxModel<Condition> filterConditionModel) {
 		activeFilterConditionComboBox.setModel(filterConditionModel);
 	}
 }

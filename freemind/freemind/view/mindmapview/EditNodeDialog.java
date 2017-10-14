@@ -271,7 +271,7 @@ public class EditNodeDialog extends EditNodeBase {
 
 		public void show() {
 			textArea.requestFocus();
-			super.show();
+			super.setVisible(true);
 		}
 
 		/*
@@ -331,6 +331,6 @@ public class EditNodeDialog extends EditNodeBase {
 		// set position
 		getView().scrollNodeToVisible(getNode(), 0);
 		Tools.setDialogLocationRelativeTo(dialog, getNode());
-		dialog.show();
+		dialog.setVisible(true);
 	}
 }

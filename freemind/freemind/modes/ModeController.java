@@ -152,7 +152,7 @@ public interface ModeController extends TextTranslator, MapFeedback,
 	 * @return a LinkedList of MindMapNodes ordered by depth. nodes with greater
 	 *         depth occur first.
 	 */
-	List getSelectedsByDepth();
+	List<MindMapNode> getSelectedsByDepth();
 
 	/**
 	 * nodes with greater depth occur first.
@@ -160,7 +160,7 @@ public interface ModeController extends TextTranslator, MapFeedback,
 	 * @param inPlaceList
 	 *            the given list is sorted by reference.
 	 */
-	public void sortNodesByDepth(List inPlaceList);
+	public void sortNodesByDepth(List<MindMapNode> inPlaceList);
 
 	/**
 	 * This extends the currently selected nodes.

@@ -46,7 +46,7 @@ public class NodeGeneralAction extends AbstractXmlAction {
 
 	SingleNodeOperation singleNodeOperation;
 
-	private Class mDoActionClass;
+	private Class<?> mDoActionClass;
 
 	protected static Logger logger;
 
@@ -156,7 +156,7 @@ public class NodeGeneralAction extends AbstractXmlAction {
 		return pair;
 	}
 
-	protected void setDoActionClass(Class pDoActionClass) {
+	protected void setDoActionClass(Class<?> pDoActionClass) {
 		this.mDoActionClass = pDoActionClass;
 	}
 

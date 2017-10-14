@@ -216,10 +216,6 @@ public class ExportHook extends ModeControllerHookAdapter {
 		try {
 			logger.finest("searching for " + dir + fileName);
 			File resource = new File(dir, fileName);
-			if (resource == null) {
-				logger.severe("Cannot find resource: " + dir + fileName);
-				return;
-			}
 			InputStream in = new FileInputStream(resource);
 			OutputStream out = new FileOutputStream(destinationDirectory + "/"
 					+ fileName);

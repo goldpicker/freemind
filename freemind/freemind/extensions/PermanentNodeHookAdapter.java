@@ -180,12 +180,11 @@ public class PermanentNodeHookAdapter extends NodeHookAdapter implements
 
 	/**
 	 */
-	protected void saveNameValuePairs(HashMap nameValuePairs, XMLElement xml) {
+	protected void saveNameValuePairs(HashMap<String, Object> nameValuePairs, XMLElement xml) {
 		if(!nameValuePairs.isEmpty()) {
 			XMLElement child = new XMLElement();
 			child.setName(PARAMETERS);
-			for (Iterator<String> i = nameValuePairs.keySet().iterator(); i.hasNext();) {
-				String key = i.next();
+			for (String key : nameValuePairs.keySet()) {
 				Object value = nameValuePairs.get(key);
 				child.setAttribute(key, value);
 			}

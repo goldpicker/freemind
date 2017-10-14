@@ -89,7 +89,7 @@ public class MapNodePositionHolder extends MapNodePositionHolderBase {
 	 */
 	public void save(XMLElement xml) {
 		super.save(xml);
-		HashMap<String, String> values = new HashMap<>();
+		HashMap<String, Object> values = new HashMap<>();
 		values.put(XML_STORAGE_POS_LON, toString(mPosition.getLon()));
 		values.put(XML_STORAGE_POS_LAT, toString(mPosition.getLat()));
 		values.put(XML_STORAGE_MAP_LON, toString(mMapCenter.getLon()));

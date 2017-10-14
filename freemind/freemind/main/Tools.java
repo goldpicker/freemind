@@ -260,8 +260,8 @@ public class Tools {
 		return list;
 	}
 
-	public static String listToString(List list) {
-		ListIterator it = list.listIterator(0);
+	public static String listToString(List<?> list) {
+		ListIterator<?> it = list.listIterator(0);
 		StringBuffer str = new StringBuffer();
 		while (it.hasNext()) {
 			str.append(it.next().toString() + ";");
@@ -1315,7 +1315,7 @@ public class Tools {
 	}
 
 	public static void convertPointToAncestor(Component source, Point point,
-			Class ancestorClass) {
+			Class<?> ancestorClass) {
 		Component destination = SwingUtilities.getAncestorOfClass(
 				ancestorClass, source);
 		convertPointToAncestor(source, point, destination);
@@ -1866,8 +1866,7 @@ public class Tools {
 		Transferable clipboardContents = pMindMapController.getClipboardContents();
 		if (clipboardContents != null) {
 			try {
-				List<String> transferData = (List<String>) clipboardContents
-						.getTransferData(MindMapNodesSelection.copyNodeIdsFlavor);
+				List<String> transferData = (List<String>) clipboardContents.getTransferData(MindMapNodesSelection.copyNodeIdsFlavor);
 				for (Iterator<String> it = transferData.iterator(); it.hasNext();) {
 					String nodeId = (String) it.next();
 					MindMapNode node = pMindMapController.getNodeFromID(nodeId);

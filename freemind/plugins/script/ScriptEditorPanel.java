@@ -95,7 +95,7 @@ public class ScriptEditorPanel extends JDialog implements MenuListener {
 
 	private JTextArea mScriptTextField;
 
-	private DefaultListModel mListModel;
+	private DefaultListModel<String> mListModel;
 
 	private Integer mLastSelected = null;
 
@@ -343,8 +343,8 @@ public class ScriptEditorPanel extends JDialog implements MenuListener {
 		Container contentPane = this.getContentPane();
 
 		contentPane.setLayout(new BorderLayout());
-		mListModel = new DefaultListModel();
-		mScriptList = new JList(mListModel);
+		mListModel = new DefaultListModel<>();
+		mScriptList = new JList<>(mListModel);
 		mScriptList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		mScriptList.addListSelectionListener(new ListSelectionListener() {
 
@@ -360,8 +360,7 @@ public class ScriptEditorPanel extends JDialog implements MenuListener {
 		mScriptTextField.setFont(new Font("Monospaced", Font.PLAIN, 12));
 		mScriptTextField.setEnabled(false);
 		mScriptTextField.setTabSize(2);
-		mCentralUpperPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-				mScriptList, new JScrollPane(mScriptTextField));
+		mCentralUpperPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, mScriptList, new JScrollPane(mScriptTextField));
 		mCentralUpperPanel.setContinuousLayout(true);
 		mScriptResultField = new JTextArea();
 		mScriptResultField.setEditable(false);

@@ -66,7 +66,7 @@ public class SearchViewPanel extends JDialog implements ListSelectionListener {
 			}
 
 			@Override
-			public Logger getLogger(Class className) {
+			public Logger getLogger(Class<?> className) {
 				return Logger.getLogger(className.getName());
 			}
 
@@ -135,7 +135,7 @@ public class SearchViewPanel extends JDialog implements ListSelectionListener {
 		scorePanel = new JTextArea("");
 		Dimension minimumSize = new Dimension(100, 0);
 		String[] listing = new String[] { "No results" };
-		resultsList = new JList(listing);
+		resultsList = new JList<>(listing);
 		resultsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		resultsList.setSelectedIndex(0);
 		resultsList.addListSelectionListener(this);

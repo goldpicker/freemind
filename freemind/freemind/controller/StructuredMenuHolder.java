@@ -194,9 +194,9 @@ public class StructuredMenuHolder {
 	private class MapTokenPair {
 		Map map;
 		String token;
-		Vector order;
+		Vector<String> order;
 
-		MapTokenPair(Map map, String token, Vector order) {
+		MapTokenPair(Map map, String token, Vector<String> order) {
 			this.map = map;
 			this.token = token;
 			this.order = order;
@@ -214,13 +214,13 @@ public class StructuredMenuHolder {
 					thisMap.put(nextToken, newMap);
 				}
 				Map nextMap = (Map) thisMap.get(nextToken);
-				Vector<String> order = (Vector) thisMap.get(ORDER_NAME);
+				Vector<String> order = (Vector<String>) thisMap.get(ORDER_NAME);
 				if (!order.contains(nextToken)) {
 					order.add(nextToken);
 				}
 				return getCategoryMap(tokens, nextMap);
 			} else {
-				Vector order = (Vector) thisMap.get(ORDER_NAME);
+				Vector<String> order = (Vector<String>) thisMap.get(ORDER_NAME);
 				return new MapTokenPair(thisMap, nextToken, order);
 			}
 		}

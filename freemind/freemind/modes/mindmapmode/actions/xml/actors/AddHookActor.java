@@ -225,8 +225,7 @@ public class AddHookActor extends XmlActorAdapter {
 		logger.finest("invoke(selecteds) called.");
 		HookInstanciationMethod instMethod = getInstanciationMethod(hookName);
 		// get destination nodes
-		Collection<MindMapNode> destinationNodes = instMethod.getDestinationNodes(
-				getExMapFeedback(), focussed, selecteds);
+		Collection<MindMapNode> destinationNodes = instMethod.getDestinationNodes(getExMapFeedback(), focussed, selecteds);
 		MindMapNode adaptedFocussedNode = instMethod.getCenterNode(
 				getExMapFeedback(), focussed, selecteds);
 		// test if hook already present
@@ -306,7 +305,7 @@ public class AddHookActor extends XmlActorAdapter {
 	 * @param destinationNodes
 	 *            The calculated list of selected nodes (see last)
 	 */
-	private void finishInvocation(MindMapNode focussed, List<MindMapNode> selecteds, MindMapNode adaptedFocussedNode, Collection destinationNodes) {
+	private void finishInvocation(MindMapNode focussed, List<MindMapNode> selecteds, MindMapNode adaptedFocussedNode, Collection<MindMapNode> destinationNodes) {
 		// restore selection only, if nothing selected.
 		if (getViewAbstraction().getSelecteds().size() == 0) {
 			// select all destination nodes:

@@ -475,7 +475,8 @@ public class TimeList extends MindMapHookAdapter implements
 		 * 
 		 * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
 		 */
-		public Class getColumnClass(int arg0) {
+		@Override
+		public Class<?> getColumnClass(int arg0) {
 			switch (arg0) {
 			case DATE_COLUMN:
 			case NODE_CREATED_COLUMN:
@@ -915,7 +916,7 @@ public class TimeList extends MindMapHookAdapter implements
 	}
 
 	/** removes html in nodes before comparison. */
-	public static class NodeHolder implements Comparable {
+	public static class NodeHolder implements Comparable<NodeHolder> {
 		private final MindMapNode node;
 		private String untaggedNodeText = null;
 		/**
@@ -931,10 +932,12 @@ public class TimeList extends MindMapHookAdapter implements
 			this.node = node;
 		}
 
-		public int compareTo(Object compareToObject) {
+		@Override
+		public int compareTo(NodeHolder compareToObject) {
 			return toString().compareTo(compareToObject.toString());
 		}
 
+		@Override
 		public String toString() {
 			return getUntaggedNodeText();
 		}
@@ -960,7 +963,7 @@ public class TimeList extends MindMapHookAdapter implements
 	}
 
 	/** removes html in notes before comparison. */
-	public static class NotesHolder implements Comparable {
+	public static class NotesHolder implements Comparable<NotesHolder> {
 		private final MindMapNode node;
 		private String untaggedNotesText = null;
 		private String originalNotesText = null;
@@ -972,10 +975,12 @@ public class TimeList extends MindMapHookAdapter implements
 			this.node = node;
 		}
 
-		public int compareTo(Object compareToObject) {
+		@Override
+		public int compareTo(NotesHolder compareToObject) {
 			return toString().compareTo(compareToObject.toString());
 		}
 
+		@Override
 		public String toString() {
 			return getUntaggedNotesText();
 		}
@@ -997,7 +1002,7 @@ public class TimeList extends MindMapHookAdapter implements
 
 	}
 
-	static class IconsHolder implements Comparable {
+	static class IconsHolder implements Comparable<IconsHolder> {
 		Vector<MindIcon> icons = new Vector<>();
 
 		private Vector<String> iconNames;
@@ -1012,7 +1017,8 @@ public class TimeList extends MindMapHookAdapter implements
 			Collections.sort(iconNames);
 		}
 
-		public int compareTo(Object compareToObject) {
+		@Override
+		public int compareTo(IconsHolder compareToObject) {
 			return toString().compareTo(compareToObject.toString());
 		}
 

@@ -128,7 +128,7 @@ public interface MapFeedback {
 	 */
 	ViewFeedback getViewFeedback();
 
-	void sortNodesByDepth(List inPlaceList);
+	void sortNodesByDepth(List<MindMapNode> inPlaceList);
 	
 }
 

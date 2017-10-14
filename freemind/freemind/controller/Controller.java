@@ -486,7 +486,7 @@ public class Controller implements MapModuleChangeObserver {
 		dialog.addWindowListener(new Closer());
 		dialog.addComponentListener(new DisposeOnClose());
 
-		dialog.show(); // blocks until user brings dialog down...
+		dialog.setVisible(true);; // blocks until user brings dialog down...
 
 		return ok.getColor();
 	}
@@ -511,7 +511,7 @@ public class Controller implements MapModuleChangeObserver {
 	static class Closer extends WindowAdapter implements Serializable {
 		public void windowClosing(WindowEvent e) {
 			Window w = e.getWindow();
-			w.hide();
+			w.setVisible(false);
 		}
 	}
 
@@ -1666,8 +1666,8 @@ public class Controller implements MapModuleChangeObserver {
 					dialog, new OptionPanelFeedback() {
 
 						public void writeProperties(Properties props) {
-							Vector sortedKeys = new Vector<>();
-							sortedKeys.addAll(props.keySet());
+							Vector<String> sortedKeys = new Vector<>();
+							sortedKeys.addAll(props.stringPropertyNames());
 							Collections.sort(sortedKeys);
 							boolean propertiesChanged = false;
 							for (Iterator<String> i = sortedKeys.iterator(); i.hasNext();) {

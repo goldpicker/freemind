@@ -54,7 +54,7 @@ public class SearchControllerHook extends MindMapHookAdapter implements
 		}
 	}
 
-	public Logger getLogger(Class className) {
+	public Logger getLogger(Class<?> className) {
 		return getController().getFrame().getLogger(className.getName());
 	}
 

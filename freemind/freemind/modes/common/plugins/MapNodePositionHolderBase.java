@@ -62,7 +62,7 @@ public class MapNodePositionHolderBase extends PermanentNodeHookAdapter {
 	
 	protected String mTooltipLocation = null;
 	protected File mTooltipFile = null;
-	private HashMap mValues;
+	private HashMap<String, String> mValues;
 
 	public static ImageIcon getMapLocationIcon() {
 		// icon

@@ -681,7 +681,7 @@ public abstract class NodeAdapter implements MindMapNode {
 
 	public ListIterator<MindMapNode> childrenFolded() {
 		if (isFolded()) {
-			return Collections.EMPTY_LIST.listIterator();
+			return Collections.emptyListIterator();
 		}
 		return childrenUnfolded();
 	}

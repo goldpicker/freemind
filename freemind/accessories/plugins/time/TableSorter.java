@@ -101,9 +101,9 @@ public class TableSorter extends AbstractTableModel {
 
 	private static Directive EMPTY_DIRECTIVE = new Directive(-1, NOT_SORTED);
 
-	public static final Comparator COMPARABLE_COMAPRATOR = new Comparator() {
-		public int compare(Object o1, Object o2) {
-			return ((Comparable) o1).compareTo(o2);
+	public static final Comparator COMPARABLE_COMAPRATOR = new Comparator<Comparable>() {
+		public int compare(Comparable o1, Comparable o2) {
+			return o1.compareTo(o2);
 		}
 	};
 	public static final Comparator LEXICAL_COMPARATOR = new Comparator() {
@@ -118,7 +118,7 @@ public class TableSorter extends AbstractTableModel {
 	private JTableHeader tableHeader;
 	private MouseListener mouseListener;
 	private TableModelListener tableModelListener;
-	private Map columnComparators = new HashMap<>();
+	private Map<Class<?> , Comparator> columnComparators = new HashMap<>();
 	private List<Directive> sortingColumns = new ArrayList<>();
 
 	public TableSorter() {
@@ -242,8 +242,8 @@ public class TableSorter extends AbstractTableModel {
 	}
 
 	protected Comparator getComparator(int column) {
-		Class columnType = tableModel.getColumnClass(column);
-		Comparator comparator = (Comparator) columnComparators.get(columnType);
+		Class<?> columnType = tableModel.getColumnClass(column);
+		Comparator<?> comparator = (Comparator<?>) columnComparators.get(columnType);
 		if (comparator != null) {
 			return comparator;
 		}
@@ -297,7 +297,7 @@ public class TableSorter extends AbstractTableModel {
 		return tableModel.getColumnName(column);
 	}
 
-	public Class getColumnClass(int column) {
+	public Class<?> getColumnClass(int column) {
 		return tableModel.getColumnClass(column);
 	}
 
@@ -315,16 +315,17 @@ public class TableSorter extends AbstractTableModel {
 
 	// Helper classes
 
-	private class Row implements Comparable {
+	private class Row implements Comparable<Row> {
 		private int modelIndex;
 
 		public Row(int index) {
 			this.modelIndex = index;
 		}
 
-		public int compareTo(Object o) {
+		@Override
+		public int compareTo(Row o) {
 			int row1 = modelIndex;
-			int row2 = ((Row) o).modelIndex;
+			int row2 = o.modelIndex;
 
 			for (Iterator<Directive> it = sortingColumns.iterator(); it.hasNext();) {
 				Directive directive = it.next();

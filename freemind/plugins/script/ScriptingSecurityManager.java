@@ -187,7 +187,7 @@ public class ScriptingSecurityManager extends SecurityManager {
 	public void checkExit(int pStatus) {
 	}
 
-	public void checkMemberAccess(Class arg0, int arg1) {
+	public void checkMemberAccess(Class<?> arg0, int arg1) {
 	}
 
 	public void checkPackageAccess(String pPkg) {

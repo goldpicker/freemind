@@ -151,7 +151,7 @@ public class MindMapNodeModel extends NodeAdapter {
 		return result.toString();
 	}
 
-	public void saveRTF(Writer fileout, int depth, HashMap colorTable)
+	public void saveRTF(Writer fileout, int depth, HashMap<Color, Integer> colorTable)
 			throws IOException {
 		String pre = "{" + "\\li" + depth * 350;
 		String level;
@@ -162,7 +162,7 @@ public class MindMapNodeModel extends NodeAdapter {
 		}
 		String fontsize = "";
 		if (color != null) {
-			pre += "\\cf" + ((Integer) colorTable.get(getColor())).intValue();
+			pre += "\\cf" + colorTable.get(getColor());
 		}
 
 		if (isItalic()) {
@@ -207,7 +207,7 @@ public class MindMapNodeModel extends NodeAdapter {
 		saveChildrenRTF(fileout, depth, colorTable);
 	}
 
-	private void saveChildrenRTF(Writer fileout, int depth, HashMap colorTable)
+	private void saveChildrenRTF(Writer fileout, int depth, HashMap<Color, Integer> colorTable)
 			throws IOException {
 		for (ListIterator e = sortedChildrenUnfolded(); e.hasNext();) {
 			final MindMapNodeModel child = (MindMapNodeModel) e.next();

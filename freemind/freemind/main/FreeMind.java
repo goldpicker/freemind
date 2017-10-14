@@ -675,18 +675,6 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 				// to avoid infinite recursion.
 				// freemind.main.Resources.getInstance().logExecption(e);
 			}
-	        if (false) {
-				// Obtain a reference to the logger
-				Logger focusLog = Logger.getLogger("java.awt.focus.Component");
-				// The logger should log all messages
-				focusLog.setLevel(Level.ALL);
-				// Create a new handler
-				ConsoleHandler handler = new ConsoleHandler();
-				// The handler must handle all messages
-				handler.setLevel(Level.ALL);
-				// Add the handler to the logger
-				focusLog.addHandler(handler);
-			}
 		}
 		if (sLogFileHandler != null) {
 			loggerForClass.addHandler(sLogFileHandler);
@@ -718,37 +706,11 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 			frame.checkForAnotherInstance(args);
 			frame.initServer();
 			final FeedBack feedBack;
-			// change here, if you don't like the splash
-			if (true) {
-				splash = new FreeMindSplashModern(frame);
-				splash.setVisible(true);
-				feedBack = splash.getFeedBack();
-				frame.mWindowIcon = splash.getWindowIcon();
-			} else {
-				feedBack = new FeedBack() {
-					int value = 0;
-	
-					public int getActualValue() {
-						return value;
-					}
-	
-					public void increase(String messageId,
-							Object[] pMessageParameters) {
-						progress(getActualValue() + 1, messageId,
-								pMessageParameters);
-					}
-	
-					public void progress(int act, String messageId,
-							Object[] pMessageParameters) {
-						frame.logger.info("Beginnig task:" + messageId);
-					}
-	
-					public void setMaximumValue(int max) {
-					}
-				};
-				frame.mWindowIcon = freemind.view.ImageFactory.getInstance().createIcon(
-						frame.getResource("images/FreeMindWindowIcon.png"));
-			}
+			splash = new FreeMindSplashModern(frame);
+			splash.setVisible(true);
+			feedBack = splash.getFeedBack();
+			frame.mWindowIcon = splash.getWindowIcon();
+
 			feedBack.setMaximumValue(10 + frame.getMaximumNumberOfMapsToLoad(args));
 			frame.init(feedBack);
 	

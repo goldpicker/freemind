@@ -173,12 +173,12 @@ public class FilterController implements MapModuleChangeObserver {
 	}
 
 	public void setFilterConditionModel(
-			DefaultComboBoxModel filterConditionModel) {
+			DefaultComboBoxModel<Condition> filterConditionModel) {
 		this.filterConditionModel = filterConditionModel;
 		filterToolbar.setFilterConditionModel(filterConditionModel);
 	}
 
-	void saveConditions(DefaultComboBoxModel filterConditionModel,
+	void saveConditions(DefaultComboBoxModel<Condition> filterConditionModel,
 			String pathToFilterFile) throws IOException {
 		XMLElement saver = new XMLElement();
 		saver.setName("filter_conditions");
@@ -191,17 +191,16 @@ public class FilterController implements MapModuleChangeObserver {
 		writer.close();
 	}
 
-	void loadConditions(DefaultComboBoxModel filterConditionModel,
+	void loadConditions(DefaultComboBoxModel<Condition> filterConditionModel,
 			String pathToFilterFile) throws IOException {
 		filterConditionModel.removeAllElements();
 		XMLElement loader = new XMLElement();
 		Reader reader = new FileReader(pathToFilterFile);
 		loader.parseFromReader(reader);
 		reader.close();
-		final Vector conditions = loader.getChildren();
+		final Vector<XMLElement> conditions = loader.getChildren();
 		for (int i = 0; i < conditions.size(); i++) {
-			filterConditionModel.addElement(FilterController
-					.getConditionFactory().loadCondition((XMLElement) conditions.get(i)));
+			filterConditionModel.addElement(FilterController.getConditionFactory().loadCondition(conditions.get(i)));
 		}
 	}
 }

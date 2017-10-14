@@ -46,7 +46,7 @@ public class ActionRegistry {
 	/** This set denotes all filters for XmlActions. */
 	private Vector<ActionFilter> registeredFilters;
 	/** HashMap of Action class -> actor instance. */
-	private HashMap<Class, ActorXml> registeredActors;
+	private HashMap<Class<?>, ActorXml> registeredActors;
 	private UndoActionHandler undoActionHandler;
 	private static java.util.logging.Logger logger = null;
 
@@ -61,7 +61,7 @@ public class ActionRegistry {
 		}
 		registeredHandler = new Vector<ActionHandler>();
 		registeredFilters = new Vector<ActionFilter>();
-		registeredActors = new HashMap<Class, ActorXml>();
+		registeredActors = new HashMap<Class<?>, ActorXml>();
 	}
 
 	/**
@@ -179,19 +179,19 @@ public class ActionRegistry {
 
 	/**
 	 */
-	public void registerActor(ActorXml actor, Class action) {
+	public void registerActor(ActorXml actor, Class<?> action) {
 		registeredActors.put(action, actor);
 	}
 
 	/**
 	 */
-	public void deregisterActor(Class action) {
+	public void deregisterActor(Class<?> action) {
 		registeredActors.remove(action);
 	}
 
 	public ActorXml getActor(XmlAction action) {
-		for (Iterator<Class> i = registeredActors.keySet().iterator(); i.hasNext();) {
-			Class actorClass = i.next();
+		for (Iterator<Class<?>> i = registeredActors.keySet().iterator(); i.hasNext();) {
+			Class<?> actorClass = i.next();
 			if (actorClass.isInstance(action)) {
 				return registeredActors.get(actorClass);
 			}
@@ -204,7 +204,7 @@ public class ActionRegistry {
 				+ action.getClass());
 	}
 
-	public ActorXml getActor(Class actionClass) {
+	public ActorXml getActor(Class<?> actionClass) {
 		if (registeredActors.containsKey(actionClass)) {
 			return registeredActors.get(actionClass);
 		}

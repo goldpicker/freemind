@@ -108,7 +108,7 @@ public class ClonePlugin extends PermanentMindMapNodeHookAdapter implements
 
 	public void save(XMLElement xml) {
 		super.save(xml);
-		HashMap<String, String> values = new HashMap<>();
+		HashMap<String, Object> values = new HashMap<>();
 		values.put(XML_STORAGE_CLONES, getCloneIdsAsString());
 		values.put(XML_STORAGE_CLONE_ID, mCloneId);
 		String cloneItselfValue = getCloneItselfValue();

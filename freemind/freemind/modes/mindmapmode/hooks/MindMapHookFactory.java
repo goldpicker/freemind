@@ -105,7 +105,7 @@ public class MindMapHookFactory extends HookFactoryAdapter {
 	/**
 	 * @return a string vector with representatives for plugins.
 	 */
-	private Vector<String> searchFor(Class baseClass, Class mode) {
+	private Vector<String> searchFor(Class baseClass, Class<?> mode) {
 		actualizePlugins();
 		Vector<String> returnValue = new Vector<>();
 		String modeName = mode.getPackage().getName();

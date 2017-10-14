@@ -74,7 +74,7 @@ public class JColorCombo extends JComboBox<ColorPair> {
 		return getPreferredSize();
 	}
 	
-	public class ComboBoxRenderer extends JLabel implements ListCellRenderer {
+	public class ComboBoxRenderer extends JLabel implements ListCellRenderer<ColorPair> {
 		public ComboBoxRenderer() {
 			setOpaque(true);
 	        setHorizontalAlignment(LEFT);
@@ -86,12 +86,9 @@ public class JColorCombo extends JComboBox<ColorPair> {
 	     * to the selected value and returns the label, set up
 	     * to display the text and image.
 	     */
-	    public Component getListCellRendererComponent(
-	                                       JList list,
-	                                       Object value,
-	                                       int index,
-	                                       boolean isSelected,
-	                                       boolean cellHasFocus) {
+		@Override
+		public Component getListCellRendererComponent(JList<? extends ColorPair> list, ColorPair value, int index,
+				boolean isSelected, boolean cellHasFocus) {
 	        if (isSelected) {
 	            setBackground(list.getSelectionBackground());
 	            setForeground(list.getSelectionForeground());
@@ -105,9 +102,8 @@ public class JColorCombo extends JComboBox<ColorPair> {
 	        setIcon(icon);
 	        setText(pair.displayName);
 
-
 	        return this;
-	    }
+		}
 	}
 
 	public static void main(String[] s) {

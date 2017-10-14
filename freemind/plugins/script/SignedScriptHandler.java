@@ -194,8 +194,8 @@ public class SignedScriptHandler {
 							+ "\n-----END CERTIFICATE-----\n";
 					CertificateFactory cf = CertificateFactory
 							.getInstance("X.509");
-					Collection c = cf.generateCertificates(new ByteArrayInputStream(cer.getBytes()));
-					Iterator<Certificate> i = c.iterator();
+					Collection<? extends Certificate> c = cf.generateCertificates(new ByteArrayInputStream(cer.getBytes()));
+					Iterator<? extends Certificate> i = c.iterator();
 					if (i.hasNext()) {
 						Certificate cert = i.next();
 						instanceVerify.initVerify(cert);

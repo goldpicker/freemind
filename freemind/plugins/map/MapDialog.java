@@ -198,7 +198,7 @@ public class MapDialog extends MindMapHookAdapter implements
 		 * 
 		 * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
 		 */
-		public Class getColumnClass(int arg0) {
+		public Class<?> getColumnClass(int arg0) {
 			switch (arg0) {
 			case SEARCH_DESCRIPTION_COLUMN:
 				return String.class;
@@ -439,10 +439,8 @@ public class MapDialog extends MindMapHookAdapter implements
 		mResultTableSorter = new TableSorter(mResultTableModel);
 		mResultTable.setModel(mResultTableSorter);
 		mResultTableSorter.setTableHeader(mResultTable.getTableHeader());
-		mResultTableSorter.setColumnComparator(String.class,
-				TableSorter.LEXICAL_COMPARATOR);
-		mResultTableSorter.setColumnComparator(Double.class,
-				TableSorter.COMPARABLE_COMAPRATOR);
+		mResultTableSorter.setColumnComparator(String.class, TableSorter.LEXICAL_COMPARATOR);
+		mResultTableSorter.setColumnComparator(Double.class, TableSorter.COMPARABLE_COMAPRATOR);
 		// Sort by default by date.
 		mResultTableSorter.setSortingStatus(SEARCH_DISTANCE_COLUMN,
 				TableSorter.ASCENDING);

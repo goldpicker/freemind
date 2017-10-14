@@ -212,18 +212,18 @@ public class EncryptedMindMapNode extends MindMapNodeModel {
 		return 0;
 	}
 
-	public ListIterator childrenFolded() {
+	public ListIterator<MindMapNode> childrenFolded() {
 		if (isAccessible()) {
 			return super.childrenFolded();
 		}
-		return new Vector<>().listIterator();
+		return new Vector<MindMapNode>().listIterator();
 	}
 
-	public ListIterator childrenUnfolded() {
+	public ListIterator<MindMapNode> childrenUnfolded() {
 		if (isAccessible() || isShuttingDown) {
 			return super.childrenUnfolded();
 		}
-		return new Vector<>().listIterator();
+		return new Vector<MindMapNode>().listIterator();
 	}
 
 	public boolean hasChildren() {
