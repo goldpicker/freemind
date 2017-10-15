@@ -28,6 +28,7 @@ import java.util.List;
 import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.actions.MindmapAction;
 
+@SuppressWarnings("serial")
 public class NodeDownAction extends MindmapAction {
 	private final MindMapController modeController;
 
@@ -38,7 +39,7 @@ public class NodeDownAction extends MindmapAction {
 
 	public void actionPerformed(ActionEvent e) {
 		MindMapNode selected = modeController.getSelected();
-		List selecteds = modeController.getSelecteds();
+		List<MindMapNode> selecteds = modeController.getSelecteds();
 		modeController.moveNodes(selected, selecteds, 1);
 		modeController.select(selected, selecteds);
 

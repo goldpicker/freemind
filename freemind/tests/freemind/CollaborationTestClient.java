@@ -102,7 +102,6 @@ public abstract class CollaborationTestClient extends CommunicationBase {
 		}
 		boolean commandHandled = false;
 		if (pCommand instanceof CollaborationUserInformation) {
-			CollaborationUserInformation userInfo = (CollaborationUserInformation) pCommand;
 			commandHandled = true;
 		}
 		if (pCommand instanceof CollaborationWhoAreYou) {
@@ -182,7 +181,7 @@ public abstract class CollaborationTestClient extends CommunicationBase {
 	void createNewMap(String map) throws IOException {
 		MapAdapter newModel = new MindMapMapModel(mController);
 		((ExtendedMapFeedbackImpl) mController).setMap(newModel);
-		HashMap IDToTarget = new HashMap();
+		HashMap<String, NodeAdapter> IDToTarget = new HashMap<>();
 		StringReader reader = new StringReader(map);
 		MindMapNodeModel rootNode = (MindMapNodeModel) newModel
 				.createNodeTreeFromXml(reader, IDToTarget);

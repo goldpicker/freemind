@@ -19,6 +19,7 @@
 
 package freemind.view.mindmapview;
 
+import java.awt.AWTKeyStroke;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
@@ -51,7 +52,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.ListIterator;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -83,6 +83,7 @@ import freemind.preferences.FreemindPropertyListener;
  * This class represents the view of a whole MindMap (in analogy to class
  * JTree).
  */
+@SuppressWarnings("serial")
 public class MapView extends JPanel implements ViewAbstraction, Printable, Autoscroll {
 	
 	/**
@@ -155,7 +156,7 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 	}
 
 	private class Selected {
-		private Vector mySelected = new Vector();
+		private Vector<NodeView> mySelected = new Vector<>();
 
 		public Selected() {
 		};
@@ -165,9 +166,8 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 				removeFocusForHooks(get(0));
 			}
 			mySelected.clear();
-			Vector selectedCopy = new Vector(mySelected);
-			for (Iterator it = selectedCopy.iterator(); it.hasNext();) {
-				NodeView view = (NodeView) it.next();
+			Vector<NodeView> selectedCopy = new Vector<>(mySelected);
+			for (NodeView view : selectedCopy) {
 				changeSelection(view, false);
 			}
 			logger.finest("Cleared selected.");
@@ -273,7 +273,7 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 	private static FreemindPropertyListener propertyChangeListener;
 
 	/** Used to identify a right click onto a link curve. */
-	private Vector/* of ArrowLinkViews */mArrowLinkViews = new Vector();
+	private Vector<ArrowLinkView> mArrowLinkViews = new Vector<>();
 
 	private Point rootContentLocation;
 
@@ -372,11 +372,11 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 
 		// fc, 20.6.2004: to enable tab for insert.
 		setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
-				Collections.EMPTY_SET);
+				Collections.<AWTKeyStroke>emptySet());
 		setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
-				Collections.EMPTY_SET);
+				Collections.<AWTKeyStroke>emptySet());
 		setFocusTraversalKeys(KeyboardFocusManager.UP_CYCLE_TRAVERSAL_KEYS,
-				Collections.EMPTY_SET);
+				Collections.<AWTKeyStroke>emptySet());
 		// end change.
 
 		// fc, 31.3.2013: set policy to achive that after note window close, the
@@ -865,7 +865,7 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 	 */
 	public void selectAsTheOnlyOneSelected(NodeView newSelected) {
 		logger.finest("selectAsTheOnlyOneSelected");
-		LinkedList oldSelecteds = getSelecteds();
+		LinkedList<NodeView> oldSelecteds = getSelecteds();
 		// select new node
 		this.selected.clear();
 		this.selected.add(newSelected);
@@ -878,8 +878,7 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 		scrollNodeToVisible(newSelected);
 		newSelected.repaintSelected();
 
-		for (ListIterator e = oldSelecteds.listIterator(); e.hasNext();) {
-			NodeView oldSelected = (NodeView) e.next();
+		for (NodeView oldSelected : oldSelecteds) {
 			if (oldSelected != null) {
 				oldSelected.repaintSelected();
 			}
@@ -943,9 +942,7 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 			toggleSelected(newlySelectedNodeView);
 		}
 		// select(newSelected,extend);
-		for (ListIterator e = newlySelectedNodeView.getChildrenViews()
-				.listIterator(); e.hasNext();) {
-			NodeView target = (NodeView) e.next();
+		for (NodeView target : newlySelectedNodeView.getChildrenViews()) {
 			selectBranch(target, true);
 		}
 	}
@@ -954,12 +951,11 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 		/* fc, 25.1.2004: corrected due to completely inconsistent behaviour. */
 		NodeView oldSelected = null;
 		// search for the last already selected item among the siblings:
-		LinkedList selList = getSelecteds();
-		ListIterator j = selList.listIterator(/* selList.size() */);
+		LinkedList<NodeView> selList = getSelecteds();
+		ListIterator<NodeView> j = selList.listIterator(/* selList.size() */);
 		while (j.hasNext()) {
-			NodeView selectedNode = (NodeView) j.next();
-			if (selectedNode != newSelected
-					&& newSelected.isSiblingOf(selectedNode)) {
+			NodeView selectedNode = j.next();
+			if (selectedNode != newSelected && newSelected.isSiblingOf(selectedNode)) {
 				oldSelected = selectedNode;
 				break;
 			}
@@ -976,9 +972,9 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 		boolean oldPositionLeft = oldSelected.isLeft();
 		boolean newPositionLeft = newSelected.isLeft();
 		/* find old starting point. */
-		ListIterator i = newSelected.getSiblingViews().listIterator();
+		ListIterator<NodeView> i = newSelected.getSiblingViews().listIterator();
 		while (i.hasNext()) {
-			NodeView nodeView = (NodeView) i.next();
+			NodeView nodeView = i.next();
 			if (nodeView == oldSelected) {
 				break;
 			}
@@ -987,9 +983,9 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 		 * Remove all selections for the siblings in the connected component
 		 * between old and new.
 		 */
-		ListIterator i_backup = i;
+		ListIterator<NodeView> i_backup = i;
 		while (i.hasNext()) {
-			NodeView nodeView = (NodeView) i.next();
+			NodeView nodeView = i.next();
 			if ((nodeView.isLeft() == oldPositionLeft || nodeView.isLeft() == newPositionLeft)) {
 				if (isSelected(nodeView))
 					deselect(nodeView);
@@ -1002,7 +998,7 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 		if (i.hasPrevious()) {
 			i.previous(); /* this is old selected! */
 			while (i.hasPrevious()) {
-				NodeView nodeView = (NodeView) i.previous();
+				NodeView nodeView =  i.previous();
 				if (nodeView.isLeft() == oldPositionLeft
 						|| nodeView.isLeft() == newPositionLeft) {
 					if (isSelected(nodeView))
@@ -1017,7 +1013,7 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 		/* find starting point. */
 		i = newSelected.getSiblingViews().listIterator();
 		while (i.hasNext()) {
-			NodeView nodeView = (NodeView) i.next();
+			NodeView nodeView = i.next();
 			if (nodeView == newSelected || nodeView == oldSelected) {
 				if (!isSelected(nodeView) && nodeView.isContentVisible())
 					toggleSelected(nodeView);
@@ -1026,7 +1022,7 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 		}
 		/* select all up to the end point. */
 		while (i.hasNext()) {
-			NodeView nodeView = (NodeView) i.next();
+			NodeView nodeView = i.next();
 			if ((nodeView.isLeft() == oldPositionLeft || nodeView.isLeft() == newPositionLeft)
 					&& !isSelected(nodeView) && nodeView.isContentVisible())
 				toggleSelected(nodeView);
@@ -1106,11 +1102,11 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 	 *         descendant node are selected, only the ancestor is returned
 	 */
 	public ArrayList<MindMapNode> getSelectedNodesSortedByY() {
-		final HashSet selectedNodesSet = new HashSet();
+		final HashSet<MindMapNode> selectedNodesSet = new HashSet<>();
 		for (int i = 0; i < selected.size(); i++) {
 			selectedNodesSet.add(getSelected(i).getModel());
 		}
-		LinkedList pointNodePairs = new LinkedList();
+		LinkedList<Pair> pointNodePairs = new LinkedList<>();
 
 		Point point = new Point();
 		iteration: for (int i = 0; i < selected.size(); i++) {
@@ -1127,26 +1123,18 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 			pointNodePairs.add(new Pair(new Integer(point.y), node));
 		}
 		// do the sorting:
-		Collections.sort(pointNodePairs, new Comparator() {
+		Collections.sort(pointNodePairs, new Comparator<Pair>() {
+			public int compare(Pair pair0, Pair pair1) {
+				Integer int0 = (Integer) pair0.getFirst();
+				Integer int1 = (Integer) pair1.getFirst();
+				return int0.compareTo(int1);
 
-			public int compare(Object arg0, Object arg1) {
-				if (arg0 instanceof Pair) {
-					Pair pair0 = (Pair) arg0;
-					if (arg1 instanceof Pair) {
-						Pair pair1 = (Pair) arg1;
-						Integer int0 = (Integer) pair0.getFirst();
-						Integer int1 = (Integer) pair1.getFirst();
-						return int0.compareTo(int1);
-					}
-				}
-				throw new IllegalArgumentException("Wrong compare arguments "
-						+ arg0 + ", " + arg1);
 			}
 		});
 
-		ArrayList selectedNodes = new ArrayList();
-		for (Iterator it = pointNodePairs.iterator(); it.hasNext();) {
-			selectedNodes.add(((Pair) it.next()).getSecond());
+		ArrayList<MindMapNode> selectedNodes = new ArrayList<>();
+		for (Iterator<Pair> it = pointNodePairs.iterator(); it.hasNext();) {
+			selectedNodes.add( (MindMapNode) it.next().getSecond());
 		}
 
 		// logger.fine("Cutting #" + selectedNodes.size());
@@ -1161,8 +1149,8 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 	 * @return an ArrayList of MindMapNode objects. If both ancestor and
 	 *         descandant node are selected, only the ancestor ist returned
 	 */
-	public ArrayList /* of MindMapNodes */getSingleSelectedNodes() {
-		ArrayList selectedNodes = new ArrayList(selected.size());
+	public ArrayList<MindMapNode> getSingleSelectedNodes() {
+		ArrayList<MindMapNode> selectedNodes = new ArrayList<>(selected.size());
 		for (int i = selected.size() - 1; i >= 0; i--) {
 			selectedNodes.add(getSelected(i).getModel().shallowCopy());
 		}
@@ -1294,8 +1282,8 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 	}
 
 	public void paintChildren(Graphics graphics) {
-		HashMap labels = new HashMap();
-		mArrowLinkViews = new Vector();
+		HashMap<String, NodeView> labels = new HashMap<>();
+		mArrowLinkViews = new Vector<>();
 		collectLabels(rootView, labels);
 		super.paintChildren(graphics);
 		Graphics2D graphics2d = (Graphics2D) graphics;
@@ -1317,7 +1305,7 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 		}
 		g.setStroke(standardSelectionStroke);
 		Object renderingHint = setEdgesRenderingHint(g);
-		final Iterator i = getSelecteds().iterator();
+		final Iterator<NodeView> i = getSelecteds().iterator();
 		while (i.hasNext()) {
 			NodeView selected = (NodeView) i.next();
 			paintSelected(g, selected);
@@ -1338,7 +1326,7 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 	}
 
 	/** collect all existing labels in the current map. */
-	protected void collectLabels(NodeView source, HashMap labels) {
+	protected void collectLabels(NodeView source, HashMap<String, NodeView> labels) {
 		// check for existing registry:
 		if (getModel().getLinkRegistry() == null)
 			return;
@@ -1346,25 +1334,23 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 		String label = getModel().getLinkRegistry().getLabel(source.getModel());
 		if (label != null)
 			labels.put(label, source);
-		for (ListIterator e = source.getChildrenViews().listIterator(); e
-				.hasNext();) {
-			NodeView target = (NodeView) e.next();
+		for (NodeView target : source.getChildrenViews()) {
 			collectLabels(target, labels);
 		}
 	}
 
 	protected void paintLinks(NodeView source, Graphics2D graphics,
-			HashMap labels, HashSet /* MindMapLink s */LinkAlreadyVisited) {
+			HashMap<String, NodeView> labels, HashSet<MindMapLink> LinkAlreadyVisited) {
 		// check for existing registry:
 		if (getModel().getLinkRegistry() == null)
 			return;
 		if (LinkAlreadyVisited == null)
-			LinkAlreadyVisited = new HashSet();
+			LinkAlreadyVisited = new HashSet<>();
 		// references first
 		// logger.fine("Searching for links of " +
 		// source.getModel().toString());
 		// paint own labels:
-		Vector vec = getModel().getLinkRegistry()
+		Vector<MindMapLink> vec = getModel().getLinkRegistry()
 				.getAllLinks(source.getModel());
 		for (int i = 0; i < vec.size(); ++i) {
 			MindMapLink ref = (MindMapLink) vec.get(i);
@@ -1390,9 +1376,7 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 				}
 			}
 		}
-		for (ListIterator e = source.getChildrenViews().listIterator(); e
-				.hasNext();) {
-			NodeView target = (NodeView) e.next();
+		for (NodeView target : source.getChildrenViews()) {
 			paintLinks(target, graphics, labels, LinkAlreadyVisited);
 		}
 	}
@@ -1434,9 +1418,9 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 	}
 
 	private void repaintSelecteds() {
-		final Iterator iterator = getSelecteds().iterator();
+		final Iterator<NodeView> iterator = getSelecteds().iterator();
 		while (iterator.hasNext()) {
-			NodeView next = (NodeView) iterator.next();
+			NodeView next = iterator.next();
 			next.repaintSelected();
 		}
 		// repaint();
@@ -1586,10 +1570,6 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 		return rootView;
 	}
 
-	private MindMapLayout getMindMapLayout() {
-		return (MindMapLayout) getLayout();
-	}
-
 	// this property is used when the user navigates up/down using cursor keys
 	// (PN)
 	// it will keep the level of nodes that are understand as "siblings"
@@ -1671,9 +1651,8 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 		selectedsValid = true;
 		// Keep selected nodes
 		logger.finest("validateSelecteds");
-		ArrayList selectedNodes = new ArrayList();
-		for (ListIterator it = getSelecteds().listIterator(); it.hasNext();) {
-			NodeView nodeView = (NodeView) it.next();
+		ArrayList<NodeView> selectedNodes = new ArrayList<>();
+		for (NodeView nodeView : getSelecteds()) {
 			if (nodeView != null) {
 				selectedNodes.add(nodeView);
 			}
@@ -1681,8 +1660,7 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 		// Warning, the old views still exist, because JVM has not deleted them.
 		// But don't use them!
 		selected.clear();
-		for (ListIterator it = selectedNodes.listIterator(); it.hasNext();) {
-			NodeView oldNodeView = ((NodeView) it.next());
+		for (NodeView oldNodeView : selectedNodes) {
 			if (oldNodeView.isContentVisible()) {
 				NodeView newNodeView = getNodeView(oldNodeView.getModel());
 				// test, whether or not the node is still visible:
@@ -1777,9 +1755,9 @@ public class MapView extends JPanel implements ViewAbstraction, Printable, Autos
 	 * .NodeViewVisitor)
 	 */
 	public void acceptViewVisitor(MindMapNode pNode, NodeViewVisitor visitor) {
-		final Iterator iterator = getViewers(pNode).iterator();
+		final Iterator<NodeView> iterator = getViewers(pNode).iterator();
 		while (iterator.hasNext()) {
-			visitor.visit((NodeView) iterator.next());
+			visitor.visit( iterator.next());
 		}
 
 	}

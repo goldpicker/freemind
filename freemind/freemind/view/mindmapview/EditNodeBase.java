@@ -289,7 +289,7 @@ public class EditNodeBase {
 		final KeyboardFocusManager currentKeyboardFocusManager =
 				KeyboardFocusManager.getCurrentKeyboardFocusManager();
 		class KeyEventQueue implements KeyEventDispatcher, FocusListener {
-			LinkedList events = new LinkedList();
+			LinkedList<KeyEvent> events = new LinkedList<>();
 
 			public boolean dispatchKeyEvent(KeyEvent e) {
 				events.add(e);
@@ -299,7 +299,7 @@ public class EditNodeBase {
 			public void focusGained(FocusEvent e) {
 				e.getComponent().removeFocusListener(this);
 				currentKeyboardFocusManager.removeKeyEventDispatcher(this);
-				final Iterator iterator = events.iterator();
+				final Iterator<KeyEvent> iterator = events.iterator();
 				while (iterator.hasNext()) {
 					final KeyEvent ke = (KeyEvent) iterator.next();
 					ke.setSource(textComponent);

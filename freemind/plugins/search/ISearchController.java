@@ -21,7 +21,7 @@ import javax.swing.JFrame;
 public interface ISearchController {
 	public void setWaitingCursor(boolean waiting);
 
-	public Logger getLogger(Class className);
+	public Logger getLogger(Class<?> className);
 
 	public JFrame getJFrame();
 	

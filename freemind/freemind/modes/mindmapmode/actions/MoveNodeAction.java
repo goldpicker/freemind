@@ -26,14 +26,13 @@ package freemind.modes.mindmapmode.actions;
 import freemind.controller.actions.generated.instance.MoveNodeXmlAction;
 import freemind.modes.mindmapmode.MindMapController;
 
+@SuppressWarnings("serial")
 public class MoveNodeAction extends NodeGeneralAction  {
-	private final MindMapController modeController;
 
 	/**
      */
 	public MoveNodeAction(MindMapController modeController) {
 		super(modeController, "reset_node_position", (String) null);
-		this.modeController = modeController;
 		setDoActionClass(MoveNodeXmlAction.class);
 	}
 	

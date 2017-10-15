@@ -23,7 +23,6 @@
 package freemind.extensions;
 
 import java.util.HashMap;
-import java.util.Iterator;
 
 import freemind.modes.MindMapNode;
 
@@ -34,7 +33,7 @@ import freemind.modes.MindMapNode;
 public abstract class HookFactoryAdapter implements HookFactory {
 
 	/** Contains PluginType -> Object (baseClass) relations. */
-	protected HashMap allRegistrationInstances;
+	protected HashMap<String, HookRegistration> allRegistrationInstances;
 
 	/**
 	 * 
@@ -48,8 +47,7 @@ public abstract class HookFactoryAdapter implements HookFactory {
 	 */
 	public PermanentNodeHook getHookInNode(MindMapNode node, String hookName) {
 		// search for already instanciated hooks of this type:
-		for (Iterator i = node.getActivatedHooks().iterator(); i.hasNext();) {
-			PermanentNodeHook otherHook = (PermanentNodeHook) i.next();
+		for (PermanentNodeHook otherHook : node.getActivatedHooks()) {
 			if (otherHook.getName().equals(hookName)) {
 				// there is already one instance.
 				return otherHook;

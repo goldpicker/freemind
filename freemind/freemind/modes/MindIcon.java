@@ -20,7 +20,6 @@
 
 package freemind.modes;
 
-import java.awt.Image;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
@@ -40,21 +39,20 @@ import freemind.view.ScalableImageIcon;
  * This class represents a MindIcon than can be applied to a node or a whole
  * branch.
  */
-public class MindIcon implements Comparable, IconInformation {
+public class MindIcon implements Comparable<MindIcon>, IconInformation {
 	public static final String PROPERTY_STRING_ICONS_LIST = "icons.list";
 	private String name;
-	private String description;
 	private int number = UNKNOWN;
 	/**
 	 * Stores the once created ImageIcon.
 	 */
 	private ImageIcon associatedIcon;
-	private static Vector mAllIconNames;
+	private static Vector<String> mAllIconNames;
 	private static ImageIcon iconNotFound;
 	/**
 	 * Set of all created icons. Name -> MindIcon
 	 */
-	private static HashMap createdIcons = new HashMap();
+	private static HashMap<String, MindIcon> createdIcons = new HashMap<>();
 	private static final int UNKNOWN = -1;
 	public static final int LAST = UNKNOWN;
 	static int nextNumber = UNKNOWN - 1;
@@ -187,10 +185,10 @@ public class MindIcon implements Comparable, IconInformation {
 		return associatedIcon;
 	}
 	
-	public static Vector getAllIconNames() {
+	public static Vector<String> getAllIconNames() {
 		if (mAllIconNames != null)
 			return mAllIconNames;
-		Vector mAllIconNames = new Vector();
+		Vector<String> mAllIconNames = new Vector<>();
 		String icons = Resources.getInstance().getProperty(
 				PROPERTY_STRING_ICONS_LIST);
 		StringTokenizer tokenizer = new StringTokenizer(icons, ";");
@@ -226,14 +224,10 @@ public class MindIcon implements Comparable, IconInformation {
 	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
-	public int compareTo(Object o) {
-		if (o instanceof MindIcon) {
-			MindIcon icon = (MindIcon) o;
-			int i1 = getNumber();
-			int i2 = icon.getNumber();
-			return i1 < i2 ? -1 : i1 == i2 ? 0 : +1;
-		}
-		throw new ClassCastException();
+	public int compareTo(MindIcon icon) {
+		int i1 = getNumber();
+		int i2 = icon.getNumber();
+		return i1 < i2 ? -1 : i1 == i2 ? 0 : +1;
 	}
 
 	private int getNumber() {

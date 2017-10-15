@@ -63,7 +63,7 @@ public class StylePatternFactory {
 
 	public static final String TRUE_VALUE = "true";
 
-	public static List loadPatterns(File file) throws Exception {
+	public static List<Pattern> loadPatterns(File file) throws Exception {
 		return loadPatterns(new BufferedReader(new FileReader(file)));
 	}
 
@@ -71,13 +71,12 @@ public class StylePatternFactory {
 	 * @return a List of Pattern elements.
 	 * @throws Exception
 	 */
-	public static List loadPatterns(Reader reader) throws Exception {
+	public static List<Pattern> loadPatterns(Reader reader) throws Exception {
 		Patterns patterns = (Patterns) XmlBindingTools.getInstance()
 				.unMarshall(reader);
 		// translate standard strings:
-		for (Iterator iterator = patterns.getListChoiceList().iterator(); iterator
-				.hasNext();) {
-			Pattern pattern = (Pattern) iterator.next();
+		for (Iterator<Pattern> iterator = patterns.getListChoiceList().iterator(); iterator.hasNext();) {
+			Pattern pattern = iterator.next();
 			String originalName = pattern.getName();
 			String name = originalName;
 			if (name == null) {
@@ -93,9 +92,8 @@ public class StylePatternFactory {
 				// store original name to be able to translate back
 				pattern.setOriginalName(originalName);
 				// look, whether or not the string occurs in other situations:
-				for (Iterator it = patterns.getListChoiceList().iterator(); it
-						.hasNext();) {
-					Pattern otherPattern = (Pattern) it.next();
+				for (Iterator<Pattern> it = patterns.getListChoiceList().iterator(); it.hasNext();) {
+					Pattern otherPattern = it.next();
 					PatternChild child = otherPattern.getPatternChild();
 					if (child != null) {
 						if (Tools.safeEquals(originalName, child.getValue())) {
@@ -114,12 +112,11 @@ public class StylePatternFactory {
 	 * 
 	 * @throws Exception
 	 */
-	public static void savePatterns(Writer writer, List listOfPatterns)
+	public static void savePatterns(Writer writer, List<Pattern> listOfPatterns)
 			throws Exception {
 		Patterns patterns = new Patterns();
-		HashMap nameToPattern = new HashMap();
-		for (Iterator iter = listOfPatterns.iterator(); iter.hasNext();) {
-			Pattern pattern = (Pattern) iter.next();
+		HashMap<String, Pattern> nameToPattern = new HashMap<>();
+		for (Pattern pattern : listOfPatterns) {
 			patterns.addChoice(pattern);
 			if (pattern.getOriginalName() != null) {
 				nameToPattern.put(pattern.getName(), pattern);
@@ -127,9 +124,8 @@ public class StylePatternFactory {
 				pattern.setOriginalName(null);
 			}
 		}
-		for (Iterator it = patterns.getListChoiceList().iterator(); it
-				.hasNext();) {
-			Pattern pattern = (Pattern) it.next();
+		for (Iterator<Pattern> it = patterns.getListChoiceList().iterator(); it.hasNext();) {
+			Pattern pattern = it.next();
 			PatternChild patternChild = pattern.getPatternChild();
 			if (patternChild != null
 					&& nameToPattern.containsKey(patternChild.getValue())) {
@@ -358,10 +354,9 @@ public class StylePatternFactory {
 	}
 
 	public static Pattern createPatternFromSelected(MindMapNode focussed,
-			List selected) {
+			List<MindMapNode> selected) {
 		Pattern nodePattern = createPatternFromNode(focussed);
-		for (Iterator iter = selected.iterator(); iter.hasNext();) {
-			MindMapNode node = (MindMapNode) iter.next();
+		for (MindMapNode node : selected) {
 			Pattern tempNodePattern = createPatternFromNode(node);
 			nodePattern = intersectPattern(nodePattern, tempNodePattern);
 		}
@@ -424,10 +419,10 @@ public class StylePatternFactory {
 				}
 			} else {
 				// check if icon is already present:
-				List icons = pNode.getIcons();
+				List<MindIcon> icons = pNode.getIcons();
 				boolean found = false;
-				for (Iterator iterator = icons.iterator(); iterator.hasNext();) {
-					MindIcon icon = (MindIcon) iterator.next();
+				for (MindIcon icon : icons) {
+
 					if (icon.getName() != null
 							&& icon.getName().equals(iconName)) {
 						found = true;
@@ -525,10 +520,9 @@ public class StylePatternFactory {
 				}
 			} else {
 				// check if icon is already present:
-				List icons = node.getIcons();
+				List<MindIcon> icons = node.getIcons();
 				boolean found = false;
-				for (Iterator iterator = icons.iterator(); iterator.hasNext();) {
-					MindIcon icon = (MindIcon) iterator.next();
+				for (MindIcon icon : icons) {
 					if (icon.getName() != null
 							&& icon.getName().equals(iconName)) {
 						found = true;
@@ -591,9 +585,7 @@ public class StylePatternFactory {
 				&& pattern.getPatternChild().getValue() != null) {
 			// find children among all patterns:
 			String searchedPatternName = pattern.getPatternChild().getValue();
-			for (Iterator it = pPatternList.iterator(); it
-					.hasNext();) {
-				Pattern otherPattern = (Pattern) it.next();
+			for (Pattern otherPattern : pPatternList) {
 				if (otherPattern.getName().equals(searchedPatternName)) {
 					for (ListIterator j = node.childrenUnfolded(); j.hasNext();) {
 						NodeAdapter child = (NodeAdapter) j.next();
@@ -603,8 +595,7 @@ public class StylePatternFactory {
 				}
 			}
 		}
-		for (Iterator i = pPlugins.iterator(); i.hasNext();) {
-			MindMapControllerPlugin plugin = (MindMapControllerPlugin) i.next();
+		for (MindMapControllerPlugin plugin : pPlugins) {
 			if (plugin instanceof ExternalPatternAction) {
 				ExternalPatternAction externalAction = (ExternalPatternAction) plugin;
 				externalAction.act(node, pattern);

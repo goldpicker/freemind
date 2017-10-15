@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 import freemind.controller.actions.generated.instance.CompoundAction;
 import freemind.controller.actions.generated.instance.FormatNodeAction;
 import freemind.controller.actions.generated.instance.NewNodeAction;
-import freemind.controller.actions.generated.instance.NodeAction;
 import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.extensions.HookRegistration;
 import freemind.main.Tools;
@@ -50,17 +49,14 @@ public class FormatNewNodes implements ActionHandler, ActionFilter,
 
 	private MindMapController controller;
 
-	private MindMap mMap;
-
 	private Logger logger;
 
-	private HashMap formatActions;
+	private HashMap<String, XmlAction> formatActions;
 
 	public FormatNewNodes(ModeController controller, MindMap map) {
 		this.controller = (MindMapController) controller;
-		mMap = map;
 		logger = controller.getFrame().getLogger(this.getClass().getName());
-		this.formatActions = new HashMap();
+		this.formatActions = new HashMap<>();
 	}
 
 	public void register() {
@@ -84,9 +80,8 @@ public class FormatNewNodes implements ActionHandler, ActionFilter,
 	private void detectFormatChanges(XmlAction doAction) {
 		if (doAction instanceof CompoundAction) {
 			CompoundAction compAction = (CompoundAction) doAction;
-			for (Iterator i = compAction.getListChoiceList().iterator(); i
-					.hasNext();) {
-				XmlAction childAction = (XmlAction) i.next();
+			for (Iterator<XmlAction> i = compAction.getListChoiceList().iterator(); i.hasNext();) {
+				XmlAction childAction = i.next();
 				detectFormatChanges(childAction);
 			}
 		} else if (doAction instanceof FormatNodeAction) {
@@ -108,8 +103,7 @@ public class FormatNewNodes implements ActionHandler, ActionFilter,
 			// have:
 			CompoundAction compound = new CompoundAction();
 			compound.addChoice(newNodeAction);
-			for (Iterator i = formatActions.values().iterator(); i.hasNext();) {
-				NodeAction formatAction = (NodeAction) i.next();
+			for (XmlAction formatAction : formatActions.values()) {
 				// deep copy:
 				FormatNodeAction copiedFormatAction = (FormatNodeAction) Tools
 						.deepCopy(formatAction);

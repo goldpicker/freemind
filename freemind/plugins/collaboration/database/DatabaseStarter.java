@@ -33,6 +33,7 @@ import java.util.Vector;
 import plugins.collaboration.socket.FormDialog;
 import plugins.collaboration.socket.FormDialog.FormDialogValidator;
 import freemind.common.NumberProperty;
+import freemind.common.PropertyControl;
 import freemind.common.StringProperty;
 import freemind.extensions.DontSaveMarker;
 import freemind.extensions.PermanentNodeHook;
@@ -66,7 +67,7 @@ public class DatabaseStarter extends DatabaseBasics implements
 		// StringProperty bindProperty = new StringProperty(
 		// "IP address of the local machine, or 0.0.0.0 if ", "Host");
 		final NumberProperty portProperty = getPortProperty();
-		Vector controls = new Vector();
+		Vector<PropertyControl> controls = new Vector<>();
 		controls.add(passwordProperty);
 		controls.add(passwordProperty2);
 		// controls.add(bindProperty);

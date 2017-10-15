@@ -26,12 +26,12 @@ package freemind.modes.mindmapmode.actions;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.util.ListIterator;
 
 import freemind.controller.Controller;
+import freemind.modes.MindMapNode;
 import freemind.modes.mindmapmode.MindMapController;
-import freemind.modes.mindmapmode.MindMapNodeModel;
 
+@SuppressWarnings("serial")
 public class NodeColorAction extends MindmapAction {
 	private final MindMapController controller;
 
@@ -48,9 +48,8 @@ public class NodeColorAction extends MindmapAction {
 		if (color == null) {
 			return;
 		}
-		for (ListIterator it = controller.getSelecteds().listIterator(); it
-				.hasNext();) {
-			MindMapNodeModel selected = (MindMapNodeModel) it.next();
+		for (MindMapNode selected : controller.getSelecteds()) {
+
 			controller.setNodeColor(selected, color);
 		}
 	}

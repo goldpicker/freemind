@@ -49,7 +49,7 @@ public class ImportWizard {
 
 	public final String lookFor = ".xml";
 	/** Stores the list of all classes in the classpath */
-	public Vector CLASS_LIST = new Vector(500);
+	public Vector<String> CLASS_LIST = new Vector<>(500);
 	protected static java.util.logging.Logger logger = null;
 
 	public ImportWizard() {
@@ -77,7 +77,7 @@ public class ImportWizard {
 				+ classPath;
 		logger.info("Classpath for plugins:" + classPath);
 		// to remove duplicates
-		HashSet foundPlugins = new HashSet();
+		HashSet<String> foundPlugins = new HashSet<>();
 		StringTokenizer st = new StringTokenizer(classPath, classPathSeparator);
 		while (st.hasMoreTokens()) {
 			String classPathEntry = st.nextToken();
@@ -118,7 +118,7 @@ public class ImportWizard {
 	 * @param classPathFile
 	 *            the File to scan as a zip file
 	 */
-	public void addClassesFromZip(Vector classList, File classPathFile) {
+	public void addClassesFromZip(Vector<String> classList, File classPathFile) {
 		// System.out.println("Processing jar/zip file: " + classPathFile);
 
 		try {
@@ -161,7 +161,7 @@ public class ImportWizard {
 	 *            To ensure that after a certain depth the recursive directory
 	 *            search stops
 	 */
-	public void addClassesFromDir(Vector classList, File rootDir,
+	public void addClassesFromDir(Vector<String> classList, File rootDir,
 			File currentDir, int recursionLevel) {
 		if (recursionLevel >= 6) {
 			// search only the first levels

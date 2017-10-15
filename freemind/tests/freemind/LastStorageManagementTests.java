@@ -44,7 +44,7 @@ public class LastStorageManagementTests extends FreeMindTestBase {
 			assertEquals(test, mMgm.getStorage("" + i));
 			waitOneMilli();
 		}
-		List list = mMgm.getLastOpenList();
+		List<MindmapLastStateStorage> list = mMgm.getLastOpenList();
 		assertEquals(6, list.size());
 		assertEquals("5",
 				((MindmapLastStateStorage) list.get(0)).getRestorableName());

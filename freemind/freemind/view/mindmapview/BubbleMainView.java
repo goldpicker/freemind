@@ -30,10 +30,8 @@ import java.awt.Stroke;
 import freemind.main.Tools;
 import freemind.modes.MindMapNode;
 
+@SuppressWarnings("serial")
 class BubbleMainView extends MainView {
-	private final static Stroke BOLD_STROKE = new BasicStroke(2.0f,
-			BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[] { 2f,
-					2f }, 0f);
 	final static Stroke DEF_STROKE = new BasicStroke();
 
 	/*

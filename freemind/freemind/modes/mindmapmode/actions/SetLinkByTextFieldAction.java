@@ -33,6 +33,7 @@ import javax.swing.JOptionPane;
 
 import freemind.modes.mindmapmode.MindMapController;
 
+@SuppressWarnings("serial")
 public class SetLinkByTextFieldAction extends MindmapAction {
 	private final MindMapController controller;
 

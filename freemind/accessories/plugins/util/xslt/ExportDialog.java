@@ -43,6 +43,7 @@ import freemind.main.ExampleFileFilter;
 import freemind.modes.FreeMindFileDialog;
 import freemind.modes.ModeController;
 
+@SuppressWarnings("serial")
 public class ExportDialog extends JFrame {
 	private static final String ACCESSORIES_PLUGINS_UTIL_XSLT_EXPORT_DIALOG_STORE_TARGET = "accessories.plugins.util.xslt.ExportDialog.store.target"; //$NON-NLS-1$
 	private static final String ACCESSORIES_PLUGINS_UTIL_XSLT_EXPORT_DIALOG_STORE_XSLT = "accessories.plugins.util.xslt.ExportDialog.store.xslt"; //$NON-NLS-1$
@@ -183,7 +184,7 @@ public class ExportDialog extends JFrame {
 		// cancel-Button
 		JButton cbutton = new JButton(getResourceString("ExportDialog.8")); //$NON-NLS-1$
 		gbc = makegbc(1, 2, 1, 1);
-		gbc.anchor = gbc.EAST;
+		gbc.anchor = GridBagConstraints.EAST;
 		gbc.fill = GridBagConstraints.NONE;
 		// gbc.anchor = GridBagConstraints.SOUTHEAST;
 		gbl.setConstraints(cbutton, gbc);
@@ -201,7 +202,7 @@ public class ExportDialog extends JFrame {
 		gbc.gridwidth = width;
 		gbc.gridheight = height;
 		gbc.insets = new Insets(1, 1, 1, 1);
-		gbc.anchor = gbc.WEST;
+		gbc.anchor = GridBagConstraints.WEST;
 		return gbc;
 	}
 
@@ -217,17 +218,12 @@ public class ExportDialog extends JFrame {
 		private final String xslch = getResourceString("ExportDialog.9"); //$NON-NLS-1$
 		private final String expch = getResourceString("ExportDialog.10"); //$NON-NLS-1$
 		private String WindowTitle = null;
-		private File xf = null;
-
-		private FileChooseListener() {
-		};
 
 		public FileChooseListener(int wit, JTextField jt, Component c,
 				File mmFile) {
 			parent = c;
 			jtf = jt;
 			kind = wit;
-			xf = mmFile;
 			if (kind == 0) {
 				WindowTitle = xslch;
 			} else {

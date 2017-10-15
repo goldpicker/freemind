@@ -23,7 +23,6 @@
  */
 package freemind.controller.filter.condition;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
@@ -50,9 +49,9 @@ public class IconNotContainedCondition implements Condition {
 	}
 
 	static public int iconFirstIndex(MindMapNode node, String iconName) {
-		List icons = node.getIcons();
-		for (ListIterator i=icons.listIterator(); i.hasNext(); ) {
-			MindIcon nextIcon = (MindIcon) i.next() ;
+		List<MindIcon> icons = node.getIcons();
+		for (ListIterator<MindIcon> i=icons.listIterator(); i.hasNext(); ) {
+			MindIcon nextIcon =i.next() ;
 			if (iconName.equals(nextIcon.getName())) return i.previousIndex();
 		}
 		return -1;
@@ -60,8 +59,8 @@ public class IconNotContainedCondition implements Condition {
 	}
 
 	static public int iconLastIndex(MindMapNode node, String iconName) {
-		List icons = node.getIcons();
-		ListIterator i=icons.listIterator(icons.size());
+		List<MindIcon> icons = node.getIcons();
+		ListIterator<MindIcon> i=icons.listIterator(icons.size());
 		while ( i.hasPrevious()) {
 			MindIcon nextIcon = (MindIcon) i.previous() ;
 			if (iconName.equals(nextIcon.getName())) return i.nextIndex();
@@ -71,9 +70,8 @@ public class IconNotContainedCondition implements Condition {
 	}
 
 	private static boolean isStateIconContained(MindMapNode node, String iconName) {
-		Set stateIcons = node.getStateIcons().keySet();
-		for(Iterator stateIcon = stateIcons.iterator(); stateIcon.hasNext();){
-			String nextIcon = (String) stateIcon.next() ;
+		Set<String> stateIcons = node.getStateIcons().keySet();
+		for(String nextIcon : stateIcons){
 			if (iconName.equals(nextIcon)) return true;		    
 		}
 		return false;

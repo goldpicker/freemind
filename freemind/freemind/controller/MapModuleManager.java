@@ -29,7 +29,6 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +79,7 @@ public class MapModuleManager {
 
 	public static class MapModuleChangeObserverCompound implements
 			MapModuleChangeObserver {
-		private HashSet listeners = new HashSet();
+		private HashSet<MapModuleChangeObserver> listeners = new HashSet<>();
 
 		public void addListener(MapModuleChangeObserver listener) {
 			listeners.add(listener);
@@ -93,10 +92,7 @@ public class MapModuleManager {
 		public boolean isMapModuleChangeAllowed(MapModule oldMapModule,
 				Mode oldMode, MapModule newMapModule, Mode newMode) {
 			boolean returnValue = true;
-			for (Iterator iter = new Vector(listeners).iterator(); iter
-					.hasNext();) {
-				MapModuleChangeObserver observer = (MapModuleChangeObserver) iter
-						.next();
+			for (MapModuleChangeObserver observer : new Vector<>(listeners)) {
 				returnValue = observer.isMapModuleChangeAllowed(oldMapModule,
 						oldMode, newMapModule, newMode);
 				if (!returnValue) {
@@ -108,10 +104,7 @@ public class MapModuleManager {
 
 		public void beforeMapModuleChange(MapModule oldMapModule, Mode oldMode,
 				MapModule newMapModule, Mode newMode) {
-			for (Iterator iter = new Vector(listeners).iterator(); iter
-					.hasNext();) {
-				MapModuleChangeObserver observer = (MapModuleChangeObserver) iter
-						.next();
+			for (MapModuleChangeObserver observer : new Vector<>(listeners)) {
 				observer.beforeMapModuleChange(oldMapModule, oldMode,
 						newMapModule, newMode);
 			}
@@ -119,29 +112,21 @@ public class MapModuleManager {
 
 		public void afterMapModuleChange(MapModule oldMapModule, Mode oldMode,
 				MapModule newMapModule, Mode newMode) {
-			for (Iterator iter = new Vector(listeners).iterator(); iter
-					.hasNext();) {
-				MapModuleChangeObserver observer = (MapModuleChangeObserver) iter
-						.next();
+			for (MapModuleChangeObserver observer : new Vector<>(listeners)) {
 				observer.afterMapModuleChange(oldMapModule, oldMode,
 						newMapModule, newMode);
 			}
 		}
 
 		public void numberOfOpenMapInformation(int number, int pIndex) {
-			for (Iterator iter = new Vector(listeners).iterator(); iter
-					.hasNext();) {
-				MapModuleChangeObserver observer = (MapModuleChangeObserver) iter
-						.next();
+			for (MapModuleChangeObserver observer : new Vector<>(listeners)) {
+
 				observer.numberOfOpenMapInformation(number, pIndex);
 			}
 		}
 
 		public void afterMapClose(MapModule pOldMapModule, Mode pOldMode) {
-			for (Iterator iter = new Vector(listeners).iterator(); iter
-					.hasNext();) {
-				MapModuleChangeObserver observer = (MapModuleChangeObserver) iter
-						.next();
+			for (MapModuleChangeObserver observer : new Vector<>(listeners)) {
 				observer.afterMapClose(pOldMapModule, pOldMode);
 			}
 		}
@@ -192,7 +177,7 @@ public class MapModuleManager {
 	 * A vector of MapModule instances. They are ordered according to their
 	 * screen order.
 	 */
-	private Vector mapModuleVector = new Vector();
+	private Vector<MapModule> mapModuleVector = new Vector<>();
 
 	/** reference to the current mapmodule; null is allowed, too. */
 	private MapModule mapModule;
@@ -201,10 +186,7 @@ public class MapModuleManager {
 	 */
 	private Mode mCurrentMode = null;
 
-	private Controller mController;
-
 	MapModuleManager(Controller c) {
-		this.mController = c;
 	}
 
 	/**
@@ -212,24 +194,22 @@ public class MapModuleManager {
 	 * @deprecated use getMapModuleVector instead (and get the displayname as
 	 *             MapModule.getDisplayName().
 	 */
-	public Map getMapModules() {
-		HashMap returnValue = new HashMap();
-		for (Iterator iterator = mapModuleVector.iterator(); iterator.hasNext();) {
-			MapModule module = (MapModule) iterator.next();
+	public Map<String, MapModule> getMapModules() {
+		HashMap<String, MapModule> returnValue = new HashMap<>();
+		for (MapModule module : mapModuleVector) {
 			returnValue.put(module.getDisplayName(), module);
 		}
 		return Collections.unmodifiableMap(returnValue);
 	}
 
-	public List getMapModuleVector() {
+	public List<MapModule> getMapModuleVector() {
 		return Collections.unmodifiableList(mapModuleVector);
 	}
 
 	/** @return an unmodifiable set of all display names of current opened maps. */
-	public List getMapKeys() {
-		LinkedList returnValue = new LinkedList();
-		for (Iterator iterator = mapModuleVector.iterator(); iterator.hasNext();) {
-			MapModule module = (MapModule) iterator.next();
+	public List<String> getMapKeys() {
+		LinkedList<String> returnValue = new LinkedList<>();
+		for (MapModule module : mapModuleVector) {
 			returnValue.add(module.getDisplayName());
 		}
 		return Collections.unmodifiableList(returnValue);
@@ -248,9 +228,7 @@ public class MapModuleManager {
 
 	public MapModule getModuleGivenModeController(ModeController pModeController) {
 		MapModule mapModule = null;
-		for (Iterator iter = getMapModules().entrySet().iterator(); iter
-				.hasNext();) {
-			Map.Entry mapEntry = (Map.Entry) iter.next();
+		for (Map.Entry<String, MapModule> mapEntry : getMapModules().entrySet()) {
 			mapModule = (MapModule) mapEntry.getValue();
 			if (pModeController.equals(mapModule.getModeController())) {
 				break;
@@ -325,8 +303,7 @@ public class MapModuleManager {
 	 */
 	public String checkIfFileIsAlreadyOpened(URL urlToCheck)
 			throws MalformedURLException {
-		for (Iterator iter = mapModuleVector.iterator(); iter.hasNext();) {
-			MapModule module = (MapModule) iter.next();
+		for (MapModule module : mapModuleVector) {
 			if (module.getModel() != null) {
 				final URL moduleUrl = module.getModel().getURL();
 				if (sameFile(urlToCheck, moduleUrl))
@@ -350,8 +327,7 @@ public class MapModuleManager {
 
 	public boolean changeToMapModule(String mapModuleDisplayName) {
 		MapModule mapModuleCandidate = null;
-		for (Iterator iterator = mapModuleVector.iterator(); iterator.hasNext();) {
-			MapModule mapMod = (MapModule) iterator.next();
+		for (MapModule mapMod : mapModuleVector) {
 			if (Tools.safeEquals(mapModuleDisplayName, mapMod.getDisplayName())) {
 				mapModuleCandidate = mapMod;
 				break;
@@ -369,8 +345,7 @@ public class MapModuleManager {
 	}
 
 	public void changeToMapOfMode(Mode mode) {
-		for (Iterator iterator = mapModuleVector.iterator(); iterator.hasNext();) {
-			MapModule mapMod = (MapModule) iterator.next();
+		for (MapModule mapMod : mapModuleVector) {
 			if (mapMod.getMode() == mode) {
 				changeToMapModule(mapMod);
 				return;
@@ -419,7 +394,7 @@ public class MapModuleManager {
 		// check, if already present:
 		String extension = "";
 		int count = 1;
-		List mapKeys = getMapKeys();
+		List<String> mapKeys = getMapKeys();
 		while (mapKeys.contains(key + extension)) {
 			extension = "<" + (++count) + ">";
 		}

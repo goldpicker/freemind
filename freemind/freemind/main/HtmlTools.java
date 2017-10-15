@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -165,8 +164,8 @@ public class HtmlTools {
 	 */
 	public String getReplaceResult(Pattern pattern, String replacement,
 			String text) {
-		ArrayList splittedStringList = new ArrayList();
-		String stringWithoutTags = null;
+		ArrayList<IndexPair> splittedStringList = new ArrayList<>();
+
 		// remove tags and denote their positions:
 		{
 			StringBuffer sb = new StringBuffer();
@@ -207,8 +206,7 @@ public class HtmlTools {
 				// System.out.println(sb.toString() + ", " + indexPair);
 				splittedStringList.add(indexPair);
 			}
-			// System.out.println(sb.toString());
-			stringWithoutTags = sb.toString();
+
 		}
 
 		// // give it out:
@@ -224,9 +222,7 @@ public class HtmlTools {
 		 * them, if pair is a tag then we just append
 		 */
 		StringBuffer sbResult = new StringBuffer();
-		for (Iterator iter = splittedStringList.iterator(); iter.hasNext();) {
-			IndexPair pair = (IndexPair) iter.next();
-
+		for (IndexPair pair : splittedStringList) {
 			if (pair.mIsTag)
 				append(sbResult, text, pair.originalStart, pair.originalEnd);
 			else {
@@ -236,7 +232,6 @@ public class HtmlTools {
 				int mStart = 0;
 				int mEnd = 0;
 				int mEndOld = 0;
-				int mStartOld = 0;
 
 				while (matcher.find()) {
 					mStart = matcher.start();
@@ -256,7 +251,6 @@ public class HtmlTools {
 					// original text
 					sbResult.append(replacement);
 					mEndOld = mEnd;
-					mStartOld = mStart;
 				}
 				append(sbResult, text, pair.originalStart + mEndOld,
 						pair.originalEnd);
@@ -276,9 +270,9 @@ public class HtmlTools {
 		pSbResult.append(pText.substring(pStart, pEnd));
 	}
 
-	public int getMinimalOriginalPosition(int pI, ArrayList pListOfIndices) {
-		for (Iterator iter = pListOfIndices.iterator(); iter.hasNext();) {
-			IndexPair pair = (IndexPair) iter.next();
+	public int getMinimalOriginalPosition(int pI, ArrayList<IndexPair> pListOfIndices) {
+		for (IndexPair pair : pListOfIndices) {
+
 			if (pI >= pair.replacedStart && pI <= pair.replacedEnd) {
 				return pair.originalStart + pI - pair.replacedStart;
 			}
@@ -290,9 +284,9 @@ public class HtmlTools {
 	 * @return the maximal index i such that pI is mapped to i by removing all
 	 *         tags from the original input.
 	 */
-	public int getMaximalOriginalPosition(int pI, ArrayList pListOfIndices) {
+	public int getMaximalOriginalPosition(int pI, ArrayList<IndexPair> pListOfIndices) {
 		for (int i = pListOfIndices.size() - 1; i >= 0; --i) {
-			IndexPair pair = (IndexPair) pListOfIndices.get(i);
+			IndexPair pair = pListOfIndices.get(i);
 			if (pI >= pair.replacedStart) {
 				if (!pair.mIsTag) {
 					return pair.originalStart + pI - pair.replacedStart;

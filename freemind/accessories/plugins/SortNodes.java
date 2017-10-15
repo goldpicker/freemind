@@ -26,7 +26,6 @@ package accessories.plugins;
 import java.awt.datatransfer.Transferable;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Vector;
 
 import freemind.main.Tools;
@@ -38,28 +37,23 @@ import freemind.modes.mindmapmode.hooks.MindMapNodeHookAdapter;
  */
 public class SortNodes extends MindMapNodeHookAdapter {
 
-	private final class NodeTextComparator implements Comparator {
+	private final class NodeTextComparator implements Comparator<MindMapNode> {
 		private boolean mNegative = false;
 
-		public int compare(Object pArg0, Object pArg1) {
-			if (pArg0 instanceof MindMapNode) {
-				MindMapNode node1 = (MindMapNode) pArg0;
-				if (pArg1 instanceof MindMapNode) {
-					MindMapNode node2 = (MindMapNode) pArg1;
-					String nodeText1 = node1.getPlainTextContent();
-					String nodeText2 = node2.getPlainTextContent();
-					int retValue = nodeText1.compareToIgnoreCase(nodeText2);
-					if(mNegative){
-						return -retValue;
-					}
-					return retValue;
-				}
+		public int compare(MindMapNode node1, MindMapNode node2) {
+
+			String nodeText1 = node1.getPlainTextContent();
+			String nodeText2 = node2.getPlainTextContent();
+			int retValue = nodeText1.compareToIgnoreCase(nodeText2);
+			if (mNegative) {
+				return -retValue;
 			}
-			return 0;
+			return retValue;
+
 		}
-		
+
 		public void setNegative() {
-			mNegative  = true;
+			mNegative = true;
 		}
 	}
 
@@ -98,9 +92,8 @@ public class SortNodes extends MindMapNodeHookAdapter {
 		}
 		Collections.sort(sortVector, comparator);
 		// now, as it is sorted. we cut the children
-		for (Iterator iter = sortVector.iterator(); iter.hasNext();) {
-			MindMapNode child = (MindMapNode) iter.next();
-			Vector childList = Tools.getVectorWithSingleElement(child);
+		for (MindMapNode child : sortVector) {
+			Vector<MindMapNode> childList = Tools.getVectorWithSingleElement(child);
 			Transferable cut = getMindMapController().cut(childList);
 			// paste directly again causes that the node is added as the last
 			// one.

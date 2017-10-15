@@ -23,7 +23,6 @@
 package freemind.modes.mindmapmode.actions;
 
 import java.awt.event.ActionEvent;
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -38,6 +37,7 @@ import freemind.extensions.HookInstanciationMethod;
 import freemind.modes.MindMapNode;
 import freemind.modes.mindmapmode.MindMapController;
 
+@SuppressWarnings("serial")
 public class NodeHookAction extends MindmapAction implements HookAction,
 		MenuItemEnabledListener, MenuItemSelectedListener {
 	String _hookName;
@@ -67,7 +67,7 @@ public class NodeHookAction extends MindmapAction implements HookAction,
 		mMindMapController.getFrame().setWaitingCursor(false);
 	}
 
-	public void invoke(MindMapNode focussed, List selecteds) {
+	public void invoke(MindMapNode focussed, List<MindMapNode> selecteds) {
 		mMindMapController.addHook(focussed, selecteds, _hookName, null);
 	}
 
@@ -130,11 +130,10 @@ public class NodeHookAction extends MindmapAction implements HookAction,
 			}
 		}
 		MindMapNode focussed = mMindMapController.getSelected();
-		List selecteds = mMindMapController.getSelecteds();
+		List<MindMapNode> selecteds = mMindMapController.getSelecteds();
 		HookInstanciationMethod instMethod = getInstanciationMethod(_hookName);
 		// get destination nodes
-		Collection destinationNodes = instMethod.getDestinationNodes(
-				mMindMapController, focussed, selecteds);
+		instMethod.getDestinationNodes(mMindMapController, focussed, selecteds);
 		MindMapNode adaptedFocussedNode = instMethod.getCenterNode(
 				mMindMapController, focussed, selecteds);
 		// test if hook already present

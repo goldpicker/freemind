@@ -96,8 +96,7 @@ public class ImportMindmanagerFiles extends ModeControllerHookAdapter {
 				if (xsltUrl == null) {
 					logger.severe("Can't find " + xsltFileName
 							+ " as resource.");
-					throw new IllegalArgumentException("Can't find "
-							+ xsltFileName + " as resource.");
+					throw new IllegalArgumentException("Can't find " + xsltFileName + " as resource.");
 				}
 				InputStream xsltFile = xsltUrl.openStream();
 				String xml = transForm(new StreamSource(in), xsltFile);

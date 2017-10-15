@@ -20,8 +20,6 @@
 
 package freemind.modes.mindmapmode.actions.xml.actors;
 
-import java.util.Iterator;
-
 import freemind.controller.actions.generated.instance.CompoundAction;
 import freemind.controller.actions.generated.instance.RemoveAllIconsXmlAction;
 import freemind.controller.actions.generated.instance.XmlAction;
@@ -68,14 +66,13 @@ public class RemoveAllIconsActor extends NodeXmlActorAdapter {
 				this.getClass().getName(), apply(getExMapFeedback().getMap(), node));
 	}
 
-	public Class getDoActionClass() {
+	public Class<RemoveAllIconsXmlAction> getDoActionClass() {
 		return RemoveAllIconsXmlAction.class;
 	}
 
 	public ActionPair apply(MindMap model, MindMapNode selected) {
 		CompoundAction undoAction = new CompoundAction();
-		for (Iterator i = selected.getIcons().iterator(); i.hasNext();) {
-			MindIcon icon = (MindIcon) i.next();
+		for (MindIcon icon : selected.getIcons()) {
 			undoAction.addChoice(getExMapFeedback().getActorFactory().getAddIconActor().createAddIconAction(selected,
 					icon, MindIcon.LAST));
 		}

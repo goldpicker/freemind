@@ -51,7 +51,7 @@ public class SetAttributeActor extends XmlActorAdapter {
 		}
 	}
 
-	public Class getDoActionClass() {
+	public Class<SetAttributeAction> getDoActionClass() {
 		return SetAttributeAction.class;
 	}
 

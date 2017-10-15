@@ -64,7 +64,6 @@ import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
@@ -75,7 +74,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
@@ -110,15 +108,16 @@ import freemind.view.mindmapview.MapView;
  * Provides the methods to edit/change a Node. Forwards all messages to
  * MapModel(editing) or MapView(navigation).
  */
+@SuppressWarnings("serial")
 public class Controller implements MapModuleChangeObserver {
 
 	/**
 	 * 
 	 */
 	private static final String PAGE_FORMAT_PROPERTY = "page_format";
-	private HashSet mMapTitleChangeListenerSet = new HashSet();
-	private HashSet mZoomListenerSet = new HashSet();
-	private HashSet mMapTitleContributorSet = new HashSet();
+	private HashSet<MapModuleManager.MapTitleChangeListener> mMapTitleChangeListenerSet = new HashSet<>();
+	private HashSet<ZoomListener> mZoomListenerSet = new HashSet<>();
+	private HashSet<MapModuleManager.MapTitleContributor> mMapTitleContributorSet = new HashSet<>();
 	/**
 	 * Converts from a local link to the real file URL of the documentation map.
 	 * (Used to change this behaviour under MacOSX).
@@ -146,8 +145,7 @@ public class Controller implements MapModuleChangeObserver {
 	private ModesCreator mModescreator = new ModesCreator(this);
 	private PageFormat pageFormat = null;
 	private PrinterJob printerJob = null;
-	private Icon bswatch = new BackgroundSwatch();// needed for BackgroundAction
-	private Map fontMap = new HashMap();
+	private Map<String, Font> fontMap = new HashMap<>();
 
 	private FilterController mFilterController;
 
@@ -195,12 +193,11 @@ public class Controller implements MapModuleChangeObserver {
 			75 / 100f, 100 / 100f, 150 / 100f, 200 / 100f, 300 / 100f,
 			400 / 100f };
 
-	private static Vector propertyChangeListeners = new Vector();
+	private static Vector<FreemindPropertyListener> propertyChangeListeners = new Vector<>();
 
-	private Vector mTabbedPaneMapModules;
+	private Vector<MapModule> mTabbedPaneMapModules;
 	private JTabbedPane mTabbedPane;
 	private boolean mTabbedPaneSelectionUpdate = true;
-	private Map<SplitComponentType,JComponent> mSouthComponents = new HashMap<Controller.SplitComponentType, JComponent>();
 
 	//
 	// Constructors
@@ -333,10 +330,7 @@ public class Controller implements MapModuleChangeObserver {
 	private void firePropertyChanged(String property, String value,
 			String oldValue) {
 		if (oldValue == null || !oldValue.equals(value)) {
-			for (Iterator i = Controller.getPropertyChangeListeners()
-					.iterator(); i.hasNext();) {
-				FreemindPropertyListener listener = (FreemindPropertyListener) i
-						.next();
+			for (FreemindPropertyListener listener : Controller.getPropertyChangeListeners()) {
 				listener.propertyChanged(property, value, oldValue);
 			}
 		}
@@ -393,7 +387,7 @@ public class Controller implements MapModuleChangeObserver {
 		}
 	}
 
-	Set getModes() {
+	Set<String> getModes() {
 		return mModescreator.getAllModes();
 	}
 
@@ -492,7 +486,7 @@ public class Controller implements MapModuleChangeObserver {
 		dialog.addWindowListener(new Closer());
 		dialog.addComponentListener(new DisposeOnClose());
 
-		dialog.show(); // blocks until user brings dialog down...
+		dialog.setVisible(true);; // blocks until user brings dialog down...
 
 		return ok.getColor();
 	}
@@ -517,7 +511,7 @@ public class Controller implements MapModuleChangeObserver {
 	static class Closer extends WindowAdapter implements Serializable {
 		public void windowClosing(WindowEvent e) {
 			Window w = e.getWindow();
-			w.hide();
+			w.setVisible(false);
 		}
 	}
 
@@ -622,8 +616,7 @@ public class Controller implements MapModuleChangeObserver {
 	}
 
 	protected void changeZoomValueProperty(final float zoomValue) {
-		for (Iterator it = mZoomListenerSet.iterator(); it.hasNext();) {
-			ZoomListener listener = (ZoomListener) it.next();
+		for (ZoomListener listener : mZoomListenerSet) {
 			listener.setZoom(zoomValue);
 		}
 	}
@@ -881,19 +874,13 @@ public class Controller implements MapModuleChangeObserver {
 			if (file != null) {
 				title += " " + file.getAbsolutePath();
 			}
-			for (Iterator iterator = mMapTitleContributorSet.iterator(); iterator
-					.hasNext();) {
-				MapModuleManager.MapTitleContributor contributor = (MapModuleManager.MapTitleContributor) iterator
-						.next();
+			for (MapModuleManager.MapTitleContributor contributor : mMapTitleContributorSet) {
 				title = contributor.getMapTitle(title, mapModule, model);
 			}
 
 		}
 		getFrame().setTitle(title);
-		for (Iterator iterator = mMapTitleChangeListenerSet.iterator(); iterator
-				.hasNext();) {
-			MapModuleManager.MapTitleChangeListener listener = (MapModuleManager.MapTitleChangeListener) iterator
-					.next();
+		for (MapModuleManager.MapTitleChangeListener listener : mMapTitleChangeListenerSet) {
 			listener.setMapTitle(rawTitle, mapModule, model);
 		}
 	}
@@ -954,9 +941,9 @@ public class Controller implements MapModuleChangeObserver {
 				.getRestorable() : null;
 		storeOptionSplitPanePosition();
 		// collect all maps:
-		Vector restorables = new Vector();
+		Vector<String> restorables = new Vector<>();
 		// move to first map in the window.
-		List mapModuleVector = getMapModuleManager().getMapModuleVector();
+		List<MapModule> mapModuleVector = getMapModuleManager().getMapModuleVector();
 		if (mapModuleVector.size() > 0) {
 			String displayName = ((MapModule) mapModuleVector.get(0))
 					.getDisplayName();
@@ -988,8 +975,7 @@ public class Controller implements MapModuleChangeObserver {
 				lastStateMapXml);
 		management.setLastFocussedTab(-1);
 		management.clearTabIndices();
-		for (Iterator it = restorables.iterator(); it.hasNext();) {
-			String restorable = (String) it.next();
+		for (String restorable : restorables) {
 			MindmapLastStateStorage storage = management.getStorage(restorable);
 			if (storage != null) {
 				storage.setTabIndex(index);
@@ -1100,14 +1086,13 @@ public class Controller implements MapModuleChangeObserver {
 	}
 
 	private class PrintAction extends AbstractAction {
-		Controller controller;
+
 		boolean isDlg;
 
 		PrintAction(Controller controller, boolean isDlg) {
 			super(isDlg ? controller.getResourceString("print_dialog")
 					: controller.getResourceString("print"), freemind.view.ImageFactory.getInstance().createIcon(
 					getResource("images/fileprint.png")));
-			this.controller = controller;
 			setEnabled(false);
 			this.isDlg = isDlg;
 		}
@@ -1157,11 +1142,9 @@ public class Controller implements MapModuleChangeObserver {
 	}
 
 	private class PageAction extends AbstractAction {
-		Controller controller;
 
 		PageAction(Controller controller) {
 			super(controller.getResourceString("page"));
-			this.controller = controller;
 			setEnabled(false);
 		}
 
@@ -1610,7 +1593,7 @@ public class Controller implements MapModuleChangeObserver {
 	// Preferences
 	//
 
-	public static Collection getPropertyChangeListeners() {
+	public static Collection<FreemindPropertyListener> getPropertyChangeListeners() {
 		return Collections.unmodifiableCollection(propertyChangeListeners);
 	}
 
@@ -1646,13 +1629,11 @@ public class Controller implements MapModuleChangeObserver {
 	 *            to the listener after registration. Here, the oldValue
 	 *            parameter is set to null.
 	 */
-	public static void addPropertyChangeListenerAndPropagate(
-			FreemindPropertyListener listener) {
+	public static void addPropertyChangeListenerAndPropagate(FreemindPropertyListener listener) {
 		Controller.addPropertyChangeListener(listener);
 		Properties properties = Resources.getInstance().getProperties();
-		for (Iterator it = properties.keySet().iterator(); it.hasNext();) {
-			String key = (String) it.next();
-			listener.propertyChanged(key, properties.getProperty(key), null);
+		for (Object key : properties.keySet()) {
+			listener.propertyChanged((String) key, properties.getProperty((String) key), null);
 		}
 	}
 
@@ -1685,13 +1666,12 @@ public class Controller implements MapModuleChangeObserver {
 					dialog, new OptionPanelFeedback() {
 
 						public void writeProperties(Properties props) {
-							Vector sortedKeys = new Vector();
-							sortedKeys.addAll(props.keySet());
+							Vector<String> sortedKeys = new Vector<>();
+							sortedKeys.addAll(props.stringPropertyNames());
 							Collections.sort(sortedKeys);
 							boolean propertiesChanged = false;
-							for (Iterator i = sortedKeys.iterator(); i
-									.hasNext();) {
-								String key = (String) i.next();
+							for (Iterator<String> i = sortedKeys.iterator(); i.hasNext();) {
+								String key = i.next();
 								// save only changed keys:
 								String newProperty = props.getProperty(key);
 								propertiesChanged = propertiesChanged
@@ -1701,9 +1681,7 @@ public class Controller implements MapModuleChangeObserver {
 							}
 
 							if (propertiesChanged) {
-								JOptionPane
-										.showMessageDialog(
-												null,
+								JOptionPane.showMessageDialog(null,
 												getResourceString("option_changes_may_require_restart"));
 								controller.getFrame().saveProperties(false);
 							}
@@ -1729,12 +1707,6 @@ public class Controller implements MapModuleChangeObserver {
 
 		}
 
-	}
-
-	private class BackgroundSwatch extends ColorSwatch {
-		Color getColor() {
-			return getView().getBackground();
-		}
 	}
 
 	public class OptionAntialiasAction extends AbstractAction {
@@ -1832,7 +1804,7 @@ public class Controller implements MapModuleChangeObserver {
 
 	public void addTabbedPane(JTabbedPane pTabbedPane) {
 		mTabbedPane = pTabbedPane;
-		mTabbedPaneMapModules = new Vector();
+		mTabbedPaneMapModules = new Vector<>();
 		mTabbedPane.addChangeListener(new ChangeListener() {
 
 			public synchronized void stateChanged(ChangeEvent pE) {

@@ -29,7 +29,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -38,6 +37,7 @@ import javax.swing.JOptionPane;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.TranscodingHints;
 import org.apache.batik.transcoder.TranscodingHints.Key;
 import org.apache.fop.svg.PDFTranscoder;
 import org.w3c.dom.Document;
@@ -59,9 +59,9 @@ public class ExportPdf extends ExportVectorGraphic {
 		super.startupMapHook();
 		boolean nodeExport = Tools.safeEquals("node",
 				getResourceString("export_type"));
-		HashMap transcodingHints = null;
-		List selecteds = getController().getSelecteds();
-		Vector documentsToOpen = new Vector();
+		HashMap<TranscodingHints.Key, Float>  transcodingHints = null;
+		List<MindMapNode> selecteds = getController().getSelecteds();
+		Vector<File> documentsToOpen = new Vector<>();
 		while (!selecteds.isEmpty()) {
 			MindMapNode selectedNode = (MindMapNode) selecteds.remove(0);
 			String nameExtension = null;
@@ -82,8 +82,7 @@ public class ExportPdf extends ExportVectorGraphic {
 			}
 			getController().getFrame().setWaitingCursor(true);
 			try {
-				exportAsPdf(nodeExport, selectedNode, chosenFile,
-						transcodingHints);
+				exportAsPdf(nodeExport, selectedNode, chosenFile, transcodingHints);
 				documentsToOpen.add(chosenFile);
 			} catch (Exception e) {
 				freemind.main.Resources.getInstance().logException(e);
@@ -97,8 +96,7 @@ public class ExportPdf extends ExportVectorGraphic {
 			}
 		}
 		try {
-			for (Iterator it = documentsToOpen.iterator(); it.hasNext();) {
-				File fileToOpen = (File) it.next();
+			for (File fileToOpen : documentsToOpen) {
 				getController().getFrame().openDocument(
 						Tools.fileToUrl(fileToOpen));
 			}
@@ -110,8 +108,8 @@ public class ExportPdf extends ExportVectorGraphic {
 	/**
 	 * @return a map PDFTranscoder->value.
 	 */
-	public HashMap choosePaper() {
-		HashMap retValue = new HashMap();
+	public HashMap<TranscodingHints.Key, Float> choosePaper() {
+		HashMap<TranscodingHints.Key, Float> retValue = new HashMap<>();
 		// user dialog
 		String[] paperNames = papers.getPaperNames();
 		Controller controller = this.getController().getController();
@@ -164,7 +162,7 @@ public class ExportPdf extends ExportVectorGraphic {
 	}
 
 	public boolean exportAsPdf(boolean nodeExport, MindMapNode selectedNode,
-			File chosenFile, HashMap pTranscoderHints) throws Exception {
+			File chosenFile, HashMap<TranscodingHints.Key, Float> pTranscoderHints) throws Exception {
 		MapView view = getController().getView();
 		if (view == null)
 			return false;
@@ -190,11 +188,8 @@ public class ExportPdf extends ExportVectorGraphic {
 		pdfTranscoder.addTranscodingHint(PDFTranscoder.KEY_MAX_WIDTH,
 				new Float(19200));
 		if (pTranscoderHints != null) {
-			for (Iterator it = pTranscoderHints.keySet().iterator(); it
-					.hasNext();) {
-				Key key = (Key) it.next();
-				pdfTranscoder
-						.addTranscodingHint(key, pTranscoderHints.get(key));
+			for (Key key : pTranscoderHints.keySet()) {
+				pdfTranscoder.addTranscodingHint(key, pTranscoderHints.get(key));
 			}
 		}
 		/* end patch */

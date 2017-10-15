@@ -29,6 +29,7 @@ import freemind.main.Resources;
  * @author foltin
  * @date 18.06.2015
  */
+@SuppressWarnings("serial")
 public class ScalableJTable extends JTable {
 	public ScalableJTable() {
 		int scale = Resources.getInstance().getIntProperty(FreeMind.SCALING_FACTOR_PROPERTY, 100);

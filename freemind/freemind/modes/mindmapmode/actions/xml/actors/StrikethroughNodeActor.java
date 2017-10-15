@@ -51,7 +51,7 @@ public class StrikethroughNodeActor extends NodeXmlActorAdapter {
 		}
 	}
 
-	public Class getDoActionClass() {
+	public Class<StrikethroughNodeAction> getDoActionClass() {
 		return StrikethroughNodeAction.class;
 	}
 

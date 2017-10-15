@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
+@SuppressWarnings("serial")
 class ZoomAction extends AbstractAction {
 	public ZoomAction(Preview preview, double zoomStep) {
 		super();

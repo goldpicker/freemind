@@ -49,7 +49,7 @@ public class ConvexHull {
 		return 1;
 	}
 
-	protected class thetaComparator implements Comparator {
+	protected class thetaComparator implements Comparator<Point> {
 		Point p0;
 
 		public thetaComparator(Point p0) {
@@ -57,9 +57,9 @@ public class ConvexHull {
 		}
 
 		/* the < relation. */
-		public int compare(Object p1, Object p2) {
-			double comp = theta(p0, (Point) p1) - theta(p0, (Point) p2);
-			if (((Point) p1).equals(p2))
+		public int compare(Point p1, Point p2) {
+			double comp = theta(p0, p1) - theta(p0, p2);
+			if ( p1.equals(p2))
 				return 0;
 			if (comp > 0)
 				return 1;
@@ -70,10 +70,10 @@ public class ConvexHull {
 			// points are greater.
 			// we take the point that is nearer to p0:
 			int dx1, dx2, dy1, dy2;
-			dx1 = ((Point) p1).x - ((Point) p0).x;
-			dy1 = ((Point) p1).y - ((Point) p0).y;
-			dx2 = ((Point) p2).x - ((Point) p0).x;
-			dy2 = ((Point) p2).y - ((Point) p0).y;
+			dx1 = p1.x - p0.x;
+			dy1 = p1.y - p0.y;
+			dx2 = p2.x - p0.x;
+			dy2 = p2.y - p0.y;
 			int comp2 = (dx1 * dx1 + dy1 * dy1) - (dx2 * dx2 + dy2 * dy2);
 			if (comp2 > 0)
 				return -1;
@@ -103,8 +103,8 @@ public class ConvexHull {
 		}
 	}
 
-	Vector doGraham(Vector p) {
-		int i, j, min, M;
+	Vector<Point> doGraham(Vector<Point> p) {
+		int i, min, M;
 		Point t;
 		min = 0;
 		// search for minimum:
@@ -143,14 +143,13 @@ public class ConvexHull {
 		return p;
 	}
 
-	public Vector/* <newPoint> */calculateHull(LinkedList coordinates) {
-		Vector q = new Vector();
-		int i = 0;
-		ListIterator coordinates_it = coordinates.listIterator();
+	public Vector<Point> calculateHull(LinkedList<Point> coordinates) {
+		Vector<Point> q = new Vector<>();
+		ListIterator<Point> coordinates_it = coordinates.listIterator();
 		while (coordinates_it.hasNext()) {
-			q.add(coordinates_it.next());
+			q.add((Point) coordinates_it.next());
 		}
-		Vector res = doGraham(q);
+		Vector<Point> res = doGraham(q);
 		return res;
 	}
 

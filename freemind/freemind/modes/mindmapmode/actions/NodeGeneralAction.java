@@ -30,7 +30,6 @@ import java.util.ListIterator;
 import java.util.logging.Logger;
 
 import javax.swing.Action;
-import javax.swing.ImageIcon;
 
 import freemind.controller.actions.generated.instance.CompoundAction;
 import freemind.main.Tools;
@@ -41,12 +40,13 @@ import freemind.modes.mindmapmode.actions.xml.AbstractXmlAction;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 import freemind.modes.mindmapmode.actions.xml.ActorXml;
 
+@SuppressWarnings("serial")
 public class NodeGeneralAction extends AbstractXmlAction {
 	protected final MindMapController modeController;
 
 	SingleNodeOperation singleNodeOperation;
 
-	private Class mDoActionClass;
+	private Class<?> mDoActionClass;
 
 	protected static Logger logger;
 
@@ -99,6 +99,9 @@ public class NodeGeneralAction extends AbstractXmlAction {
 		this.singleNodeOperation = singleNodeOperation;
 	}
 
+	/* (non-Javadoc)
+	 * @see freemind.modes.mindmapmode.actions.xml.AbstractXmlAction#xmlActionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void xmlActionPerformed(ActionEvent e) {
 		if (singleNodeOperation != null) {
 			for (ListIterator it = modeController.getSelecteds().listIterator(); it
@@ -153,7 +156,7 @@ public class NodeGeneralAction extends AbstractXmlAction {
 		return pair;
 	}
 
-	protected void setDoActionClass(Class pDoActionClass) {
+	protected void setDoActionClass(Class<?> pDoActionClass) {
 		this.mDoActionClass = pDoActionClass;
 	}
 

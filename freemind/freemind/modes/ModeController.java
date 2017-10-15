@@ -135,7 +135,7 @@ public interface ModeController extends TextTranslator, MapFeedback,
 	 * Multiple selection. All MindMapNode s from the selecteds list are
 	 * selected, and the focused is moreover focused.
 	 */
-	public void select(MindMapNode focused, List selecteds);
+	public void select(MindMapNode focused, List<MindMapNode> selecteds);
 
 	public void selectBranch(NodeView selected, boolean extend);
 
@@ -146,13 +146,13 @@ public interface ModeController extends TextTranslator, MapFeedback,
 	/**
 	 * @return a List of MindMapNode s.
 	 */
-	List getSelecteds();
+	List<MindMapNode> getSelecteds();
 
 	/**
 	 * @return a LinkedList of MindMapNodes ordered by depth. nodes with greater
 	 *         depth occur first.
 	 */
-	List getSelectedsByDepth();
+	List<MindMapNode> getSelectedsByDepth();
 
 	/**
 	 * nodes with greater depth occur first.
@@ -160,7 +160,7 @@ public interface ModeController extends TextTranslator, MapFeedback,
 	 * @param inPlaceList
 	 *            the given list is sorted by reference.
 	 */
-	public void sortNodesByDepth(List inPlaceList);
+	public void sortNodesByDepth(List<MindMapNode> inPlaceList);
 
 	/**
 	 * This extends the currently selected nodes.
@@ -371,7 +371,7 @@ public interface ModeController extends TextTranslator, MapFeedback,
 
 	Transferable copySingle();
 
-	public Transferable copy(List selectedNodes, boolean copyInvisible);
+	public Transferable copy(List<MindMapNode> selectedNodes, boolean copyInvisible);
 
 	FreeMindFileDialog getFileChooser(FileFilter filter);
 

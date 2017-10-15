@@ -31,7 +31,6 @@ import java.io.Writer;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
 
 import freemind.controller.Controller;
 import freemind.controller.MapModuleManager.MapModuleChangeObserver;
@@ -54,7 +53,7 @@ import freemind.view.MapModule;
 public class FilterController implements MapModuleChangeObserver {
 	private Controller c;
 	private FilterToolbar filterToolbar;
-	private DefaultComboBoxModel filterConditionModel;
+	private DefaultComboBoxModel<Condition> filterConditionModel;
 	static private ConditionRenderer conditionRenderer = null;
 	static private ConditionFactory conditionFactory;
 	private MindMap map;
@@ -77,8 +76,7 @@ public class FilterController implements MapModuleChangeObserver {
 	public FilterToolbar getFilterToolbar() {
 		if (filterToolbar == null) {
 			filterToolbar = new FilterToolbar(c);
-			filterConditionModel = (DefaultComboBoxModel) filterToolbar
-					.getFilterConditionModel();
+			filterConditionModel = (DefaultComboBoxModel<Condition>) filterToolbar.getFilterConditionModel();
 
 			// FIXME state icons should be created on order to make possible
 			// their use in the filter component.
@@ -130,14 +128,6 @@ public class FilterController implements MapModuleChangeObserver {
 		return map;
 	}
 
-	/**
-	 * @param filterToolbar
-	 *            The filterToolbar to set.
-	 */
-	private void setFilterToolbar(FilterToolbar filterToolbar) {
-		this.filterToolbar = filterToolbar;
-	}
-
 	public boolean isMapModuleChangeAllowed(MapModule oldMapModule,
 			Mode oldMode, MapModule newMapModule, Mode newMode) {
 		return true;
@@ -178,17 +168,17 @@ public class FilterController implements MapModuleChangeObserver {
 		}
 	}
 
-	public DefaultComboBoxModel getFilterConditionModel() {
+	public DefaultComboBoxModel<Condition> getFilterConditionModel() {
 		return filterConditionModel;
 	}
 
 	public void setFilterConditionModel(
-			DefaultComboBoxModel filterConditionModel) {
+			DefaultComboBoxModel<Condition> filterConditionModel) {
 		this.filterConditionModel = filterConditionModel;
 		filterToolbar.setFilterConditionModel(filterConditionModel);
 	}
 
-	void saveConditions(DefaultComboBoxModel filterConditionModel,
+	void saveConditions(DefaultComboBoxModel<Condition> filterConditionModel,
 			String pathToFilterFile) throws IOException {
 		XMLElement saver = new XMLElement();
 		saver.setName("filter_conditions");
@@ -201,18 +191,16 @@ public class FilterController implements MapModuleChangeObserver {
 		writer.close();
 	}
 
-	void loadConditions(DefaultComboBoxModel filterConditionModel,
+	void loadConditions(DefaultComboBoxModel<Condition> filterConditionModel,
 			String pathToFilterFile) throws IOException {
 		filterConditionModel.removeAllElements();
 		XMLElement loader = new XMLElement();
 		Reader reader = new FileReader(pathToFilterFile);
 		loader.parseFromReader(reader);
 		reader.close();
-		final Vector conditions = loader.getChildren();
+		final Vector<XMLElement> conditions = loader.getChildren();
 		for (int i = 0; i < conditions.size(); i++) {
-			filterConditionModel.addElement(FilterController
-					.getConditionFactory().loadCondition(
-							(XMLElement) conditions.get(i)));
+			filterConditionModel.addElement(FilterController.getConditionFactory().loadCondition(conditions.get(i)));
 		}
 	}
 }

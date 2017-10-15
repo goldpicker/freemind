@@ -26,7 +26,6 @@ import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MindMapNode;
 import freemind.modes.NodeAdapter;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
-import freemind.view.mindmapview.NodeView;
 
 /**
  * @author foltin
@@ -64,7 +63,7 @@ public class EditActor extends XmlActorAdapter {
 	 * 
 	 * @see freemind.controller.actions.ActorXml#getDoActionClass()
 	 */
-	public Class getDoActionClass() {
+	public Class<EditNodeAction> getDoActionClass() {
 		return EditNodeAction.class;
 	}
 	public void setNodeText(MindMapNode selected, String newText) {

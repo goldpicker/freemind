@@ -87,13 +87,13 @@ public interface MindMapActions {
 	 *            a list of MindMapNode elements
 	 * @return the result of the cut operation.
 	 */
-	public Transferable cut(List nodeList);
+	public Transferable cut(List<MindMapNode> nodeList);
 
 	/**
 	 * moves selected and selecteds (if they are child of the same parent and
 	 * adjacent) in the direction specified (up = -1, down = 1).
 	 * */
-	void moveNodes(MindMapNode selected, List selecteds, int direction);
+	void moveNodes(MindMapNode selected, List<MindMapNode> selecteds, int direction);
 
 	/**
 	 */
@@ -185,9 +185,9 @@ public interface MindMapActions {
 	public void paste(MindMapNode node, MindMapNode parent);
 
 	// hooks, fc 28.2.2004:
-	public void addHook(MindMapNode focussed, List selecteds, String hookName, Properties pHookProperties);
+	public void addHook(MindMapNode focussed, List<MindMapNode> selecteds, String hookName, Properties pHookProperties);
 
-	public void removeHook(MindMapNode focussed, List selecteds, String hookName);
+	public void removeHook(MindMapNode focussed, List<MindMapNode> selecteds, String hookName);
 
 	/**
 	 * This is the only way to instanciate new Hooks. THEY HAVE TO BE INVOKED

@@ -21,11 +21,10 @@ class MindMapHTMLWriter {
 	private static String el = System.getProperty("line.separator");
 	private boolean writeFoldingCode;
 	private boolean basedOnHeadings;
-	private boolean exportIcons;
+
 
 	MindMapHTMLWriter(Writer fileout) {
 		this.fileout = fileout;
-		exportIcons = false;
 		writeFoldingCode = false;
 		basedOnHeadings = (getProperty("html_export_folding")
 				.equals("html_export_based_on_headings"));
@@ -127,11 +126,11 @@ class MindMapHTMLWriter {
 		return result.toString();
 	}
 
-	void saveHTML(List mindMapNodes) throws IOException {
+	void saveHTML(List<MindMapNodeModel> mindMapNodes) throws IOException {
 		fileout.write("<html>" + el + "<head>" + el);
 		writeStyle();
 		fileout.write(el + "</head>" + el + "<body>" + el);
-		Iterator iterator = mindMapNodes.iterator();
+		Iterator<MindMapNodeModel> iterator = mindMapNodes.iterator();
 		while (iterator.hasNext()) {
 			MindMapNodeModel node = (MindMapNodeModel) iterator.next();
 			saveHTML(node, "1", 0, /* isRoot */true, true, /* depth */1);
@@ -151,9 +150,6 @@ class MindMapHTMLWriter {
 				.equals("html_export_fold_currently_folded") && rootNodeOfBranch
 				.hasFoldedStrictDescendant())
 				|| htmlExportFoldingOption.equals("html_export_fold_all");
-
-		exportIcons = Resources.getInstance().getBoolProperty(
-				"export_icons_in_html");
 
 		fileout.write("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">"
 				+ el + "<html>" + el + "<head>" + el);
@@ -455,8 +451,7 @@ class MindMapHTMLWriter {
 			writeFoldingButtons(localParentID);
 		}
 
-		for (Iterator it = model.getActivatedHooks().iterator(); it.hasNext();) {
-			PermanentNodeHook hook = (PermanentNodeHook) it.next();
+		for (PermanentNodeHook hook : model.getActivatedHooks()) {
 			hook.saveHtml(fileout);
 		}
 		

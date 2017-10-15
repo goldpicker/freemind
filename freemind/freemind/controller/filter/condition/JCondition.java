@@ -29,6 +29,7 @@ import javax.swing.JPanel;
 /**
  * @author Dimitri Polivaev 06.11.2005
  */
+@SuppressWarnings("serial")
 public class JCondition extends JPanel {
 
 	/**

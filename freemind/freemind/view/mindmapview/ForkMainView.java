@@ -31,6 +31,7 @@ import freemind.modes.EdgeAdapter;
 import freemind.modes.MindMapEdge;
 import freemind.modes.MindMapNode;
 
+@SuppressWarnings("serial")
 class ForkMainView extends MainView {
 	public void paint(Graphics graphics) {
 		Graphics2D g = (Graphics2D) graphics;
@@ -115,8 +116,8 @@ class ForkMainView extends MainView {
 		case EdgeAdapter.INT_EDGESTYLE_SHARP_LINEAR:
 			// here, we take the maximum of width of children:
 			edgeWidth = 1;
-			for (Iterator it = nodeModel.childrenUnfolded(); it.hasNext();) {
-				MindMapNode child = (MindMapNode) it.next();
+			for (Iterator<MindMapNode> it = nodeModel.childrenUnfolded(); it.hasNext();) {
+				MindMapNode child = it.next();
 				edgeWidth = Math.max(edgeWidth, child.getEdge().getWidth());
 			}
 		}

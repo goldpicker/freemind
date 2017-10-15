@@ -34,6 +34,7 @@ import freemind.main.Tools;
 /**
  * @author Stefan Zechmeister
  */
+@SuppressWarnings("serial")
 public class FreeMindToolBar extends JToolBar {
 	private static Insets nullInsets = new Insets(0, 0, 0, 0);
 

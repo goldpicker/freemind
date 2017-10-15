@@ -41,7 +41,6 @@ class PathBBox {
 		double movy = 0;
 		double cpx0, cpy0, cpx1, cpy1, endx, endy;
 		for (PathIterator pi = s.getPathIterator(null); !pi.isDone(); pi.next()) {
-			int type = pi.currentSegment(coords);
 			switch (pi.currentSegment(coords)) {
 			case PathIterator.SEG_MOVETO:
 				movx = curx = coords[0];

@@ -23,9 +23,7 @@ package freemind.modes.mindmapmode.actions;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -39,6 +37,7 @@ import freemind.modes.mindmapmode.MindMapMapModel;
 import freemind.modes.mindmapmode.MindMapNodeModel;
 
 /** */
+@SuppressWarnings("serial")
 public class ExportBranchAction extends MindmapAction {
 	private final MindMapController mMindMapController;
 
@@ -75,7 +74,6 @@ public class ExportBranchAction extends MindmapAction {
 				.getSelectedView());
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File chosenFile = chooser.getSelectedFile();
-			URL link;
 			// Force the extension to be .mm
 			String ext = Tools.getExtension(chosenFile.getName());
 			if (!ext.equals(freemind.main.FreeMindCommon.FREEMIND_FILE_EXTENSION_WITHOUT_DOT)) {
@@ -85,7 +83,7 @@ public class ExportBranchAction extends MindmapAction {
 								+ freemind.main.FreeMindCommon.FREEMIND_FILE_EXTENSION);
 			}
 			try {
-				link = Tools.fileToUrl(chosenFile);
+				Tools.fileToUrl(chosenFile);
 			} catch (MalformedURLException ex) {
 				JOptionPane.showMessageDialog(mMindMapController.getView(),
 						"couldn't create valid URL!");

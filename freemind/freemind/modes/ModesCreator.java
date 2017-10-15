@@ -40,12 +40,12 @@ public class ModesCreator {
 	/**
 	 * Contains translated mode name => Mode instances
 	 */
-	private Map mCreatedModes;
+	private Map<String, Mode> mCreatedModes;
 
 	/**
 	 * Contains a name translation. Mode name => Class Name
 	 */
-	private Map modesTranslation;
+	private Map<String, String> modesTranslation;
 
 	private static Logger logger;
 
@@ -53,13 +53,13 @@ public class ModesCreator {
 		this.c = c;
 	}
 
-	public Set getAllModes() {
+	public Set<String> getAllModes() {
 		if (logger == null) {
 			logger = c.getFrame().getLogger(this.getClass().getName());
 		}
 		if (mCreatedModes == null) {
-			mCreatedModes = new TreeMap();
-			modesTranslation = new HashMap();
+			mCreatedModes = new TreeMap<>();
+			modesTranslation = new HashMap<>();
 			String modestring = c.getFrame().getProperty("modes_since_0_8_0");
 
 			StringTokenizer tokens = new StringTokenizer(modestring, ",");

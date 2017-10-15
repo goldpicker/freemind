@@ -22,7 +22,6 @@ package freemind.modes;
 import java.awt.Font;
 import java.awt.font.TextAttribute;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -40,7 +39,7 @@ public class XMLElementAdapter extends XMLElement {
 
 	private Object userObject = null;
 	private NodeAdapter mapChild = null;
-	private HashMap nodeAttributes = new HashMap();
+	private HashMap<String, String> nodeAttributes = new HashMap<>();
 
 	// Font attributes
 
@@ -53,8 +52,8 @@ public class XMLElementAdapter extends XMLElement {
 	private String iconName;
 
 	// arrow link attributes:
-	protected Vector mArrowLinkAdapters;
-	protected HashMap /* id -> target */mIdToTarget;
+	protected Vector<ArrowLinkAdapter> mArrowLinkAdapters;
+	protected HashMap<String, NodeAdapter> mIdToTarget;
 	public static final String XML_NODE_TEXT = "TEXT";
 	public static final String XML_NODE = "node";
 	public static final String XML_NODE_ATTRIBUTE = "attribute";
@@ -84,11 +83,11 @@ public class XMLElementAdapter extends XMLElement {
 	// Overhead methods
 
 	public XMLElementAdapter(MapFeedback pMapFeedback) {
-		this(pMapFeedback, new Vector(), new HashMap());
+		this(pMapFeedback, new Vector<ArrowLinkAdapter>(), new HashMap<String, NodeAdapter>());
 	}
 
 	protected XMLElementAdapter(MapFeedback pMapFeedback,
-			Vector arrowLinkAdapters, HashMap IDToTarget) {
+			Vector<ArrowLinkAdapter> arrowLinkAdapters, HashMap<String, NodeAdapter> IDToTarget) {
 		this.mMapFeedback = pMapFeedback;
 		this.mArrowLinkAdapters = arrowLinkAdapters;
 		this.mIdToTarget = IDToTarget;
@@ -257,8 +256,6 @@ public class XMLElementAdapter extends XMLElement {
 		if (child instanceof XMLElementAdapter
 				&& getName().equals(XML_NODE_REGISTERED_ATTRIBUTE_NAME)
 				&& child.getName().equals(XML_NODE_REGISTERED_ATTRIBUTE_VALUE)) {
-			Attribute attribute = new Attribute(attributeName,
-					((XMLElementAdapter) child).attributeValue);
 		}
 	}
 
@@ -455,8 +452,7 @@ public class XMLElementAdapter extends XMLElement {
 	 */
 	protected void copyAttributesToNode(NodeAdapter node) {
 		// reactivate all settings from nodeAttributes:
-		for (Iterator i = nodeAttributes.keySet().iterator(); i.hasNext();) {
-			String key = (String) i.next();
+		for (String key : nodeAttributes.keySet()) {
 			// to avoid self reference:
 			setNodeAttribute(key, (String) nodeAttributes.get(key), node);
 		}
@@ -506,8 +502,7 @@ public class XMLElementAdapter extends XMLElement {
 	 */
 	public void processUnfinishedLinks(MindMapLinkRegistry registry) {
 		// add labels to the nodes:
-		for (Iterator i1 = mIdToTarget.keySet().iterator(); i1.hasNext();) {
-			String key = (String) i1.next();
+		for (String key : mIdToTarget.keySet()) {
 			NodeAdapter target1 = (NodeAdapter) mIdToTarget.get(key);
 			/*
 			 * key is the proposed name for the target, is changed by the
@@ -605,11 +600,11 @@ public class XMLElementAdapter extends XMLElement {
 		}
 	}
 
-	public HashMap getIDToTarget() {
+	public HashMap<String, NodeAdapter> getIDToTarget() {
 		return mIdToTarget;
 	}
 
-	public void setIDToTarget(HashMap pToTarget) {
+	public void setIDToTarget(HashMap<String, NodeAdapter> pToTarget) {
 		mIdToTarget = pToTarget;
 	}
 

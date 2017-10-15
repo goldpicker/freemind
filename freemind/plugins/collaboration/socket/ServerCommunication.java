@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.Socket;
-import java.util.Iterator;
 
 import plugins.collaboration.socket.SocketBasics.UnableToGetLockException;
 import freemind.controller.actions.generated.instance.CollaborationActionBase;
@@ -95,9 +94,7 @@ public class ServerCommunication extends CommunicationBase {
 						commandGetOffers.getPassword())) {
 					CollaborationOffers commandOffers = new CollaborationOffers();
 					commandOffers.setIsSingleOffer(mIsSingleMapServer);
-					for (Iterator it = mMindMapMaster.getFileMap().keySet().iterator(); it
-							.hasNext();) {
-						String fileName = (String) it.next();
+					for (String fileName : mMindMapMaster.getFileMap().keySet()) {
 						CollaborationMapOffer offer = new CollaborationMapOffer();
 						offer.setMap(fileName);
 						commandOffers.addCollaborationMapOffer(offer);

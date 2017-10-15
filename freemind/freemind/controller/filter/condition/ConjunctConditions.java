@@ -107,7 +107,7 @@ public class ConjunctConditions implements Condition {
 	}
 
 	static Condition load(XMLElement element) {
-		final Vector children = element.getChildren();
+		final Vector<XMLElement> children = element.getChildren();
 		Object[] conditions = new Object[children.size()];
 		for (int i = 0; i < conditions.length; i++) {
 			Condition cond = FilterController.getConditionFactory()

@@ -26,6 +26,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JLabel;
 
+@SuppressWarnings("serial")
 class BrowseAction extends AbstractAction {
 	private JLabel pageNumber;
 

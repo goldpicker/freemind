@@ -25,9 +25,7 @@
  */
 package accessories.plugins;
 
-import java.util.Iterator;
 import java.util.List;
-
 import accessories.plugins.dialogs.ChooseFormatPopupDialog;
 import freemind.controller.actions.generated.instance.Pattern;
 import freemind.modes.MindMapNode;
@@ -49,7 +47,7 @@ public class ApplyFormatPlugin extends MindMapNodeHookAdapter {
 	public void invoke(MindMapNode rootNode) {
 		// we dont need node.
 		MindMapNode focussed = getController().getSelected();
-		List selected = getController().getSelecteds();
+		List<MindMapNode> selected = getController().getSelecteds();
 		Pattern nodePattern = StylePatternFactory.createPatternFromSelected(
 				focussed, selected);
 		ChooseFormatPopupDialog formatDialog = new ChooseFormatPopupDialog(
@@ -61,8 +59,7 @@ public class ApplyFormatPlugin extends MindMapNodeHookAdapter {
 		// process result:
 		if (formatDialog.getResult() == ChooseFormatPopupDialog.OK) {
 			Pattern pattern = formatDialog.getPattern();
-			for (Iterator iter = selected.iterator(); iter.hasNext();) {
-				MindMapNode node = (MindMapNode) iter.next();
+			for (MindMapNode node : selected) {
 				getMindMapController().applyPattern(node, pattern);
 			}
 		}

@@ -23,8 +23,6 @@
 
 package accessories.plugins;
 
-import java.util.Iterator;
-
 import javax.swing.Action;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -63,9 +61,7 @@ public class RemoveNote extends MindMapNodeHookAdapter {
 			return;
 		}
 
-		for (Iterator iterator = getMindMapController().getSelecteds()
-				.iterator(); iterator.hasNext();) {
-			MindMapNode node = (MindMapNode) iterator.next();
+		for (MindMapNode node : getMindMapController().getSelecteds()) {
 			if (node.getNoteText() != null) {
 				removeNote(node);
 			}
@@ -85,13 +81,10 @@ public class RemoveNote extends MindMapNodeHookAdapter {
 
 		private final MindMapController controller;
 
-		private final MindMap mMap;
-
 		private final java.util.logging.Logger logger;
 
 		public Registration(ModeController controller, MindMap map) {
 			this.controller = (MindMapController) controller;
-			mMap = map;
 			logger = controller.getFrame().getLogger(this.getClass().getName());
 		}
 
@@ -99,9 +92,7 @@ public class RemoveNote extends MindMapNodeHookAdapter {
 			if (controller == null)
 				return false;
 			boolean foundNote = false;
-			for (Iterator iterator = controller.getSelecteds().iterator(); iterator
-					.hasNext();) {
-				MindMapNode node = (MindMapNode) iterator.next();
+			for (MindMapNode node : controller.getSelecteds()) {
 				if (node.getNoteText() != null) {
 					foundNote = true;
 					break;

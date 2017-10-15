@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import freemind.controller.FreeMindPopupMenu;
 import freemind.controller.StructuredMenuHolder;
 
+@SuppressWarnings("serial")
 public class MindMapPopupMenu extends FreeMindPopupMenu {
 
 	private static final String MINDMAPMODE_POPUP = "mindmapmode_popup/";

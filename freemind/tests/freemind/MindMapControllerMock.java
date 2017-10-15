@@ -293,7 +293,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * java.util.List)
 	 */
 	@Override
-	public void select(MindMapNode pFocused, List pSelecteds) {
+	public void select(MindMapNode pFocused, List<MindMapNode> pSelecteds) {
 
 	}
 
@@ -337,7 +337,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * @see freemind.modes.ModeController#getSelecteds()
 	 */
 	@Override
-	public List getSelecteds() {
+	public List<MindMapNode> getSelecteds() {
 
 		return null;
 	}
@@ -348,7 +348,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * @see freemind.modes.ModeController#getSelectedsByDepth()
 	 */
 	@Override
-	public List getSelectedsByDepth() {
+	public List<MindMapNode> getSelectedsByDepth() {
 
 		return null;
 	}
@@ -359,7 +359,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * @see freemind.modes.ModeController#sortNodesByDepth(java.util.List)
 	 */
 	@Override
-	public void sortNodesByDepth(List pInPlaceList) {
+	public void sortNodesByDepth(List<MindMapNode> pInPlaceList) {
 
 	}
 
@@ -706,7 +706,7 @@ public class MindMapControllerMock extends MapFeedbackAdapter implements
 	 * @see freemind.modes.ModeController#copy(java.util.List, boolean)
 	 */
 	@Override
-	public Transferable copy(List pSelectedNodes, boolean pCopyInvisible) {
+	public Transferable copy(List<MindMapNode> pSelectedNodes, boolean pCopyInvisible) {
 
 		return null;
 	}

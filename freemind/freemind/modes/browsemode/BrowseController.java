@@ -50,6 +50,7 @@ import freemind.main.Tools;
 import freemind.main.XMLParseException;
 import freemind.modes.MapAdapter;
 import freemind.modes.MindMap;
+import freemind.modes.MindMapLink;
 import freemind.modes.MindMapNode;
 import freemind.modes.Mode;
 import freemind.modes.ModeController;
@@ -60,6 +61,7 @@ import freemind.modes.common.plugins.NodeNoteBase;
 import freemind.modes.viewmodes.ViewControllerAdapter;
 import freemind.view.mindmapview.MainView;
 
+@SuppressWarnings("serial")
 public class BrowseController extends ViewControllerAdapter {
 
 	private JPopupMenu popupmenu;
@@ -95,7 +97,7 @@ public class BrowseController extends ViewControllerAdapter {
 				String[] barePositions = hook.getBarePosition();
 				try {
 					// GRR, this is doubled code :-(
-					HashMap tileSources = new HashMap();
+					HashMap<String, String> tileSources = new HashMap<>();
 					tileSources.put(
 							MapNodePositionHolderBase.TILE_SOURCE_MAPNIK,
 							MapNodePositionHolderBase.SHORT_MAPNIK);
@@ -247,13 +249,11 @@ public class BrowseController extends ViewControllerAdapter {
 
 			arrowLinkPopup.addSeparator();
 			// add all links from target and from source:
-			HashSet nodeAlreadyVisited = new HashSet();
+			HashSet<MindMapNode> nodeAlreadyVisited = new HashSet<>();
 			nodeAlreadyVisited.add(link.getSource());
 			nodeAlreadyVisited.add(link.getTarget());
-			Vector links = getModel().getLinkRegistry().getAllLinks(
-					link.getSource());
-			links.addAll(getModel().getLinkRegistry().getAllLinks(
-					link.getTarget()));
+			Vector<MindMapLink> links = getModel().getLinkRegistry().getAllLinks(link.getSource());
+			links.addAll(getModel().getLinkRegistry().getAllLinks(link.getTarget()));
 			for (int i = 0; i < links.size(); ++i) {
 				BrowseArrowLinkModel foreign_link = (BrowseArrowLinkModel) links
 						.get(i);
@@ -366,7 +366,7 @@ public class BrowseController extends ViewControllerAdapter {
 			}
 			node.setStateIcon(NodeNoteBase.NODE_NOTE_ICON, noteIcon);
 		}
-		ListIterator children = node.childrenUnfolded();
+		ListIterator<MindMapNode> children = node.childrenUnfolded();
 		while (children.hasNext()) {
 			setNoteIcon((MindMapNode) children.next());
 		}
@@ -460,9 +460,8 @@ public class BrowseController extends ViewControllerAdapter {
 		}
 
 		try {
-			HashMap IDToTarget = new HashMap();
-			root = (BrowseNodeModel) getMap().createNodeTreeFromXml(
-					urlStreamReader, IDToTarget);
+			HashMap<String, NodeAdapter> IDToTarget = new HashMap<>();
+			root = (BrowseNodeModel) getMap().createNodeTreeFromXml(urlStreamReader, IDToTarget);
 			urlStreamReader.close();
 			return root;
 		} catch (Exception ex) {

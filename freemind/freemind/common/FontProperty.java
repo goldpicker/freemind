@@ -40,9 +40,7 @@ public class FontProperty extends PropertyBean implements PropertyControl {
 
 	Font font = null;
 
-	private final TextTranslator mTranslator;
-
-	JComboBox mFontComboBox = new JComboBox();
+	JComboBox<String> mFontComboBox = new JComboBox<>();
 
 	private String[] mAvailableFontFamilyNames;
 
@@ -54,10 +52,9 @@ public class FontProperty extends PropertyBean implements PropertyControl {
 		super();
 		this.description = description;
 		this.label = label;
-		mTranslator = pTranslator;
 		mAvailableFontFamilyNames = GraphicsEnvironment
 				.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-		mFontComboBox.setModel(new DefaultComboBoxModel(
+		mFontComboBox.setModel(new DefaultComboBoxModel<>(
 				mAvailableFontFamilyNames));
 		mFontComboBox.addActionListener(new ActionListener() {
 

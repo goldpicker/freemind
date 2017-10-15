@@ -36,18 +36,18 @@ import freemind.main.Tools;
 import freemind.modes.mindmapmode.MindMapToolBar;
 
 
+@SuppressWarnings("serial")
 public class JColorCombo extends JComboBox<ColorPair> {
 
 
 	public static class ColorIcon extends ImageIcon {
 
 		private static final int ICON_SIZE = (int) (Tools.getScalingFactor()*16);
-		private Color mColor;
+
 		private BufferedImage mImage;
 
 		public ColorIcon(Color pColor) {
 			super(new BufferedImage(ICON_SIZE,ICON_SIZE,BufferedImage.TYPE_INT_RGB));
-			mColor = pColor;
 			mImage = (BufferedImage) getImage();
 			Graphics g = mImage.getGraphics();
 			g.setColor(pColor);
@@ -74,7 +74,7 @@ public class JColorCombo extends JComboBox<ColorPair> {
 		return getPreferredSize();
 	}
 	
-	public class ComboBoxRenderer extends JLabel implements ListCellRenderer {
+	public class ComboBoxRenderer extends JLabel implements ListCellRenderer<ColorPair> {
 		public ComboBoxRenderer() {
 			setOpaque(true);
 	        setHorizontalAlignment(LEFT);
@@ -86,12 +86,9 @@ public class JColorCombo extends JComboBox<ColorPair> {
 	     * to the selected value and returns the label, set up
 	     * to display the text and image.
 	     */
-	    public Component getListCellRendererComponent(
-	                                       JList list,
-	                                       Object value,
-	                                       int index,
-	                                       boolean isSelected,
-	                                       boolean cellHasFocus) {
+		@Override
+		public Component getListCellRendererComponent(JList<? extends ColorPair> list, ColorPair value, int index,
+				boolean isSelected, boolean cellHasFocus) {
 	        if (isSelected) {
 	            setBackground(list.getSelectionBackground());
 	            setForeground(list.getSelectionForeground());
@@ -103,14 +100,10 @@ public class JColorCombo extends JComboBox<ColorPair> {
 	        ColorPair pair = (ColorPair) value;
 	        ImageIcon icon = new ColorIcon(pair.color);
 	        setIcon(icon);
-	        if (icon != null) {
-	            setText(pair.displayName);
-	        } else {
-	        	System.err.println("baeh");
-	        }
+	        setText(pair.displayName);
 
 	        return this;
-	    }
+		}
 	}
 
 	public static void main(String[] s) {

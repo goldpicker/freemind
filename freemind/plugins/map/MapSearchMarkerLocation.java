@@ -28,10 +28,10 @@ import java.awt.Stroke;
 
 import freemind.controller.actions.generated.instance.Place;
 
+@SuppressWarnings("serial")
 public class MapSearchMarkerLocation extends MapMarkerBase {
 
 	public static final int CIRCLE_SELECTED_FACTOR = 2;
-	private static final int CIRCLE_DIAMETER = CIRCLE_RADIUS * 2;
 	private final Place mPlace;
 
 	/**

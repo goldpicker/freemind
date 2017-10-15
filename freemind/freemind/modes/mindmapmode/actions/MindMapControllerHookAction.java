@@ -32,6 +32,7 @@ import javax.swing.JMenuItem;
 import freemind.controller.MenuItemEnabledListener;
 import freemind.modes.mindmapmode.MindMapController;
 
+@SuppressWarnings("serial")
 public class MindMapControllerHookAction extends AbstractAction implements
 		HookAction, MenuItemEnabledListener {
 	String mHookName;

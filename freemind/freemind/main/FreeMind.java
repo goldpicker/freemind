@@ -20,12 +20,10 @@
 
 package freemind.main;
 
-import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.Toolkit;
@@ -56,10 +54,8 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Vector;
@@ -97,6 +93,7 @@ import freemind.preferences.FreemindPropertyListener;
 import freemind.view.MapModule;
 import freemind.view.mindmapview.MapView;
 
+@SuppressWarnings("serial")
 public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 
 	public static final String J_SPLIT_PANE_SPLIT_TYPE = "JSplitPane.SPLIT_TYPE";
@@ -257,8 +254,6 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 	
 	private Timer mStatusMessageDisplayTimer;
 
-	private Map filetypes; // Hopefully obsolete. Used to store applications
-
 	// used to open different file types
 
 	private File autoPropertiesFile;
@@ -287,11 +282,11 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 
 	private boolean mStartupDone = false;
 
-	private List mStartupDoneListeners = new Vector();
+	private List<StartupDoneListener> mStartupDoneListeners = new Vector<>();
 
 	private EditServer mEditServer = null;
 
-	private Vector mLoggerList = new Vector();
+	private Vector<Logger> mLoggerList = new Vector<>();
 
 
 	private static LogFileLogHandler sLogFileHandler;
@@ -336,14 +331,12 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 			StringBuffer b = new StringBuffer();
 			// print all java/sun properties
 			Properties properties = System.getProperties();
-			List list = new ArrayList();
-			for (Iterator it = properties.keySet().iterator(); it.hasNext();) {
-				Object key = (Object) it.next();
-				list.add(key);
+			List<String> list = new ArrayList<>();
+			for (Object key : properties.keySet()) {
+				list.add((String) key);
 			}
 			Collections.sort(list);
-			for (Iterator it = list.iterator(); it.hasNext();) {
-				String key = (String) it.next();
+			for (String key : list) {
 				if (key.startsWith("java") || key.startsWith("sun")) {
 					b.append("Environment key " + key + " = "
 							+ properties.getProperty(key) + "\n");
@@ -682,18 +675,6 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 				// to avoid infinite recursion.
 				// freemind.main.Resources.getInstance().logExecption(e);
 			}
-	        if (false) {
-				// Obtain a reference to the logger
-				Logger focusLog = Logger.getLogger("java.awt.focus.Component");
-				// The logger should log all messages
-				focusLog.setLevel(Level.ALL);
-				// Create a new handler
-				ConsoleHandler handler = new ConsoleHandler();
-				// The handler must handle all messages
-				handler.setLevel(Level.ALL);
-				// Add the handler to the logger
-				focusLog.addHandler(handler);
-			}
 		}
 		if (sLogFileHandler != null) {
 			loggerForClass.addHandler(sLogFileHandler);
@@ -725,37 +706,11 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 			frame.checkForAnotherInstance(args);
 			frame.initServer();
 			final FeedBack feedBack;
-			// change here, if you don't like the splash
-			if (true) {
-				splash = new FreeMindSplashModern(frame);
-				splash.setVisible(true);
-				feedBack = splash.getFeedBack();
-				frame.mWindowIcon = splash.getWindowIcon();
-			} else {
-				feedBack = new FeedBack() {
-					int value = 0;
-	
-					public int getActualValue() {
-						return value;
-					}
-	
-					public void increase(String messageId,
-							Object[] pMessageParameters) {
-						progress(getActualValue() + 1, messageId,
-								pMessageParameters);
-					}
-	
-					public void progress(int act, String messageId,
-							Object[] pMessageParameters) {
-						frame.logger.info("Beginnig task:" + messageId);
-					}
-	
-					public void setMaximumValue(int max) {
-					}
-				};
-				frame.mWindowIcon = freemind.view.ImageFactory.getInstance().createIcon(
-						frame.getResource("images/FreeMindWindowIcon.png"));
-			}
+			splash = new FreeMindSplashModern(frame);
+			splash.setVisible(true);
+			feedBack = splash.getFeedBack();
+			frame.mWindowIcon = splash.getWindowIcon();
+
 			feedBack.setMaximumValue(10 + frame.getMaximumNumberOfMapsToLoad(args));
 			frame.init(feedBack);
 	
@@ -836,13 +791,6 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 	}
 
 
-	private class MyEventQueue extends EventQueue {
-        public void postEvent(AWTEvent theEvent) {
-            logger.info("Event Posted: " + theEvent);
-            super.postEvent(theEvent);
-        }
-    }
-
 	private void initServer() {
 		String portFile = getPortFile();
 		if (portFile == null) {
@@ -919,8 +867,7 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 
 	private void fireStartupDone() {
 		mStartupDone = true;
-		for (Iterator it = mStartupDoneListeners.iterator(); it.hasNext();) {
-			StartupDoneListener listener = (StartupDoneListener) it.next();
+		for (StartupDoneListener listener : mStartupDoneListeners) {
 			listener.startupDone();
 		}
 	}
@@ -1064,10 +1011,7 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 			int index = 0;
 			MapModule mapToFocus = null;
 			LastStateStorageManagement management = getLastStateStorageManagement();
-			for (Iterator it = management.getLastOpenList().iterator(); it
-					.hasNext();) {
-				MindmapLastStateStorage store = (MindmapLastStateStorage) it
-						.next();
+			for (MindmapLastStateStorage store : management.getLastOpenList()) {
 				String restorable = store.getRestorableName();
 				pFeedBack.increase(FREE_MIND_PROGRESS_LOAD_MAPS_NAME,
 						new Object[] { restorable.replaceAll(".*/", "") });
@@ -1323,7 +1267,7 @@ public class FreeMind extends JFrame implements FreeMindMain, ActionListener {
 			mStartupDoneListeners.add(pStartupDoneListener);
 	}
 
-	public List getLoggerList() {
+	public List<Logger> getLoggerList() {
 		return Collections.unmodifiableList(mLoggerList);
 	}
 

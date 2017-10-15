@@ -21,16 +21,13 @@
 package freemind.controller;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -48,6 +45,7 @@ import freemind.view.MapModule;
  * This is the menu bar for FreeMind. Actions are defined in MenuListener.
  * Moreover, the StructuredMenuHolder of all menus are hold here.
  * */
+@SuppressWarnings("serial")
 public class MenuBar extends JMenuBar {
 
 	private static java.util.logging.Logger logger;
@@ -73,12 +71,8 @@ public class MenuBar extends JMenuBar {
 	private StructuredMenuHolder menuHolder;
 
 	JPopupMenu mapsPopupMenu;
-	private JMenu filemenu;
-	private JMenu editmenu;
-	private JMenu mapsmenu;
 	Controller c;
 	ActionListener mapsMenuActionListener = new MapsMenuActionListener();
-	private JMenu formatmenu;
 
 	public MenuBar(Controller controller) {
 		this.c = controller;
@@ -99,8 +93,7 @@ public class MenuBar extends JMenuBar {
 		menuHolder = new StructuredMenuHolder();
 
 		// filemenu
-		filemenu = menuHolder.addMenu(new JMenu(c.getResourceString("file")),
-				FILE_MENU + ".");
+		menuHolder.addMenu(new JMenu(c.getResourceString("file")),FILE_MENU + ".");
 		// filemenu.setMnemonic(KeyEvent.VK_F);
 
 		menuHolder.addCategory(FILE_MENU + "open");
@@ -117,8 +110,7 @@ public class MenuBar extends JMenuBar {
 		menuHolder.addCategory(FILE_MENU + "quit");
 
 		// editmenu
-		editmenu = menuHolder.addMenu(new JMenu(c.getResourceString("edit")),
-				EDIT_MENU + ".");
+		menuHolder.addMenu(new JMenu(c.getResourceString("edit")),EDIT_MENU + ".");
 		menuHolder.addCategory(EDIT_MENU + "undo");
 		menuHolder.addSeparator(EDIT_MENU);
 		menuHolder.addCategory(EDIT_MENU + "select");
@@ -142,9 +134,7 @@ public class MenuBar extends JMenuBar {
 		menuHolder.addSeparator(INSERT_MENU);
 
 		// format menu
-		formatmenu = menuHolder.addMenu(
-				new JMenu(c.getResourceString("menu_format")), FORMAT_MENU
-						+ ".");
+		menuHolder.addMenu(new JMenu(c.getResourceString("menu_format")), FORMAT_MENU + ".");
 
 		// navigate menu
 		menuHolder.addMenu(new JMenu(c.getResourceString("menu_navigate")),
@@ -156,8 +146,7 @@ public class MenuBar extends JMenuBar {
 		menuHolder.addCategory(EXTRAS_MENU + "first");
 
 		// Mapsmenu
-		mapsmenu = menuHolder.addMenu(
-				new JMenu(c.getResourceString("mindmaps")), MINDMAP_MENU + ".");
+		menuHolder.addMenu(new JMenu(c.getResourceString("mindmaps")), MINDMAP_MENU + ".");
 		// mapsmenu.setMnemonic(KeyEvent.VK_M);
 		menuHolder.addCategory(MINDMAP_MENU + "navigate");
 		menuHolder.addSeparator(MINDMAP_MENU);
@@ -208,9 +197,8 @@ public class MenuBar extends JMenuBar {
 	private void updateModeMenu() {
 		ButtonGroup group = new ButtonGroup();
 		ActionListener modesMenuActionListener = new ModesMenuActionListener();
-		List keys = new LinkedList(c.getModes());
-		for (ListIterator i = keys.listIterator(); i.hasNext();) {
-			String key = (String) i.next();
+		List<String> keys = new LinkedList<>(c.getModes());
+		for (String key : keys) {
 			JRadioButtonMenuItem item = new JRadioButtonMenuItem(
 					c.getResourceString("mode_" + key));
 			item.setActionCommand(key);
@@ -255,13 +243,12 @@ public class MenuBar extends JMenuBar {
 
 	private void updateMapsMenu(StructuredMenuHolder holder, String basicKey) {
 		MapModuleManager mapModuleManager = c.getMapModuleManager();
-		List mapModuleVector = mapModuleManager.getMapModuleVector();
+		List<MapModule> mapModuleVector = mapModuleManager.getMapModuleVector();
 		if (mapModuleVector == null) {
 			return;
 		}
 		ButtonGroup group = new ButtonGroup();
-		for (Iterator iterator = mapModuleVector.iterator(); iterator.hasNext();) {
-			MapModule mapModule = (MapModule) iterator.next();
+		for (MapModule mapModule : mapModuleVector) {
 			String displayName = mapModule.getDisplayName();
 			JRadioButtonMenuItem newItem = new JRadioButtonMenuItem(displayName);
 			newItem.setSelected(false);
@@ -309,8 +296,8 @@ public class MenuBar extends JMenuBar {
 				FILE_MENU + "last/.");
 		boolean firstElement = true;
 		LastOpenedList lst = c.getLastOpenedList();
-		for (ListIterator it = lst.listIterator(); it.hasNext();) {
-			String key = (String) it.next();
+		for (ListIterator<String> it = lst.listIterator(); it.hasNext();) {
+			String key = it.next();
 			JMenuItem item = new JMenuItem(key);
 			if (firstElement) {
 				firstElement = false;
@@ -369,19 +356,14 @@ public class MenuBar extends JMenuBar {
 	}
 
 	private void updateViewMenu() {
-		JMenuItem toggleToolbar = menuHolder.addAction(c.toggleToolbar,
-				VIEW_MENU + "toolbars/toggleToolbar");
-		JMenuItem toggleLeftToolbar = menuHolder.addAction(c.toggleLeftToolbar,
-				VIEW_MENU + "toolbars/toggleLeftToolbar");
+		menuHolder.addAction(c.toggleToolbar, VIEW_MENU + "toolbars/toggleToolbar");
+		menuHolder.addAction(c.toggleLeftToolbar, VIEW_MENU + "toolbars/toggleLeftToolbar");
 
 		menuHolder.addSeparator(VIEW_MENU);
 
-		JMenuItem showSelectionAsRectangle = menuHolder.addAction(
-				c.showSelectionAsRectangle, VIEW_MENU
-						+ "general/selectionAsRectangle");
+		menuHolder.addAction(c.showSelectionAsRectangle, VIEW_MENU+ "general/selectionAsRectangle");
 
-		JMenuItem zoomIn = menuHolder.addAction(c.zoomIn, VIEW_MENU
-				+ "zoom/zoomIn");
+		JMenuItem zoomIn = menuHolder.addAction(c.zoomIn, VIEW_MENU+ "zoom/zoomIn");
 		zoomIn.setAccelerator(KeyStroke.getKeyStroke(c.getFrame()
 				.getAdjustableProperty("keystroke_zoom_in")));
 
@@ -392,42 +374,10 @@ public class MenuBar extends JMenuBar {
 
 		menuHolder.addSeparator(VIEW_MENU);
 		menuHolder.addCategory(VIEW_MENU + "note_window");
-//		menuHolder.addSeparator(VIEW_MENU);
-	}
-
-	private void addOptionSet(Action action, String[] textIDs, JMenu menu,
-			String selectedTextID) {
-		ButtonGroup group = new ButtonGroup();
-		for (int optionIdx = 0; optionIdx < textIDs.length; optionIdx++) {
-			JRadioButtonMenuItem item = new JRadioButtonMenuItem(action);
-			item.setText(c.getResourceString(textIDs[optionIdx]));
-			item.setActionCommand(textIDs[optionIdx]);
-			group.add(item);
-			menu.add(item);
-			if (selectedTextID != null) {
-				item.setSelected(selectedTextID.equals(textIDs[optionIdx]));
-			}
-			// keystroke present?
-			String keystroke = c.getFrame().getAdjustableProperty(
-					"keystroke_" + textIDs[optionIdx]);
-			if (keystroke != null)
-				item.setAccelerator(KeyStroke.getKeyStroke(keystroke));
-		}
 	}
 
 	JPopupMenu getMapsPopupMenu() { // visible only in controller package
 		return mapsPopupMenu;
-	}
-
-	/**
-	 * This method simpy copy's all elements of the source Menu to the end of
-	 * the second menu.
-	 */
-	private void copyMenuItems(JMenu source, JMenu dest) {
-		Component[] items = source.getMenuComponents();
-		for (int i = 0; i < items.length; i++) {
-			dest.add(items[i]);
-		}
 	}
 
 	private class MapsMenuActionListener implements ActionListener {

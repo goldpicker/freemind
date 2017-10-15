@@ -29,6 +29,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Insets;
 
+@SuppressWarnings("serial")
 public class VariableSizeCardLayout extends CardLayout {
 
 	public VariableSizeCardLayout() {

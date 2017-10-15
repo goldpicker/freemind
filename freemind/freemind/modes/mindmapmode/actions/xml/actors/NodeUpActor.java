@@ -33,7 +33,6 @@ import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MindMap;
 import freemind.modes.MindMapNode;
-import freemind.modes.NodeAdapter;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
@@ -51,7 +50,7 @@ public class NodeUpActor extends XmlActorAdapter {
 
 	/**
      */
-	public void moveNodes(MindMapNode selected, List selecteds, int direction) {
+	public void moveNodes(MindMapNode selected, List<MindMapNode> selecteds, int direction) {
 		MoveNodesAction doAction = createMoveNodesAction(selected, selecteds,
 				direction);
 		MoveNodesAction undoAction = createMoveNodesAction(selected, selecteds,
@@ -60,22 +59,18 @@ public class NodeUpActor extends XmlActorAdapter {
 				doAction, undoAction));
 	}
 
-	private void _moveNodes(MindMapNode selected, List selecteds, int direction) {
-		Comparator comparator = (direction == -1) ? null : new Comparator() {
-
-			public int compare(Object o1, Object o2) {
-				int i1 = ((Integer) o1).intValue();
-				int i2 = ((Integer) o2).intValue();
+	private void _moveNodes(MindMapNode selected, List<MindMapNode> selecteds, int direction) {
+		Comparator<Integer> comparator = (direction == -1) ? null : new Comparator<Integer>() {
+			public int compare(Integer i1, Integer i2) {
 				return i2 - i1;
 			}
 		};
 		if (!selected.isRoot()) {
 			MindMapNode parent = selected.getParentNode();
 			// multiple move:
-			Vector sortedChildren = getSortedSiblings(parent);
+			Vector<MindMapNode> sortedChildren = getSortedSiblings(parent);
 			TreeSet<Integer> range = new TreeSet<Integer>(comparator);
-			for (Iterator<NodeAdapter> i = selecteds.iterator(); i.hasNext();) {
-				MindMapNode node = (MindMapNode) i.next();
+			for (MindMapNode node : selecteds) {
 				if (node.getParent() != parent) {
 					logger.warning("Not all selected nodes (here: "
 							+ node.getText() + ") have the same parent "
@@ -86,19 +81,16 @@ public class NodeUpActor extends XmlActorAdapter {
 			}
 			// test range for adjacent nodes:
 			Integer last = (Integer) range.iterator().next();
-			for (Iterator i = range.iterator(); i.hasNext();) {
-				Integer newInt = (Integer) i.next();
+			for (Integer newInt : range) {
 				if (Math.abs(newInt.intValue() - last.intValue()) > 1) {
 					logger.warning("Not adjacent nodes. Skipped. ");
 					return;
 				}
 				last = newInt;
 			}
-			for (Iterator i = range.iterator(); i.hasNext();) {
-				Integer position = (Integer) i.next();
+			for (Integer position : range) {
 				// from above:
-				MindMapNode node = (MindMapNode) sortedChildren.get(position
-						.intValue());
+				MindMapNode node = (MindMapNode) sortedChildren.get(position.intValue());
 				moveNodeTo(node, parent, direction);
 			}
 		}
@@ -117,7 +109,7 @@ public class NodeUpActor extends XmlActorAdapter {
 		int index = model.getIndexOfChild(parent, newChild);
 		int newIndex = index;
 		int maxIndex = parent.getChildCount();
-		Vector sortedNodesIndices = getSortedSiblings(parent);
+		Vector<MindMapNode> sortedNodesIndices = getSortedSiblings(parent);
 		int newPositionInVector = sortedNodesIndices.indexOf(newChild)
 				+ direction;
 		if (newPositionInVector < 0) {
@@ -138,26 +130,17 @@ public class NodeUpActor extends XmlActorAdapter {
 	/**
 	 * Sorts nodes by their left/right status. The left are first.
 	 */
-	private Vector getSortedSiblings(MindMapNode node) {
-		Vector nodes = new Vector();
-		for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
+	private Vector<MindMapNode> getSortedSiblings(MindMapNode node) {
+		Vector<MindMapNode> nodes = new Vector<>();
+		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
 			nodes.add(i.next());
 		}
-		Collections.sort(nodes, new Comparator() {
+		Collections.sort(nodes, new Comparator<MindMapNode>() {
 
-			public int compare(Object o1, Object o2) {
-				if (o1 instanceof MindMapNode) {
-					MindMapNode n1 = (MindMapNode) o1;
-					if (o2 instanceof MindMapNode) {
-						MindMapNode n2 = (MindMapNode) o2;
-						// left is less than right
-						int b1 = n1.isLeft() ? 0 : 1;
-						int b2 = n2.isLeft() ? 0 : 1;
-						return b1 - b2;
-					}
-				}
-				throw new IllegalArgumentException(
-						"Elements in LeftRightComparator are not comparable.");
+			public int compare(MindMapNode n1, MindMapNode n2) {
+				int b1 = n1.isLeft() ? 0 : 1;
+				int b2 = n2.isLeft() ? 0 : 1;
+				return b1 - b2;
 			}
 		});
 		// logger.finest("Sorted nodes "+ nodes);
@@ -169,28 +152,27 @@ public class NodeUpActor extends XmlActorAdapter {
 			MoveNodesAction moveAction = (MoveNodesAction) action;
 			MindMapNode selected = getNodeFromID(moveAction
 					.getNode());
-			Vector selecteds = new Vector();
-			for (Iterator i = moveAction.getListNodeListMemberList().iterator(); i
-					.hasNext();) {
-				NodeListMember node = (NodeListMember) i.next();
+			Vector<MindMapNode> selecteds = new Vector<>();
+			for (Iterator<NodeListMember> i = moveAction.getListNodeListMemberList().iterator(); i.hasNext();) {
+				NodeListMember node = i.next();
 				selecteds.add(getNodeFromID(node.getNode()));
 			}
 			_moveNodes(selected, selecteds, moveAction.getDirection());
 		}
 	}
 
-	public Class getDoActionClass() {
+	public Class<MoveNodesAction> getDoActionClass() {
 		return MoveNodesAction.class;
 	}
 
 	private MoveNodesAction createMoveNodesAction(MindMapNode selected,
-			List selecteds, int direction) {
+			List<MindMapNode> selecteds, int direction) {
 		MoveNodesAction moveAction = new MoveNodesAction();
 		moveAction.setDirection(direction);
 		moveAction.setNode(getNodeID(selected));
 		// selectedNodes list
-		for (Iterator i = selecteds.iterator(); i.hasNext();) {
-			MindMapNode node = (MindMapNode) i.next();
+		for (MindMapNode node : selecteds) {
+
 			NodeListMember nodeListMember = new NodeListMember();
 			nodeListMember.setNode(getNodeID(node));
 			moveAction.addNodeListMember(nodeListMember);

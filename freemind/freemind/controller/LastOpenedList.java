@@ -45,11 +45,11 @@ public class LastOpenedList {
 	/**
 	 * Contains Restore strings.
 	 */
-	private List mlastOpenedList = new LinkedList();
+	private List<String> mlastOpenedList = new LinkedList<>();
 	/**
 	 * Contains Restore string => map name (map.toString()).
 	 */
-	private Map mRestorableToMapName = new HashMap();
+	private Map<String, String> mRestorableToMapName = new HashMap<>();
 
 	public LastOpenedList(Controller c, String restored) {
 		this.mController = c;
@@ -95,8 +95,8 @@ public class LastOpenedList {
 	/** fc, 8.8.2004: This method returns a string representation of this class. */
 	public String save() {
 		String str = new String();
-		for (ListIterator it = listIterator(); it.hasNext();) {
-			str = str.concat((String) it.next() + ";");
+		for (ListIterator<String> it = listIterator(); it.hasNext();) {
+			str = str.concat( it.next() + ";");
 		}
 		return str;
 	}
@@ -130,7 +130,7 @@ public class LastOpenedList {
 		return false;
 	}
 
-	ListIterator listIterator() {
+	ListIterator<String> listIterator() {
 		return mlastOpenedList.listIterator();
 	}
 }

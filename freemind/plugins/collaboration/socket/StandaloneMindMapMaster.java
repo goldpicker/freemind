@@ -26,15 +26,14 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.Iterator;
 
-import tests.freemind.FreeMindMainMock;
 import freemind.controller.actions.generated.instance.CollaborationUserInformation;
 import freemind.main.Tools;
 import freemind.main.XMLParseException;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MindMap;
 import freemind.modes.mindmapmode.MindMapController;
+import tests.freemind.FreeMindMainMock;
 
 /**
  * Background server for map serving without gui. Single map instance.
@@ -46,7 +45,6 @@ public class StandaloneMindMapMaster extends SocketMaster {
 
 	private ServerSocket mServer;
 	private MasterThread mMasterThread;
-	private FreeMindMainMock mFreeMindMain;
 	private File mBaseFilePath;
 
 	private class MasterThread extends TerminateableThread {
@@ -66,8 +64,7 @@ public class StandaloneMindMapMaster extends SocketMaster {
 			Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			    public void run() {
 			    	System.out.println("Automatic save on exit starts...");
-			    	for (Iterator it = mFileMap.keySet().iterator(); it.hasNext();) {
-			    		String mapName = (String) it.next();
+			    	for (String mapName : mFileMap.keySet()) {
 			    		ExtendedMapFeedback extendedMapFeedback = mFileMap.get(mapName);
 			    		MindMap map = extendedMapFeedback.getMap();
 			    		File file = map.getFile();
@@ -104,8 +101,7 @@ public class StandaloneMindMapMaster extends SocketMaster {
 			}
 			final long now = System.currentTimeMillis();
 			synchronized (mSessions) {
-				for (Iterator it = mFileMap.keySet().iterator(); it.hasNext();) {
-					String mapName = (String) it.next();
+				for (String mapName : mFileMap.keySet()) {
 					ExtendedMapFeedback extendedMapFeedback = mFileMap.get(mapName);
 					SessionData sessionData = getSessionData(extendedMapFeedback);
 					if (now - mLastTimeUserInformationSent > TIME_BETWEEN_USER_INFORMATION_IN_MILLIES) {
@@ -192,7 +188,6 @@ public class StandaloneMindMapMaster extends SocketMaster {
 	 */
 	public StandaloneMindMapMaster(FreeMindMainMock pFreeMindMain, File pFilePath,
 			String pPassword, int pPort) throws XMLParseException, IOException {
-		mFreeMindMain = pFreeMindMain;
 		mBaseFilePath = pFilePath;
 		String[] fileList = pFilePath.list(new FilenameFilter() {
 
@@ -242,8 +237,7 @@ public class StandaloneMindMapMaster extends SocketMaster {
 			path = "/tmp/";
 		}
 		System.out.println("Using path '" + path + "'");
-		StandaloneMindMapMaster master = new StandaloneMindMapMaster(
-				new FreeMindMainMock(), new File(path), "aa", 9001);
+		new StandaloneMindMapMaster(new FreeMindMainMock(), new File(path), "aa", 9001);
 
 	}
 

@@ -53,7 +53,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -95,6 +94,7 @@ import freemind.view.mindmapview.MultipleImage;
  * 
  *         TODO: - Extract HTML from nodes and notes.
  */
+@SuppressWarnings("serial")
 public class TimeList extends MindMapHookAdapter implements
 		MapModuleChangeObserver {
 
@@ -125,8 +125,6 @@ public class TimeList extends MindMapHookAdapter implements
 	protected static final int NODE_NOTES_COLUMN = 5;
 
 	private JDialog mDialog;
-
-	private JPanel mTimePanel;
 
 	private JTable mTimeTable;
 
@@ -337,7 +335,7 @@ public class TimeList extends MindMapHookAdapter implements
 				menuHolder.addAction(replaceSelectedAction,
 						"main/actions/replaceSelected"),
 				"keystroke_plugins/TimeList_replaceSelected");
-		final JMenuItem replaceAllMenuItem = addAccelerator(
+		addAccelerator(
 				menuHolder.addAction(replaceAllAction,
 						"main/actions/replaceAll"),
 				"keystroke_plugins/TimeList_replaceAll");
@@ -421,11 +419,8 @@ public class TimeList extends MindMapHookAdapter implements
 			toggleViewFoldedNodes();
 		}
 		int column = 0;
-		for (Iterator i = timeStorage
-				.getListTimeWindowColumnSettingList().iterator(); i
-				.hasNext();) {
-			TimeWindowColumnSetting setting = (TimeWindowColumnSetting) i
-					.next();
+		for (Iterator<TimeWindowColumnSetting> i = timeStorage.getListTimeWindowColumnSettingList().iterator(); i.hasNext();) {
+			TimeWindowColumnSetting setting = i.next();
 			mTimeTable.getColumnModel().getColumn(column)
 					.setPreferredWidth(setting.getColumnWidth());
 			mSorter.setSortingStatus(column, setting.getColumnSorting());
@@ -452,7 +447,7 @@ public class TimeList extends MindMapHookAdapter implements
 
 	protected void exportSelectedRowsAndClose() {
 		int[] selectedRows = mTimeTable.getSelectedRows();
-		Vector selectedNodes = new Vector();
+		Vector<MindMapNode> selectedNodes = new Vector<>();
 		for (int i = 0; i < selectedRows.length; i++) {
 			int row = selectedRows[i];
 			selectedNodes.add(getMindMapNode(row));
@@ -461,8 +456,7 @@ public class TimeList extends MindMapHookAdapter implements
 		MindMapController newMindMapController = (MindMapController) getMindMapController().newMap();
 		// Tools.BooleanHolder booleanHolder = new Tools.BooleanHolder();
 		// booleanHolder.setValue(false);
-		for (Iterator iter = selectedNodes.iterator(); iter.hasNext();) {
-			MindMapNode node = (MindMapNode) iter.next();
+		for (MindMapNode node : selectedNodes) {
 			MindMapNode copy = node.shallowCopy();
 			if (copy != null) {
 				newMindMapController.insertNodeInto(copy, newMindMapController.getRootNode());
@@ -481,7 +475,8 @@ public class TimeList extends MindMapHookAdapter implements
 		 * 
 		 * @see javax.swing.table.AbstractTableModel#getColumnClass(int)
 		 */
-		public Class getColumnClass(int arg0) {
+		@Override
+		public Class<?> getColumnClass(int arg0) {
 			switch (arg0) {
 			case DATE_COLUMN:
 			case NODE_CREATED_COLUMN:
@@ -608,7 +603,7 @@ public class TimeList extends MindMapHookAdapter implements
 		if (focussedRow >= 0) {
 			MindMapNode focussedNode = getMindMapNode(focussedRow);
 			// getController().centerNode(focussedNode);
-			Vector selectedNodes = new Vector();
+			Vector<MindMapNode> selectedNodes = new Vector<>();
 			for (int i = 0; i < selectedRows.length; i++) {
 				int row = selectedRows[i];
 				selectedNodes.add(getMindMapNode(row));
@@ -683,29 +678,10 @@ public class TimeList extends MindMapHookAdapter implements
 			// no recursion, if folded nodes should be hidden.
 			return;
 		}
-		for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-			MindMapNode child = (MindMapNode) i.next();
+		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+			MindMapNode child = i.next();
 			updateModel(model, child);
 		}
-	}
-
-	/**
-	 */
-	private JPanel getTimePanel() {
-		if (mTimePanel == null) {
-			mTimePanel = new JPanel();
-			mTimePanel.setLayout(new GridBagLayout());
-			// {
-			// GridBagConstraints gb2 = new GridBagConstraints();
-			// gb2.gridx = 0;
-			// gb2.gridy = 0;
-			// gb2.fill = GridBagConstraints.HORIZONTAL;
-			// timePanel.add(new JLabel(
-			// getResourceString("plugins/TimeManagement.xml_hour")),
-			// gb2);
-			// }
-		}
-		return mTimePanel;
 	}
 
 	/**
@@ -940,7 +916,7 @@ public class TimeList extends MindMapHookAdapter implements
 	}
 
 	/** removes html in nodes before comparison. */
-	public static class NodeHolder implements Comparable {
+	public static class NodeHolder implements Comparable<NodeHolder> {
 		private final MindMapNode node;
 		private String untaggedNodeText = null;
 		/**
@@ -956,10 +932,12 @@ public class TimeList extends MindMapHookAdapter implements
 			this.node = node;
 		}
 
-		public int compareTo(Object compareToObject) {
+		@Override
+		public int compareTo(NodeHolder compareToObject) {
 			return toString().compareTo(compareToObject.toString());
 		}
 
+		@Override
 		public String toString() {
 			return getUntaggedNodeText();
 		}
@@ -985,7 +963,7 @@ public class TimeList extends MindMapHookAdapter implements
 	}
 
 	/** removes html in notes before comparison. */
-	public static class NotesHolder implements Comparable {
+	public static class NotesHolder implements Comparable<NotesHolder> {
 		private final MindMapNode node;
 		private String untaggedNotesText = null;
 		private String originalNotesText = null;
@@ -997,10 +975,12 @@ public class TimeList extends MindMapHookAdapter implements
 			this.node = node;
 		}
 
-		public int compareTo(Object compareToObject) {
+		@Override
+		public int compareTo(NotesHolder compareToObject) {
 			return toString().compareTo(compareToObject.toString());
 		}
 
+		@Override
 		public String toString() {
 			return getUntaggedNotesText();
 		}
@@ -1022,35 +1002,34 @@ public class TimeList extends MindMapHookAdapter implements
 
 	}
 
-	static class IconsHolder implements Comparable {
-		Vector icons = new Vector();
+	static class IconsHolder implements Comparable<IconsHolder> {
+		Vector<MindIcon> icons = new Vector<>();
 
-		private Vector iconNames;
+		private Vector<String> iconNames;
 
 		public IconsHolder(MindMapNode node) {
 			icons.addAll(node.getIcons());
 			// sorting the output.
-			iconNames = new Vector();
-			for (Iterator i = icons.iterator(); i.hasNext();) {
-				MindIcon icon = (MindIcon) i.next();
+			iconNames = new Vector<>();
+			for (MindIcon icon : icons) {
 				iconNames.add(icon.getName());
 			}
 			Collections.sort(iconNames);
 		}
 
-		public int compareTo(Object compareToObject) {
+		@Override
+		public int compareTo(IconsHolder compareToObject) {
 			return toString().compareTo(compareToObject.toString());
 		}
 
-		public Vector getIcons() {
+		public Vector<MindIcon> getIcons() {
 			return icons;
 		}
 
 		/** Returns a sorted list of icon names. */
 		public String toString() {
 			String result = "";
-			for (Iterator i = iconNames.iterator(); i.hasNext();) {
-				String name = (String) i.next();
+			for (String name : iconNames) {
 				result += name + " ";
 			}
 			return result;
@@ -1058,20 +1037,16 @@ public class TimeList extends MindMapHookAdapter implements
 	}
 
 	static class IconsRenderer extends DefaultTableCellRenderer {
-		private final ModeController modeController;
 
 		public IconsRenderer(ModeController controller) {
 			super();
-			modeController = controller;
 		}
 
 		public void setValue(Object value) {
 			if (value instanceof IconsHolder) {
 				IconsHolder iconsHolder = (IconsHolder) value;
 				MultipleImage iconImages = new MultipleImage(1.0f);
-				for (Iterator i = iconsHolder.getIcons().iterator(); i
-						.hasNext();) {
-					MindIcon icon = (MindIcon) i.next();
+				for (MindIcon icon : iconsHolder.getIcons()) {
 					iconImages.addImage(icon.getIcon());
 				}
 				if (iconImages.getImageCount() > 0) {

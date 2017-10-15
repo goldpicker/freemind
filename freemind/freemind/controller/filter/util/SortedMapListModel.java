@@ -32,12 +32,13 @@ import java.util.TreeSet;
 
 import javax.swing.AbstractListModel;
 
+@SuppressWarnings("serial")
 public class SortedMapListModel extends AbstractListModel implements
 		SortedListModel {
 	SortedSet model;
 
 	public SortedMapListModel() {
-		model = new TreeSet();
+		model = new TreeSet<>();
 	}
 
 	public int getSize() {
@@ -92,7 +93,7 @@ public class SortedMapListModel extends AbstractListModel implements
 	/**
  */
 	public int getIndexOf(Object o) {
-		Iterator i = iterator();
+		Iterator<Object> i = iterator();
 		int count = -1;
 		while (i.hasNext()) {
 			count++;

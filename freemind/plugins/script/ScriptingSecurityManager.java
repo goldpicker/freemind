@@ -119,7 +119,7 @@ public class ScriptingSecurityManager extends SecurityManager {
 		/*
 		 * This should permit system libraries to be loaded.
 		 */
-		HashSet set = new HashSet();
+		HashSet<String> set = new HashSet<>();
 		set.add("awt");
 		set.add("net");
 		set.add("jpeg");
@@ -187,7 +187,7 @@ public class ScriptingSecurityManager extends SecurityManager {
 	public void checkExit(int pStatus) {
 	}
 
-	public void checkMemberAccess(Class arg0, int arg1) {
+	public void checkMemberAccess(Class<?> arg0, int arg1) {
 	}
 
 	public void checkPackageAccess(String pPkg) {

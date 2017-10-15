@@ -90,7 +90,7 @@ public class ConditionNotSatisfiedDecorator implements Condition {
 	}
 
 	static Condition load(XMLElement element) {
-		final Vector children = element.getChildren();
+		final Vector<XMLElement> children = element.getChildren();
 		Condition cond = FilterController.getConditionFactory().loadCondition(
 				(XMLElement) children.get(0));
 		return new ConditionNotSatisfiedDecorator(cond);

@@ -45,6 +45,7 @@ import freemind.modes.mindmapmode.MindMapController;
  * @author foltin
  * 
  */
+@SuppressWarnings("serial")
 public class RevertAction extends MindmapAction  {
 
 	private final MindMapController mindMapController;

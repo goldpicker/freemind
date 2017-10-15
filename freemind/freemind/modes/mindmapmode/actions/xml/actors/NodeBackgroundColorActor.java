@@ -72,7 +72,7 @@ public class NodeBackgroundColorActor extends XmlActorAdapter {
 		}
 	}
 
-	public Class getDoActionClass() {
+	public Class<NodeBackgroundColorFormatAction> getDoActionClass() {
 		return NodeBackgroundColorFormatAction.class;
 	}
 

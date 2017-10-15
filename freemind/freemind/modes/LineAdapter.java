@@ -21,10 +21,7 @@
 package freemind.modes;
 
 import java.awt.Color;
-
-import freemind.main.FreeMindMain;
 import freemind.main.Tools;
-import freemind.modes.mindmapmode.MindMapController;
 
 public abstract class LineAdapter implements MindMapLine {
 

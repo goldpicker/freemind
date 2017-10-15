@@ -27,13 +27,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
 import freemind.controller.actions.generated.instance.Plugin;
 import freemind.controller.actions.generated.instance.PluginClasspath;
-import freemind.main.FreeMindMain;
 import freemind.main.Resources;
 import freemind.main.Tools;
 
@@ -101,11 +99,9 @@ public class HookDescriptorBase {
 		return pluginBase;
 	}
 
-	public List getPluginClasspath() {
-		Vector returnValue = new Vector();
-		for (Iterator i = pluginBase.getListChoiceList().iterator(); i
-				.hasNext();) {
-			Object obj = (Object) i.next();
+	public List<PluginClasspath> getPluginClasspath() {
+		Vector<PluginClasspath> returnValue = new Vector<>();
+		for (Object obj : pluginBase.getListChoiceList()) {
 			if (obj instanceof PluginClasspath) {
 				PluginClasspath pluginClasspath = (PluginClasspath) obj;
 				returnValue.add(pluginClasspath);
@@ -116,21 +112,20 @@ public class HookDescriptorBase {
 
 	public ClassLoader getPluginClassLoader() {
 		// construct class loader:
-		List pluginClasspathList = getPluginClasspath();
+		List<PluginClasspath> pluginClasspathList = getPluginClasspath();
 		ClassLoader loader = getClassLoader(pluginClasspathList);
 		return loader;
 	}
 
-	private static HashMap classLoaderCache = new HashMap();
+	private static HashMap<String, ClassLoader> classLoaderCache = new HashMap<>();
 
 	/**
 	 * This string is used to identify known classloaders as they are cached.
 	 * 
 	 */
-	private String createPluginClasspathString(List pluginClasspathList) {
+	private String createPluginClasspathString(List<PluginClasspath> pluginClasspathList) {
 		String result = "";
-		for (Iterator i = pluginClasspathList.iterator(); i.hasNext();) {
-			PluginClasspath type = (PluginClasspath) i.next();
+		for (PluginClasspath type : pluginClasspathList) {
 			result += type.getJar() + ",";
 		}
 		return result;
@@ -139,15 +134,14 @@ public class HookDescriptorBase {
 	/**
 	 * @throws MalformedURLException
 	 */
-	private ClassLoader getClassLoader(List pluginClasspathList) {
+	private ClassLoader getClassLoader(List<PluginClasspath> pluginClasspathList) {
 		String key = createPluginClasspathString(pluginClasspathList);
 		if (classLoaderCache.containsKey(key))
 			return (ClassLoader) classLoaderCache.get(key);
 		try {
 			URL[] urls = new URL[pluginClasspathList.size()];
 			int j = 0;
-			for (Iterator i = pluginClasspathList.iterator(); i.hasNext();) {
-				PluginClasspath classPath = (PluginClasspath) i.next();
+			for (PluginClasspath classPath :pluginClasspathList) {
 				String jarString = classPath.getJar();
 				// if(jarString.startsWith(FREEMIND_BASE_DIR_STRING)){
 				// jarString = frame.getFreemindBaseDir() +

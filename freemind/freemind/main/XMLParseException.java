@@ -66,6 +66,7 @@ package freemind.main;
  * @author Marc De Scheemaecker
  * @version $Name: fm_060405_integration $, $Revision: 1.7.34.3 $
  */
+@SuppressWarnings("serial")
 public class XMLParseException extends RuntimeException {
 
 	/**

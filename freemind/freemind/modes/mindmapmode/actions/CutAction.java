@@ -27,15 +27,14 @@ import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import freemind.common.OptionalDontShowMeAgainDialog;
 import freemind.main.FreeMind;
 import freemind.modes.mindmapmode.MindMapController;
 
+@SuppressWarnings("serial")
 public class CutAction extends AbstractAction {
-	private String text;
 	private final MindMapController mMindMapController;
 	private static java.util.logging.Logger logger = null;
 
@@ -47,7 +46,6 @@ public class CutAction extends AbstractAction {
 					this.getClass().getName());
 		}
 		this.mMindMapController = c;
-		this.text = c.getText("cut");
 		setEnabled(false);
 	}
 

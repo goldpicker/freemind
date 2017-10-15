@@ -42,6 +42,7 @@ import freemind.main.Tools;
  * @author foltin
  * @date 01.04.2013
  */
+@SuppressWarnings("serial")
 public class FreeMindProgressMonitor extends JDialog {
 
 	/**

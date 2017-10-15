@@ -30,6 +30,7 @@ import freemind.controller.MenuItemSelectedListener;
 import freemind.controller.actions.generated.instance.UnderlinedNodeAction;
 import freemind.modes.mindmapmode.MindMapController;
 
+@SuppressWarnings("serial")
 public class UnderlinedAction extends NodeGeneralAction implements
 		MenuItemSelectedListener {
 	private final MindMapController modeController;

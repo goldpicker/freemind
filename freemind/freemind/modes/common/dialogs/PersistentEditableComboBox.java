@@ -29,6 +29,7 @@ import javax.swing.JComboBox;
 
 import freemind.modes.ModeController;
 
+@SuppressWarnings("serial")
 public class PersistentEditableComboBox extends JComboBox {
 	private ActionListener actionListener = null;
 

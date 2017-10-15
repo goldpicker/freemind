@@ -23,7 +23,6 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.MalformedURLException;
 
-import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 
 import freemind.main.FreeMindMain;
@@ -32,6 +31,7 @@ import freemind.modes.FreeMindFileDialog;
 import freemind.modes.MindMapNode;
 import freemind.modes.mindmapmode.MindMapController;
 
+@SuppressWarnings("serial")
 public class ImportFolderStructureAction extends MindmapAction {
 	// Logging:
 	private static java.util.logging.Logger logger;

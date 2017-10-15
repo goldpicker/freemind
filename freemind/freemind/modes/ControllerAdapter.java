@@ -42,7 +42,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -55,7 +54,6 @@ import java.util.logging.Level;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
@@ -103,6 +101,7 @@ import freemind.view.mindmapview.ViewFeedback;
  * default Actions you may want to use for easy editing of your model. Take
  * MindMapController as a sample.
  */
+@SuppressWarnings("serial")
 public abstract class ControllerAdapter extends MapFeedbackAdapter implements ModeController,
 		DirectoryResultListener {
 
@@ -115,8 +114,8 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	 * default controller that does not show a map.
 	 */
 	private MapAdapter mModel;
-	private HashSet mNodeSelectionListeners = new HashSet();
-	private HashSet mNodeLifetimeListeners = new HashSet();
+	private HashSet<NodeSelectionListener> mNodeSelectionListeners = new HashSet<>();
+	private HashSet<NodeLifetimeListener> mNodeLifetimeListeners = new HashSet<>();
 	private File lastCurrentDir = null;
 
 	/**
@@ -204,9 +203,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	}
 
 	public void refreshMapFrom(MindMapNode node) {
-		final Iterator iterator = node.getChildren().iterator();
-		while (iterator.hasNext()) {
-			MindMapNode child = (MindMapNode) iterator.next();
+		for(MindMapNode child : node.getChildren()) {
 			refreshMapFrom(child);
 		}
 		((MapAdapter) getMap()).nodeChangedInternal(node);
@@ -223,9 +220,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	 * Overwrite this method to perform additional operations to an node update.
 	 */
 	protected void updateNode(MindMapNode node) {
-		for (Iterator iter = mNodeSelectionListeners.iterator(); iter.hasNext();) {
-			NodeSelectionListener listener = (NodeSelectionListener) iter
-					.next();
+		for (NodeSelectionListener listener : mNodeSelectionListeners) {
 			listener.onUpdateNodeHook(node);
 		}
 	}
@@ -233,17 +228,13 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	public void onLostFocusNode(NodeView node) {
 		try {
 			// deselect the old node:
-			HashSet copy = new HashSet(mNodeSelectionListeners);
+			HashSet<NodeSelectionListener> copy = new HashSet<>(mNodeSelectionListeners);
 			// we copied the set to be able to remove listeners during a
 			// listener method.
-			for (Iterator iter = copy.iterator(); iter.hasNext();) {
-				NodeSelectionListener listener = (NodeSelectionListener) iter
-						.next();
+			for (NodeSelectionListener listener : copy) {
 				listener.onLostFocusNode(node);
 			}
-			for (Iterator i = node.getModel().getActivatedHooks().iterator(); i
-					.hasNext();) {
-				PermanentNodeHook hook = (PermanentNodeHook) i.next();
+			for (PermanentNodeHook hook : node.getModel().getActivatedHooks()) {
 				hook.onLostFocusNode(node);
 			}
 		} catch (RuntimeException e) {
@@ -255,17 +246,13 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	public void onFocusNode(NodeView node) {
 		try {
 			// select the new node:
-			HashSet copy = new HashSet(mNodeSelectionListeners);
+			HashSet<NodeSelectionListener> copy = new HashSet<>(mNodeSelectionListeners);
 			// we copied the set to be able to remove listeners during a
 			// listener method.
-			for (Iterator iter = copy.iterator(); iter.hasNext();) {
-				NodeSelectionListener listener = (NodeSelectionListener) iter
-						.next();
+			for (NodeSelectionListener listener : copy) {
 				listener.onFocusNode(node);
 			}
-			for (Iterator i = node.getModel().getActivatedHooks().iterator(); i
-					.hasNext();) {
-				PermanentNodeHook hook = (PermanentNodeHook) i.next();
+			for (PermanentNodeHook hook : node.getModel().getActivatedHooks()) {
 				hook.onFocusNode(node);
 			}
 		} catch (RuntimeException e) {
@@ -276,10 +263,8 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 
 	public void changeSelection(NodeView pNode, boolean pIsSelected) {
 		try {
-			HashSet copy = new HashSet(mNodeSelectionListeners);
-			for (Iterator iter = copy.iterator(); iter.hasNext();) {
-				NodeSelectionListener listener = (NodeSelectionListener) iter
-						.next();
+			HashSet<NodeSelectionListener> copy = new HashSet<>(mNodeSelectionListeners);
+			for (NodeSelectionListener listener : copy) {
 				listener.onSelectionChange(pNode, pIsSelected);
 			}
 		} catch (RuntimeException e) {
@@ -289,17 +274,13 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	}
 
 	public void onViewCreatedHook(NodeView node) {
-		for (Iterator i = node.getModel().getActivatedHooks().iterator(); i
-				.hasNext();) {
-			PermanentNodeHook hook = (PermanentNodeHook) i.next();
+		for (PermanentNodeHook hook : node.getModel().getActivatedHooks()) {
 			hook.onViewCreatedHook(node);
 		}
 	}
 
 	public void onViewRemovedHook(NodeView node) {
-		for (Iterator i = node.getModel().getActivatedHooks().iterator(); i
-				.hasNext();) {
-			PermanentNodeHook hook = (PermanentNodeHook) i.next();
+		for (PermanentNodeHook hook : node.getModel().getActivatedHooks()) {
 			hook.onViewRemovedHook(node);
 		}
 	}
@@ -313,9 +294,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 			} catch (Exception e) {
 				freemind.main.Resources.getInstance().logException(e);
 			}
-			for (Iterator it = getView().getSelecteds().iterator(); it
-					.hasNext();) {
-				NodeView view = (NodeView) it.next();
+			for (NodeView view : getView().getSelecteds()) {
 				try {
 					listener.onSelectionChange(view, true);
 				} catch (Exception e) {
@@ -343,44 +322,39 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		mNodeLifetimeListeners.remove(listener);
 	}
 
-	public HashSet getNodeLifetimeListeners() {
+	public HashSet<NodeLifetimeListener> getNodeLifetimeListeners() {
 		return mNodeLifetimeListeners;
 	}
 
 	public void fireNodePreDeleteEvent(MindMapNode node) {
 		// call lifetime listeners:
-		for (Iterator iter = mNodeLifetimeListeners.iterator(); iter.hasNext();) {
-			NodeLifetimeListener listener = (NodeLifetimeListener) iter.next();
+		for (NodeLifetimeListener listener : mNodeLifetimeListeners) {
 			listener.onPreDeleteNode(node);
 		}
 	}
 
 	public void fireNodePostDeleteEvent(MindMapNode node, MindMapNode parent) {
 		// call lifetime listeners:
-		for (Iterator iter = mNodeLifetimeListeners.iterator(); iter.hasNext();) {
-			NodeLifetimeListener listener = (NodeLifetimeListener) iter.next();
+		for (NodeLifetimeListener listener : mNodeLifetimeListeners) {
 			listener.onPostDeleteNode(node, parent);
 		}
 	}
 
 	public void fireRecursiveNodeCreateEvent(MindMapNode node) {
-		for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-			NodeAdapter child = (NodeAdapter) i.next();
+		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+			MindMapNode child = i.next();
 			fireRecursiveNodeCreateEvent(child);
 		}
 		// call lifetime listeners:
-		for (Iterator iter = mNodeLifetimeListeners.iterator(); iter.hasNext();) {
-			NodeLifetimeListener listener = (NodeLifetimeListener) iter.next();
+		for (NodeLifetimeListener listener : mNodeLifetimeListeners) {
 			listener.onCreateNodeHook(node);
 		}
 	}
 
 	public void firePreSaveEvent(MindMapNode node) {
 		// copy to prevent concurrent modification.
-		HashSet listenerCopy = new HashSet(mNodeSelectionListeners);
-		for (Iterator iter = listenerCopy.iterator(); iter.hasNext();) {
-			NodeSelectionListener listener = (NodeSelectionListener) iter
-					.next();
+		HashSet<NodeSelectionListener> listenerCopy = new HashSet<>(mNodeSelectionListeners);
+		for (NodeSelectionListener listener : listenerCopy) {
 			listener.onSaveNode(node);
 		}
 	}
@@ -474,12 +448,10 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 				// Selected:
 				sel = modeController.getNodeFromID(store.getLastSelected());
 				modeController.centerNode(sel);
-				List selected = new Vector();
-				for (Iterator iter = store.getListNodeListMemberList()
-						.iterator(); iter.hasNext();) {
-					NodeListMember member = (NodeListMember) iter.next();
-					NodeAdapter selNode = modeController.getNodeFromID(member
-							.getNode());
+				List<MindMapNode> selected = new Vector<>();
+				for (Iterator<NodeListMember> iter = store.getListNodeListMemberList().iterator(); iter.hasNext();) {
+					NodeListMember member = iter.next();
+					MindMapNode selNode = modeController.getNodeFromID(member.getNode());
 					selected.add(selNode);
 				}
 				modeController.select(sel, selected);
@@ -624,12 +596,12 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	 * 
 	 * @return returns a list of MindMapNode s.
 	 */
-	public List getSelecteds() {
-		LinkedList selecteds = new LinkedList();
-		ListIterator it = getView().getSelecteds().listIterator();
+	public List<MindMapNode> getSelecteds() {
+		LinkedList<MindMapNode> selecteds = new LinkedList<>();
+		ListIterator<NodeView> it = getView().getSelecteds().listIterator();
 		if (it != null) {
 			while (it.hasNext()) {
-				NodeView selected = (NodeView) it.next();
+				NodeView selected = it.next();
 				selecteds.add(selected.getModel());
 			}
 		}
@@ -641,18 +613,17 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		getView().select(node);
 	}
 
-	public void select(MindMapNode primarySelected, List selecteds) {
+	public void select(MindMapNode primarySelected, List<MindMapNode> selecteds) {
 		// are they visible?
-		for (Iterator i = selecteds.iterator(); i.hasNext();) {
-			MindMapNode node = (MindMapNode) (i.next());
+		for (MindMapNode node : selecteds) {
 			displayNode(node);
 		}
 		final NodeView focussedNodeView = getNodeView(primarySelected);
 		if (focussedNodeView != null) {
 			getView().selectAsTheOnlyOneSelected(focussedNodeView);
 			getView().scrollNodeToVisible(focussedNodeView);
-			for (Iterator i = selecteds.iterator(); i.hasNext();) {
-				MindMapNode node = (MindMapNode) i.next();
+			for (Iterator<MindMapNode> i = selecteds.iterator(); i.hasNext();) {
+				MindMapNode node = i.next();
 				NodeView nodeView = getNodeView(node);
 				if (nodeView != null) {
 					getView().makeTheSelected(nodeView);
@@ -667,9 +638,9 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		getView().selectBranch(selected, extend);
 	}
 
-	public List getSelectedsByDepth() {
+	public List<MindMapNode> getSelectedsByDepth() {
 		// return an ArrayList of MindMapNodes.
-		List result = getSelecteds();
+		List<MindMapNode> result = getSelecteds();
 		sortNodesByDepth(result);
 		return result;
 	}
@@ -981,9 +952,8 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 			String lastSelected = this.getNodeID(this.getSelected());
 			store.setLastSelected(lastSelected);
 			store.clearNodeListMemberList();
-			List selecteds = this.getSelecteds();
-			for (Iterator iter = selecteds.iterator(); iter.hasNext();) {
-				MindMapNode node = (MindMapNode) iter.next();
+			List<MindMapNode> selecteds = this.getSelecteds();
+			for (MindMapNode node : selecteds) {
 				NodeListMember member = new NodeListMember();
 				member.setNode(this.getNodeID(node));
 				store.addNodeListMember(member);
@@ -1197,6 +1167,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		return null;
 	}
 
+	
 	public class OpenAction extends AbstractAction {
 		ControllerAdapter mc;
 
@@ -1278,8 +1249,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 			}
 			dtde.acceptDrop(DnDConstants.ACTION_COPY);
 			try {
-				Object data = dtde.getTransferable().getTransferData(
-						DataFlavor.javaFileListFlavor);
+				Object data = dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
 				if (data == null) {
 					// Shouldn't happen because dragEnter() rejects drags w/out
 					// at least
@@ -1287,9 +1257,9 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 					dtde.dropComplete(false);
 					return;
 				}
-				Iterator iterator = ((List) data).iterator();
+				Iterator<File> iterator = ((List<File>) data).iterator();
 				while (iterator.hasNext()) {
-					File file = (File) iterator.next();
+					File file = iterator.next();
 					load(file);
 				}
 			} catch (Exception e) {
@@ -1335,15 +1305,15 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 
 	public Transferable copySingle() {
 
-		final ArrayList selectedNodes = getView().getSingleSelectedNodes();
+		final ArrayList<MindMapNode> selectedNodes = getView().getSingleSelectedNodes();
 		return copy(selectedNodes, false);
 	}
 
-	public Transferable copy(List selectedNodes, boolean copyInvisible) {
+	public Transferable copy(List<MindMapNode> selectedNodes, boolean copyInvisible) {
 		try {
 			String forNodesFlavor = createForNodesFlavor(selectedNodes,
 					copyInvisible);
-			List createForNodeIdsFlavor = createForNodeIdsFlavor(selectedNodes,
+			List<String> createForNodeIdsFlavor = createForNodeIdsFlavor(selectedNodes,
 					copyInvisible);
 
 			String plainText = getMap().getAsPlainText(selectedNodes);
@@ -1360,12 +1330,11 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		return null;
 	}
 
-	public String createForNodesFlavor(List selectedNodes, boolean copyInvisible)
+	public String createForNodesFlavor(List<MindMapNode> selectedNodes, boolean copyInvisible)
 			throws UnsupportedFlavorException, IOException {
 		String forNodesFlavor = "";
 		boolean firstLoop = true;
-		for (Iterator it = selectedNodes.iterator(); it.hasNext();) {
-			MindMapNode tmpNode = (MindMapNode) it.next();
+		for (MindMapNode tmpNode : selectedNodes) {
 			if (firstLoop) {
 				firstLoop = false;
 			} else {
@@ -1378,13 +1347,11 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		return forNodesFlavor;
 	}
 
-	public List createForNodeIdsFlavor(List selectedNodes, boolean copyInvisible)
+	public List<String> createForNodeIdsFlavor(List<MindMapNode> selectedNodes, boolean copyInvisible)
 			throws UnsupportedFlavorException, IOException {
-		Vector forNodesFlavor = new Vector();
-		boolean firstLoop = true;
-		for (Iterator it = selectedNodes.iterator(); it.hasNext();) {
-			MindMapNode tmpNode = (MindMapNode) it.next();
+		Vector<String> forNodesFlavor = new Vector<>();
 
+		for (MindMapNode tmpNode : selectedNodes) {
 			forNodesFlavor.add(getNodeID(tmpNode));
 		}
 		return forNodesFlavor;
@@ -1424,8 +1391,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		setAllActions(true);
 		if (getFrame().getView() != null) {
 			FileOpener fileOpener = new FileOpener();
-			DropTarget dropTarget = new DropTarget(getFrame().getView(),
-					fileOpener);
+			new DropTarget(getFrame().getView(),fileOpener);
 		}
 		getMapMouseWheelListener().register(
 				new MindMapMouseWheelEventHandler(this));
@@ -1454,7 +1420,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	 * Display a node in the display (used by find and the goto action by arrow
 	 * link actions).
 	 */
-	public void displayNode(MindMapNode node, ArrayList nodesUnfoldedByDisplay) {
+	public void displayNode(MindMapNode node, ArrayList<MindMapNode> nodesUnfoldedByDisplay) {
 		// Unfold the path to the node
 		Object[] path = getMap().getPathToRoot(node);
 		// Iterate the path with the exception of the last node
@@ -1502,8 +1468,8 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 		}
 	}
 
-	public Set getRegisteredMouseWheelEventHandler() {
-		return Collections.EMPTY_SET;
+	public Set<MouseWheelEventHandler> getRegisteredMouseWheelEventHandler() {
+		return Collections.emptySet();
 	}
 
 	public MapModule getMapModule() {
@@ -1581,8 +1547,7 @@ public abstract class ControllerAdapter extends MapFeedbackAdapter implements Mo
 	 */
 	@Override
 	public NodeAdapter getNodeFromID(String nodeID) {
-		NodeAdapter node = (NodeAdapter) getMap().getLinkRegistry()
-				.getTargetForId(nodeID);
+		NodeAdapter node = (NodeAdapter) getMap().getLinkRegistry().getTargetForId(nodeID);
 		if (node == null) {
 			throw new IllegalArgumentException("Node belonging to the node id "
 					+ nodeID + " not found in map " + getMap().getFile());

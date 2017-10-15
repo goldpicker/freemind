@@ -71,14 +71,13 @@ import java.nio.file.Path;
 import java.nio.file.attribute.DosFileAttributes;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.KeySpec;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
@@ -148,12 +147,22 @@ public class Tools {
 	// initializing an array. Here's an example of this syntax:
 	// boolean[] answers = { true, false, true, true, false };
 
-	public static final Set executableExtensions = new HashSet(
-			Arrays.asList(new String[] { "exe", "com", "vbs", "bat", "lnk" }));
+	public static final Set<String> executableExtensions = new HashSet<>(5);
+	static {
+		executableExtensions.add("exe");
+		executableExtensions.add("com");
+		executableExtensions.add("vbs");
+		executableExtensions.add("bat");
+		executableExtensions.add("lnk");
+		
+	}
+	
 
-	private static Set availableFontFamilyNames = null; // Keep set of platform
+	private static Set<String> availableFontFamilyNames = null; // Keep set of platform
 
 	private static String sEnvFonts[] = null;
+	
+	private static Vector<String> vectorAvailableFontFamilyNames;
 
 	// bug fix from Dimitri.
 	public static Random ran = new Random();
@@ -201,10 +210,10 @@ public class Tools {
 		if (col == null)
 			return null; // throw new IllegalArgumentException("Point was
 		// null");
-		Vector l = new Vector();
+		Vector<String> l = new Vector<>();
 		l.add(Integer.toString(col.x));
 		l.add(Integer.toString(col.y));
-		return listToString((List) l);
+		return listToString(l);
 	}
 
 	public static Point xmlToPoint(String string) {
@@ -216,8 +225,8 @@ public class Tools {
 					"java\\.awt\\.Point\\[x=(-*[0-9]*),y=(-*[0-9]*)\\]",
 					"$1;$2");
 		}
-		List l = stringToList(string);
-		ListIterator it = l.listIterator(0);
+		List<String> l = stringToList(string);
+		ListIterator<String> it = l.listIterator(0);
 		if (l.size() != 2)
 			throw new IllegalArgumentException(
 					"A point must consist of two numbers (and not: '" + string
@@ -232,10 +241,9 @@ public class Tools {
 	}
 
 	public static boolean xmlToBoolean(String string) {
-		if (string == null)
-			return false;
-		if (string.equals("true"))
+		if ("true".equals(string))
 			return true;
+
 		return false;
 	}
 
@@ -243,22 +251,22 @@ public class Tools {
 	 * Converts a String in the format "value;value;value" to a List with the
 	 * values (as strings)
 	 */
-	public static List stringToList(String string) {
+	public static List<String> stringToList(String string) {
 		StringTokenizer tok = new StringTokenizer(string, ";");
-		List list = new LinkedList();
+		List<String> list = new LinkedList<>();
 		while (tok.hasMoreTokens()) {
 			list.add(tok.nextToken());
 		}
 		return list;
 	}
 
-	public static String listToString(List list) {
-		ListIterator it = list.listIterator(0);
-		String str = new String();
+	public static String listToString(List<?> list) {
+		ListIterator<?> it = list.listIterator(0);
+		StringBuffer str = new StringBuffer();
 		while (it.hasNext()) {
-			str += it.next().toString() + ";";
+			str.append(it.next().toString() + ";");
 		}
-		return str;
+		return str.toString();
 	}
 
 	/**
@@ -272,10 +280,10 @@ public class Tools {
 		return file;
 	}
 
-	public static Set getAvailableFontFamilyNames() {
+	public static Set<String> getAvailableFontFamilyNames() {
 		if (availableFontFamilyNames == null) {
 			String[] envFonts = getAvailableFonts();
-			availableFontFamilyNames = new HashSet();
+			availableFontFamilyNames = new HashSet<>(envFonts.length);
 			for (int i = 0; i < envFonts.length; i++) {
 				availableFontFamilyNames.add(envFonts[i]);
 			}
@@ -296,13 +304,16 @@ public class Tools {
 		return sEnvFonts;
 	}
 
-	public static Vector getAvailableFontFamilyNamesAsVector() {
-		String[] envFonts = getAvailableFonts();
-		Vector availableFontFamilyNames = new Vector();
-		for (int i = 0; i < envFonts.length; i++) {
-			availableFontFamilyNames.add(envFonts[i]);
+	public static Vector<String> getAvailableFontFamilyNamesAsVector() {
+		if(vectorAvailableFontFamilyNames == null) {
+			String[] envFonts = getAvailableFonts();
+			vectorAvailableFontFamilyNames = new Vector<>(envFonts.length);
+			for (int i = 0; i < envFonts.length; i++) {
+				vectorAvailableFontFamilyNames.add(envFonts[i]);
+			}
+			
 		}
-		return availableFontFamilyNames;
+		return vectorAvailableFontFamilyNames;
 	}
 
 	public static boolean isAvailableFontFamily(String fontFamilyName) {
@@ -621,7 +632,7 @@ public class Tools {
 		}
 
 		public String toString() {
-			return new String("IntHolder(") + value + ")";
+			return "IntHolder(" + value + ")";
 		}
 		
 		public void increase() {
@@ -1304,7 +1315,7 @@ public class Tools {
 	}
 
 	public static void convertPointToAncestor(Component source, Point point,
-			Class ancestorClass) {
+			Class<?> ancestorClass) {
 		Component destination = SwingUtilities.getAncestorOfClass(
 				ancestorClass, source);
 		convertPointToAncestor(source, point, destination);
@@ -1721,13 +1732,13 @@ public class Tools {
 		return mode;
 	}
 
-	public static Vector getVectorWithSingleElement(Object obj) {
-		Vector nodes = new Vector();
+	public static <T> Vector<T> getVectorWithSingleElement(T obj) {
+		Vector<T> nodes = new Vector<>();
 		nodes.add(obj);
 		return nodes;
 	}
 
-	public static void swapVectorPositions(Vector pVector, int src, int dst) {
+	public static <T> void swapVectorPositions(Vector<T> pVector, int src, int dst) {
 		if (src >= pVector.size() || dst >= pVector.size() || src < 0
 				|| dst < 0) {
 			throw new IllegalArgumentException("One index is out of bounds "
@@ -1807,9 +1818,9 @@ public class Tools {
 		return b.toString();
 	}
 
-	public static Vector/* <URL> */urlStringToUrls(String pUrls) {
+	public static Vector<URL> urlStringToUrls(String pUrls) {
 		String[] urls = pUrls.split("\n");
-		Vector ret = new Vector();
+		Vector<URL> ret = new Vector<>();
 		for (int i = 0; i < urls.length; i++) {
 			String url = urls[i];
 			try {
@@ -1825,7 +1836,7 @@ public class Tools {
 	 * @return
 	 */
 	public static boolean isHeadless() {
-		return GraphicsEnvironment.getLocalGraphicsEnvironment().isHeadless();
+		return GraphicsEnvironment.isHeadless();
 	}
 
 	/**
@@ -1855,8 +1866,7 @@ public class Tools {
 		Transferable clipboardContents = pMindMapController.getClipboardContents();
 		if (clipboardContents != null) {
 			try {
-				List<String> transferData = (List<String>) clipboardContents
-						.getTransferData(MindMapNodesSelection.copyNodeIdsFlavor);
+				List<String> transferData = (List<String>) clipboardContents.getTransferData(MindMapNodesSelection.copyNodeIdsFlavor);
 				for (Iterator<String> it = transferData.iterator(); it.hasNext();) {
 					String nodeId = (String) it.next();
 					MindMapNode node = pMindMapController.getNodeFromID(nodeId);
@@ -2010,12 +2020,12 @@ public class Tools {
 		if (pAction instanceof CompoundAction) {
 			CompoundAction compound = (CompoundAction) pAction;
 			StringBuffer buf = new StringBuffer("[");
-			for (Iterator it = compound.getListChoiceList().iterator(); it
+			for (Iterator<XmlAction> it = compound.getListChoiceList().iterator(); it
 					.hasNext();) {
 				if (buf.length() > 1) {
 					buf.append(',');
 				}
-				XmlAction subAction = (XmlAction) it.next();
+				XmlAction subAction = it.next();
 				buf.append(printXmlAction(subAction));
 			}
 			buf.append(']');
@@ -2028,9 +2038,9 @@ public class Tools {
 		return (XmlAction) unMarshall(marshall(action));
 	}
 
-	public static String generateID(String proposedID, HashMap hashMap,
+	public static String generateID(String proposedID, Map map,
 			String prefix) {
-		String myProposedID = new String((proposedID != null) ? proposedID : "");
+		String myProposedID = (proposedID != null) ? proposedID : "";
 		String returnValue;
 		do {
 			if (!myProposedID.isEmpty()) {
@@ -2046,7 +2056,7 @@ public class Tools {
 				returnValue = prefix
 						+ Integer.toString(Tools.ran.nextInt(2000000000));
 			}
-		} while (hashMap.containsKey(returnValue));
+		} while (map.containsKey(returnValue));
 		return returnValue;
 	}
 
@@ -2136,9 +2146,9 @@ public class Tools {
 	}
 
 	static public int iconFirstIndex(MindMapNode node, String iconName) {
-		List icons = node.getIcons();
-		for (ListIterator i = icons.listIterator(); i.hasNext();) {
-			MindIcon nextIcon = (MindIcon) i.next();
+		List<MindIcon> icons = node.getIcons();
+		for (ListIterator<MindIcon> i = icons.listIterator(); i.hasNext();) {
+			MindIcon nextIcon = i.next();
 			if (iconName.equals(nextIcon.getName()))
 				return i.previousIndex();
 		}
@@ -2147,10 +2157,10 @@ public class Tools {
 	}
 
 	static public int iconLastIndex(MindMapNode node, String iconName) {
-		List icons = node.getIcons();
-		ListIterator i = icons.listIterator(icons.size());
+		List<MindIcon> icons = node.getIcons();
+		ListIterator<MindIcon> i = icons.listIterator(icons.size());
 		while (i.hasPrevious()) {
-			MindIcon nextIcon = (MindIcon) i.previous();
+			MindIcon nextIcon = i.previous();
 			if (iconName.equals(nextIcon.getName()))
 				return i.nextIndex();
 		}
@@ -2206,9 +2216,7 @@ public class Tools {
 	}
 
 	public static void scaleAllFonts(float pScale) {
-		for (Iterator i = UIManager.getLookAndFeelDefaults().keySet()
-				.iterator(); i.hasNext();) {
-			Object next = i.next();
+		for (Object next : UIManager.getLookAndFeelDefaults().keySet()) {
 			if (next instanceof String) {
 				String key = (String) next;
 				if (key.endsWith(".font")) {

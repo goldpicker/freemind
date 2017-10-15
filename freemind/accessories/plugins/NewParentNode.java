@@ -71,9 +71,9 @@ public class NewParentNode extends MindMapNodeHookAdapter {
 		final MapView mapView = getMindMapController().getView();
 		// we dont need node.
 		MindMapNode focussed = getMindMapController().getSelected();
-		List selecteds = getMindMapController().getSelecteds();
+		List<MindMapNode> selecteds = getMindMapController().getSelecteds();
 		MindMapNode selectedNode = focussed;
-		List selectedNodes = selecteds;
+		List<MindMapNode> selectedNodes = selecteds;
 
 		// bug fix: sort to make independent by user's selection:
 		getMindMapController().sortNodesByDepth(selectedNodes);
@@ -81,20 +81,20 @@ public class NewParentNode extends MindMapNodeHookAdapter {
 		if (focussed.isRoot()) {
 			if (selecteds.size() == 1) {
 				// only root is selected. we try to create a new root:
-				Vector children = new Vector(rootNode.getChildren());
+				Vector<MindMapNode> children = new Vector<>(rootNode.getChildren());
 				// copy only root.
 				Transferable rootContent = getMindMapController().copySingle();
 				// and paste it directly again.
 				getMindMapController().paste(rootContent, rootNode);
-				Vector childrenNew = new Vector(rootNode.getChildren());
+				Vector<MindMapNode> childrenNew = new Vector<>(rootNode.getChildren());
 				/*
 				 * look for the new node as the difference between former
 				 * children and new children.
 				 */
 				MindMapNode rootCopy = null;
 				boolean found = false;
-				for (Iterator it = childrenNew.iterator(); it.hasNext();) {
-					rootCopy = (MindMapNode) it.next();
+				for (Iterator<MindMapNode> it = childrenNew.iterator(); it.hasNext();) {
+					rootCopy = it.next();
 					if (!children.contains(rootCopy)) {
 						found = true;
 						break;
@@ -130,7 +130,7 @@ public class NewParentNode extends MindMapNodeHookAdapter {
 	}
 
 	private MindMapNode moveToNewParent(MindMapNode rootNode,
-			MindMapNode selectedNode, List selectedNodes) {
+			MindMapNode selectedNode, List<MindMapNode> selectedNodes) {
 		// Create new node in the position of the selectedNode
 		MindMapNode selectedParent = selectedNode.getParentNode();
 		int childPosition = selectedParent.getChildPosition(selectedNode);
@@ -140,7 +140,7 @@ public class NewParentNode extends MindMapNodeHookAdapter {
 	}
 
 	private MindMapNode moveToOtherNode(MindMapNode rootNode,
-			List nodesToBeMoved, MindMapNode selectedParent, MindMapNode newNode) {
+			List<MindMapNode> nodesToBeMoved, MindMapNode selectedParent, MindMapNode newNode) {
 		if (nodesToBeMoved.size() == 0) {
 			// nothing to do.
 			return newNode;
@@ -149,8 +149,7 @@ public class NewParentNode extends MindMapNodeHookAdapter {
 		// (this restriction is to simplify the action, and could
 		// possibly be removed in the future, when we have undo)
 		// Also make sure that none of the selected nodes are the root node
-		for (Iterator it = nodesToBeMoved.iterator(); it.hasNext();) {
-			MindMapNode node = (MindMapNode) it.next();
+		for (MindMapNode node :nodesToBeMoved) {
 			if (node.getParentNode() != selectedParent) {
 				getMindMapController().getController().errorMessage(
 						getResourceString("cannot_add_parent_diff_parents"));

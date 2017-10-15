@@ -75,7 +75,7 @@ public abstract class ReminderHookBase extends PermanentNodeHookAdapter {
 
 	public void loadFrom(XMLElement child) {
 		super.loadFrom(child);
-		HashMap hash = loadNameValuePairs(child);
+		HashMap<String, String> hash = loadNameValuePairs(child);
 		if (hash.containsKey(REMINDUSERAT)) {
 			String remindAt = (String) hash.get(REMINDUSERAT);
 			setRemindUserAt(new Long(remindAt).longValue());
@@ -85,8 +85,8 @@ public abstract class ReminderHookBase extends PermanentNodeHookAdapter {
 
 	public void save(XMLElement xml) {
 		super.save(xml);
-		HashMap nameValuePairs = new HashMap();
-		nameValuePairs.put(REMINDUSERAT, new Long(remindUserAt));
+		HashMap<String, Object> nameValuePairs = new HashMap<>();
+		nameValuePairs.put(REMINDUSERAT, remindUserAt);
 		saveNameValuePairs(nameValuePairs, xml);
 	}
 

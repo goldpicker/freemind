@@ -54,7 +54,7 @@ public class SearchControllerHook extends MindMapHookAdapter implements
 		}
 	}
 
-	public Logger getLogger(Class className) {
+	public Logger getLogger(Class<?> className) {
 		return getController().getFrame().getLogger(className.getName());
 	}
 
@@ -83,7 +83,6 @@ public class SearchControllerHook extends MindMapHookAdapter implements
 	}
 
 	public File[] getFilesOfOpenTabs() {
-		@SuppressWarnings("unchecked")
 		List<MapModule> maps = getController().getFrame().getController()
 				.getMapModuleManager().getMapModuleVector();
 		File[] mapFiles = new File[maps.size()];

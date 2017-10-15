@@ -40,7 +40,7 @@ public class FontSizeActor extends XmlActorAdapter {
 		super(pMapFeedback);
 	}
 
-	public Class getDoActionClass() {
+	public Class<FontSizeNodeAction> getDoActionClass() {
 		return FontSizeNodeAction.class;
 	}
 

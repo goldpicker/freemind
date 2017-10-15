@@ -23,6 +23,7 @@ package freemind.controller;
 import java.awt.Insets;
 import java.util.logging.Logger;
 
+@SuppressWarnings("serial")
 public class MainToolBar extends FreeMindToolBar {
 	Controller controller;
 	private static Logger logger = null;

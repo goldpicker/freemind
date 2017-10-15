@@ -22,8 +22,6 @@
 
 package accessories.plugins.time;
 
-import java.util.Iterator;
-
 import javax.swing.Action;
 import javax.swing.JMenuItem;
 
@@ -46,12 +44,10 @@ public class TimeManagementOrganizer implements HookRegistration,
 		MenuItemEnabledListener {
 
 	private final ModeController controller;
-	private final MindMap mMap;
 	private final java.util.logging.Logger logger;
 
 	public TimeManagementOrganizer(ModeController controller, MindMap map) {
 		this.controller = controller;
-		mMap = map;
 		logger = controller.getFrame().getLogger(this.getClass().getName());
 	}
 
@@ -73,9 +69,7 @@ public class TimeManagementOrganizer implements HookRegistration,
 			String hookName = ((NodeHookAction) action).getHookName();
 			if (hookName.equals("plugins/time/RemoveReminderHook.java")) {
 				boolean visible = false;
-				for (Iterator i = controller.getSelecteds().iterator(); i
-						.hasNext();) {
-					MindMapNode node = (MindMapNode) i.next();
+				for (MindMapNode node : controller.getSelecteds()) {
 					if (TimeManagementOrganizer.getHook(node) != null) {
 						visible = true;
 					}
@@ -89,8 +83,7 @@ public class TimeManagementOrganizer implements HookRegistration,
 	/**
 	 */
 	public static ReminderHookBase getHook(MindMapNode node) {
-		for (Iterator j = node.getActivatedHooks().iterator(); j.hasNext();) {
-			PermanentNodeHook element = (PermanentNodeHook) j.next();
+		for (PermanentNodeHook element : node.getActivatedHooks()) {
 			if (element instanceof ReminderHookBase) {
 				return (ReminderHookBase) element;
 			}

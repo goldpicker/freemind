@@ -35,7 +35,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.SwingUtilities;
@@ -202,7 +201,7 @@ public class UpdateThread extends Thread implements ResultHandler,
 			MindMapController newModeController = (MindMapController) mController
 					.getMode().createModeController();
 			MapAdapter newModel = new MindMapMapModel(newModeController);
-			HashMap IDToTarget = new HashMap();
+			HashMap<String, NodeAdapter>  IDToTarget = new HashMap<>();
 			StringReader reader = new StringReader(map);
 			MindMapNodeModel rootNode = (MindMapNodeModel) newModel
 					.createNodeTreeFromXml(reader, IDToTarget);
@@ -216,10 +215,8 @@ public class UpdateThread extends Thread implements ResultHandler,
 			// add new hook
 			DatabaseBasics.togglePermanentHook(mController);
 			// tell him about this thread.
-			Collection activatedHooks = mController.getRootNode()
-					.getActivatedHooks();
-			for (Iterator it = activatedHooks.iterator(); it.hasNext();) {
-				PermanentNodeHook hook = (PermanentNodeHook) it.next();
+			Collection<PermanentNodeHook> activatedHooks = mController.getRootNode().getActivatedHooks();
+			for (PermanentNodeHook hook : activatedHooks) {
 				if (hook instanceof DatabaseConnectionHook) {
 					DatabaseConnectionHook connHook = (DatabaseConnectionHook) hook;
 					connHook.setUpdateThread(this);
@@ -255,7 +252,6 @@ public class UpdateThread extends Thread implements ResultHandler,
 	public synchronized void query(PreparedStatement preparedStatement,
 			ResultHandler pHandler) throws SQLException {
 
-		Statement st = null;
 		ResultSet rs = null;
 
 		boolean execute = preparedStatement.execute();
@@ -377,12 +373,12 @@ public class UpdateThread extends Thread implements ResultHandler,
 		}
 	}
 
-	public Vector getUsers() throws SQLException {
+	public Vector<String> getUsers() throws SQLException {
 		if (mPrepareStatementUsers == null) {
 			mPrepareStatementUsers = mConnection
 					.prepareStatement(QUERY_GET_USERS);
 		}
-		Vector result = new Vector();
+		Vector<String> result = new Vector<>();
 
 		boolean execute = mPrepareStatementUsers.execute();
 		if (!execute) {

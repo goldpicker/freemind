@@ -146,7 +146,7 @@ public class KeyEventTranslator {
 		 * consuming won't work. I don't think this is a problem as nothing uses
 		 * translation anyway
 		 */
-		Key trans = (Key) transMap.get(returnValue);
+		Key trans = transMap.get(returnValue);
 		if (trans == null)
 			return returnValue;
 		else
@@ -298,10 +298,8 @@ public class KeyEventTranslator {
 		StringBuffer buf = null;
 
 		if ((mods & InputEvent.CTRL_MASK) != 0) {
-			if (buf == null)
-				buf = new StringBuffer();
-			else
-				buf.append(GrabKeyDialog.MODIFIER_SEPARATOR);
+			buf = new StringBuffer();
+
 			buf.append(getSymbolicModifierName(InputEvent.CTRL_MASK));
 		}
 		if ((mods & InputEvent.ALT_MASK) != 0) {
@@ -358,7 +356,7 @@ public class KeyEventTranslator {
 	static int c, a, m, s;
 
 	// {{{ Private members
-	private static Map transMap = new HashMap();
+	private static Map<Key,Key> transMap = new HashMap<>();
 
 	static {
 		if (Tools.isMacOsX()) {

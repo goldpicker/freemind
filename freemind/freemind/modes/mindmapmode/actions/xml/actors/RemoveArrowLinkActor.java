@@ -27,7 +27,6 @@ import freemind.main.Tools;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MindMapArrowLink;
 import freemind.modes.MindMapLink;
-import freemind.modes.MindMapLinkRegistry;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
@@ -71,7 +70,7 @@ public class RemoveArrowLinkActor extends XmlActorAdapter {
 		}
 	}
 
-	public Class getDoActionClass() {
+	public Class<RemoveArrowLinkXmlAction> getDoActionClass() {
 		return RemoveArrowLinkXmlAction.class;
 	}
 

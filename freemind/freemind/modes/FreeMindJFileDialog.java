@@ -32,6 +32,7 @@ import javax.swing.filechooser.FileFilter;
  * @author foltin
  * @date 23.02.2012
  */
+@SuppressWarnings("serial")
 public class FreeMindJFileDialog extends JFileChooser implements FreeMindFileDialog  {
 
 	private DirectoryResultListener mDirectoryResultListener = null;

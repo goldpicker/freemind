@@ -56,6 +56,7 @@ public class FindTextTests extends FreeMindTestBase {
 	 * 
 	 * @throws Exception
 	 */
+	@SuppressWarnings("serial")
 	public void testFlatNodeTableFilter() throws Exception {
 		AbstractTableModel tm = new AbstractTableModel() {
 
@@ -92,7 +93,7 @@ public class FindTextTests extends FreeMindTestBase {
 		HtmlTools.IndexPair pair3 = new HtmlTools.IndexPair(14, 27, 0, 4, false);
 		HtmlTools.IndexPair pair4 = new HtmlTools.IndexPair(27, 34, 4, 4, false);
 		HtmlTools.IndexPair pair5 = new HtmlTools.IndexPair(34, 34, 4, 4, false);
-		ArrayList list = new ArrayList();
+		ArrayList<HtmlTools.IndexPair> list = new ArrayList<>();
 		list.add(pair1);
 		list.add(pair2);
 		list.add(pair3);

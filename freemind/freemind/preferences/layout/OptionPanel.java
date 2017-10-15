@@ -39,7 +39,6 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -48,8 +47,8 @@ import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.builder.ButtonBarBuilder;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
@@ -78,6 +77,7 @@ import freemind.modes.MindIcon;
 import freemind.modes.MindMapNode;
 import freemind.modes.ModeController;
 import freemind.modes.mindmapmode.MindMapController;
+import freemind.modes.mindmapmode.actions.IconAction;
 import freemind.preferences.FreemindPropertyContributor;
 import freemind.preferences.layout.GrabKeyDialog.KeyBinding;
 
@@ -109,11 +109,9 @@ public class OptionPanel implements TextTranslator {
 
 	private final JDialog frame;
 
-	private HashMap tabButtonMap = new HashMap();
-	private HashMap tabActionMap = new HashMap();
+	private HashMap<String, JButton> tabButtonMap = new HashMap<>();
+	private HashMap<String, ChangeTabAction> tabActionMap = new HashMap<>();
 	private String selectedPanel = null;
-
-	private static JColorChooser colorChooser;
 
 	private final OptionPanelFeedback feedback;
 
@@ -150,8 +148,6 @@ public class OptionPanel implements TextTranslator {
 	public interface OptionPanelFeedback {
 		void writeProperties(Properties props);
 	}
-
-	public static Vector changeListeners = new Vector();
 
 	/**
 	 */
@@ -257,8 +253,6 @@ public class OptionPanel implements TextTranslator {
 				BorderLayout.SOUTH);
 	}
 
-	private static String lastKey = "";
-
 	/**
 	 */
 	public String getText(String string) {
@@ -290,7 +284,7 @@ public class OptionPanel implements TextTranslator {
 		return (JButton) tabButtonMap.get(name);
 	}
 
-	private Collection getAllButtons() {
+	private Collection<JButton>  getAllButtons() {
 		return tabButtonMap.values();
 	}
 
@@ -312,9 +306,8 @@ public class OptionPanel implements TextTranslator {
 		public void actionPerformed(ActionEvent arg0) {
 			cardLayout.show(centralPanel, tabName);
 			// design: mark selected button with a color
-			Collection c = getAllButtons();
-			for (Iterator i = c.iterator(); i.hasNext();) {
-				JButton button = (JButton) i.next();
+			Collection<JButton> c = getAllButtons();
+			for (JButton button : c) {
 				button.setForeground(null);
 			}
 			getTabButton(tabName).setForeground(MARKED_BUTTON_COLOR);
@@ -678,7 +671,7 @@ public class OptionPanel implements TextTranslator {
 		LookAndFeelInfo[] lafInfo = UIManager.getInstalledLookAndFeels();
 		int reservedCount = 6;
 		String[] lafNames = new String[lafInfo.length + reservedCount];
-		Vector translatedLafNames = new Vector();
+		Vector<String> translatedLafNames = new Vector<>();
 		lafNames[0] = "default";
 		translatedLafNames.add(getText("default"));
 		lafNames[1] = "metal";
@@ -1172,18 +1165,16 @@ public class OptionPanel implements TextTranslator {
 				.getModeController();
 		if (modeController instanceof MindMapController) {
 			MindMapController controller = (MindMapController) modeController;
-			Vector iconActions = controller.iconActions;
-			Vector actions = new Vector();
+			Vector<IconAction> iconActions = controller.iconActions;
+			Vector<IconInformation> actions = new Vector<>();
 			actions.addAll(iconActions);
 			actions.add(controller.removeLastIconAction);
 			actions.add(controller.removeAllIconsAction);
 			controls.add(new NextLineProperty());
 			controls.add(new SeparatorProperty("icons"));
-			final Iterator iterator = actions.iterator();
-			while (iterator.hasNext()) {
-				IconInformation info = (IconInformation) iterator.next();
-				final KeyProperty keyProperty = new KeyProperty(frame, null,
-						info.getKeystrokeResourceName());
+			
+			for(IconInformation info : actions) {
+				final KeyProperty keyProperty = new KeyProperty(frame, null, info.getKeystrokeResourceName());
 				keyProperty.setLabelText(info.getDescription());
 				keyProperty.setImageIcon(info.getIcon());
 				keyProperty.disableModifiers();

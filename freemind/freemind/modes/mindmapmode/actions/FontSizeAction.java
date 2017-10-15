@@ -31,6 +31,7 @@ import freemind.modes.mindmapmode.actions.xml.ActionPair;
  * @author foltin
  * 
  */
+@SuppressWarnings("serial")
 public class FontSizeAction extends NodeGeneralAction {
 
 	/** This action is used for all sizes, which have to be set first. */

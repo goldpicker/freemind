@@ -188,7 +188,7 @@ public class XMLElement {
 	 * </dd>
 	 * </dl>
 	 */
-	private TreeMap attributes;
+	private TreeMap<String, String> attributes;
 
 	/**
 	 * Child elements of the element.
@@ -205,7 +205,7 @@ public class XMLElement {
 	 * </dd>
 	 * </dl>
 	 */
-	private Vector children;
+	private Vector<XMLElement> children;
 
 	/**
 	 * The name of the element.
@@ -264,7 +264,7 @@ public class XMLElement {
 	 * </dd>
 	 * </dl>
 	 */
-	private Hashtable entities;
+	private Hashtable<String, char[]> entities;
 
 	/**
 	 * The line number where the element starts.
@@ -357,7 +357,7 @@ public class XMLElement {
 	 *      XMLElement(Hashtable, boolean)
 	 */
 	public XMLElement() {
-		this(new Hashtable(), false, true, true);
+		this(new Hashtable<String, char[]>(), false, true, true);
 	}
 
 	/**
@@ -401,7 +401,7 @@ public class XMLElement {
 	 * @see freemind.main.XMLElement#XMLElement(java.util.Hashtable,boolean)
 	 *      XMLElement(Hashtable, boolean)
 	 */
-	public XMLElement(Hashtable entities) {
+	public XMLElement(Hashtable<String, char[]> entities) {
 		this(entities, false, true, true);
 	}
 
@@ -440,7 +440,7 @@ public class XMLElement {
 	 *      XMLElement(Hashtable, boolean)
 	 */
 	public XMLElement(boolean skipLeadingWhitespace) {
-		this(new Hashtable(), skipLeadingWhitespace, true, true);
+		this(new Hashtable<String, char[]>(), skipLeadingWhitespace, true, true);
 	}
 
 	/**
@@ -485,7 +485,7 @@ public class XMLElement {
 	 * @see freemind.main.XMLElement#XMLElement(java.util.Hashtable)
 	 *      XMLElement(Hashtable)
 	 */
-	public XMLElement(Hashtable entities, boolean skipLeadingWhitespace) {
+	public XMLElement(Hashtable<String, char[]> entities, boolean skipLeadingWhitespace) {
 		this(entities, skipLeadingWhitespace, true, true);
 	}
 
@@ -529,7 +529,7 @@ public class XMLElement {
 	 * @see freemind.main.XMLElement#XMLElement(java.util.Hashtable,boolean)
 	 *      XMLElement(Hashtable, boolean)
 	 */
-	public XMLElement(Hashtable entities, boolean skipLeadingWhitespace,
+	public XMLElement(Hashtable<String, char[]> entities, boolean skipLeadingWhitespace,
 			boolean ignoreCase) {
 		this(entities, skipLeadingWhitespace, true, ignoreCase);
 	}
@@ -578,23 +578,22 @@ public class XMLElement {
 	 * 
 	 * @see freemind.main.XMLElement#createAnotherElement()
 	 */
-	protected XMLElement(Hashtable entities, boolean skipLeadingWhitespace,
+	protected XMLElement(Hashtable<String, char[]> entities, boolean skipLeadingWhitespace,
 			boolean fillBasicConversionTable, boolean ignoreCase) {
 		this.ignoreWhitespace = skipLeadingWhitespace;
 		this.ignoreCase = ignoreCase;
 		this.name = null;
 		this.contents = "";
-		this.attributes = new TreeMap();
-		this.children = new Vector();
+		this.attributes = new TreeMap<>();
+		this.children = new Vector<>();
 		this.entities = entities;
 		this.lineNr = 0;
-		Enumeration enumerator = this.entities.keys();
+		Enumeration<String> enumerator = this.entities.keys();
 		while (enumerator.hasMoreElements()) {
-			Object key = enumerator.nextElement();
+			String key = enumerator.nextElement();
 			Object value = this.entities.get(key);
 			if (value instanceof String) {
-				value = ((String) value).toCharArray();
-				this.entities.put(key, value);
+				this.entities.put(key, ((String) value).toCharArray());
 			}
 		}
 		if (fillBasicConversionTable) {
@@ -913,18 +912,8 @@ public class XMLElement {
 	 *      java.lang.String, java.lang.String, boolean)
 	 *      getBooleanAttribute(String, String, String, boolean)
 	 */
-	public Iterator enumerateAttributeNames() {
+	public Iterator<String> enumerateAttributeNames() {
 		return this.attributes.keySet().iterator();
-	}
-
-	/**
-	 * Enumerates the attribute names.
-	 * 
-	 * @deprecated Use {@link #enumerateAttributeNames()
-	 *             enumerateAttributeNames} instead.
-	 */
-	public Iterator enumeratePropertyNames() {
-		return this.enumerateAttributeNames();
 	}
 
 	/**
@@ -967,9 +956,9 @@ public class XMLElement {
 	 * @see freemind.main.XMLElement#removeChild(XMLElement)
 	 *      removeChild(XMLElement)
 	 */
-	public Vector getChildren() {
+	public Vector<XMLElement> getChildren() {
 		try {
-			return (Vector) this.children.clone();
+			return (Vector<XMLElement>) this.children.clone();
 		} catch (Exception e) {
 			// this never happens, however, some Java compilers are so
 			// braindead that they require this exception clause
@@ -1256,7 +1245,7 @@ public class XMLElement {
 	 * @see freemind.main.XMLElement#getStringAttribute(java.lang.String,
 	 *      java.lang.String) getStringAttribute(String, String)
 	 */
-	public String getStringAttribute(String name, Hashtable valueSet,
+	public String getStringAttribute(String name, Hashtable<Object, String> valueSet,
 			String defaultKey, boolean allowLiterals) {
 		return (String) this.getAttribute(name, valueSet, defaultKey,
 				allowLiterals);
@@ -1378,7 +1367,7 @@ public class XMLElement {
 	 * @see freemind.main.XMLElement#getIntAttribute(java.lang.String, int)
 	 *      getIntAttribute(String, int)
 	 */
-	public int getIntAttribute(String name, Hashtable valueSet,
+	public int getIntAttribute(String name, Hashtable<Object, Integer> valueSet,
 			String defaultKey, boolean allowLiteralNumbers) {
 		if (this.ignoreCase) {
 			name = name.toUpperCase(Locale.ENGLISH);
@@ -1523,7 +1512,7 @@ public class XMLElement {
 	 * @see freemind.main.XMLElement#getDoubleAttribute(java.lang.String,
 	 *      double) getDoubleAttribute(String, double)
 	 */
-	public double getDoubleAttribute(String name, Hashtable valueSet,
+	public double getDoubleAttribute(String name, Hashtable<Object, Double> valueSet,
 			String defaultKey, boolean allowLiteralNumbers) {
 		if (this.ignoreCase) {
 			name = name.toUpperCase(Locale.ENGLISH);
@@ -1607,133 +1596,12 @@ public class XMLElement {
 	}
 
 	/**
-	 * Returns an attribute by looking up a key in a hashtable.
-	 * 
-	 * @deprecated Use
-	 *             {@link #getIntAttribute(java.lang.String, java.util.Hashtable, java.lang.String, boolean)
-	 *             getIntAttribute} instead.
-	 */
-	public int getIntProperty(String name, Hashtable valueSet, String defaultKey) {
-		return this.getIntAttribute(name, valueSet, defaultKey, false);
-	}
-
-	/**
-	 * Returns an attribute.
-	 * 
-	 * @deprecated Use {@link #getStringAttribute(java.lang.String)
-	 *             getStringAttribute} instead.
-	 */
-	public String getProperty(String name) {
-		return this.getStringAttribute(name);
-	}
-
-	/**
-	 * Returns an attribute.
-	 * 
-	 * @deprecated Use
-	 *             {@link #getStringAttribute(java.lang.String, java.lang.String)
-	 *             getStringAttribute} instead.
-	 */
-	public String getProperty(String name, String defaultValue) {
-		return this.getStringAttribute(name, defaultValue);
-	}
-
-	/**
-	 * Returns an attribute.
-	 * 
-	 * @deprecated Use {@link #getIntAttribute(java.lang.String, int)
-	 *             getIntAttribute} instead.
-	 */
-	public int getProperty(String name, int defaultValue) {
-		return this.getIntAttribute(name, defaultValue);
-	}
-
-	/**
-	 * Returns an attribute.
-	 * 
-	 * @deprecated Use {@link #getDoubleAttribute(java.lang.String, double)
-	 *             getDoubleAttribute} instead.
-	 */
-	public double getProperty(String name, double defaultValue) {
-		return this.getDoubleAttribute(name, defaultValue);
-	}
-
-	/**
-	 * Returns an attribute.
-	 * 
-	 * @deprecated Use
-	 *             {@link #getBooleanAttribute(java.lang.String, java.lang.String, java.lang.String, boolean)
-	 *             getBooleanAttribute} instead.
-	 */
-	public boolean getProperty(String key, String trueValue, String falseValue,
-			boolean defaultValue) {
-		return this.getBooleanAttribute(key, trueValue, falseValue,
-				defaultValue);
-	}
-
-	/**
-	 * Returns an attribute by looking up a key in a hashtable.
-	 * 
-	 * @deprecated Use
-	 *             {@link #getAttribute(java.lang.String, java.util.Hashtable, java.lang.String, boolean)
-	 *             getAttribute} instead.
-	 */
-	public Object getProperty(String name, Hashtable valueSet, String defaultKey) {
-		return this.getAttribute(name, valueSet, defaultKey, false);
-	}
-
-	/**
-	 * Returns an attribute by looking up a key in a hashtable.
-	 * 
-	 * @deprecated Use
-	 *             {@link #getStringAttribute(java.lang.String, java.util.Hashtable, java.lang.String, boolean)
-	 *             getStringAttribute} instead.
-	 */
-	public String getStringProperty(String name, Hashtable valueSet,
-			String defaultKey) {
-		return this.getStringAttribute(name, valueSet, defaultKey, false);
-	}
-
-	/**
-	 * Returns an attribute by looking up a key in a hashtable.
-	 * 
-	 * @deprecated Use
-	 *             {@link #getIntAttribute(java.lang.String, java.util.Hashtable, java.lang.String, boolean)
-	 *             getIntAttribute} instead.
-	 */
-	public int getSpecialIntProperty(String name, Hashtable valueSet,
-			String defaultKey) {
-		return this.getIntAttribute(name, valueSet, defaultKey, true);
-	}
-
-	/**
-	 * Returns an attribute by looking up a key in a hashtable.
-	 * 
-	 * @deprecated Use
-	 *             {@link #getDoubleAttribute(java.lang.String, java.util.Hashtable, java.lang.String, boolean)
-	 *             getDoubleAttribute} instead.
-	 */
-	public double getSpecialDoubleProperty(String name, Hashtable valueSet,
-			String defaultKey) {
-		return this.getDoubleAttribute(name, valueSet, defaultKey, true);
-	}
-
-	/**
 	 * Returns the name of the element.
 	 * 
 	 * @see freemind.main.XMLElement#setName(java.lang.String) setName(String)
 	 */
 	public String getName() {
 		return this.name;
-	}
-
-	/**
-	 * Returns the name of the element.
-	 * 
-	 * @deprecated Use {@link #getName() getName} instead.
-	 */
-	public String getTagName() {
-		return this.getName();
 	}
 
 	/**
@@ -2345,16 +2213,15 @@ public class XMLElement {
 		writer.write('<');
 		writer.write(this.name);
 		if (!this.attributes.isEmpty()) {
-			Iterator enumerator = this.attributes.keySet().iterator();
-			while (enumerator.hasNext()) {
+			
+			for(String key : this.attributes.keySet()) {
 				writer.write(' ');
-				String key = (String) enumerator.next();
 				String value = (String) this.attributes.get(key);
 				writer.write(key);
 				writer.write('=');
 				writer.write('"');
 				this.writeEncoded(writer, value);
-				writer.write('"');
+				writer.write('"');	
 			}
 		}
 		if ((this.contents != null) && (this.contents.length() > 0)) {

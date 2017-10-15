@@ -36,17 +36,15 @@ import freemind.modes.mindmapmode.MindMapController;
  * @author foltin
  * 
  */
+@SuppressWarnings("serial")
 public class RemoveAllIconsAction extends NodeGeneralAction implements
 		IconInformation {
-
-	private final IconAction addIconAction;
 
 	/**
      */
 	public RemoveAllIconsAction(MindMapController modeController,
 			IconAction addIconAction) {
 		super(modeController, "remove_all_icons", "images/edittrash.png");
-		this.addIconAction = addIconAction;
 		setDoActionClass(RemoveAllIconsXmlAction.class);
 	}
 

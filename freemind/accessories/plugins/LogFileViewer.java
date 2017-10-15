@@ -27,7 +27,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Handler;
@@ -64,6 +63,7 @@ import freemind.modes.mindmapmode.actions.xml.PrintActionHandler;
 import freemind.modes.mindmapmode.hooks.MindMapHookAdapter;
 import freemind.view.MapModule;
 
+@SuppressWarnings("serial")
 public class LogFileViewer extends MindMapHookAdapter implements
 		MapModuleChangeObserver, LogReceiver {
 
@@ -73,7 +73,7 @@ public class LogFileViewer extends MindMapHookAdapter implements
 		 * used, as the HookRegistration are registered each time a map is
 		 * changed. Thus, a normal member isn't possible here.
 		 */
-		private static HashMap mPrintActionHandler = new HashMap();
+		private static HashMap<MindMapController, PrintActionHandler> mPrintActionHandler = new HashMap<>();
 
 		private final MindMapController modeController;
 
@@ -189,9 +189,8 @@ public class LogFileViewer extends MindMapHookAdapter implements
 		 */
 		public void actionPerformed(ActionEvent pE) {
 			getBaseHandler().setLevel(mLevel);
-			List loggerList = getMindMapController().getFrame().getLoggerList();
-			for (Iterator it = loggerList.iterator(); it.hasNext();) {
-				Logger otherLogger = (Logger) it.next();
+			List<Logger> loggerList = getMindMapController().getFrame().getLoggerList();
+			for (Logger otherLogger : loggerList) {
 				otherLogger.setLevel(mLevel);
 			}
 		}
@@ -422,7 +421,7 @@ public class LogFileViewer extends MindMapHookAdapter implements
 	}
 
 	private class UpdateTextAreaThread extends Thread {
-		Vector mInbox = new Vector();
+		Vector<String> mInbox = new Vector<>();
 		private boolean mCommitSuicide = false;
 		private boolean mSuicided = false;
 
@@ -431,7 +430,7 @@ public class LogFileViewer extends MindMapHookAdapter implements
 		 */
 		public void run() {
 			while(!mCommitSuicide) {
-				final Vector queue = new Vector();
+				final Vector<String> queue = new Vector<>();
 				synchronized (mInbox) {
 					if(!mInbox.isEmpty()) {
 						queue.addAll(mInbox);
@@ -443,9 +442,7 @@ public class LogFileViewer extends MindMapHookAdapter implements
 						public void run() {
 							try {
 								StringBuffer buffer = new StringBuffer();
-								for (Iterator it = queue.iterator(); it
-										.hasNext();) {
-									String msg = (String) it.next();
+								for (String msg : queue) {
 									buffer.append(msg);
 //									buffer.append('\n');
 								}

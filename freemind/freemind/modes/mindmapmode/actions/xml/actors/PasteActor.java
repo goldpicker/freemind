@@ -29,8 +29,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -105,7 +103,7 @@ public class PasteActor extends XmlActorAdapter {
 	 * 
 	 * @see freemind.controller.actions.ActorXml#getDoActionClass()
 	 */
-	public Class getDoActionClass() {
+	public Class<PasteNodeAction> getDoActionClass() {
 		return PasteNodeAction.class;
 	}
 
@@ -232,9 +230,8 @@ public class PasteActor extends XmlActorAdapter {
 		public void paste(Object TransferData, MindMapNode target,
 				boolean asSibling, boolean isLeft, Transferable t) {
 			// TODO: Does not correctly interpret asSibling.
-			List fileList = (List) TransferData;
-			for (ListIterator it = fileList.listIterator(); it.hasNext();) {
-				File file = (File) it.next();
+			List<File> fileList = (List<File>) TransferData;
+			for (File file : fileList) {
 				MindMapNode node = getExMapFeedback().newNode(file.getName(),
 						target.getMap());
 				node.setLeft(isLeft);
@@ -422,94 +419,6 @@ public class PasteActor extends XmlActorAdapter {
 		}
 	}
 
-	private class HtmlFlavorHandler implements DataFlavorHandler {
-
-		public void paste(Object TransferData, MindMapNode target,
-				boolean asSibling, boolean isLeft, Transferable t)
-				throws UnsupportedFlavorException, IOException {
-			String textFromClipboard = (String) TransferData;
-			// ^ This outputs transfer data to standard output. I don't know
-			// why.
-			MindMapNode pastedNode = pasteStringWithoutRedisplay(t, target,
-					asSibling, isLeft);
-
-			textFromClipboard = textFromClipboard.replaceAll("<!--.*?-->", ""); // remove
-			// HTML
-			// comment
-			String[] links = textFromClipboard
-					.split("<[aA][^>]*[hH][rR][eE][fF]=\"");
-
-			MindMapNode linkParentNode = null;
-			URL referenceURL = null;
-			boolean baseUrlCanceled = false;
-
-			for (int i = 1; i < links.length; i++) {
-				String link = links[i].substring(0, links[i].indexOf("\""));
-				String textWithHtml = links[i].replaceAll("^[^>]*>", "")
-						.replaceAll("</[aA]>[\\s\\S]*", "");
-				String text = HtmlTools
-						.toXMLUnescapedText(textWithHtml.replaceAll("\\n", "")
-								.replaceAll("<[^>]*>", "").trim());
-				if (text.equals("")) {
-					text = link;
-				}
-				URL linkURL = null;
-				try {
-					linkURL = new URL(link);
-				} catch (MalformedURLException ex) {
-					try {
-						// Either invalid URL or relative URL
-						if (referenceURL == null && !baseUrlCanceled) {
-							String referenceURLString = JOptionPane
-									.showInputDialog(getExMapFeedback()
-											.getViewAbstraction().getSelected(),
-											getExMapFeedback()
-													.getResourceString("enter_base_url"));
-							if (referenceURLString == null) {
-								baseUrlCanceled = true;
-							} else {
-								referenceURL = new URL(referenceURLString);
-							}
-						}
-						linkURL = new URL(referenceURL, link);
-					} catch (MalformedURLException ex2) {
-					}
-				}
-				if (linkURL != null) {
-					if (links.length == 2 & pastedNode != null) {
-						// pastedNode != null iff the number of pasted lines is
-						// one
-						// The firts element in links[] array is never a link,
-						// therefore
-						// the condition links.length == 2 actually says
-						// "there is one link".
-						// Set link directly into node
-						((MindMapNodeModel) pastedNode).setLink(linkURL
-								.toString());
-						break;
-					}
-					if (linkParentNode == null) {
-						linkParentNode = getExMapFeedback().newNode("Links",
-								target.getMap());
-						linkParentNode.setLeft(target.isNewChildLeft());
-						// Here we cannot set bold, because linkParentNode.font
-						// is null
-						insertNodeInto(linkParentNode, target);
-						((NodeAdapter) linkParentNode).setBold(true);
-					}
-					MindMapNode linkNode = getExMapFeedback().newNode(text,
-							target.getMap());
-					linkNode.setLink(linkURL.toString());
-					insertNodeInto(linkNode, linkParentNode);
-				}
-			}
-		}
-
-		public DataFlavor getDataFlavor() {
-			return MindMapNodesSelection.htmlFlavor;
-		}
-	}
-
 	private class StringFlavorHandler implements DataFlavorHandler {
 
 		public void paste(Object TransferData, MindMapNode target,
@@ -623,13 +532,12 @@ public class PasteActor extends XmlActorAdapter {
 
 	public MindMapNodeModel pasteXMLWithoutRedisplay(String pasted,
 			MindMapNode target, boolean asSibling, boolean changeSide,
-			boolean isLeft, HashMap pIDToTarget) throws XMLParseException {
+			boolean isLeft, HashMap<String, NodeAdapter> pIDToTarget) throws XMLParseException {
 		// Call nodeStructureChanged(target) after this function.
 		logger.fine("Pasting " + pasted + " to " + target);
 		try {
 			MindMapNodeModel node = (MindMapNodeModel) getExMapFeedback().getMap()
-					.createNodeTreeFromXml(new StringReader(pasted),
-							pIDToTarget);
+					.createNodeTreeFromXml(new StringReader(pasted), pIDToTarget);
 			insertNodeInto(node, target, asSibling, isLeft, changeSide);
 			getExMapFeedback().invokeHooksRecursively(node,
 					getExMapFeedback().getMap());
@@ -691,22 +599,20 @@ public class PasteActor extends XmlActorAdapter {
 			setWaitingCursor(true);
 		}
 
-		MindMapNode realParent = null;
 		if (asSibling) {
 			// When pasting as sibling, we use virtual node as parent. When the
 			// pasting to
 			// virtual node is completed, we insert the children of that virtual
 			// node to
 			// the parent of real parent.
-			realParent = parent;
 			parent = new MindMapNodeModel(getExMapFeedback().getMap());
 		}
 
-		ArrayList parentNodes = new ArrayList();
-		ArrayList parentNodesDepths = new ArrayList();
+		ArrayList<MindMapNode> parentNodes = new ArrayList<>();
+		ArrayList<Integer> parentNodesDepths = new ArrayList<>();
 
 		parentNodes.add(parent);
-		parentNodesDepths.add(new Integer(-1));
+		parentNodesDepths.add(-1);
 
 		String[] linkPrefixes = { "http://", "ftp://", "https://" };
 
@@ -833,10 +739,9 @@ public class PasteActor extends XmlActorAdapter {
 				 * doesn't supply a setTranserableAsFileList method, we have to
 				 * get the fileList, clear it, and then set it to the new value.
 				 */
-				List fileList = (List) t
-						.getTransferData(MindMapNodesSelection.fileListFlavor);
-				for (Iterator iter = fileList.iterator(); iter.hasNext();) {
-					File fileName = (File) iter.next();
+				List<File> fileList = (List<File>) t.getTransferData(MindMapNodesSelection.fileListFlavor);
+				for (Iterator<File> iter = fileList.iterator(); iter.hasNext();) {
+					File fileName = iter.next();
 					TransferableFile transferableFile = new TransferableFile();
 					transferableFile.setFileName(fileName.getAbsolutePath());
 					trans.addTransferableFile(transferableFile);
@@ -996,10 +901,9 @@ public class PasteActor extends XmlActorAdapter {
 	private Transferable getTransferable(TransferableContent trans) {
 		// create Transferable:
 		// Add file list to this selection.
-		Vector fileList = new Vector();
-		for (Iterator iter = trans.getListTransferableFileList().iterator(); iter
-				.hasNext();) {
-			TransferableFile tFile = (TransferableFile) iter.next();
+		Vector<File> fileList = new Vector<>();
+		for (Iterator<TransferableFile> iter = trans.getListTransferableFileList().iterator(); iter.hasNext();) {
+			TransferableFile tFile = iter.next();
 			fileList.add(new File(tFile.getFileName()));
 		}
 		Transferable copy = new MindMapNodesSelection(trans.getTransferable(),
@@ -1017,12 +921,11 @@ public class PasteActor extends XmlActorAdapter {
 	 *
 	 */
 	public void processUnfinishedLinksInHooks(MindMapNode node) {
-		for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-			MindMapNode child = (MindMapNode) i.next();
+		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+			MindMapNode child = i.next();
 			processUnfinishedLinksInHooks(child);
 		}
-		for (Iterator i = node.getHooks().iterator(); i.hasNext();) {
-			PermanentNodeHook hook = (PermanentNodeHook) i.next();
+		for (PermanentNodeHook hook : node.getHooks()) {
 			hook.processUnfinishedLinks();
 		}
 	}

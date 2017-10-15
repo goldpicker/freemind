@@ -31,6 +31,7 @@ import freemind.modes.MindMapNode;
 
 class NodeViewFactory {
 
+	@SuppressWarnings("serial")
 	private static class ContentPane extends JComponent {
 		static private LayoutManager layoutManager = new ContentPaneLayout();
 

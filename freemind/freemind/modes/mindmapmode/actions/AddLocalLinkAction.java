@@ -23,7 +23,6 @@
 package freemind.modes.mindmapmode.actions;
 
 import java.awt.event.ActionEvent;
-import java.util.List;
 import java.util.Vector;
 
 import javax.swing.Action;
@@ -37,6 +36,7 @@ import freemind.modes.mindmapmode.MindMapController;
  * @author foltin
  * 
  */
+@SuppressWarnings("serial")
 public class AddLocalLinkAction extends MindmapAction {
 
 	private final MindMapController modeController;

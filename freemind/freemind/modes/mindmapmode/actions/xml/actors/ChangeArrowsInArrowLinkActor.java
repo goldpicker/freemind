@@ -69,7 +69,7 @@ public class ChangeArrowsInArrowLinkActor extends XmlActorAdapter {
 		}
 	}
 
-	public Class getDoActionClass() {
+	public Class<ArrowLinkArrowXmlAction> getDoActionClass() {
 		return ArrowLinkArrowXmlAction.class;
 	}
 

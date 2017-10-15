@@ -46,9 +46,10 @@ import javax.swing.border.BevelBorder;
 import freemind.main.FreeMindMain;
 import freemind.modes.IconInformation;
 
+@SuppressWarnings("serial")
 public class IconSelectionPopupDialog extends JDialog implements KeyListener,
 		MouseListener {
-	private Vector icons;
+	private Vector<IconInformation> icons;
 	private int result;
 	private JPanel iconPanel = new JPanel();
 	private JLabel[] iconLabels;
@@ -275,13 +276,6 @@ public class IconSelectionPopupDialog extends JDialog implements KeyListener,
 			keyEvent.consume();
 			this.dispose();
 		}
-	}
-
-	private KeyStroke getKeyStrokeForEvent(KeyEvent keyEvent) {
-		if (keyEvent.getKeyChar() != 0) {
-			return KeyStroke.getKeyStroke(keyEvent.getKeyChar());
-		}
-		return KeyStroke.getKeyStroke(keyEvent.getKeyCode(), 0);
 	}
 
 	private int findIndexByKeyEvent(KeyEvent keyEvent) {

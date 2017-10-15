@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.Iterator;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -91,8 +90,7 @@ public class ExportVectorGraphic extends ExportHook {
 			view.preparePrinting();
 			Rectangle innerBounds = null;
 			
-			for (Iterator it = view.getViewers(pNode).iterator(); it.hasNext();) {
-				NodeView nodeView = (NodeView) it.next();
+			for (NodeView nodeView : view.getViewers(pNode)) {
 				if (innerBounds == null) {
 					innerBounds = nodeView.getInnerBounds();
 				} else {
@@ -105,8 +103,7 @@ public class ExportVectorGraphic extends ExportHook {
 			//
 			// Generate SVG content
 			//
-			for (Iterator it = view.getViewers(pNode).iterator(); it.hasNext();) {
-				NodeView nodeView = (NodeView) it.next();
+			for (NodeView nodeView : view.getViewers(pNode)) {
 				nodeView.print(g2d);
 			}
 		} finally {

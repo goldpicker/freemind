@@ -27,7 +27,6 @@ import freemind.controller.actions.generated.instance.XmlAction;
 import freemind.main.Tools;
 import freemind.modes.ExtendedMapFeedback;
 import freemind.modes.MindMapArrowLink;
-import freemind.modes.MindMapLinkRegistry;
 import freemind.modes.mindmapmode.actions.xml.ActionPair;
 
 /**
@@ -83,7 +82,7 @@ public class ChangeArrowLinkEndPointsActor extends XmlActorAdapter {
 	 * 
 	 * @see freemind.controller.actions.ActorXml#getDoActionClass()
 	 */
-	public Class getDoActionClass() {
+	public Class<ArrowLinkPointXmlAction> getDoActionClass() {
 		return ArrowLinkPointXmlAction.class;
 	}
 

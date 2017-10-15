@@ -35,6 +35,6 @@ public interface ActorXml {
 
 	/**
 	 */
-	Class getDoActionClass();
+	Class<?> getDoActionClass();
 
 }

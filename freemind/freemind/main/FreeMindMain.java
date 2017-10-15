@@ -28,6 +28,7 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -177,7 +178,7 @@ public interface FreeMindMain {
 				return;
 			}
 			// here,we have info.length == 5!
-			Vector types = new Vector();
+			Vector<String> types = new Vector<>();
 			types.add("Alpha");
 			types.add("Beta");
 			types.add("RC");
@@ -275,5 +276,5 @@ public interface FreeMindMain {
 	/**
 	 * @return a list of all loggers. Used for example for the log file viewer.
 	 */
-	public List getLoggerList();
+	public List<Logger> getLoggerList();
 }

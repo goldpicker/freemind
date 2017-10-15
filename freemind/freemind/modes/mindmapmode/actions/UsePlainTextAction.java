@@ -27,6 +27,7 @@ import freemind.modes.mindmapmode.MindMapController;
 import freemind.modes.mindmapmode.MindMapMapModel;
 import freemind.modes.mindmapmode.MindMapNodeModel;
 
+@SuppressWarnings("serial")
 public class UsePlainTextAction extends NodeGeneralAction {
 
 	public UsePlainTextAction(final MindMapController modeController) {

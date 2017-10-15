@@ -26,13 +26,13 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
 
+@SuppressWarnings("serial")
 public class MultipleImage extends ImageIcon {
-	private Vector mImages = new Vector();
+	private Vector<ImageIcon> mImages = new Vector<>();
 	private double zoomFactor = 1;
 	private boolean isDirty;
 
@@ -62,9 +62,8 @@ public class MultipleImage extends ImageIcon {
 		BufferedImage outImage = new BufferedImage(w, h,
 				BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = outImage.createGraphics();
-		double myX = 0;
-		for (Iterator i = mImages.iterator(); i.hasNext();) {
-			ImageIcon currentIcon = (ImageIcon) i.next();
+
+		for (ImageIcon currentIcon : mImages) {
 			// py = /* center: */ ( myHeight -
 			// (int)(currentIcon.getIconHeight()* zoomFactor)) /2;
 			// int pheight = (int) (currentIcon.getIconHeight() * zoomFactor);
@@ -73,7 +72,6 @@ public class MultipleImage extends ImageIcon {
 					zoomFactor, zoomFactor);
 			g.drawImage(currentIcon.getImage(), inttrans, null);
 			g.translate(pwidth, 0);
-			myX += pwidth;
 		}
 		g.dispose();
 		setImage(outImage);

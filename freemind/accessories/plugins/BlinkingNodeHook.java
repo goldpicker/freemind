@@ -66,7 +66,7 @@ public class BlinkingNodeHook extends PermanentMindMapNodeHookAdapter {
 	// MindMapNode newNode=((ControllerAdapter)getController()).newNode();
 	// ((MapAdapter) getMap()).insertNodeInto(newNode, getNode(), 0);
 
-	static Vector colors = new Vector();
+	static Vector<Color> colors = new Vector<>();
 
 	protected class TimerColorChanger extends TimerTask {
 		TimerColorChanger() {

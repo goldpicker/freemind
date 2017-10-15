@@ -29,10 +29,10 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Vector;
 
 import freemind.common.NumberProperty;
+import freemind.common.PropertyControl;
 import freemind.common.StringProperty;
 import freemind.controller.actions.generated.instance.CollaborationPublishNewMap;
 import freemind.controller.actions.generated.instance.CollaborationUserInformation;
@@ -77,7 +77,7 @@ public class MindMapClient extends SocketBasics {
 			// get last value
 			hostProperty.setValue(controller.getFrame().getProperty(
 					HOST_PROPERTY));
-			Vector controls = new Vector();
+			Vector<PropertyControl> controls = new Vector<>();
 			controls.add(passwordProperty);
 			controls.add(hostProperty);
 			controls.add(portProperty);
@@ -158,10 +158,9 @@ public class MindMapClient extends SocketBasics {
 	}
 
 	private SocketConnectionHook isConnected() {
-		Collection activatedHooks = getMindMapController().getRootNode()
+		Collection<PermanentNodeHook> activatedHooks = getMindMapController().getRootNode()
 				.getActivatedHooks();
-		for (Iterator it = activatedHooks.iterator(); it.hasNext();) {
-			PermanentNodeHook hook = (PermanentNodeHook) it.next();
+		for (PermanentNodeHook hook : activatedHooks) {
 			if (hook instanceof SocketConnectionHook) {
 				return (SocketConnectionHook) hook;
 			}

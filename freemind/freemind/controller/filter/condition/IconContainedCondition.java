@@ -23,12 +23,9 @@
  */
 package freemind.controller.filter.condition;
 
-import java.util.Iterator;
 import java.util.Set;
-
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-
 import freemind.controller.Controller;
 import freemind.main.Resources;
 import freemind.main.Tools;
@@ -52,9 +49,8 @@ public class IconContainedCondition implements Condition {
 
 	private static boolean isStateIconContained(MindMapNode node,
 			String iconName) {
-		Set stateIcons = node.getStateIcons().keySet();
-		for (Iterator stateIcon = stateIcons.iterator(); stateIcon.hasNext();) {
-			String nextIcon = (String) stateIcon.next();
+		Set<String> stateIcons = node.getStateIcons().keySet();
+		for (String nextIcon : stateIcons) {
 			if (iconName.equals(nextIcon))
 				return true;
 		}

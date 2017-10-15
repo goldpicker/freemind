@@ -150,8 +150,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 					controller.removeAttribute(pNode, 0);
 				}
 				// write it from new.
-				for (Iterator it = mAttributeTableModel.mData.iterator(); it.hasNext();) {
-					AttributeHolder holder = (AttributeHolder) it.next();
+				for (AttributeHolder holder : mAttributeTableModel.mData) {
 					// add at end
 					controller.addAttribute(pNode, new Attribute(holder.mKey, holder.mValue));
 				}
@@ -169,8 +168,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 			if(mCurrentNode.getAttributeTableLength() == mAttributeTableModel.mData.size()) {
 				int index = 0;
 				equal = true;
-				for (Iterator it = mAttributeTableModel.mData.iterator(); it.hasNext();) {
-					AttributeHolder holder = (AttributeHolder) it.next();
+				for (AttributeHolder holder : mAttributeTableModel.mData) {
 					Attribute attribute = mCurrentNode.getAttribute(index);
 					if(Tools.safeEquals(holder.mKey, attribute.getName()) && Tools.safeEquals(holder.mValue, attribute.getValue())) {
 						// ok
@@ -216,6 +214,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 	 * @author foltin
 	 * @date 4.09.2014
 	 */
+	@SuppressWarnings("serial")
 	public final class AttributeTableModel extends AbstractTableModel {
 		/**
 		 * 
@@ -429,9 +428,9 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 		AttributeTableProperties props = (AttributeTableProperties) XmlBindingTools
 				.getInstance().unMarshall(marshalled);
 		Vector<SortKey> keys = new Vector<RowSorter.SortKey>();
-		for (Iterator it = props.getListTableColumnOrderList().iterator(); it
+		for (Iterator<TableColumnOrder> it = props.getListTableColumnOrderList().iterator(); it
 				.hasNext();) {
-			TableColumnOrder setting = (TableColumnOrder) it.next();
+			TableColumnOrder setting = it.next();
 			keys.add(new SortKey(setting.getColumnIndex(), SortOrder
 					.valueOf(setting.getColumnSorting())));
 		}
@@ -501,8 +500,7 @@ public class NodeAttributeTableRegistration implements HookRegistration,
 	public void deRegister() {
 		// store sortings:
 		AttributeTableProperties props = new AttributeTableProperties();
-		for (Iterator it = mAttributeTable.getRowSorter().getSortKeys().iterator(); it.hasNext();) {
-			SortKey key = (SortKey) it.next();
+		for (SortKey key : mAttributeTable.getRowSorter().getSortKeys()) {
 			TableColumnOrder order = new TableColumnOrder();
 			order.setColumnIndex(key.getColumn());
 			order.setColumnSorting(key.getSortOrder().name());

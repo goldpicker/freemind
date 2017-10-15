@@ -68,8 +68,8 @@ public class CreationModificationPlugin extends PermanentMindMapNodeHookAdapter 
 	 */
 	private void removeToolTipRecursively(MindMapNode node) {
 		setToolTip(node, getName(), null);
-		for (Iterator i = node.childrenUnfolded(); i.hasNext();) {
-			MindMapNode child = (MindMapNode) i.next();
+		for (Iterator<MindMapNode> i = node.childrenUnfolded(); i.hasNext();) {
+			MindMapNode child = i.next();
 			removeToolTipRecursively(child);
 		}
 	}
@@ -120,8 +120,8 @@ public class CreationModificationPlugin extends PermanentMindMapNodeHookAdapter 
 		logger.finest("setStyle " + node);
 		setStyle(node);
 		// recurse:
-		for (Iterator i = node.childrenFolded(); i.hasNext();) {
-			MindMapNode child = (MindMapNode) i.next();
+		for (Iterator<MindMapNode> i = node.childrenFolded(); i.hasNext();) {
+			MindMapNode child = i.next();
 			setStyleRecursive(child);
 		}
 	}

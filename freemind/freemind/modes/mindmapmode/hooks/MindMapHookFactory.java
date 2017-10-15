@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -50,7 +49,6 @@ import freemind.extensions.MindMapHook;
 import freemind.extensions.MindMapHook.PluginBaseClassSearcher;
 import freemind.extensions.ModeControllerHook;
 import freemind.extensions.NodeHook;
-import freemind.main.FreeMindMain;
 import freemind.main.Resources;
 import freemind.modes.mindmapmode.MindMapController;
 
@@ -70,14 +68,14 @@ public class MindMapHookFactory extends HookFactoryAdapter {
 	// Logging:
 	protected static java.util.logging.Logger logger = null;
 
-	private static HashMap pluginInfo = null;
+	private static HashMap<String, HookDescriptorPluginAction> pluginInfo = null;
 
-	private static Vector allPlugins = null;
+	private static Vector<String> allPlugins = null;
 
 	private static ImportWizard importWizard = null;
 
 	/** Contains PluginRegistrationType -> PluginType relations. */
-	protected static HashSet allRegistrations;
+	protected static HashSet<HookDescriptorRegistration> allRegistrations;
 
 	/**
 	 *
@@ -87,43 +85,39 @@ public class MindMapHookFactory extends HookFactoryAdapter {
 			logger = freemind.main.Resources.getInstance().getLogger(
 					this.getClass().getName());
 		}
-		allRegistrationInstances = new HashMap();
+		allRegistrationInstances = new HashMap<>();
 	}
 
 	/**
 	 * @return a string vector with representatives for plugins.
 	 */
-	public Vector getPossibleNodeHooks() {
+	public Vector<String> getPossibleNodeHooks() {
 		return searchFor(NodeHook.class, MindMapController.class);
 	}
 
 	/**
 	 * @return a string vector with representatives for plugins.
 	 */
-	public Vector getPossibleModeControllerHooks() {
+	public Vector<String> getPossibleModeControllerHooks() {
 		return searchFor(ModeControllerHook.class, MindMapController.class);
 	}
 
 	/**
 	 * @return a string vector with representatives for plugins.
 	 */
-	private Vector searchFor(Class baseClass, Class mode) {
+	private Vector<String> searchFor(Class baseClass, Class<?> mode) {
 		actualizePlugins();
-		Vector returnValue = new Vector();
+		Vector<String> returnValue = new Vector<>();
 		String modeName = mode.getPackage().getName();
-		for (Iterator i = allPlugins.iterator(); i.hasNext();) {
-			String label = (String) i.next();
+		for (String label : allPlugins) {
 			HookDescriptorPluginAction descriptor = getHookDescriptor(label);
 			// Properties prop = descriptor.properties;
 			try {
 				logger.finest("Loading: " + label);
-				if (baseClass.isAssignableFrom(Class.forName(descriptor
-						.getBaseClass()))) {
+				if (baseClass.isAssignableFrom(Class.forName(descriptor.getBaseClass()))) {
 					// the plugin inherits from the baseClass, we carry on to
 					// look for the mode
-					for (Iterator j = descriptor.getModes().iterator(); j
-							.hasNext();) {
-						String pmode = (String) j.next();
+					for (String pmode : descriptor.getModes()) {
 						if (pmode.equals(modeName)) {
 							// add the class:
 							returnValue.add(label);
@@ -147,15 +141,14 @@ public class MindMapHookFactory extends HookFactoryAdapter {
 			importWizard = new ImportWizard();
 			importWizard.CLASS_LIST.clear();
 			importWizard.buildClassList();
-			pluginInfo = new HashMap();
-			allPlugins = new Vector();
-			allRegistrations = new HashSet();
+			pluginInfo = new HashMap<>();
+			allPlugins = new Vector<>();
+			allRegistrations = new HashSet<>();
 			// the unmarshaller:
 			IUnmarshallingContext unmarshaller = XmlBindingTools.getInstance()
 					.createUnmarshaller();
 			// the loop
-			for (Iterator i = importWizard.CLASS_LIST.iterator(); i.hasNext();) {
-				String xmlPluginFile = (String) i.next();
+			for (String xmlPluginFile : importWizard.CLASS_LIST) {
 				if (xmlPluginFile.matches(pluginPrefixRegEx)) {
 					// make file name:
 					/*
@@ -180,13 +173,10 @@ public class MindMapHookFactory extends HookFactoryAdapter {
 						continue;
 					}
 					// plugin is loaded.
-					for (Iterator j = plugin.getListChoiceList().iterator(); j
-							.hasNext();) {
-						Object obj = j.next();
+					for (Object obj : plugin.getListChoiceList()) {
 						if (obj instanceof PluginAction) {
 							PluginAction action = (PluginAction) obj;
-							pluginInfo.put(action.getLabel(),
-									new HookDescriptorPluginAction(xmlPluginFile, plugin, action));
+							pluginInfo.put(action.getLabel(), new HookDescriptorPluginAction(xmlPluginFile, plugin, action));
 							allPlugins.add(action.getLabel());
 
 						} else if (obj instanceof PluginRegistration) {
@@ -220,8 +210,7 @@ public class MindMapHookFactory extends HookFactoryAdapter {
 			return hook;
 		} catch (Throwable e) {
 			String path = "";
-			for (Iterator it = descriptor.getPluginClasspath().iterator(); it.hasNext();) {
-				PluginClasspath plPath = (PluginClasspath) it.next();
+			for (PluginClasspath plPath : descriptor.getPluginClasspath()) {
 				path += plPath.getJar() + ";";
 			}
 			freemind.main.Resources.getInstance().logException(
@@ -287,7 +276,7 @@ public class MindMapHookFactory extends HookFactoryAdapter {
 	 * @return returns a list of menu position strings for the
 	 *         StructuredMenuHolder.
 	 */
-	public List getHookMenuPositions(String hookName) {
+	public List<String> getHookMenuPositions(String hookName) {
 		HookDescriptorPluginAction descriptor = getHookDescriptor(hookName);
 		return descriptor.menuPositions;
 	}
@@ -311,19 +300,15 @@ public class MindMapHookFactory extends HookFactoryAdapter {
 	 *         registration via the registerRegistrationContainer method when
 	 *         instanciated (this is typically done in the ModeController).
 	 */
-	public List getRegistrations() {
-		Class mode = MindMapController.class;
+	public List<RegistrationContainer> getRegistrations() {
+		Class<MindMapController> mode = MindMapController.class;
 		actualizePlugins();
-		Vector returnValue = new Vector();
-		for (Iterator i = allRegistrations.iterator(); i.hasNext();) {
-			HookDescriptorRegistration descriptor = (HookDescriptorRegistration) i
-					.next();
+		Vector<RegistrationContainer> returnValue = new Vector<>();
+		for (HookDescriptorRegistration descriptor : allRegistrations) {
 			// PluginRegistration registration =
 			// descriptor.getPluginRegistration();
 			boolean modeFound = false;
-			for (Iterator j = (descriptor.getListPluginModeList()).iterator(); j
-					.hasNext();) {
-				PluginMode possibleMode = (PluginMode) j.next();
+			for (PluginMode possibleMode : descriptor.getListPluginModeList() ) {
 				if (mode.getPackage().getName()
 						.equals(possibleMode.getClassName())) {
 					modeFound = true;
@@ -334,8 +319,7 @@ public class MindMapHookFactory extends HookFactoryAdapter {
 			try {
 				Plugin plugin = descriptor.getPluginBase();
 				ClassLoader loader = descriptor.getPluginClassLoader();
-				Class hookRegistrationClass = Class.forName(
-						descriptor.getClassName(), true, loader);
+				Class hookRegistrationClass = Class.forName(descriptor.getClassName(), true, loader);
 				RegistrationContainer container = new RegistrationContainer();
 				container.hookRegistrationClass = hookRegistrationClass;
 				container.correspondingPlugin = plugin;

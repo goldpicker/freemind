@@ -24,7 +24,6 @@
 package plugins.collaboration.socket;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import javax.swing.Action;
 import javax.swing.JMenuItem;
@@ -43,11 +42,9 @@ public class SocketRegistration implements HookRegistration,
 
 	private final MindMapController mController;
 	private final java.util.logging.Logger logger;
-	private MindMap mMap;
 
 	public SocketRegistration(ModeController controller, MindMap map) {
 		this.mController = (MindMapController) controller;
-		mMap = map;
 		logger = controller.getFrame().getLogger(this.getClass().getName());
 	}
 
@@ -79,10 +76,9 @@ public class SocketRegistration implements HookRegistration,
 	}
 
 	private boolean isMaster() {
-		Collection activatedHooks = mController.getRootNode()
+		Collection<PermanentNodeHook> activatedHooks = mController.getRootNode()
 				.getActivatedHooks();
-		for (Iterator it = activatedHooks.iterator(); it.hasNext();) {
-			PermanentNodeHook hook = (PermanentNodeHook) it.next();
+		for (PermanentNodeHook hook : activatedHooks) {
 			if (hook instanceof MindMapMaster) {
 				return true;
 			}
@@ -91,10 +87,9 @@ public class SocketRegistration implements HookRegistration,
 	}
 
 	private boolean isSlave() {
-		Collection activatedHooks = mController.getRootNode()
+		Collection<PermanentNodeHook> activatedHooks = mController.getRootNode()
 				.getActivatedHooks();
-		for (Iterator it = activatedHooks.iterator(); it.hasNext();) {
-			PermanentNodeHook hook = (PermanentNodeHook) it.next();
+		for (PermanentNodeHook hook : activatedHooks) {
 			if (hook instanceof SocketConnectionHook) {
 				return true;
 			}

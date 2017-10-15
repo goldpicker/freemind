@@ -24,8 +24,6 @@
 package freemind.modes.mindmapmode.actions;
 
 import java.awt.event.ActionEvent;
-import java.util.Iterator;
-
 import javax.swing.JOptionPane;
 
 import freemind.common.OptionalDontShowMeAgainDialog;
@@ -34,21 +32,18 @@ import freemind.main.FreeMind;
 import freemind.modes.MindMapNode;
 import freemind.modes.mindmapmode.MindMapController;
 
+@SuppressWarnings("serial")
 public class DeleteChildAction extends MindmapAction  {
 	private final MindMapController mMindMapController;
-	private String text;
 
 	public DeleteChildAction(MindMapController modeController) {
 		super("remove_node", "images/editdelete.png", modeController);
-		text = modeController.getText("remove_node");
 		this.mMindMapController = modeController;
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		// ask user if not root is selected:
-		for (Iterator iterator = mMindMapController.getSelecteds().iterator(); iterator
-				.hasNext();) {
-			MindMapNode node = (MindMapNode) iterator.next();
+		for (MindMapNode node : mMindMapController.getSelecteds()) {
 			if (node.isRoot()) {
 				mMindMapController.getController().errorMessage(
 						mMindMapController.getFrame().getResourceString(
@@ -72,7 +67,7 @@ public class DeleteChildAction extends MindmapAction  {
 		// this.c.deleteNode(c.getSelected());
 	}
 
-	public Class getDoActionClass() {
+	public Class<DeleteNodeAction> getDoActionClass() {
 		return DeleteNodeAction.class;
 	}
 

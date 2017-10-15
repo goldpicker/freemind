@@ -24,8 +24,6 @@ import java.awt.BorderLayout;
 import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.dnd.DragGestureListener;
-import java.awt.dnd.DropTargetListener;
 import java.util.Vector;
 
 import javax.swing.JPanel;
@@ -45,6 +43,7 @@ import freemind.view.mindmapview.NodeView;
  * @author foltin
  * @date 13.08.2013
  */
+@SuppressWarnings("serial")
 public class LayoutTests extends FreeMindTestBase {
 
 	private MindMapNodeModel mRoot;
@@ -82,14 +81,6 @@ public class LayoutTests extends FreeMindTestBase {
 		mRoot.insert(mChild2, 1);
 		mModel.setRoot(mRoot);
 		mMapView = new MapView(mModel, mc) {
-			DragGestureListener getNodeDragListener() {
-				return null;
-			}
-
-			DropTargetListener getNodeDropListener() {
-				return null;
-			}
-
 			public void selectAsTheOnlyOneSelected(NodeView pNewSelected) {
 			}
 
@@ -200,7 +191,7 @@ public class LayoutTests extends FreeMindTestBase {
 		LayoutManager layout = root.getLayout();
 		layout.layoutContainer(root);
 		root.getMainView().doLayout();
-		Vector nodes = Tools.getVectorWithSingleElement(root);
+		Vector<NodeView> nodes = Tools.getVectorWithSingleElement(root);
 		// print summary
 		System.out.println("------------------");
 		while(!nodes.isEmpty()) {

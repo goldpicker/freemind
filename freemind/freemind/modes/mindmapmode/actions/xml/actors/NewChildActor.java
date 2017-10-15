@@ -20,8 +20,6 @@
 
 package freemind.modes.mindmapmode.actions.xml.actors;
 
-import java.util.Iterator;
-
 import freemind.controller.actions.generated.instance.DeleteNodeAction;
 import freemind.controller.actions.generated.instance.NewNodeAction;
 import freemind.controller.actions.generated.instance.XmlAction;
@@ -68,8 +66,7 @@ public class NewChildActor extends XmlActorAdapter {
 		}
 		getExMapFeedback().insertNodeInto(newNode, parent, index);
 		// call hooks:
-		for (Iterator i = parent.getActivatedHooks().iterator(); i.hasNext();) {
-			PermanentNodeHook hook = (PermanentNodeHook) i.next();
+		for (PermanentNodeHook hook : parent.getActivatedHooks()) {
 			hook.onNewChild(newNode);
 		}
 		// done.
@@ -84,7 +81,7 @@ public class NewChildActor extends XmlActorAdapter {
 	 * 
 	 * @see freemind.controller.actions.ActorXml#getDoActionClass()
 	 */
-	public Class getDoActionClass() {
+	public Class<NewNodeAction> getDoActionClass() {
 		return NewNodeAction.class;
 	}
 

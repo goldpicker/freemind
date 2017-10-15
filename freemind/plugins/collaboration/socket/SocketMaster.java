@@ -190,7 +190,7 @@ public abstract class SocketMaster extends SocketBasics {
 	}
 	
 	protected void executeTransaction(final ActionPair pair, ExtendedMapFeedback pController) {
-		SessionData sessionData = getSessionData(pController);
+		getSessionData(pController);
 		mFilterEnabled = false;
 		try {
 			pController.doTransaction("update", pair);

@@ -127,9 +127,8 @@ public class CollaborationTests extends FreeMindTestBase {
 
 		public void reactOnOffers(final CollaborationOffers collOffers) {
 			// now, we have a bundle of different maps to offer to the user
-			for (Iterator it = collOffers.getListCollaborationMapOfferList()
-					.iterator(); it.hasNext();) {
-				CollaborationMapOffer offer = (CollaborationMapOffer) it.next();
+			for (Iterator<CollaborationMapOffer> it = collOffers.getListCollaborationMapOfferList().iterator(); it.hasNext();) {
+				CollaborationMapOffer offer = it.next();
 				System.out.println("Map: " + offer.getMap());
 			}
 			// send hello:

@@ -21,7 +21,6 @@
 package plugins.map;
 
 import java.text.MessageFormat;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -55,9 +54,8 @@ public class SearchInMapForNodeTextAction extends MindMapNodeHookAdapter {
 		// generate string to search for
 		StringBuffer sb = new StringBuffer();
 
-		List selecteds = getMindMapController().getSelecteds();
-		for (Iterator it = selecteds.iterator(); it.hasNext();) {
-			MindMapNode node = (MindMapNode) it.next();
+		List<MindMapNode> selecteds = getMindMapController().getSelecteds();
+		for (MindMapNode node : selecteds) {
 			// Convert to plain text
 			final String plainText = HtmlTools.htmlToPlain(node.getText());
 			if(sb.length()!=0) {

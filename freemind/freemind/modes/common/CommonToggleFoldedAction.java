@@ -37,6 +37,7 @@ import freemind.modes.MindMapNode;
  * @author foltin
  * 
  */
+@SuppressWarnings("serial")
 public class CommonToggleFoldedAction extends AbstractAction {
 
 	private ControllerAdapter modeController;
@@ -59,8 +60,8 @@ public class CommonToggleFoldedAction extends AbstractAction {
 
 	public void toggleFolded(ListIterator listIterator) {
 		boolean fold = getFoldingState(reset(listIterator));
-		for (Iterator i = reset(listIterator); i.hasNext();) {
-			MindMapNode node = (MindMapNode) i.next();
+		for (Iterator<MindMapNode> i = reset(listIterator); i.hasNext();) {
+			MindMapNode node = i.next();
 			modeController.setFolded(node, fold);
 		}
 	}
@@ -81,15 +82,15 @@ public class CommonToggleFoldedAction extends AbstractAction {
 	 *            an iterator of MindMapNodes.
 	 * @return true, if the nodes should be folded.
 	 */
-	public static boolean getFoldingState(ListIterator iterator) {
+	public static boolean getFoldingState(ListIterator<MindMapNode> iterator) {
 		/*
 		 * Retrieve the information whether or not all nodes have the same
 		 * folding state.
 		 */
 		Tools.BooleanHolder state = null;
 		boolean allNodeHaveSameFoldedStatus = true;
-		for (ListIterator it = iterator; it.hasNext();) {
-			MindMapNode node = (MindMapNode) it.next();
+		for (ListIterator<MindMapNode> it = iterator; it.hasNext();) {
+			MindMapNode node = it.next();
 			if (node.getChildCount() == 0) {
 				// no folding state change for unfoldable nodes.
 				continue;
