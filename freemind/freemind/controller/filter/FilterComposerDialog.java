@@ -34,6 +34,8 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
@@ -62,11 +64,15 @@ import freemind.controller.filter.condition.ConditionNotSatisfiedDecorator;
 import freemind.controller.filter.condition.ConjunctConditions;
 import freemind.controller.filter.condition.DisjunctConditions;
 import freemind.controller.filter.util.ExtendedComboBoxModel;
+import freemind.controller.filter.util.SortedComboBoxModel;
+import freemind.controller.filter.util.SortedListModel;
 import freemind.main.Resources;
 import freemind.main.Tools;
 import freemind.modes.FreeMindFileDialog;
 import freemind.modes.MindIcon;
 import freemind.modes.MindMap;
+import freemind.modes.MindMapNode;
+import freemind.modes.attributes.Attribute;
 
 /**
  * @author dimitri
@@ -108,8 +114,12 @@ public class FilterComposerDialog extends JDialog {
 			Object selectedItem = attributes.getSelectedItem();
 			if (selectedItem instanceof NamedObject) {
 				NamedObject attribute = (NamedObject) selectedItem;
-				newCond = mFilterController.getConditionFactory().createCondition(attribute,
+				newCond = FilterController.getConditionFactory().createCondition(attribute,
 						simpleCond, value, ignoreCase);
+			} else {
+				String attribute = selectedItem.toString();
+				newCond = FilterController.getConditionFactory().createAttributeCondition(
+						attribute, simpleCond, value, ignoreCase);
 			}
 			DefaultComboBoxModel model = (DefaultComboBoxModel) conditionList
 					.getModel();
@@ -453,6 +463,33 @@ public class FilterComposerDialog extends JDialog {
 					caseInsensitive.setEnabled(false);
 					return;
 				}
+				if (attributes.getSelectedIndex() > NODE_POSITION) {
+					final String attributeName = attributes.getSelectedItem()
+							.toString();
+					SortedComboBoxModel attributesInMap = new SortedComboBoxModel();
+					addAttributeValuesRecursively(attributeName, mController.getMap().getRootNode(), attributesInMap);
+					nodes.setExtensionList(attributesInMap);
+					values.setModel(nodes);
+					if (values.getSelectedItem() != null) {
+						if (nodes.getSize() >= 1) {
+							values.setSelectedIndex(0);
+						} else {
+							values.setSelectedItem(null);
+						}
+					}
+					if (simpleCondition.getModel() != simpleAttributeConditionComboBoxModel) {
+						simpleCondition
+								.setModel(simpleAttributeConditionComboBoxModel);
+						simpleCondition.setSelectedIndex(0);
+					}
+					if (simpleCondition.getSelectedIndex() == 0) {
+						caseInsensitive.setEnabled(false);
+						values.setEnabled(false);
+					}
+					values.setEditable(true);
+					simpleCondition.setEnabled(true);
+					return;
+				}
 			}
 		}
 	}
@@ -482,9 +519,12 @@ public class FilterComposerDialog extends JDialog {
 	private JButton btnSave;
 	private JButton btnLoad;
 	private ConditionListSelectionListener conditionListListener;
+	private Controller mController;
+	private DefaultComboBoxModel simpleAttributeConditionComboBoxModel;
 
 	public FilterComposerDialog(Controller controller, final FilterToolbar pFilterToolbar) {
 		super(controller.getJFrame(), controller.getResourceString("filter_dialog"));
+		mController = controller;
 
 		this.mFilterController = controller.getFilterController();
 		this.mFilterToolbar = pFilterToolbar;
@@ -494,18 +534,18 @@ public class FilterComposerDialog extends JDialog {
 		getContentPane().add(simpleConditionBox, BorderLayout.NORTH);
 
 		attributes = new JComboBox();
-		filteredAttributeComboBoxModel = new ExtendedComboBoxModel(mFilterController
+		filteredAttributeComboBoxModel = new ExtendedComboBoxModel(FilterController
 				.getConditionFactory().getAttributeConditionNames());
-		filteredAttributeComboBoxModel.setExtensionList(null);
+		getAttributesFromMap(controller.getMap());
 		attributes.setModel(filteredAttributeComboBoxModel);
 		attributes.addItemListener(new SelectedAttributeChangeListener());
 		simpleConditionBox.add(Box.createHorizontalGlue());
 		simpleConditionBox.add(attributes);
 		attributes.setRenderer(mFilterController.getConditionRenderer());
 
-		simpleNodeConditionComboBoxModel = new DefaultComboBoxModel(mFilterController
+		simpleNodeConditionComboBoxModel = new DefaultComboBoxModel(FilterController
 				.getConditionFactory().getNodeConditionNames());
-		simpleIconConditionComboBoxModel = new DefaultComboBoxModel(mFilterController
+		simpleIconConditionComboBoxModel = new DefaultComboBoxModel(FilterController
 				.getConditionFactory().getIconConditionNames());
 
 		simpleCondition = new JComboBox();
@@ -514,6 +554,9 @@ public class FilterComposerDialog extends JDialog {
 		simpleConditionBox.add(Box.createHorizontalGlue());
 		simpleConditionBox.add(simpleCondition);
 		simpleCondition.setRenderer(mFilterController.getConditionRenderer());
+		
+		simpleAttributeConditionComboBoxModel = new DefaultComboBoxModel(FilterController
+				.getConditionFactory().getAttributeConditionNames());
 
 		values = new JComboBox();
 		nodes = new ExtendedComboBoxModel();
@@ -641,6 +684,39 @@ public class FilterComposerDialog extends JDialog {
 		pack();
 	}
 
+	private void getAttributesFromMap(MindMap map) {
+		if(map != null) {
+			// gather attributes in the map:
+			SortedListModel attributesInMap = new SortedComboBoxModel();
+			addAttributeKeysRecursively(map.getRootNode(), attributesInMap);
+			filteredAttributeComboBoxModel.setExtensionList(attributesInMap);
+		} else {
+			filteredAttributeComboBoxModel.setExtensionList(null);
+		}
+	}
+
+	private void addAttributeKeysRecursively(MindMapNode pNode, SortedListModel pAttributesInMap) {
+		for (String key : pNode.getAttributeKeyList()) {
+			pAttributesInMap.add(key);
+		}
+		for (Iterator it = pNode.getChildren().iterator(); it.hasNext();) {
+			MindMapNode child = (MindMapNode) it.next();
+			addAttributeKeysRecursively(child, pAttributesInMap);
+		}
+	}
+
+	private void addAttributeValuesRecursively(String pKey, MindMapNode pNode, SortedListModel pAttributesInMap) {
+		for (Attribute attr : pNode.getAttributes()) {
+			if(Tools.safeEquals(attr.getName(), pKey)){
+				pAttributesInMap.add(attr.getValue());
+			}
+		}
+		for (Iterator it = pNode.getChildren().iterator(); it.hasNext();) {
+			MindMapNode child = (MindMapNode) it.next();
+			addAttributeValuesRecursively(pKey, child, pAttributesInMap);
+		}
+	}
+	
 	private String getAttributeValue() {
 		if (attributes.getSelectedIndex() == ICON_POSITION) {
 			MindIcon mi = (MindIcon) values.getSelectedItem();
@@ -665,6 +741,7 @@ public class FilterComposerDialog extends JDialog {
 			}
 			if (attributes.getSelectedIndex() > 1)
 				attributes.setSelectedIndex(0);
+			getAttributesFromMap(newMap);
 		} else {
 			icons.setExtensionList(null);
 			values.setSelectedIndex(-1);
