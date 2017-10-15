@@ -111,6 +111,8 @@ public class ManagePatternsPopupDialog extends JDialog implements
 	public static final int CANCEL = -1;
 
 	public static final int OK = 1;
+	
+	public static final int STAY = 2;
 
 	private int result = CANCEL;
 
@@ -216,8 +218,7 @@ public class ManagePatternsPopupDialog extends JDialog implements
 	private void close() {
 		ManageStyleEditorWindowConfigurationStorage storage = new ManageStyleEditorWindowConfigurationStorage();
 		storage.setDividerPosition(mSplitPane.getDividerLocation());
-		mController.storeDialogPositions(this, storage,
-				WINDOW_PREFERENCE_STORAGE_PROPERTY);
+		mController.storeDialogPositions(this, storage, WINDOW_PREFERENCE_STORAGE_PROPERTY);
 		this.dispose();
 
 	}
@@ -225,7 +226,8 @@ public class ManagePatternsPopupDialog extends JDialog implements
 	private void okPressed() {
 		result = OK;
 		writePatternBackToModel();
-		close();
+		if(result != STAY)
+			close();
 	}
 
 	private void cancelPressed() {
@@ -545,20 +547,27 @@ public class ManagePatternsPopupDialog extends JDialog implements
 						continue;
 					}
 					if (otherPattern.getName().equals(newPatternName)) {
-						// duplicate found. What now?
-						JOptionPane
-								.showMessageDialog(
-										this,
-										mController
-												.getText("ManagePatternsPopupDialog.DuplicateNameMessage"));
+
+						int selection = JOptionPane.showOptionDialog( null, mController.getText("ManagePatternsPopupDialog.question"),
+								mController.getText("ManagePatternsPopupDialog.DuplicateNameMessage"),JOptionPane.YES_NO_CANCEL_OPTION,
+								JOptionPane.ERROR_MESSAGE,null,
+								new Object[] { mController.getText("ManagePatternsPopupDialog.discard"), mController.getText("ManagePatternsPopupDialog.rename")},
+								mController.getText("ManagePatternsPopupDialog.rename"));
+						 if (selection == 0){//discard
+						           result= CANCEL;
+						           return;
+						 }else if(selection == 1) {//cancel
+							 result= STAY;
+							 return;
+						 }
+						 
 					}
 				}
 			}
 			// no duplicates. We search for uses of the old name:
 			for (Pattern otherPattern : mPatternListModel.unmodifiableList()) {
 				if (otherPattern.getPatternChild() != null
-						&& oldPatternName.equals(otherPattern.getPatternChild()
-								.getValue())) {
+						&& oldPatternName.equals(otherPattern.getPatternChild().getValue())) {
 					// change to new name
 					otherPattern.getPatternChild().setValue(newPatternName);
 				}
@@ -566,8 +575,7 @@ public class ManagePatternsPopupDialog extends JDialog implements
 			mStylePatternFrame.getResultPattern(pattern);
 			// Special case that a pattern that points to itself is renamed:
 			if (pattern.getPatternChild() != null
-					&& oldPatternName.equals(pattern.getPatternChild()
-							.getValue())) {
+					&& oldPatternName.equals(pattern.getPatternChild().getValue())) {
 				pattern.getPatternChild().setValue(newPatternName);
 			}
 		}
