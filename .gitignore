@@ -13,7 +13,7 @@ local.properties
 .recommenders
 
 # External tool builders
-.externalToolBuilders/
+#.externalToolBuilders/
 
 # Locally stored "Eclipse launch configurations"
 *.launch
@@ -26,10 +26,10 @@ local.properties
 
 ### Eclipse Patch ###
 # Eclipse Core
-.project
+#.project
 
 # JDT-specific (Eclipse Java Development Tools)
-.classpath
+#.classpath
 
 ### Java ###
 # Compiled class file
@@ -39,12 +39,14 @@ local.properties
 *.log
 
 # Package Files #
-*.jar
-*.zip
+#*.jar
+#*.zip
 *.tar.gz
 *.rar
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
-freemind/.classpath
+#freemind/.classpath
 freemind/version.properties
+/.project
+/.classpath

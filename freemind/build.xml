@@ -51,14 +51,14 @@
 		<classpath path="${jibxlibs}"/>
 		<classpath location="binding/classes"/>
 	</taskdef>
-	<property name="formsLib" location="lib/jgoodies-forms.jar:lib/jgoodies-common.jar:lib/SimplyHTML/SimplyHTML.jar"/>
+	<property name="formsLib" location="lib/jgoodies-forms-1.8.0.jar:lib/jgoodies-common-1.8.1.jar"/>
 	<property name="simplyHtml" location="lib/SimplyHTML/SimplyHTML.jar"/>
 	<property name="spellLib" location="lib/jortho.jar"/>
 	<property name="xsltLib" location="lib/xalan.jar"/>
 	<property name="xsltLib2" location="lib/serializer.jar"/>
 	<property name="xsltLib3" location="lib/xml-apis.jar"/>
 	<property name="xsltLib4" location="lib/xercesImpl.jar"/>
-	<property name="jsoup" location="lib/jsoup.jar"/>
+	<property name="jsoup" location="lib/jsoup-1.10.3.jar"/>
 
 	<property name="classpath" value="${jibxruntimelibs}:${jibxjar}:${formsLib}:${simplyHtml}:${spellLib}:${xsltLib}:${xsltLib2}:${xsltLib3}:${xsltLib4}:${jsoup}"/>
 	<path id="jars.path">
@@ -257,21 +257,19 @@
 		<mkdir dir="${dist.lib}" />
 		<copy todir="${dist.lib}">
 			<fileset dir="${src}/lib">
-				<include name="jsoup.jar"/>
+				<include name="jsoup-1.10.3.jar"/>
 				<include name="jortho.jar"/>
 				<include name="xalan.jar"/>
 				<include name="serializer.jar"/>
 				<include name="xml-apis.jar"/>
 				<include name="xercesImpl.jar"/>
-				<include name="jgoodies-forms.jar"/>
-				<include name="jgoodies-common.jar"/>
+				<include name="jgoodies-forms-1.8.0.jar"/>
+				<include name="jgoodies-common-1.8.1.jar"/>
 				<include name="bindings.jar"/>
 				<include name="jibx/jibx-run.jar"/>
 				<include name="jibx/xpp3.jar"/>
 				<include name="SimplyHTML/gnu-regexp-1.1.4.jar"/>
 				<include name="SimplyHTML/SimplyHTML.jar"/>
-				<include name="SimplyHTML/SimplyHTMLHelp.jar"/>
-				<include name="SimplyHTML/jhall.jar"/>
 			</fileset>
 		</copy>
 
@@ -476,7 +474,7 @@
 			<attribute name="Built-Number" value="${build.number}" />
 			<attribute name="Created-By" value="Joerg Mueller, Daniel Polansky, Christian Foltin, Dimitry Polivaev, and others." />
 			<attribute name="Main-Class" value="freemind.main.FreeMindStarter" />
-			<attribute name="Class-Path" value="freemind.jar .. commons-lang-2.0.jar jgoodies-forms.jar jgoodies-common.jar jibx/jibx-run.jar jibx/xpp3.jar jibx-run.jar xpp3.jar bindings.jar jortho.jar xalan.jar serializer.jar xml-apis.jar xercesImpl.jar SimplyHTML/gnu-regexp-1.1.4.jar gnu-regexp-1.1.4.jar SimplyHTML/SimplyHTML.jar SimplyHTML.jar jsoup.jar"/>
+			<attribute name="Class-Path" value="freemind.jar .. commons-lang-2.0.jar jgoodies-forms-1.8.0.jar jgoodies-common-1.8.0.jar jibx/jibx-run.jar jibx/xpp3.jar jibx-run.jar xpp3.jar bindings.jar jortho.jar xalan.jar serializer.jar xml-apis.jar xercesImpl.jar SimplyHTML/gnu-regexp-1.1.4.jar SimplyHTML/SimplyHTML.jar jsoup-1.10.3.jar"/>
 		</manifest>
 		<jar jarfile="${FM.jar}"
 		     manifest="${temp.manifest.file}"
