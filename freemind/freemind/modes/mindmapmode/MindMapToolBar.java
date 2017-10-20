@@ -25,7 +25,6 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Vector;
 
 import javax.swing.Action;
 import javax.swing.Box;
@@ -53,10 +52,7 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 	 * A combo box that doesn't fill the complete screen.
 	 * See http://stackoverflow.com/questions/13345640/does-anyone-know-how-to-layout-a-jtoolbar-that-doest-move-or-re-size-any-compon
 	 */
-	private final class FreeMindComboBox extends JComboBox {
-		private FreeMindComboBox(Vector pItems) {
-			super(pItems);
-		}
+	private final class FreeMindComboBox extends JComboBox<String> {
 
 		public FreeMindComboBox(String[] pItems) {
 			super(pItems);
@@ -70,7 +66,7 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 	private static final String[] sizes = { "8", "10", "12", "14", "16", "18",
 			"20", "24", "28" };
 	private MindMapController c;
-	private JComboBox fonts, size;
+	private JComboBox<String> fonts, size;
 	private JAutoScrollBarPane iconToolBarScrollPane;
 	private JToolBar iconToolBar;
 	private boolean fontSize_IgnoreChangeEvent = false;
@@ -78,7 +74,7 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 	private boolean color_IgnoreChangeEvent = false;
 	private ItemListener fontsListener;
 	private ItemListener sizeListener;
-	private JComboBox zoom;
+	private JComboBox<String> zoom;
 	private String userDefinedZoom;
 	private JColorCombo colorCombo;
 	private int userDefinedCounter = 1;
@@ -93,7 +89,7 @@ public class MindMapToolBar extends FreeMindToolBar implements ZoomListener {
 					this.getClass().getName());
 		}
 		this.setRollover(true);
-		fonts = new FreeMindComboBox(Tools.getAvailableFontFamilyNamesAsVector());
+		fonts = new FreeMindComboBox(Tools.getAvailableFonts());
 		fonts.setFocusable(false);
 		size = new FreeMindComboBox(sizes);
 		size.setFocusable(false);

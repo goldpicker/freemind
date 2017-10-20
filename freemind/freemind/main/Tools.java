@@ -156,18 +156,11 @@ public class Tools {
 		executableExtensions.add("lnk");
 		
 	}
-	
-
-	private static Set<String> availableFontFamilyNames = null; // Keep set of platform
 
 	private static String sEnvFonts[] = null;
-	
-	private static Vector<String> vectorAvailableFontFamilyNames;
 
 	// bug fix from Dimitri.
 	public static Random ran = new Random();
-
-	// fonts
 
 	public static boolean executableByExtension(String file) {
 		return executableExtensions.contains(getExtension(file));
@@ -280,44 +273,22 @@ public class Tools {
 		return file;
 	}
 
-	public static Set<String> getAvailableFontFamilyNames() {
-		if (availableFontFamilyNames == null) {
-			String[] envFonts = getAvailableFonts();
-			availableFontFamilyNames = new HashSet<>(envFonts.length);
-			for (int i = 0; i < envFonts.length; i++) {
-				availableFontFamilyNames.add(envFonts[i]);
-			}
-			// Add this one explicitly, Java defaults to it if the font is not
-			availableFontFamilyNames.add("dialog");
-		}
-		return availableFontFamilyNames;
-	}
-
 	/**
      */
-	private static String[] getAvailableFonts() {
+	public static String[] getAvailableFonts() {
 		if (sEnvFonts == null) {
-			GraphicsEnvironment gEnv = GraphicsEnvironment
-					.getLocalGraphicsEnvironment();
+			GraphicsEnvironment gEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
 			sEnvFonts = gEnv.getAvailableFontFamilyNames();
 		}
 		return sEnvFonts;
 	}
 
-	public static Vector<String> getAvailableFontFamilyNamesAsVector() {
-		if(vectorAvailableFontFamilyNames == null) {
-			String[] envFonts = getAvailableFonts();
-			vectorAvailableFontFamilyNames = new Vector<>(envFonts.length);
-			for (int i = 0; i < envFonts.length; i++) {
-				vectorAvailableFontFamilyNames.add(envFonts[i]);
-			}
-			
+	public static boolean isAvailableFontFamily(String name) {
+		for(String s: getAvailableFonts()){
+			if(s.equals(name))
+				return true;
 		}
-		return vectorAvailableFontFamilyNames;
-	}
-
-	public static boolean isAvailableFontFamily(String fontFamilyName) {
-		return getAvailableFontFamilyNames().contains(fontFamilyName);
+		return false;
 	}
 
 	/**
