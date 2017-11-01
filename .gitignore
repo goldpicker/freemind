@@ -48,5 +48,6 @@ local.properties
 hs_err_pid*
 #freemind/.classpath
 freemind/version.properties
-/.project
-/.classpath
+
+# file is generated:
+freemind/lib/bindings.jar

@@ -87,11 +87,14 @@ public class TimeManagement extends MindMapHookAdapter implements
 
 	private class AppendDateAbstractAction extends AbstractAction {
 
+		private NodeFactory mFactory;
+
 		public AppendDateAbstractAction() {
 
 		}
 
 		public void init(NodeFactory pFactory, String pText) {
+			mFactory = pFactory;
 			putValue(Action.NAME, getMindMapController().getText(pText));
 		}
 
@@ -99,6 +102,7 @@ public class TimeManagement extends MindMapHookAdapter implements
 			MindMapNode lastElement = null;
 			Vector<MindMapNode> sel = new Vector<>();
 			for (MindMapNode element : getMindMapController().getSelecteds()) {
+				element = mFactory.getNode(element);
 				DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
 				String dateAsString = df.format(getCalendarDate());
 				getMindMapController().setNodeText(element,
