@@ -2165,7 +2165,7 @@ public class FreeMindMapController extends JMapController implements
 
 	public Reversegeocode getReverseLookup(Coordinate pCoordinate, int pZoom) {
 		StringBuilder b = new StringBuilder();
-		b.append("http://nominatim.openstreetmap.org/reverse?format=xml&email=christianfoltin%40users.sourceforge.net&addressdetails=0"); //$NON-NLS-1$
+		b.append("https://nominatim.openstreetmap.org/reverse?format=xml&email=christianfoltin%40users.sourceforge.net&addressdetails=0"); //$NON-NLS-1$
 		b.append("&accept-language=").append(Locale.getDefault().getLanguage()); //$NON-NLS-1$
 		b.append("&lat=");
 		b.append(pCoordinate.getLat());
@@ -2235,7 +2235,7 @@ public class FreeMindMapController extends JMapController implements
 		boolean limitSearchToRegion = mMapHook.isLimitSearchToRegion();
 		try {
 			if (true) {
-				b.append("http://nominatim.openstreetmap.org/search/?email=christianfoltin%40users.sourceforge.net&q="); //$NON-NLS-1$
+				b.append("https://nominatim.openstreetmap.org/search/?email=christianfoltin%40users.sourceforge.net&q="); //$NON-NLS-1$
 				b.append(URLEncoder.encode(pText, "UTF-8"));
 				b.append("&format=xml&limit=30&accept-language=").append(Locale.getDefault().getLanguage()); //$NON-NLS-1$
 				if (limitSearchToRegion) {
