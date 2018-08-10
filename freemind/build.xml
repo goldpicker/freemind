@@ -474,7 +474,7 @@
 			<attribute name="Built-Number" value="${build.number}" />
 			<attribute name="Created-By" value="Joerg Mueller, Daniel Polansky, Christian Foltin, Dimitry Polivaev, and others." />
 			<attribute name="Main-Class" value="freemind.main.FreeMindStarter" />
-			<attribute name="Class-Path" value="freemind.jar .. commons-lang-2.0.jar jgoodies-forms-1.8.0.jar jgoodies-common-1.8.0.jar jibx/jibx-run.jar jibx/xpp3.jar jibx-run.jar xpp3.jar bindings.jar jortho.jar xalan.jar serializer.jar xml-apis.jar xercesImpl.jar SimplyHTML/gnu-regexp-1.1.4.jar SimplyHTML/SimplyHTML.jar jsoup-1.10.3.jar"/>
+			<attribute name="Class-Path" value="freemind.jar .. commons-lang-2.0.jar jgoodies-forms-1.8.0.jar jgoodies-common-1.8.1.jar jibx/jibx-run.jar jibx/xpp3.jar jibx-run.jar xpp3.jar bindings.jar jortho.jar xalan.jar serializer.jar xml-apis.jar xercesImpl.jar SimplyHTML/gnu-regexp-1.1.4.jar SimplyHTML/SimplyHTML.jar jsoup-1.10.3.jar"/>
 		</manifest>
 		<jar jarfile="${FM.jar}"
 		     manifest="${temp.manifest.file}"
